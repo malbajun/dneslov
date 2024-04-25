@@ -103,18 +103,23 @@ resources:
          descriptions: :tiun.resources.image.index.args.page
        - name: l
          kind: string
+         alias: language
          descriptions: :tiun.resources.image.index.args.language
        - name: a
          kind: string
+         alias: alphabeth
          descriptions: :tiun.resources.image.index.args.alphabeth
        - name: m
          kind: string
+         alias: memory
          descriptions: :tiun.resources.image.index.args.memory
        - name: e
          kind: string
+         alias: event
          descriptions: :tiun.resources.image.index.args.event
        - name: t
          kind: string
+         alias: type
          descriptions: :tiun.resources.image.index.args.type
  - name: image.create
    path: /api/v1/images/create.json

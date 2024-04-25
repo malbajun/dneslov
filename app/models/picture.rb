@@ -21,6 +21,16 @@ class Picture < ApplicationRecord
       joins(:titles, :descriptions).where(titles: { alphabeth_code: a}).and(where(descriptions: { alphabeth_code: a}))
    end
 
+   scope :by_memory, ->(m) do
+      sub = m =~ /^\d+$/ ? Memory.where(id: m) : Memory.by_token(m)
+
+      joins(:memories).merge(sub.reorder(""))
+   end
+
+   scope :by_event, ->(e) do
+      joins(:events).merge(Event.by_token(e).reorder(""))
+   end
+
    validates_presence_of :type, :uid, :image
    validates_uniqueness_of :digest, on: :create
    validates_uniqueness_of :uid, :url, :thumb_url
