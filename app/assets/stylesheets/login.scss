@@ -1,0 +1,117 @@
+.signed {
+   i {
+      margin-left: -0.3rem;
+   }
+}
+
+.RML-login-modal-wrap {
+   opacity: 1;
+
+   &:hover {
+      opacity: 1;
+   }
+
+   .RML-login-modal-box {
+      border: 1px solid darken($terracota, 5%);
+      background: transparent;
+
+      .RML-login-modal-error {
+         line-height: 1rem;
+      }
+
+      .RML-login-modal-box-content {
+         background: transparent;
+
+         .RML-login-modal-form {
+            button {
+               background-color: darken($terracota, 5%);
+
+               &:hover {
+                  background-color: darken($terracota, 10%);
+               }
+            }
+         }
+
+         .RML-login-modal-close {
+            background: {
+               color: darken($terracota, 5%);
+            }
+
+            &:hover {
+               background-color: darken($terracota, 10%);
+            }
+         }
+
+         .RML-login-modal-mode {
+            background: transparent;
+
+            & > div {
+               background: darken($terracota, 5%);
+               color: darken($dark, 5%);
+               box-shadow: 0 0.2rem 0.8rem rgba(0,0,0,0.2), inset 0 -0.1rem 0 rgba(0,0,0,0.22);
+            }
+
+            & > div:hover {
+               background: darken($terracota, 10%);
+               color: darken($dark, 10%);
+               box-shadow: 0 0.2rem 0.8rem rgba(0,0,0,0.2), inset 0 -0.2rem 0 rgba(0,0,0,0.32);
+            }
+
+            & > div.active {
+               background: darken($terracota, 25%);
+               color: lighten($dark, 5%);
+
+               &:hover {
+                  box-shadow: 0;
+               }
+            }
+         }
+
+         .RML-social-modal-content-wrap {
+            background: $background;
+         }
+
+         .RML-recover-password-anchor {
+            float: inline-start;
+         }
+
+         .login-wrapper {
+            #uLogin {
+               background: transparent;
+               width: auto !important;
+               float: left;
+
+               .ulogin-buttons-container {
+                  width: auto !important;
+                  height: 2rem !important;
+                  float: left !important;
+               }
+            }
+
+            .button {
+               float: left;
+               width: 32px;
+               height: 32px;
+               margin: -0.25rem 1rem 1rem -0.5rem;
+
+               &.telegram {
+                  display: none;
+               }
+
+               &.discord {
+                  border: 0;
+                  padding: 0;
+
+                  div {
+                     transform: scale(1.8, 1.8);
+                  }
+
+                  span {
+                     display: none;
+                  }
+               }
+            }
+         }
+      }
+   }
+}

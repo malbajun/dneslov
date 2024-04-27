@@ -1,18 +1,31 @@
 class User < ApplicationRecord
    include Tiun::Model::Auth
+   include WithDescriptions
 
    has_one :email, class_name: "Account::Email"
-   has_one :session_token, class_name: "Token::Session"
-   has_one :refresh_token, class_name: "Token::Refresh"
+   has_one :session_token, class_name: "Token::Session", as: :tokenable
+   has_one :refresh_token, class_name: "Token::Refresh", as: :tokenable
+   has_many :session_tokina, class_name: "Token::Session", as: :tokenable
+   has_many :refresh_tokina, class_name: "Token::Refresh", as: :tokenable
+   has_many :user_names, dependent: :destroy
+   has_many :nomina, through: :user_names
 
    before_validation :fill_in_account
 
-   scope :by_credentials_or_id, ->(croi) do
-      where(id: croi).or(where("users.settings @> ?", "{\"name\": \"#{croi}\"}"))
+   validates_presence_of :accounts
+   accepts_nested_attributes_for :accounts
+
+   scope :by_accounts, ->(hash) do
+      rela =
+         hash.reduce(Account.where(Arel.sql("FALSE"))) do |rela, (type, no)|
+            rela.or(Account.where(no: no, type: type))
+         end
+
+      joins(:accounts).merge(rela).distinct
    end
 
    scope :by_uno, ->(uno) do
-      joins(:accounts).where(accounts:  { no: uno })
+      joins(:accounts).where(accounts: { no: uno })
    end
 
    scope :with_accounts, ->(context) do
@@ -36,10 +49,6 @@ class User < ApplicationRecord
       select(selector).group(:id)
    end
 
-   def name
-      [settings["name"], settings["last_name"]].compact.join(" ")
-   end
-
    def uid
       [accounts.first&.no, accounts.first&.type].join("#")
    end
@@ -50,6 +59,11 @@ class User < ApplicationRecord
 
    def type= value
       @type = value
+   end
+
+   def name
+      # name or email
+      email.no
    end
 
    def fill_in_account

@@ -12,8 +12,8 @@ Rails.application.routes.draw do
    Tiun.draw_routes(self)
 
    # auth routes
-   get '/auth/github', to: 'auth#github', format: false
-
+   post '/auth/ulogin', to: 'auth#ulogin', format: false
+   get '/auth/ulogin', to: 'auth#ulogin'
    # You can have the root of your site routed with "root"
    root 'memories#index'
 
@@ -48,6 +48,8 @@ Rails.application.routes.draw do
    end
 
    get '/index' => 'memories#index'
+   get '/token/:type/:token' => 'sessions#update'
+   get '/signout' => 'sessions#destroy'
    get '/:lat' => 'errors#show', constraints: { lat: /[a-z]+/ }
 
    get '/:slug' => 'memories#show', as: :slug#, constraints: { slug: /[ёа-я0-9]{1,6}/ }

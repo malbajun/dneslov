@@ -236,7 +236,7 @@ export default class Memory extends Component {
    getDescription() {
       let array = [this.state.order].concat(this.props.names || []).concat(this.state.describedMemoes || [])
 
-      array.reduce((res, x) => { return res + " " + x.text }, "").slice(0, 255)
+      array.reduce((res, x) => { return res + " " + x?.text }, "").slice(0, 255)
    }
 
    render() {

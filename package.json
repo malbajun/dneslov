@@ -71,6 +71,7 @@
   "dependencies": {
     "@jridgewell/gen-mapping": "0.3.1",
     "@majioa/react-scroll-pagination": "^0.2.3",
+    "@schybo-quizzing/react-oauth-discord": "^1.1.7",
     "@soon92/react-json-editor-ajrm": "^2.5.15",
     "@types/react": "17.0.38",
     "axios": "^1.6.3",
@@ -88,11 +89,13 @@
     "pickmeup": "git+https://git@github.com/majioa/PickMeUp.git#devel",
     "react": "^17.0.2",
     "react-cookie": "^4.1.1",
+    "react-discord-login": "^2.1.0",
     "react-dom": "^17.0.2",
-    "react-github-login": "git+https://git@github.com/majioa/react-github-login.git#devel",
     "react-meta-tags": "^1.0.1",
+    "react-modal-login": "^2.0.7",
     "react-rails-ujs": "^1.1.0",
     "react-showdown": "^2.3.1",
+    "telegram-login-button": "^0.1.0",
     "uuid": "^3.4.0",
     "velocity-animate": "^1.5.1"
   },

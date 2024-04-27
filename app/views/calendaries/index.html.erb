@@ -1,6 +1,8 @@
-<%= react_component 'Calendaries', calendaries: CalendariesSerializer.new( @calendaries,
-                                                                           total: @calendaries.total_count,
-                                                                           page: @page,
-                                                                           locales: @locales,
-                                                                           serializer: Admin::CalendarySerializer ),
-                                   locales: @locales %>
+<%=
+   react_component 'Calendaries', 
+      date: !@date.blank? && @date.strftime("%d.%m.%Y"),
+      user: session["user"],
+      calendaries_cloud: (binding.local_variable_get(:cloud) rescue nil),
+      calendaries_used: @calendary_slugs,
+      calendaries: @calendaries
+-%>

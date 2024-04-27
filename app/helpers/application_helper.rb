@@ -1,4 +1,6 @@
 module ApplicationHelper
+   include Tiun::CoreHelper
+
    POSES = [ ( '0'..'9' ).to_a, ( 'а'..'е' ).to_a, 'ё', ( 'ж'..'я' ).to_a ].flatten.reverse
 
    def t link, options = {}

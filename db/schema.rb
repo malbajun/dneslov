@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_05_004436) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_28_014300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -432,15 +432,27 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_05_004436) do
     t.string "tokenable_type", null: false
     t.bigint "tokenable_id", null: false
     t.datetime "expires_at"
+    t.datetime "obsoleted_at"
     t.index ["code"], name: "index_tokina_on_code", unique: true
     t.index ["expires_at"], name: "index_tokina_on_expires_at"
+    t.index ["obsoleted_at"], name: "index_tokina_on_obsoleted_at"
     t.index ["tokenable_type", "tokenable_id"], name: "index_tokina_on_tokenable"
     t.index ["type"], name: "index_tokina_on_type"
   end
 
+  create_table "user_names", force: :cascade do |t|
+    t.string "kind", null: false
+    t.bigint "user_id", null: false
+    t.bigint "nomen_id", null: false
+    t.index ["kind"], name: "index_user_names_on_kind", unique: true
+    t.index ["nomen_id"], name: "index_user_names_on_nomen_id"
+    t.index ["user_id"], name: "index_user_names_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.jsonb "settings"
-    t.string "encrypted_password", null: false
+    t.string "default_name"
+    t.string "encrypted_password"
     t.string "salt"
     t.datetime "last_login_at"
     t.datetime "last_active_at"
@@ -462,4 +474,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_05_004436) do
   add_foreign_key "memory_names", "nomina", on_delete: :cascade
   add_foreign_key "service_scripta", "scripta", on_delete: :cascade
   add_foreign_key "service_scripta", "services", on_delete: :cascade
+  add_foreign_key "user_names", "nomina", on_delete: :restrict
+  add_foreign_key "user_names", "users", on_delete: :restrict
 end

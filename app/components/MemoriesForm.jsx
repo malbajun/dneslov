@@ -11,6 +11,7 @@ import MemorySpans from 'MemorySpans'
 import Memory from 'Memory'
 import Eventee from 'Eventee'
 import Gallery from 'Gallery'
+import Login from 'Login'
 import Intro from 'Intro'
 import Error from 'Error'
 import { getCalendariesString, getDateString, getPathsFromState, getTitleFromState, parseDateString, parseCalendariesString } from 'support'
@@ -21,6 +22,7 @@ export default class MemoriesForm extends Component {
       calendaries_used: [],
       calendaries_cloud: [],
       query: "",
+      user: null,
       memories: {
          list: [],
          page: 1,
@@ -45,6 +47,7 @@ export default class MemoriesForm extends Component {
                memory: props.memory,
                eventee: props.eventee,
                gallery: props.gallery,
+               user: props.user,
                error: props.error,
                calendarySlug: props.calendaries_used?.length == 1 ? props.calendaries_used[0] : null,
                calendariesCloud: props.calendaries_cloud || [],
@@ -334,9 +337,16 @@ export default class MemoriesForm extends Component {
       }
    }
 
+   onSigninUser(user) {
+      this.setState({ user: user })
+   }
+
+   onSignoutUser() {
+      this.setState({ user: null })
+   }
+
    render() {
       console.log("[render] * ", { props: this.props, state: this.state})
-      console.log("[render] * ", )
 
       return (
          [<header>
@@ -353,10 +363,10 @@ export default class MemoriesForm extends Component {
                         <a
                            href={"/about"}>
                            {"О проекте..."}</a></li>
-                     <div className='moon btn-floating btn-large'>
-                        <i
-                           className="material-icons">
-                           brightness_4</i></div></ul></div></nav></header>,
+                     <Login
+                        onSigninUser={this.onSigninUser.bind(this)}
+                        onSignoutUser={this.onSignoutUser.bind(this)}
+                        user={this.state.user} /></ul></div></nav></header>,
          <main>
             <div className='container'>
                <div className='row'>

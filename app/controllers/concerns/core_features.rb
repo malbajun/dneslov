@@ -3,9 +3,9 @@ module CoreFeatures
 
    def self.included k
       k.class_eval do
-         before_action :default, only: %i(index show)
-         before_action :set_locales, :set_date, :set_calendary_cloud, :set_julian
-         before_action :set_calendary_slugs, only: %i(index show)
+         prepend_before_action :set_calendary_slugs, only: %i(index show)
+         prepend_before_action :set_date, :set_calendary_cloud, :set_julian, :set_locales
+         prepend_before_action :default, only: %i(index show)
          before_action :set_slug, only: %i(index show)
          before_action :set_memory, only: %i(show), if: ->(x) { @slug.sluggable_type == "Memory" }
 

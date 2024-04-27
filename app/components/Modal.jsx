@@ -1,6 +1,5 @@
 import { Component } from 'react'
 import PropTypes from 'prop-types'
-import { mixin } from 'lodash-decorators'
 
 import SubmitButton from 'SubmitButton'
 import Form from 'Form'

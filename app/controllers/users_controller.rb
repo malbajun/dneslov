@@ -1,4 +1,3 @@
-#class Api::V1::UsersController < Api::CommonController
 class UsersController < Api::CommonController
    after_action :send_validation_email, only: :create
 

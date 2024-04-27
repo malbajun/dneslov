@@ -5,6 +5,7 @@ class CreateTokina < ActiveRecord::Migration[7.0]
          t.string :type, null: false, index: true, length: 15
          t.references :tokenable, polymorphic: true, index: true, null: false
          t.datetime :expires_at, index: true
+         t.datetime :obsoleted_at, index: true
       end
    end
 end
