@@ -1,10 +1,10 @@
 const event_types = ['Resurrection', 'Repose', 'Writing', 'Appearance', 'Translation', 'Sanctification', 'Veneration']
 
-export function makeTweet(value, locales, source = 'tweets', filter = null) {
-   let tweets = locales.map((locale) => {
+export function makeTweet(value, languages, source = 'tweets', filter = null) {
+   let tweets = languages.map((language) => {
       return value[source].reduce((res, text) => {
          return res ||
-            locale === text.language_code &&
+            language === text.language_code &&
             (!filter || Object.keys(filter).reduce((r, key) => {
                return r || text[key] === filter[key]
             }, null)) &&
@@ -19,11 +19,11 @@ export function makeTweet(value, locales, source = 'tweets', filter = null) {
    }
 }
 
-export function makeNote(value, locales, source = 'notes', filter = null) {
-   let notes = locales.map((locale) => {
+export function makeNote(value, languages, source = 'notes', filter = null) {
+   let notes = languages.map((language) => {
       return value[source].reduce((res, text) => {
          return res ||
-            locale === text.language_code &&
+            language === text.language_code &&
             (!filter || Object.keys(filter).reduce((r, key) => {
                return r || text[key] === filter[key]
             }, null)) &&
@@ -38,11 +38,11 @@ export function makeNote(value, locales, source = 'notes', filter = null) {
    }
 }
 
-export function makeName(value, locales, source = 'names', filter = null) {
-   let names = locales.map((locale) => {
+export function makeName(value, languages, source = 'names', filter = null) {
+   let names = languages.map((language) => {
       return value[source].reduce((res, text) => {
          return res ||
-            locale === text.language_code &&
+            language === text.language_code &&
             (!filter || Object.keys(filter).reduce((r, key) => {
                return r || text[key] === filter[key]
             }, null)) &&
@@ -54,11 +54,11 @@ export function makeName(value, locales, source = 'names', filter = null) {
 }
 
 // filter: hash of key: value pairs to filter out the source
-export function makeTitle(value, locales, source = 'titles', filter = null) {
-   let titles = locales.map((locale) => {
+export function makeTitle(value, languages, source = 'titles', filter = null) {
+   let titles = languages.map((language) => {
       return value[source].reduce((res, text) => {
          return res ||
-            locale === text.language_code &&
+            language === text.language_code &&
             (!filter || Object.keys(filter).reduce((r, key) => {
                return r || text[key] === filter[key]
             }, null)) &&
@@ -85,11 +85,11 @@ export function makeCouncil(value) {
    }
 }
 
-export function makeDescription(value, locales, source = 'descriptions', filter = null) {
-   let descriptions = locales.map((locale) => {
+export function makeDescription(value, languages, source = 'descriptions', filter = null) {
+   let descriptions = languages.map((language) => {
       return value[source].reduce((res, text) => {
          return res ||
-            locale === text.language_code &&
+            language === text.language_code &&
             (!filter || Object.keys(filter).reduce((r, key) => {
                return r || text[key] === filter[key]
             }, null)) &&

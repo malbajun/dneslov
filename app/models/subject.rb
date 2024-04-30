@@ -54,7 +54,7 @@ class Subject < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup
 
@@ -84,7 +84,7 @@ class Subject < ActiveRecord::Base
    end
 
    scope :with_kind_title, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if selector.empty?
          selector << 'subjects.*'
@@ -106,7 +106,7 @@ class Subject < ActiveRecord::Base
    end
 
    scope :with_names, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?

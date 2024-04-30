@@ -1,4 +1,9 @@
 <%=
    react_component 'Dashboard',
-      user: current_user_data
+      user: current_user_data,
+      locales: @locales,
+      locale: @locale,
+      text_languages: @text_languages,
+      service_languages: @service_languages,
+      language: @language
 -%>

@@ -4,7 +4,7 @@ module CoreFeatures
    def self.included k
       k.class_eval do
          prepend_before_action :set_calendary_slugs, only: %i(index show)
-         prepend_before_action :set_date, :set_calendary_cloud, :set_julian, :set_locales
+         prepend_before_action :set_date, :set_calendary_cloud, :set_julian, :set_languages
          prepend_before_action :default, only: %i(index show)
          before_action :set_slug, only: %i(index show)
          before_action :set_memory, only: %i(show), if: ->(x) { @slug.sluggable_type == "Memory" }
@@ -26,7 +26,14 @@ module CoreFeatures
    end
 
    def context
-      @context ||= { locales: @locales, calendary_slugs: @calendary_slugs }
+      @_context ||= {
+         locales: @locales,
+         locale: @locale,
+         calendary_slugs: @calendary_slugs,
+         text_languages: @text_languages,
+         service_languages: @service_languages,
+         language: @language,
+      }
    end
 
    # lazy property
@@ -52,7 +59,7 @@ module CoreFeatures
 
    def default_calendary_slugs
       #TODO make automatic detection of calendary depended on the IP and country of request
-      ['днес','рпц','нмр']
+      ['днес','рпц']
    end
 
    def default
@@ -62,9 +69,13 @@ module CoreFeatures
       end
    end
 
-   def set_locales
-      #TODO unfix of the ru only (will depend on the locale)
-      @locales ||= %i(ру цс)
+   def set_languages
+      # NOTE the default values
+      @locales ||= I18n.available_locales
+      @locale ||= I18n.locale
+      @text_languages ||= %w(ру)
+      @service_languages ||= %w(цс)
+      @language ||= "ру"
    end
 
    def set_date
@@ -84,8 +95,8 @@ module CoreFeatures
    def set_calendary_cloud
       @calendary_cloud ||=
          Calendary.licit_with(params[ :c ])
-                  .with_title(@locales)
-                  .with_description(@locales)
+                  .with_title(@languages)
+                  .with_description(@languages)
                   .with_url
                   .with_slug_text
                   .group("calendaries.id")

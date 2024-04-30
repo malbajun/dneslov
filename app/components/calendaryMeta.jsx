@@ -16,6 +16,10 @@ export const calendaryMeta = {
       yes: "Да"
    },
    row: {
+      slug: {
+         title: 'Жетон',
+         value: (value) => { return value.slug.text },
+      },
       title: {
          title: 'Имя',
          value: makeTitle,

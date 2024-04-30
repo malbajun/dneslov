@@ -17,7 +17,7 @@ module WithTitles
 
          scope :with_titles, -> context do
             as = table.table_alias || table.name
-            language_codes = [ context[:locales] ].flatten
+            language_codes = [context[:text_languages]].flatten
             alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
             selector = self.select_values.dup
             if selector.empty?
@@ -75,7 +75,7 @@ module WithTitles
 
          scope :with_title, -> context do
             as = table.table_alias || table.name
-            language_codes = [context[:locales]].flatten
+            language_codes = [context[:text_languages]].flatten
 
             selector = self.select_values.dup
             selector << "#{as}.*" if selector.empty?

@@ -53,7 +53,7 @@ class Name < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup |
          ["#{model.table_name}.text || ' (' || languages.key || '_' || alphabeths.key || ')' AS _value"]
@@ -76,7 +76,7 @@ class Name < ActiveRecord::Base
    end
 
    scope :with_locale_names, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?
@@ -102,7 +102,7 @@ class Name < ActiveRecord::Base
 
    scope :with_nomina, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       selector = self.select_values.dup
       selector << "#{join_name}.*" if self.select_values.dup.empty?

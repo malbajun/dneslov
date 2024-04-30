@@ -46,7 +46,7 @@ export default class Row extends Component {
       }
 
       return element.value &&
-         element.value(this.props.value, this.props.locales, element.source, element.filter) ||
+         element.value(this.props.value, this.props.text_languages, element.source, element.filter) ||
          this.props.value[name]
    }
 

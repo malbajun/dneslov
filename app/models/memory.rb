@@ -89,7 +89,7 @@ class Memory < ActiveRecord::Base
    end
 
    scope :with_names, -> (context) do
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
 =begin
 with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (
         with recursive tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (SELECT 0,nm.text,n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,mn.state_code,mn.mode,mn.feasible FROM nomina n JOIN names nm ON nm.id = n.name_id JOIN memory_names mn ON mn.nomen_id = n.id WHERE  mn.memory_id = 2989 UNION SELECT level + 1, path || ' > ' || nm.text, n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,tt.state_code,tt.mode,tt.feasible FROM nomina n JOIN tt ON n.root_id = tt.root_id AND  tt.bond_to_id = n.name_id JOIN names nm ON nm.id = n.name_id JOIN names nm_t ON nm_t.id = tt.name_id AND nm_t.language_code <> nm.language_code LEFT OUTER JOIN memory_names mn ON n.root_id = mn.nomen_id AND mn.memory_id = 2989 ) select * from tt
@@ -190,7 +190,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_scripta, -> (context) do
       as = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:service_languages]].flatten
       alphabeth_codes = context[:codes] || Languageble.alphabeth_list_for(language_codes).flatten
       calendaries_join =
          if context[:calendary_slugs]
@@ -242,7 +242,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_covering_names, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
 
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
@@ -267,7 +267,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_coverings, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
 
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
@@ -292,7 +292,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_memoes, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __memoes AS (
@@ -369,7 +369,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_bond_memories, ->(context) do
       as = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
 
       selector = self.select_values.dup
@@ -405,7 +405,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    # https://efim360.ru/postgresql-tablicza-prisutstvuet-v-zaprose-no-soslatsya-na-neyo-iz-etoj-chasti-zaprosa-nelzya/?ysclid=lqs5tozisb568391387
    scope :with_icon, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
       selector << "jsonb_build_object(
@@ -476,7 +476,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_orders, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?
          selector << 'memories.*'
@@ -507,7 +507,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_events, -> context do
       as = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?
@@ -618,7 +618,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_memory_names, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?
          selector << 'memories.*'

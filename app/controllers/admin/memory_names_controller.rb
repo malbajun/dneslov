@@ -5,6 +5,9 @@ class Admin::MemoryNamesController < Admin::CommonController
       respond_to do |format|
          format.json { render :index, json: @names.limit(500),
                                       locales: @locales,
+                                      text_languages: @text_languages,
+                                      service_languages: @service_languages,
+                                      language: @language,
                                       serializer: Admin::AutocompleteSerializer,
                                       total: @names.count,
                                       each_serializer: Admin::ShortNameSerializer }

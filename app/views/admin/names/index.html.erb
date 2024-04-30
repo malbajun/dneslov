@@ -1,6 +1,11 @@
-<%= react_component 'Names', names: Admin::NamesSerializer.new( @objects,
-                                                                total: @objects.total_count,
-                                                                page: @page,
-                                                                locales: @locales,
-                                                                serializer: Admin::NameSerializer ),
-                             locales: @locales %>
+<%= react_component 'Names',
+   names: Admin::NamesSerializer.new(@objects,
+      total: @objects.total_count,
+      page: @page,
+      locales: @locales,
+      locale: @locale,
+      text_languages: @text_languages,
+      service_languages: @service_languages,
+      language: @language,
+      serializer: Admin::NameSerializer ),
+%>

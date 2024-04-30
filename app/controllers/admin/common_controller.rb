@@ -6,7 +6,7 @@ class Admin::CommonController < ApplicationController
    before_action :validate_session
    before_action :set_query, only: %i(index)
    before_action :set_page, only: %i(index)
-   before_action :set_locales
+   before_action :set_languages
    before_action :new_object, only: %i(create)
    before_action :fetch_object, only: %i(show update destroy)
    before_action :fetch_objects, only: %i(all index)
@@ -113,11 +113,17 @@ class Admin::CommonController < ApplicationController
 
    # TODO SQLize
    def desc record
-      record._names.find {|d| @locales.include?(d["language_code"].to_sym) }&.fetch("text", "")
+      record._names.find {|d| @languages.include?(d["language_code"].to_sym) }&.fetch("text", "")
    end
 
    def context
-      @context ||= { locales: @locales }
+      @_context ||= {
+         locales: I18n.available_locales,
+         locale: I18n.locale,
+         text_languages: @text_languages,
+         service_languages: @service_languages,
+         language: @language,
+      }
    end
 
    def short_context context_in = {}
@@ -156,9 +162,11 @@ class Admin::CommonController < ApplicationController
       @page ||= (params[ :p ] || 1).to_i
    end
 
-   def set_locales
-      #TODO unfix of the ru only (will depend on the locale)
-      @locales ||= %i(ру цс)
+   def set_languages
+      # NOTE the default values
+      @text_languages ||= %i(ру)
+      @service_languages ||= %i(цс)
+      @language ||= "ру"
    end
 
    def set_query

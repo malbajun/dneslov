@@ -81,8 +81,22 @@ export default class Dashboard extends Component {
       this.setState({ user: null })
    }
 
+   metas() {
+      return Object.entries(Metas).map(([path, metaIn]) => {
+         let meta = metaIn, renderer = null
+
+         if (metaIn && metaIn.constructor.name == "Array") {
+            renderer = metaIn[1]
+            meta = metaIn[0]
+         }
+
+          return [path, meta, renderer]
+      })
+}
+
+
    render() {
-      console.log("[Dashboard] * state", this.state)
+      console.log("[Dashboard] * props", this.props, "state", this.state)
 
       return (
          [<header>
@@ -94,7 +108,7 @@ export default class Dashboard extends Component {
                      <img
                         src="/dneslov-title.png" /></a>
                   <ul id="nav-mobile" className="right hide-on-med-and-down">
-                     {Object.entries(Metas).map(([path, meta]) =>
+                     {this.metas().map(([path, meta, _renderer]) =>
                         <li>
                            <a
                               href={"#" + path}
@@ -113,15 +127,18 @@ export default class Dashboard extends Component {
                            <Records
                               page={this.state.page}
                               meta={this.state.meta}
-                              locales={this.state.locales} />}
+                              text_languages={this.state.text_languages}
+                              service_languages={this.state.service_languages} />}
                         {this.state.meta && this.state.user && this.state.renderer &&
                            <this.state.renderer
                               page={this.state.page}
                               meta={this.state.meta}
-                              locales={this.state.locales} />}
+                              text_languages={this.state.text_languages}
+                              service_languages={this.state.service_languages} />}
                         {!this.state.meta && this.state.user &&
                            <Home
-                              locales={this.state.locales} />}
+                              text_languages={this.state.text_languages}
+                              service_languages={this.state.service_languages} />}
                         </div></div></div></div></main>,
          <div className="progress">
             <div className="indeterminate"></div></div> ])}}

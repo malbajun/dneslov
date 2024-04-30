@@ -263,7 +263,8 @@ export default class Records extends Component {
                         meta={this.props.meta.row}
                         default={this.props.meta.default}
                         remove={this.props.meta.remove}
-                        locales={this.props.locales || []}
+                        text_languages={this.props.text_languages || []}
+                        service_languages={this.props.service_languages || []}
                         onEdit={this.onRecordEdit.bind(this)}
                         onRemove={this.onRecordRemove.bind(this)} />)}</tbody></table>
             <ReactScrollPagination

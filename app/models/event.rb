@@ -128,7 +128,7 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup
 
@@ -182,7 +182,7 @@ class Event < ActiveRecord::Base
 
    scope :with_icon, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
       selector << "COALESCE((WITH __picture AS (
@@ -211,7 +211,7 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_place, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       selector = "jsonb_build_object('id', places.id, 'name', place_descriptions.text) AS _place"
       join = "LEFT OUTER JOIN places
                            ON events.place_id = places.id
@@ -225,7 +225,7 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_short_memoes, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __memoes AS (
@@ -275,7 +275,7 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_orders, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       as = table.table_alias || table.name
 
@@ -313,7 +313,7 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_memoes, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __memoes AS (
@@ -386,7 +386,7 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_scripta, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:service_languages] ].flatten
       selector = self.select_values.dup
       if selector.empty?
          selector << 'events.*'

@@ -96,7 +96,7 @@ class Calendary < ActiveRecord::Base
         selector.unshift( 'calendaries.*' )
       end
 
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       join = "LEFT OUTER JOIN descriptions ON descriptions.describable_id = calendaries.id
                           AND descriptions.describable_type = 'Calendary'
                           AND descriptions.type = 'Appellation'

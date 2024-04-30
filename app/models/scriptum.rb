@@ -36,7 +36,7 @@ class Scriptum < ActiveRecord::Base
 
    scope :with_memoried_memoes, -> context do
       as = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:service_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?

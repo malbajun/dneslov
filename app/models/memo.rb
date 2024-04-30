@@ -84,7 +84,7 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [context[:locales]].flatten
+      language_codes = [ context[:text_languages] ].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       join_name = table.table_alias || table.name
       selector = self.select_values.dup
@@ -183,7 +183,7 @@ class Memo < ActiveRecord::Base
    singleton_class.send(:alias_method, :c, :in_calendaries)
 
    scope :with_value_memoried, -> context do 
-      language_codes = [context[:locales]].flatten
+      language_codes = [ context[:text_languages] ].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       as = table.table_alias || table.name
       selector = self.select_values.dup
@@ -276,7 +276,7 @@ class Memo < ActiveRecord::Base
 
    scope :with_bond_to_title, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
@@ -298,7 +298,7 @@ class Memo < ActiveRecord::Base
 
    scope :with_event_title, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
@@ -331,7 +331,7 @@ class Memo < ActiveRecord::Base
 
    scope :with_orders, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
@@ -372,7 +372,7 @@ class Memo < ActiveRecord::Base
 
    scope :with_title, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
@@ -389,7 +389,7 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_bond_to_year_date, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       selector = self.select_values.dup
       if selector.empty?
@@ -440,7 +440,7 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_memo_orders, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       this = table.table_alias || table.name
       /`(?<as>[^']*)'/ =~ caller.grep(/delegation/)[1]
       selector = self.select_values.dup
@@ -469,7 +469,7 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_calendary_title, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if selector.empty?
          selector << 'memoes.*'
@@ -488,7 +488,7 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_memory_event, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if selector.empty?
          selector << 'memoes.*'

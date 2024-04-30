@@ -28,7 +28,7 @@ class Nomen < ActiveRecord::Base
 
    scope :with_value, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
       selector = self.select_values.dup |
         ["#{join_name}_names.text || COALESCE(' < ' || #{join_name}_bond_toes.text, '') || ' (' || #{join_name}_names.language_code || '_' || #{join_name}_names.alphabeth_code || ')' AS _value"]
@@ -44,7 +44,7 @@ class Nomen < ActiveRecord::Base
 
    scope :with_root_name, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?
          selector << "#{join_name}.*"
@@ -67,7 +67,7 @@ class Nomen < ActiveRecord::Base
 
    scope :with_bond_to_name, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if selector.empty?
          selector << "#{join_name}.*"
@@ -94,7 +94,7 @@ class Nomen < ActiveRecord::Base
 
    scope :with_bind_kind_name, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if selector.empty?
          selector << "#{join_name}.*"
