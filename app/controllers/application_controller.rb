@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
    protect_from_forgery with: :exception, unless: :json_request?
 
    def json_request?
-      @json_request ||= request.format.json? || request.content_type == "application/json"
+      @json_request ||= request.format.json? || request.media_type == "application/json"
    end
 
    def update_session *hashes

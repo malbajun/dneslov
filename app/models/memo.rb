@@ -17,6 +17,7 @@ require 'when_easter'
 class Memo < ActiveRecord::Base
    extend TotalSize
    include WithDescriptions
+   include WithTitles
    include WithLinks
    include DistinctBy
 

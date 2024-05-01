@@ -462,17 +462,17 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_slug, -> do
+      as = table.table_alias || table.name
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'memories.*'
-      end
+      selector << "#{as}.*" if selector.empty?
+      selector << "jsonb_build_object(
+         'id', #{as}_slugs.id,
+         'text', #{as}_slugs.text) AS _slug"
+      join = "LEFT OUTER JOIN slugs AS #{as}_slugs
+                           ON #{as}_slugs.sluggable_id = #{as}.id
+                          AND #{as}_slugs.sluggable_type = 'Memory'"
 
-      selector << "jsonb_build_object('id', slugs.id, 'text', slugs.text) AS _slug"
-      join = "LEFT OUTER JOIN slugs
-                           ON slugs.sluggable_id = memories.id
-                          AND slugs.sluggable_type = 'Memory'"
-
-      joins(join).select(selector).group(:id, 'slugs.id', 'slugs.text')
+      joins(join).select(selector).group(:id, "#{as}_slugs.id", "#{as}_slugs.text")
    end
 
    scope :with_orders, -> context do

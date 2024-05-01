@@ -240,6 +240,20 @@ export const nameMeta = {
                   "Неверный формат ссылки": [ "!", UrlRegexp ],
                }
             },
+            type: {
+               kind: 'select',
+               title: 'Вид ссылки',
+               codeNames: {
+                  '': 'Избери вид текста...',
+                  'WikiLink': 'Вики-ссылка',
+                  'DescriptiveLink': 'Описательная ссылка',
+                  'PhotoLink': 'Фото-ссылка',
+               },
+               display_scheme: '12-4-2-2',
+               validations: {
+                  'Пункт из списка должен быть выбран': matchEmptyObject,
+               },
+            },
             language_code: {
                kind: 'dynamic',
                title: 'Язык',
@@ -273,20 +287,6 @@ export const nameMeta = {
                   'Избранная азбука не соотвествует избранному языку': matchCodes,
                   'Азбука из списка должна быть выбрана': matchEmptyObject,
                }
-            },
-            type: {
-               kind: 'select',
-               title: 'Вид ссылки',
-               codeNames: {
-                  '': 'Избери вид текста...',
-                  'WikiLink': 'Вики-ссылка',
-                  'DescriptiveLink': 'Описательная ссылка',
-                  'PhotoLink': 'Фото-ссылка',
-               },
-               display_scheme: '12-4-2-2',
-               validations: {
-                  'Пункт из списка должен быть выбран': matchEmptyObject,
-               },
             },
          }
       },

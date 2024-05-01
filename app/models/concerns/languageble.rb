@@ -1,12 +1,12 @@
 module Languageble
    extend ActiveSupport::Concern
 
+   ANCIENT_RUSSIAN_CAPITAL = 'А-ЬЮЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѸѺꙀꙂꙆꙈꙊꙐꙒꙖ'
+   ANCIENT_RUSSIAN_STROKE = 'а-ьюєѕіїѡѣѥѧѩѫѭѯѱѳѵѹѻꙁꙃꙇꙉꙋꙑꙓꙗ'
+   ANCIENT_RUSSIAN_ACCENT = ' ҃҄҇꙼꙽́̀'
    OLD_RUSSIAN_CAPITAL = 'А-ЬЮЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѸѺꙀꙂꙆꙈꙊꙐꙒꙖ'
    OLD_RUSSIAN_STROKE = 'а-ьюєѕіїѡѣѥѧѩѫѭѯѱѳѵѹѻꙁꙃꙇꙉꙋꙑꙓꙗ'
    OLD_RUSSIAN_ACCENT = ' ҃҄҇꙼꙽́̀'
-   MIDDLE_RUSSIAN_CAPITAL = 'А-ЬЮЄЅІЇѠѢѤѦѨѪѬѮѰѲѴѸѺꙀꙂꙆꙈꙊꙐꙒꙖ'
-   MIDDLE_RUSSIAN_STROKE = 'а-ьюєѕіїѡѣѥѧѩѫѭѯѱѳѵѹѻꙁꙃꙇꙉꙋꙑꙓꙗ'
-   MIDDLE_RUSSIAN_ACCENT = ' ҃҄҇꙼꙽́̀'
    RUSSIAN_CAPITAL = 'А-ЯЁІѢѲѴ'
    RUSSIAN_STROKE = 'а-яёіѣѳѵ'
    RUSSIAN_ACCENT = '́'
@@ -33,9 +33,18 @@ module Languageble
    GREEK_CAPITAL = 'Ά-ΐΑ-Ϋ'
    GREEK_STROKE = 'ά-ΰα-ώ'
    GREEK_ACCENT = '΄´'
+   DIMOTIKA_CAPITAL = 'Ά-ΐΑ-Ϋ'
+   DIMOTIKA_STROKE = 'ά-ΰα-ώ'
+   DIMOTIKA_ACCENT = '΄´'
+   KAFAREVUSA_CAPITAL = 'Ά-ΐΑ-Ϋ'
+   KAFAREVUSA_STROKE = 'ά-ΰα-ώ'
+   KAFAREVUSA_ACCENT = '΄´'
    OLD_GREEK_CAPITAL = 'Ά-ΏΑ-ΩἈἘἨἸὈὙὨ'
    OLD_GREEK_STROKE = 'ά-ώα-ωἀἐἠἰὀὑὠό-ώἄἔἤἴὄὔὤὰ-ώ'
    OLD_GREEK_ACCENT = '᾿῎῍῝῞`´῾'
+   CHURCH_GREEK_CAPITAL = 'ͶͲΑ-ΫϏϒϓϔϘϚϜϠϞϴϷϹϺϾϿἈ-ἏἘ-ἝἨ-ἯἸ-ἿὈ-ὍὙ-ὟὨ-Ὧᾈ-ᾏᾘ-ᾟᾨ-ᾯᾸ-ᾼῈ-ῌῘ-ΊῨ-ῬῸ-ῼΩΆ-Ώ'
+   CHURCH_GREEK_STROKE = 'ά-ώϐϑϕ-ϗϙϛϝ-ϟϡ-ϳϵ-϶ϸϻϼᴦ-ᴪἀ-ἇἐ-ἕἠ-ἧἰ-ἷὀ-ὅὐ-ὗὠ-ὧὰ-ᾇᾐ-ᾗᾠ-ᾧᾰ-ᾷῂ-ῇῐ-ῗῠ-ῧῲ-ῷͻ-ͽͷΐά-ΰ'
+   CHURCH_GREEK_ACCENT = 'ͺ͵΄᾽ι᾿῀῁῍῎῏῝῞῟῭΅`´῾'
    ANCIENT_GREEK_CAPITAL = 'ͶͲΑ-ΫϏϒϓϔϘϚϜϠϞϴϷϹϺϾϿἈ-ἏἘ-ἝἨ-ἯἸ-ἿὈ-ὍὙ-ὟὨ-Ὧᾈ-ᾏᾘ-ᾟᾨ-ᾯᾸ-ᾼῈ-ῌῘ-ΊῨ-ῬῸ-ῼΩΆ-Ώ'
    ANCIENT_GREEK_STROKE = 'ά-ώϐϑϕ-ϗϙϛϝ-ϟϡ-ϳϵ-϶ϸϻϼᴦ-ᴪἀ-ἇἐ-ἕἠ-ἧἰ-ἷὀ-ὅὐ-ὗὠ-ὧὰ-ᾇᾐ-ᾗᾠ-ᾧᾰ-ᾷῂ-ῇῐ-ῗῠ-ῧῲ-ῷͻ-ͽͷΐά-ΰ'
    ANCIENT_GREEK_ACCENT = 'ͺ͵΄᾽ι᾿῀῁῍῎῏῝῞῟῭΅`´῾'
@@ -57,6 +66,10 @@ module Languageble
    ITALIAN_STROKE = 'a-il-vz'
    ARMENIAN_CAPITAL = 'Ա-Ֆ'
    ARMENIAN_STROKE = 'ա-և'
+   OLD_ARMENIAN_CAPITAL = 'Ա-Ֆ'
+   OLD_ARMENIAN_STROKE = 'ա-և'
+   ANCIENT_ARMENIAN_CAPITAL = 'Ա-Ֆ'
+   ANCIENT_ARMENIAN_STROKE = 'ա-և'
    IVERIAN_CAPITAL = 'ა-ჺჽ'
    IVERIAN_STROKE = 'ა-ჺჽ'
    ROMANIAN_CAPITAL = 'A-ZĂÂÎŞŢȘȚ'
@@ -145,8 +158,8 @@ module Languageble
    MARATHI_STROKE = 'ऄ-हक़-ॡ०-ॿꣲ-ꣾऽ'
    MARATHI_ACCENT = 'ऀ-ःऺ-़ा-ॗॢ-ॣ꣠-꣱ꣿ'
 
+   ANCIENT_RUSSIAN_SYNTAX = ' \<\>\[\]\.,:;·⁖჻᛭⁘⁙\/\-\—\–†'
    OLD_RUSSIAN_SYNTAX = ' \<\>\[\]\.,:;·⁖჻᛭⁘⁙\/\-\—\–†'
-   MIDDLE_RUSSIAN_SYNTAX = ' \<\>\[\]\.,:;·⁖჻᛭⁘⁙\/\-\—\–†'
    RUSSIAN_SYNTAX = ' \(\)\.,:;!\/\-«»\—\?\–№†IVXLCDM'
    MODERN_RUSSIAN_SYNTAX = ' \(\)\.,:;\!\/\-«»\—\?†IVXLCDM©–№\'\[\]&^'
    HIP_SYNTAX = ' \(\[\{\/\'\+\.\:\!"=~@#\$%\^&\*_\)\]\}\\\\`\-,;?\|'
@@ -156,7 +169,10 @@ module Languageble
    NCSLAV_SYNTAX = ' \(\)\.,:;·⁖჻᛭⁘⁙'
    SERBIAN_SYNTAX = ' \(\)\.,\!:;“”\/'
    GREEK_SYNTAX = ' \(\)~\+\(\)\-\.,;;:.·˙\!«»\'’"`©\/' # TODO last 4 to fix and merge
+   DIMOTIKA_SYNTAX = ' \(\)~\+\(\)\-\.,;;:.·˙\!«»\'’"`©\/' # TODO last 4 to fix and merge
+   KAFAREVUSA_SYNTAX = ' \(\)~\+\(\)\-\.,;;:.·˙\!«»\'’"`©\/' # TODO last 4 to fix and merge
    OLD_GREEK_SYNTAX = ' ~\+\-\.,;;:.·˙\!\'"\/'
+   CHURCH_GREEK_SYNTAX = ' ~\+\-\.,;;:.·˙\!\'"\/'
    ANCIENT_GREEK_SYNTAX = ' ~\+\-\.,;;:.·˙\!\'"\/'
    BULGARIAN_SYNTAX = ' \(\)\.,'
    UKRAINIAN_SYNTAX = ' \(\)\.,—’;\/:'
@@ -166,6 +182,8 @@ module Languageble
    ENGLISH_SYNTAX = ' \(\)\.,’\/\!\-:;\>"'
    ITALIAN_SYNTAX = ' \(\)\.,'
    ARMENIAN_SYNTAX = ' \(\)\.,'
+   OLD_ARMENIAN_SYNTAX = ' \(\)\.,'
+   ANCIENT_ARMENIAN_SYNTAX = ' \(\)\.,'
    IVERIAN_SYNTAX = ' \(\)\.,:;\-\!'
    ROMANIAN_SYNTAX = ' \(\)\.,;:\-\!'
    OLD_ENGLISH_SYNTAX = ' \(\)\.,\/\>'
@@ -182,23 +200,26 @@ module Languageble
    DIGITS = '0-9'
 
    UPCHAR = RUSSIAN_CAPITAL + MODERN_RUSSIAN_CAPITAL + CSLAV_CAPITAL + SSLAV_CAPITAL + ASLAV_CAPITAL + SERBIAN_CAPITAL + GREEK_CAPITAL +
-      ENGLISH_CAPITAL + LATIN_CAPITAL + CZECH_CAPITAL + ARMENIAN_CAPITAL +
+      ENGLISH_CAPITAL + LATIN_CAPITAL + CZECH_CAPITAL +
+      ARMENIAN_CAPITAL + OLD_ARMENIAN_CAPITAL + ANCIENT_ARMENIAN_CAPITAL +
       ROMANIAN_CAPITAL + OLD_ENGLISH_CAPITAL + IVERIAN_CAPITAL + GERMAN_CAPITAL + UKRAINIAN_CAPITAL + MIDDLE_ENGLISH_CAPITAL +
-      OLD_RUSSIAN_CAPITAL + OLD_GREEK_CAPITAL + ANCIENT_GREEK_CAPITAL
+      ANCIENT_RUSSIAN_CAPITAL + OLD_RUSSIAN_CAPITAL + OLD_GREEK_CAPITAL + CHURCH_GREEK_CAPITAL + ANCIENT_GREEK_CAPITAL
    DOWNCHAR = RUSSIAN_STROKE + MODERN_RUSSIAN_STROKE + CSLAV_STROKE + SSLAV_STROKE + ASLAV_STROKE + SERBIAN_STROKE + GREEK_STROKE +
-      ENGLISH_STROKE + LATIN_STROKE + CZECH_STROKE + ARMENIAN_STROKE +
+      ENGLISH_STROKE + LATIN_STROKE + CZECH_STROKE +
+      ARMENIAN_STROKE + OLD_ARMENIAN_STROKE + ANCIENT_ARMENIAN_STROKE +
       IVERIAN_STROKE + ROMANIAN_STROKE + OLD_ENGLISH_STROKE + GERMAN_STROKE + UKRAINIAN_STROKE + MIDDLE_ENGLISH_STROKE +
-      HEBREW_STROKE + OLD_RUSSIAN_STROKE +
-      OLD_GREEK_STROKE + ANCIENT_GREEK_STROKE + OLD_HEBREW_STROKE + ARABIC_STROKE
+      HEBREW_STROKE + OLD_RUSSIAN_STROKE + ANCIENT_RUSSIAN_STROKE +
+      OLD_GREEK_STROKE + CHURCH_GREEK_STROKE + ANCIENT_GREEK_STROKE + OLD_HEBREW_STROKE + ARABIC_STROKE
    ACCENT = GREEK_ACCENT + RUSSIAN_ACCENT + CSLAV_ACCENT + SSLAV_ACCENT + ASLAV_ACCENT + FRENCH_ACCENT + HEBREW_ACCENT +
-      OLD_RUSSIAN_ACCENT + OLD_GREEK_ACCENT + ANCIENT_GREEK_ACCENT
+      OLD_RUSSIAN_ACCENT + ANCIENT_RUSSIAN_ACCENT + CHURCH_GREEK_ACCENT + OLD_GREEK_ACCENT + ANCIENT_GREEK_ACCENT
    CHAR = DOWNCHAR + UPCHAR
 
    # TODO уравнять с LANGUAGE_TREE.alphabeths
    SYNTAX_TABLE = {
       :РУ => RUSSIAN_SYNTAX,
       :РО => MODERN_RUSSIAN_SYNTAX,
-      :ДР => OLD_RUSSIAN_SYNTAX,
+      :СР => OLD_RUSSIAN_SYNTAX,
+      :ДР => ANCIENT_RUSSIAN_SYNTAX,
       :ЦР => HIP_SYNTAX,
       :ЦС => CSLAV_SYNTAX,
       :СС => SSLAV_SYNTAX,
@@ -206,7 +227,10 @@ module Languageble
       :НЦ => NCSLAV_SYNTAX,
       :СЕ => SERBIAN_SYNTAX,
       :ГР => GREEK_SYNTAX,
+      :ДМ => DIMOTIKA_SYNTAX,
+      :КФ => KAFAREVUSA_SYNTAX,
       :СГ => OLD_GREEK_SYNTAX,
+      :ЦГ => CHURCH_GREEK_SYNTAX,
       :ДГ => ANCIENT_GREEK_SYNTAX,
       :АН => ENGLISH_SYNTAX,
       :АА => ENGLISH_SYNTAX,
@@ -218,6 +242,8 @@ module Languageble
       :УК => UKRAINIAN_SYNTAX,
       :ИТ => ITALIAN_SYNTAX,
       :АР => ARMENIAN_SYNTAX,
+      :СЫ => OLD_ARMENIAN_SYNTAX,
+      :ДЫ => ANCIENT_ARMENIAN_SYNTAX,
       :ИВ => IVERIAN_SYNTAX,
       :РМ => ROMANIAN_SYNTAX,
       :РА => OLD_ENGLISH_SYNTAX,
@@ -237,13 +263,12 @@ module Languageble
 #      :СК => SANSKRIT_SYNTAX,
 #      :ИН => HINDI_SYNTAX,
 #      :МХ => MARATHI_SYNTAX,
-      :СР => MIDDLE_RUSSIAN_SYNTAX,
       # ЧИНЬ: СС, СЦ, ЦР, МК, СО, СЛ, ПО, КШ, ВЛ, НЛ, ЦУ
    }
 
    MATCH_TABLE = {
-      :ДР => "#{OLD_RUSSIAN_CAPITAL}#{OLD_RUSSIAN_STROKE}#{OLD_RUSSIAN_ACCENT}#{OLD_RUSSIAN_SYNTAX}",
-      :СР => "#{MIDDLE_RUSSIAN_CAPITAL}#{MIDDLE_RUSSIAN_STROKE}#{MIDDLE_RUSSIAN_ACCENT}#{MIDDLE_RUSSIAN_SYNTAX}",
+      :ДР => "#{ANCIENT_RUSSIAN_CAPITAL}#{ANCIENT_RUSSIAN_STROKE}#{ANCIENT_RUSSIAN_ACCENT}#{ANCIENT_RUSSIAN_SYNTAX}",
+      :СР => "#{OLD_RUSSIAN_CAPITAL}#{OLD_RUSSIAN_STROKE}#{OLD_RUSSIAN_ACCENT}#{OLD_RUSSIAN_SYNTAX}",
       :РУ => "#{RUSSIAN_CAPITAL}#{RUSSIAN_STROKE}#{RUSSIAN_ACCENT}#{RUSSIAN_SYNTAX}#{DIGITS}",
       :РО => "#{MODERN_RUSSIAN_CAPITAL}#{MODERN_RUSSIAN_STROKE}#{MODERN_RUSSIAN_ACCENT}#{MODERN_RUSSIAN_SYNTAX}#{DIGITS}",
       :СС => "#{SSLAV_CAPITAL}#{SSLAV_STROKE}#{SSLAV_ACCENT}#{SSLAV_SYNTAX}",
@@ -255,9 +280,14 @@ module Languageble
       :БГ => "#{BULGARIAN_CAPITAL}#{BULGARIAN_STROKE}#{BULGARIAN_SYNTAX}#{DIGITS}",
       :УК => "#{UKRAINIAN_CAPITAL}#{UKRAINIAN_STROKE}#{UKRAINIAN_SYNTAX}#{DIGITS}",
       :ГР => "#{GREEK_CAPITAL}#{GREEK_STROKE}#{GREEK_ACCENT}#{GREEK_SYNTAX}#{DIGITS}",
+      :ДМ => "#{DIMOTIKA_CAPITAL}#{DIMOTIKA_STROKE}#{DIMOTIKA_ACCENT}#{DIMOTIKA_SYNTAX}#{DIGITS}",
+      :КФ => "#{KAFAREVUSA_CAPITAL}#{KAFAREVUSA_STROKE}#{KAFAREVUSA_ACCENT}#{KAFAREVUSA_SYNTAX}#{DIGITS}",
       :СГ => "#{OLD_GREEK_CAPITAL}#{OLD_GREEK_STROKE}#{OLD_GREEK_SYNTAX}#{OLD_GREEK_ACCENT}",
+      :ЦГ => "#{CHURCH_GREEK_CAPITAL}#{CHURCH_GREEK_STROKE}#{CHURCH_GREEK_SYNTAX}#{CHURCH_GREEK_ACCENT}",
       :ДГ => "#{ANCIENT_GREEK_CAPITAL}#{ANCIENT_GREEK_STROKE}#{ANCIENT_GREEK_ACCENT}#{ANCIENT_GREEK_SYNTAX}",
       :АР => "#{ARMENIAN_CAPITAL}#{ARMENIAN_STROKE}#{ARMENIAN_SYNTAX}#{DIGITS}",
+      :СЫ => "#{OLD_ARMENIAN_CAPITAL}#{OLD_ARMENIAN_STROKE}#{OLD_ARMENIAN_SYNTAX}#{DIGITS}",
+      :ДЫ => "#{ANCIENT_ARMENIAN_CAPITAL}#{ANCIENT_ARMENIAN_STROKE}#{ANCIENT_ARMENIAN_SYNTAX}#{DIGITS}",
       :ИВ => "#{IVERIAN_STROKE}#{IVERIAN_SYNTAX}#{DIGITS}",
       :АМ => "#{ARAMAIC_STROKE}#{ARAMAIC_ACCENT}",
       :ДЕ => "#{OLD_HEBREW_STROKE}#{OLD_HEBREW_ACCENT}",
@@ -329,10 +359,13 @@ module Languageble
       вл: :ВЛ, #верхнелужицкій
       нл: :НЛ, #нижнелужицкій
       ар: :АР, #армянскій
+      сы: :СЫ, #староармянскій/средне
+      ды: :ДЫ, #древнеармянскій/грабар
       ив: :ИВ, #грузинскій
       рм: %i(РМ ЦУ ЦР), #румынскій: латиница, кириллица, церковная кириллица
-      гр: :ГР, #грѣческій
-      сг: :СГ, #старогрѣческій,церковногрѣческій
+      гр: %i(ГР ДМ КФ), #новогрѣческій:Димотика,Кафаревуса
+      сг: :СГ, #старогрѣческій
+      цг: :ЦГ, #церковногрѣческій/койне
       дг: :ДГ, #древнегрѣческій
       ла: :ЛА, #латынь
       ит: :ИТ, #итальянскій

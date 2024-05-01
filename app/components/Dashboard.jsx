@@ -35,13 +35,8 @@ export default class Dashboard extends Component {
    // system
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
-         let parts = window.location.href.split("#"), meta, renderer
-         if (parts[1] && Metas[parts[1]].constructor.name == "Array") {
-            renderer = Metas[parts[1]][1]
-            meta = Metas[parts[1]][0]
-         } else {
-            meta = Metas[parts[1]]
-         }
+         let parts = window.location.href.split("#"),
+             [meta, renderer] = Dashboard.remetaFor(parts[1])
 
          if (parts[1]) {
             return {
@@ -65,8 +60,24 @@ export default class Dashboard extends Component {
       return null
    }
 
-   onClick(meta, page) {
-      this.setState({ meta: meta, page: page })
+   static remetaFor(page) {
+      let renderer, meta
+
+      if (page && Metas[page].constructor.name == "Array") {
+         renderer = Metas[page][1]
+         meta = Metas[page][0]
+      } else {
+         renderer = Records
+         meta = Metas[page]
+      }
+
+      return [meta, renderer]
+   }
+
+   onClick(page) {
+      let [meta, renderer] = Dashboard.remetaFor(page)
+
+      this.setState({ meta: meta, page: page, renderer: renderer, meta: meta })
    }
 
    componentDidCatch(error, errorInfo) {
@@ -90,10 +101,9 @@ export default class Dashboard extends Component {
             meta = metaIn[0]
          }
 
-          return [path, meta, renderer]
-      })
-}
-
+         return meta.title ? [path, meta, renderer] : null
+      }).compact()
+   }
 
    render() {
       console.log("[Dashboard] * props", this.props, "state", this.state)
@@ -108,37 +118,29 @@ export default class Dashboard extends Component {
                      <img
                         src="/dneslov-title.png" /></a>
                   <ul id="nav-mobile" className="right hide-on-med-and-down">
-                     {this.metas().map(([path, meta, _renderer]) =>
+                     {this.state.user && this.metas().map(([path, meta, _renderer]) =>
                         <li>
                            <a
                               href={"#" + path}
-                              onClick={this.onClick.bind(this, meta, path)} >
+                              onClick={this.onClick.bind(this, path)} >
                               {meta.title}</a></li>)}
                      <Login
                         onSigninUser={this.onSigninUser.bind(this)}
                         onSignoutUser={this.onSignoutUser.bind(this)}
+                        onClick={this.onClick.bind(this, "home")}
                         user={this.state.user} /></ul></div></nav></header>,
          <main key='main'>
             <div className='container admin'>
-               <div className='row'>
-                  <div className='col s12 m12 l12 xl12'>
-                     <div id='page'>
-                        {this.state.meta && this.state.user && !this.state.renderer &&
-                           <Records
-                              page={this.state.page}
-                              meta={this.state.meta}
-                              text_languages={this.state.text_languages}
-                              service_languages={this.state.service_languages} />}
-                        {this.state.meta && this.state.user && this.state.renderer &&
-                           <this.state.renderer
-                              page={this.state.page}
-                              meta={this.state.meta}
-                              text_languages={this.state.text_languages}
-                              service_languages={this.state.service_languages} />}
-                        {!this.state.meta && this.state.user &&
-                           <Home
-                              text_languages={this.state.text_languages}
-                              service_languages={this.state.service_languages} />}
-                        </div></div></div></div></main>,
+               {this.state.page &&
+                  <div className='row'>
+                     <div className='col s12 m12 l12 xl12'>
+                        <div id='page'>
+                           {this.state.user &&
+                              <this.state.renderer
+                                 page={this.state.page}
+                                 meta={this.state.meta}
+                                 text_languages={this.state.text_languages}
+                                 service_languages={this.state.service_languages} />}
+                           </div></div></div>}</div></main>,
          <div className="progress">
             <div className="indeterminate"></div></div> ])}}

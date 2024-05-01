@@ -28,6 +28,7 @@ export const calendaryMeta = {
       },
       licit: {
          title: 'thumb_up',
+         value: (value) => { return value.licit ? <i className='green small material-icons'>thumb_up</i> : "" },
       },
       language_code: {
          title: 'Язык',
@@ -58,7 +59,7 @@ export const calendaryMeta = {
                title: 'Жетон',
                placeholder: 'Введи имя жетона',
                data: {length: '6'},
-               display_scheme: '12-4-2-2',
+               display_scheme: '12-3-2-2',
                validations: {
                   "Слишком большое имя жетона": /^.{7,}$/,
                   "Жетон отсутствует": matchEmptyObject,
@@ -70,7 +71,7 @@ export const calendaryMeta = {
       language_code: {
          kind: 'dynamic',
          title: 'Язык',
-         display_scheme: '12-8-4-4',
+         display_scheme: '12-3-4-4',
          pathname: 'short_subjects',
          humanized_name: 'language',
          context_value: { k: "Language" },
@@ -86,7 +87,7 @@ export const calendaryMeta = {
       alphabeth_code: {
          kind: 'dynamic',
          title: 'Азбука',
-         display_scheme: '12-8-4-4',
+         display_scheme: '12-3-4-4',
          pathname: 'short_subjects',
          humanized_name: 'alphabeth',
          context_value: { k: "Alphabeth" },
@@ -103,7 +104,7 @@ export const calendaryMeta = {
          kind: 'boolean',
          name: 'licit',
          title: 'Опубликовать',
-         display_scheme: '12-4-2-2',
+         display_scheme: '12-3-2-2',
       },
       titles: {
          kind: 'collection',

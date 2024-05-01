@@ -169,7 +169,11 @@ export default class Login extends Component {
    }
 
    onAvatarClick(e) {
-      this.avatarTap.open()
+      if (this.props.onClick) {
+         this.props.onClick()
+      }
+
+      //this.avatarTap.open()
    }
 
    // props
@@ -467,8 +471,9 @@ export default class Login extends Component {
                         onClick={this.onAvatarClick}
                         src={this.state.user.info?.avatar_url} />}
                   {!this.state.user.info?.avatar_url &&
-                        <a
-                           href={"/dashboard#home"}>
+                     <a
+                        onClick={this.onAvatarClick}
+                        href={"/dashboard#home"}>
                         <i
                            className="material-icons">
                            perm_identity</i></a>}

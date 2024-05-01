@@ -95,8 +95,8 @@ module CoreFeatures
    def set_calendary_cloud
       @calendary_cloud ||=
          Calendary.licit_with(params[ :c ])
-                  .with_title(@languages)
-                  .with_description(@languages)
+                  .with_title(context)
+                  .with_description(context)
                   .with_url
                   .with_slug_text
                   .group("calendaries.id")

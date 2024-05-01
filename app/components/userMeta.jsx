@@ -13,15 +13,21 @@ export const userMeta = {
       yes: "Да"
    },
    form: {
+      default_name: {
+         kind: 'tale',
+         title: 'Имя по-умолчанию',
+         display_scheme: '12-12-12-12',
+         placeholder: 'Введи имя',
+      },
       user_names: {
          kind: 'collection',
          title: "Имена",
          action: "Добавь имя",
          display_scheme: '12-12-12-12',
-         subscribeTo: '@quantity',
+         subscribeTo: '@default_name',
          validations: {
             'Минимум одно имя должно быть задано': (value, context) => {
-               if (!context.quantity && matchEmptyObject(value, context)) { return true }
+               if (matchEmptyObject(context.default_name, context) && matchEmptyObject(value, context)) { return true }
             }
          },
          meta: {

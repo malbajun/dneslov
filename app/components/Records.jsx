@@ -15,10 +15,12 @@ export default class Records extends Component {
          page: 0,
          total: 0,
       },
+      meta: {}
    }
 
    static propTypes = {
-      object: PropTypes.object.isRequired,
+      records: PropTypes.object.isRequired,
+      meta: PropTypes.object.isRequired,
    }
 
    static getDerivedStateFromProps(props, state) {

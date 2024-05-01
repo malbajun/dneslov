@@ -1,9 +1,6 @@
 class Admin::CommonController < ApplicationController
-   include ::Auth
    include ::Pundit::Authorization
 
-   before_action :authenticate_user!, except: %i(dashboard)
-   before_action :validate_session
    before_action :set_query, only: %i(index)
    before_action :set_page, only: %i(index)
    before_action :set_languages
@@ -136,12 +133,6 @@ class Admin::CommonController < ApplicationController
 
    def table_name
       model.to_s.tableize
-   end
-
-   def validate_session
-      if session_lost?
-         drop_session
-      end
    end
 
    def authorize!

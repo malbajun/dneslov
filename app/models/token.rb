@@ -1,4 +1,6 @@
 class Token < ApplicationRecord
+   include Tiun::Model::Token
+
    has_secure_token :code, length: 36
 
    belongs_to :tokenable, polymorphic: true

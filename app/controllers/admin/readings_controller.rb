@@ -8,6 +8,7 @@ class Admin::ReadingsController < Admin::CommonController
    def permitted_params
       params.require(:reading).permit(
          :id, :year_date, :abbreviation, :kind,
-         markups_attributes: %i(id begin end position scriptum_id))
+         descriptions_attributes: %i(id text language_code alphabeth_code _destroy),
+         markups_attributes: %i(id begin end position scriptum_id _destroy))
    end
 end
