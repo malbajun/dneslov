@@ -442,11 +442,22 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_28_014300) do
 
   create_table "user_names", force: :cascade do |t|
     t.string "kind", null: false
+    t.string "way", null: false
+    t.string "usage", null: false
+    t.string "source", null: false
+    t.boolean "main", default: false, null: false
+    t.string "bindable_type"
+    t.bigint "bindable_id"
     t.bigint "user_id", null: false
     t.bigint "nomen_id", null: false
-    t.index ["kind"], name: "index_user_names_on_kind", unique: true
+    t.index ["bindable_type", "bindable_id"], name: "index_user_names_on_bindable"
+    t.index ["kind"], name: "index_user_names_on_kind"
+    t.index ["main"], name: "index_user_names_on_main"
     t.index ["nomen_id"], name: "index_user_names_on_nomen_id"
+    t.index ["source"], name: "index_user_names_on_source"
+    t.index ["usage"], name: "index_user_names_on_usage"
     t.index ["user_id"], name: "index_user_names_on_user_id"
+    t.index ["way"], name: "index_user_names_on_way"
   end
 
   create_table "users", force: :cascade do |t|
@@ -474,6 +485,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_28_014300) do
   add_foreign_key "memory_names", "nomina", on_delete: :cascade
   add_foreign_key "service_scripta", "scripta", on_delete: :cascade
   add_foreign_key "service_scripta", "services", on_delete: :cascade
-  add_foreign_key "user_names", "nomina", on_delete: :restrict
-  add_foreign_key "user_names", "users", on_delete: :restrict
+  add_foreign_key "user_names", "nomina", on_delete: :cascade
+  add_foreign_key "user_names", "users", on_delete: :cascade
 end

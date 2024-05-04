@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
    include Tiun::Auth
 
+   # before_action :set_languages
    # Prevent CSRF attacks by raising an exception.
    # For APIs, you may want to use :null_session instead.
    protect_from_forgery with: :null_session, if: :json_request?
@@ -8,6 +9,34 @@ class ApplicationController < ActionController::Base
 
    def json_request?
       @json_request ||= request.format.json? || request.media_type == "application/json"
+   end
+
+   def set_languages
+      # NOTE the default values
+      @text_languages ||= %i(ру)
+      @service_languages ||= %i(цс)
+      @language ||= "ру"
+   end
+
+   def context
+      @_context ||= {
+         locales: I18n.available_locales,
+         locale: I18n.locale,
+         text_languages: @text_languages,
+         service_languages: @service_languages,
+         language: @language,
+      }
+   end
+
+   def auth_context
+      @_auth_context ||= {
+         except: supplement_names,
+         locales: I18n.available_locales,
+         locale: I18n.locale,
+         text_languages: @text_languages,
+         service_languages: @service_languages,
+         language: @language,
+      }
    end
 
    def update_session *hashes

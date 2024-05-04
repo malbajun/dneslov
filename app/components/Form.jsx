@@ -124,6 +124,20 @@ export default class Form extends Component {
       this.setState({ error: error_text })
    }
 
+   getUno() {
+      let unoName = this.props.unoName || 'id'
+
+      return unoName.split(".").reduce((r, part) => {
+         if (r) {
+            let value = r[part]
+
+            return value.constructor.name == "Object" && !value["_pos"] ? Object.values(value)[0] : value
+         } else {
+            return r
+         }
+      }, this.state.query)
+   }
+
    onSubmit(e) {
       e.stopPropagation()
       e.preventDefault()
@@ -131,7 +145,7 @@ export default class Form extends Component {
       let record = this.serializedQuery(),
           request = { data: {}},
           request_url_base = '/' + this.props.remoteNames,
-          id = this.state.query.id
+          id = this.getUno()
 
       request.data[this.props.remoteName] = record
 

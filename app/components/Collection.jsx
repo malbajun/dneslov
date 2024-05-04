@@ -96,6 +96,7 @@ export default class Collection extends Component {
    renderBlock(element) {
       return (
          <div className={'block' + this.blankClass(element)}>
+            <div className='wrapper'>
             {element.value._destroy &&
                <a
                   onClick={() => { this.onToggleItem(element) }}
@@ -104,7 +105,7 @@ export default class Collection extends Component {
                <a
                   onClick={() => { this.onToggleItem(element) }}
                   className="block-item btn-floating btn-small waves-effect waves-light terracota">
-                  <i className="small material-icons">delete</i></a>}
+                  <i className="small material-icons">delete</i></a>}</div>
             <div className='row'>
                {!element.value._destroy && renderElement(element, this.props.meta)}</div></div>)
    }

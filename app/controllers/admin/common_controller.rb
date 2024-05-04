@@ -1,9 +1,10 @@
 class Admin::CommonController < ApplicationController
    include ::Pundit::Authorization
+   include Tiun::Base
 
    before_action :set_query, only: %i(index)
    before_action :set_page, only: %i(index)
-   before_action :set_languages
+   #before_action :set_languages
    before_action :new_object, only: %i(create)
    before_action :fetch_object, only: %i(show update destroy)
    before_action :fetch_objects, only: %i(all index)
@@ -113,22 +114,8 @@ class Admin::CommonController < ApplicationController
       record._names.find {|d| @languages.include?(d["language_code"].to_sym) }&.fetch("text", "")
    end
 
-   def context
-      @_context ||= {
-         locales: I18n.available_locales,
-         locale: I18n.locale,
-         text_languages: @text_languages,
-         service_languages: @service_languages,
-         language: @language,
-      }
-   end
-
    def short_context context_in = {}
       @short_context ||= context_in.deep_merge(except: %i(created_at updated_at id meta))
-   end
-
-   def model
-      self.class.to_s.gsub(/.*::/, "").gsub("Controller", "").singularize.constantize
    end
 
    def table_name
@@ -151,13 +138,6 @@ class Admin::CommonController < ApplicationController
 
    def set_page
       @page ||= (params[ :p ] || 1).to_i
-   end
-
-   def set_languages
-      # NOTE the default values
-      @text_languages ||= %i(ру)
-      @service_languages ||= %i(цс)
-      @language ||= "ру"
    end
 
    def set_query

@@ -139,6 +139,7 @@ export default class Dashboard extends Component {
                               <this.state.renderer
                                  page={this.state.page}
                                  meta={this.state.meta}
+                                 user={this.state.user}
                                  text_languages={this.state.text_languages}
                                  service_languages={this.state.service_languages} />}
                            </div></div></div>}</div></main>,

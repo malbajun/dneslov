@@ -439,12 +439,10 @@ export default class Login extends Component {
    }
 
    getName() {
-      return "";
+      let names = this.state.user.user_names || [],
+          full = names.find((x) => { return x.name })
 
-      let names = this.state.user.settings.names || []
-
-      names.find((x) => { return x.text && x.kind })
-
+      return full || this.state.user.default_name;
    }
 
    render() {

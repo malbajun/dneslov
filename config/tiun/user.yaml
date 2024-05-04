@@ -14,9 +14,12 @@ types:
    model: User
    version: 1.0
    fields:
-    - name: settings
-      kind: json
-      descriptions: :tiun.types.user.settings
+    - name: user_names
+      kind: user_name array
+      descriptions: :tiun.types.user.user_names
+    - name: descriptions
+      kind: description array
+      descriptions: :tiun.types.user.descriptions
     - name: accounts
       kind: account array
       descriptions: :tiun.types.user.accounts
@@ -26,10 +29,62 @@ types:
    fields:
     - name: "no"
       kind: string
-      descriptions: :tiun.types.attitude.no
+      descriptions: :tiun.types.account.no
     - name: type
       kind: enum <Account::Uid, Account::Email>
-      descriptions: :tiun.types.attitude.string
+      descriptions: :tiun.types.account.type
+    - name: validated
+      kind: flag
+      readonly: true
+      descriptions: :tiun.types.account.validated
+ - name: description
+   model: Description
+   version: 1.0
+   fields:
+    - name: text
+      kind: string
+      descriptions: :tiun.types.description.text
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.description.language_code
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.description.alphabeth_code
+    - name: type
+      kind: enum <Description>
+      descriptions: :tiun.types.description.type
+ - name: user_name
+   model: UserName
+   version: 1.0
+   fields:
+    - name: nomen
+      kind: string
+      descriptions: :tiun.types.user_name.nomen
+    - name: kind
+      kind: enum <NameKind::First, NameKind::Paternal, NameKind::Family>
+      descriptions: :tiun.types.user_name.kind
+      # kind - тип: имя фамилия/род отчество/родитель
+    - name: source
+      kind: enum <NameSource::Father, NameSource::Mother, NameSource::Husband, NameSource::Wife, NameSource::Foster, NameSource::Uncle, NameSource::Godfather, NameSource::Godmother, NameSource::Self, NameSource::Brotherhood, NameSource::Spiritual, NameSource::Saint, NameSource::Place, NameSource::Gest, NameSource::Property>
+      descriptions: :tiun.types.user_name.source
+      # source - источник: отец,мать,муж,жена,приёмный,дядя,крёстный,сам,братия,духовный,место,подвиг,свойство
+    - name: link
+      kind: string
+      descriptions: :tiun.types.user_name.link
+      # link - связанный объект: личность,место
+    - name: usage
+      kind: enum <NameUsage::Family, NameUsage::Church, NameUsage::Society, NameUsage::Community, NameUsage::Army, NameUsage::Czardom, NameUsage::Brotherhood, NameUsage::Sisterhood>
+      descriptions: :tiun.types.user_name.usage
+      # usage - использование: семья,церковь,войско,царство,братство,сестёрство
+    - name: way
+      kind: enum <NameWay::Appellation, NameWay::Baptism, NameWay::Sobriquet, NameWay::Self, NameWay::Rasophorus, NameWay::Monastic, NameWay::Schema, NameWay::Bless, NameWay::Dedication, NameWay::Repentance>
+      descriptions: :tiun.types.user_name.way
+      # way - чин: нареч,крещ,прозв,сам,рясоф,иноч,схим,благослов,посвящ,покай
+    - name: main
+      kind: flag
+      optional: true
+      descriptions: :tiun.types.user_name.main
+      # main - как основное
 resources:
  - name: user.index
    path: /api/v1/users.json
@@ -70,9 +125,12 @@ resources:
        - name: password_confirmation
          kind: string
          descriptions: :tiun.resources.user.post.password_confirmation
-       - name: settings
-         kind: json
-         descriptions: :tiun.resources.user.post.settings
+       - name: default_name
+         kind: string
+         descriptions: :tiun.resources.user.post.default_name
+       - name: user_names
+         kind: user_name array
+         descriptions: :tiun.resources.user.post.user_names
        - name: accounts
          kind: account array
          descriptions: :tiun.resources.user.post.accounts
@@ -110,15 +168,21 @@ resources:
        - name: type
          kind: enum <Account::Uid, Account::Email>
          descriptions: :tiun.resources.user.put.args.type
+       - name: old_password
+         kind: string
+         descriptions: :tiun.resources.user.put.old_password
        - name: password
          kind: string
-         descriptions: :tiun.resources.user.post.password
+         descriptions: :tiun.resources.user.put.password
        - name: password_confirmation
          kind: string
-         descriptions: :tiun.resources.user.post.password_confirmation
-       - name: settings
-         kind: json
-         descriptions: :tiun.resources.user.put.settings
+         descriptions: :tiun.resources.user.put.password_confirmation
+       - name: default_name
+         kind: string
+         descriptions: :tiun.resources.user.put.default_name
+       - name: user_names
+         kind: user_name array
+         descriptions: :tiun.resources.user.put.user_names
        - name: accounts
          kind: account array
          descriptions: :tiun.resources.user.put.accounts
