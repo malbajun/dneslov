@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_28_014300) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_07_225052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -160,6 +160,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_28_014300) do
     t.index ["scriptum_id", "reading_id", "begin", "end"], name: "index_markups_on_scriptum_id_and_reading_id_and_begin_and_end", unique: true
     t.index ["scriptum_id", "reading_id"], name: "index_markups_on_scriptum_id_and_reading_id"
     t.index ["scriptum_id"], name: "index_markups_on_scriptum_id"
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "role_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id"], name: "index_members_on_role_id"
+    t.index ["user_id"], name: "index_members_on_user_id"
   end
 
   create_table "memo_orders", force: :cascade do |t|
@@ -324,6 +333,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_28_014300) do
     t.index ["path"], name: "index_resources_on_path"
   end
 
+  create_table "roles", force: :cascade do |t|
+    t.string "permissions", default: [], array: true
+    t.boolean "default"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["default"], name: "index_roles_on_default", unique: true
+    t.index ["permissions"], name: "index_roles_on_permissions", using: :gin
+  end
+
   create_table "scripta", id: :serial, force: :cascade do |t|
     t.text "text"
     t.string "prosomeion_title"
@@ -480,6 +498,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_28_014300) do
   add_foreign_key "links", "resources", on_delete: :cascade
   add_foreign_key "markups", "readings", on_delete: :cascade
   add_foreign_key "markups", "scripta", on_delete: :restrict
+  add_foreign_key "members", "roles", on_delete: :cascade
+  add_foreign_key "members", "users", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", column: "bond_to_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade

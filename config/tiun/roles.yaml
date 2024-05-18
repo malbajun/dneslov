@@ -1,0 +1,224 @@
+---
+types:
+ - name: role
+   model: Role
+   version: 1.0
+   fields:
+    - name: id
+      kind: natural
+      descriptions: :tiun.types.role.id
+    - name: tweets
+      kind: tweet array
+      descriptions: :tiun.types.role.tweets
+    - name: permissions
+      kind: string array
+      descriptions: :tiun.types.role.permissions
+ - name: full_role
+   model: Role
+   version: 1.0
+   fields:
+    - name: id
+      kind: natural
+      descriptions: :tiun.types.role.id
+    - name: default
+      kind: bool
+      descriptions: :tiun.types.role.default
+    - name: members
+      kind: short_member array
+      alias: m
+      descriptions: :tiun.types.role.members
+    - name: tweets
+      kind: tweet array
+      alias: tw
+      descriptions: :tiun.types.role.tweets
+    - name: titles
+      kind: title array
+      alias: t
+      descriptions: :tiun.types.role.titles
+    - name: descriptions
+      kind: description array
+      alias: d
+      descriptions: :tiun.types.role.descriptions
+    - name: permissions
+      kind: string array
+      descriptions: :tiun.types.role.permissions
+ - name: title
+   model: Title
+   version: 1.0
+   fields:
+    - name: id
+      kind: natural
+      descriptions: :tiun.types.title.id
+    - name: text
+      kind: string
+      descriptions: :tiun.types.title.text
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.title.language_code
+    - name: language
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.title.language
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.title.alphabeth_code
+    - name: alphabeth
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.title.alphabeth
+    - name: type
+      kind: enum <Title>
+      descriptions: :tiun.types.title.type
+ - name: tweet
+   model: Tweet
+   version: 1.0
+   fields:
+    - name: id
+      kind: natural
+      descriptions: :tiun.types.tweet.id
+    - name: text
+      kind: string
+      descriptions: :tiun.types.tweet.text
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.tweet.language_code
+    - name: language
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.tweet.language
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.tweet.alphabeth_code
+    - name: alphabeth
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.tweet.alphabeth
+    - name: type
+      kind: enum <Tweet>
+      writeonly: true
+      descriptions: :tiun.types.tweet.type
+ - name: short_member
+   model: Member
+   version: 1.0
+   fields:
+    - name: name
+      kind: string
+      descriptions: :tiun.types.short_member.name
+    - name: name_id
+      kind: string
+      descriptions: :tiun.types.short_member.name_id
+    - name: account_no
+      kind: string
+      descriptions: :tiun.types.short_member.account_no
+    - name: account_type
+      kind: string
+      descriptions: :tiun.types.short_member.account_type
+resources:
+ - name: role.index
+   path: /api/v1/roles.json
+   methods:
+    - name: get
+      version: 1.0
+      kind: full_role page
+      policy: role_read
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      descriptions: :tiun.resources.role.index
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.role.index.args.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.role.index.args.page
+       - name: member
+         kind: string
+         descriptions: :tiun.resources.role.post.member
+       - name: permission
+         kind: string
+         descriptions: :tiun.resources.role.post.permission
+       - name: tweet
+         kind: string
+         descriptions: :tiun.resources.role.post.tweet
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.role.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.role.post.description
+ - name: role.create
+   path: /api/v1/roles.json
+   methods:
+    - name: post
+      version: 1.0
+      kind: full_role
+      descriptions: :tiun.resources.role.create
+      allowed_errors: [200, 404, 422.3, 500]
+      policy: role_read
+      args:
+       - name: members
+         kind: string array
+         descriptions: :tiun.resources.role.post.members
+       - name: permissions
+         kind: string array
+         descriptions: :tiun.resources.role.post.permissions
+       - name: tweets
+         kind: tweet array
+         descriptions: :tiun.resources.role.post.tweets
+       - name: titles
+         kind: title array
+         descriptions: :tiun.resources.role.post.titles
+       - name: descriptions
+         kind: description array
+         descriptions: :tiun.resources.role.post.descriptions
+ - name: role
+   path: /api/v1/roles/:uno.json
+   methods:
+    - name: get
+      version: 1.0
+      kind: full_role
+      policy: role_read
+      descriptions: :tiun.resources.role.get
+      allowed_errors: [200, 404, 406, 422.3, 500]
+    - name: put
+      version: 1.0
+      kind: full_role
+      policy: role_write
+      descriptions: :tiun.resources.role.put
+      allowed_errors: [200, 401, 404, 422.3, 500]
+      header:
+       - name: session_token
+         as: auth_token
+         kind: string
+         descriptions: :tiun.resources.session.put.header.session_token
+      args:
+       - name: members
+         kind: string array
+         descriptions: :tiun.resources.role.post.members
+       - name: permissions
+         kind: string array
+         descriptions: :tiun.resources.role.post.permissions
+       - name: tweets
+         kind: tweet array
+         descriptions: :tiun.resources.role.post.tweets
+       - name: titles
+         kind: title array
+         descriptions: :tiun.resources.role.post.titles
+       - name: descriptions
+         kind: description array
+         descriptions: :tiun.resources.role.post.descriptions
+    - name: delete
+      version: 1.0
+      kind: full_role
+      require: auth
+      policy: role_delete
+      descriptions: :tiun.resources.role.delete
+      allowed_errors: [200, 401, 404, 422.3, 500]
+      header:
+       - name: session_token
+         as: auth_token
+         kind: string
+         descriptions: :tiun.resources.session.put.header.session_token

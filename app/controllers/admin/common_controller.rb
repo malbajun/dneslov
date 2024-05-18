@@ -4,11 +4,10 @@ class Admin::CommonController < ApplicationController
 
    before_action :set_query, only: %i(index)
    before_action :set_page, only: %i(index)
-   #before_action :set_languages
    before_action :new_object, only: %i(create)
    before_action :fetch_object, only: %i(show update destroy)
    before_action :fetch_objects, only: %i(all index)
-   before_action :authorize!, except: %i(dashboard)
+   #before_action :authorize!, except: %i(dashboard)
    layout 'admin'
 
    rescue_from ActiveRecord::RecordNotUnique,
@@ -120,13 +119,6 @@ class Admin::CommonController < ApplicationController
 
    def table_name
       model.to_s.tableize
-   end
-
-   def authorize!
-      policy = Object.const_get(model.name + "Policy")
-      if !policy.new(current_user, @object).send(action_name + '?')
-         raise Pundit::NotAuthorizedError, "not allowed to do #{action_name} this #{@object.inspect}"
-      end
    end
 
    def unprocessable_entity e

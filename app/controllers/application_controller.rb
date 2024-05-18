@@ -22,8 +22,6 @@ class ApplicationController < ActionController::Base
       @_context ||= {
          locales: I18n.available_locales,
          locale: I18n.locale,
-         text_languages: @text_languages,
-         service_languages: @service_languages,
          language: @language,
       }
    end

@@ -41,15 +41,26 @@ types:
    model: Description
    version: 1.0
    fields:
+    - name: id
+      kind: natural
+      descriptions: :tiun.types.description.id
     - name: text
       kind: string
       descriptions: :tiun.types.description.text
     - name: language_code
       kind: string
       descriptions: :tiun.types.description.language_code
+    - name: language
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.description.language
     - name: alphabeth_code
       kind: string
       descriptions: :tiun.types.description.alphabeth_code
+    - name: alphabeth
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.description.alphabeth
     - name: type
       kind: enum <Description>
       descriptions: :tiun.types.description.type

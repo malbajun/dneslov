@@ -131,7 +131,7 @@ export default class Form extends Component {
          if (r) {
             let value = r[part]
 
-            return value.constructor.name == "Object" && !value["_pos"] ? Object.values(value)[0] : value
+            return value && value.constructor.name == "Object" && !value["_pos"] ? Object.values(value)[0] : value
          } else {
             return r
          }

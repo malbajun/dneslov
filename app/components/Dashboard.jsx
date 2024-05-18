@@ -9,6 +9,7 @@ import { orderMeta } from 'orderMeta'
 import { subjectMeta } from 'subjectMeta'
 import { scriptumMeta } from 'scriptumMeta'
 import { readingMeta } from 'readingMeta'
+import { roleMeta } from 'roleMeta'
 import { userMeta } from 'userMeta'
 import { homeMeta } from 'homeMeta'
 import Home from 'Home'
@@ -25,6 +26,7 @@ const Metas = {
    'readings': readingMeta,
    'orders': orderMeta,
    'subjects': subjectMeta,
+   'roles': roleMeta,
    'user': [userMeta, User],
    'home': [homeMeta, Home],
 }

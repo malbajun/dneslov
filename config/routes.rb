@@ -30,6 +30,7 @@ Rails.application.routes.draw do
       resources :subjects, param: :id, except: :edit
       resources :scripta, param: :id, except: :edit
       resources :readings, param: :id, except: :edit
+      resources :roles, param: :id, except: :edit
 
       get '/short_subjects' => 'subjects#all'
       get '/short_orders' => 'orders#all'
@@ -44,6 +45,7 @@ Rails.application.routes.draw do
       get '/short_items' => 'items#all'
       get '/short_scripta' => 'scripta#all'
       get '/short_readings' => 'readings#all'
+      get '/short_roles' => 'roles#all'
       get '/icons' => 'memories#icons'
    end
 

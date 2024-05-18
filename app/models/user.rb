@@ -9,6 +9,8 @@ class User < ApplicationRecord
    has_many :refresh_tokina, class_name: "Token::Refresh", as: :tokenable
    has_many :user_names, dependent: :destroy
    has_many :nomina, through: :user_names
+   has_many :members, dependent: :destroy
+   has_many :roles, through: :members
 
    before_validation :fill_in_account
 
@@ -205,6 +207,10 @@ class User < ApplicationRecord
    def name
       # name or email
       email.no
+   end
+
+   def permissions
+      roles.pluck(:permissions).flatten.uniq
    end
 
    def fill_in_account
