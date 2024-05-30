@@ -199,8 +199,6 @@ export const memoMeta = {
          action: 'Добавь заголовок',
          single: 'Заголовок',
          placeholder: 'Введи заголовок',
-         source: "descriptions",
-         filter: { type: "Title" },
          display_scheme: '12-12-12-12',
          validations: {
             "Языки в заголовках не могут совпадать": matchLanguages,

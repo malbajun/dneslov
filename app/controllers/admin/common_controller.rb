@@ -1,16 +1,13 @@
 class Admin::CommonController < ApplicationController
-   include ::Auth
    include ::Pundit::Authorization
+   include Tiun::Base
 
-   before_action :authenticate_user!, except: %i(dashboard)
-   before_action :validate_session
    before_action :set_query, only: %i(index)
    before_action :set_page, only: %i(index)
-   before_action :set_locales
    before_action :new_object, only: %i(create)
    before_action :fetch_object, only: %i(show update destroy)
    before_action :fetch_objects, only: %i(all index)
-   before_action :authorize!, except: %i(dashboard)
+   #before_action :authorize!, except: %i(dashboard)
    layout 'admin'
 
    rescue_from ActiveRecord::RecordNotUnique,
@@ -113,36 +110,15 @@ class Admin::CommonController < ApplicationController
 
    # TODO SQLize
    def desc record
-      record._names.find {|d| @locales.include?(d["language_code"].to_sym) }&.fetch("text", "")
-   end
-
-   def context
-      @context ||= { locales: @locales }
+      record._names.find {|d| @languages.include?(d["language_code"].to_sym) }&.fetch("text", "")
    end
 
    def short_context context_in = {}
       @short_context ||= context_in.deep_merge(except: %i(created_at updated_at id meta))
    end
 
-   def model
-      self.class.to_s.gsub(/.*::/, "").gsub("Controller", "").singularize.constantize
-   end
-
    def table_name
       model.to_s.tableize
-   end
-
-   def validate_session
-      if session_lost?
-         drop_session
-      end
-   end
-
-   def authorize!
-      policy = Object.const_get(model.name + "Policy")
-      if !policy.new(current_user, @object).send(action_name + '?')
-         raise Pundit::NotAuthorizedError, "not allowed to do #{action_name} this #{@object.inspect}"
-      end
    end
 
    def unprocessable_entity e
@@ -154,11 +130,6 @@ class Admin::CommonController < ApplicationController
 
    def set_page
       @page ||= (params[ :p ] || 1).to_i
-   end
-
-   def set_locales
-      #TODO unfix of the ru only (will depend on the locale)
-      @locales ||= %i(ру цс)
    end
 
    def set_query

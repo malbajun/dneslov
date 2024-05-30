@@ -53,9 +53,10 @@ export default class Gallery extends Component {
    state = {}
 
    getDescription() {
-      let array = (this.props.images[0]?.titles || []).concat(this.props.images[0]?.descriptions || [])
+      let array = (this.props.images[0]?.titles || []).concat(this.props.images[0]?.descriptions || []),
+          desc = array.reduce((res, x) => { return res + " " + x.text }, "")
 
-      array.reduce((res, x) => { return res + " " + x.text }, "").slice(0, 255)
+      return (this.state.attitudeTo + ": " + desc).slice(0, 255)
    }
 
    render() {
@@ -67,10 +68,12 @@ export default class Gallery extends Component {
                id="meta-description"
                name="descriptioan"
                content={this.getDescription()} /></MetaTags>,
-         <h4>{this.props.i18n.title}</h4>,
+         <h4>
+            <span>{this.props.i18n.title} "</span>
+            <a href={"/" + this.props.slug}>{this.state.attitudeTo}</a>"</h4>,
          <div className='row gallery'>
             {this.state.images.isPresent() && this.state.images.map((picture, index) =>
-               <div className='col s3 image'>
+               <div className='col s4 image'>
                   <Image
                      key={picture.uid}
                      uid={picture.uid}

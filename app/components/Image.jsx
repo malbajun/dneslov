@@ -22,6 +22,7 @@ export default class Image extends Component {
    state = {
       loaded: false,
       errored: false,
+      showModal: false,
    }
 
    // system
@@ -33,11 +34,21 @@ export default class Image extends Component {
 
    componentDidMount() {
       document.addEventListener('click', this.onDocumentClick, { passive: true })
-      this.modal = M.Modal.init(this.$modal, {})
+      this.componentDidRender()
    }
 
    componentWillUnmount() {
       document.removeEventListener('click', this.onDocumentClick)
+      this.modal?.destroy()
+   }
+
+    componentDidUpdate() {
+      this.componentDidRender()
+   }
+
+   // custom
+   componentDidRender() {
+      this.modal = M.Modal.init(this.$modal, {})
    }
 
    stateChanged() {
@@ -70,7 +81,12 @@ export default class Image extends Component {
 
    onIconClick(e) {
       this.modal.open()
-      console.debug("wwwww", this.modal)
+      this.setState({ showModal: true })
+   }
+
+   closeModal() {
+      this.modal.close()
+      this.setState({ showModal: false })
    }
 
    isOpen() {
@@ -83,7 +99,9 @@ export default class Image extends Component {
       return (
          !this.state.errored && <div
             className="card hoverable medium">
-            <div className="card-image">
+            <div
+               className="card-image"
+               onClick={this.onIconClick.bind(this)} >
                <img
                   alt={this.props.title}
                   src={this.props.thumb}
@@ -93,15 +111,12 @@ export default class Image extends Component {
                   onError={this.onImageCompleted.bind(this)} />
                <span
                   className="card-title">
-                  {this.props.title || "rrrr"}</span></div>
-            <div className="card-content">
-               <p>{this.props.description || "eeee"}</p></div>
-            <div
-               className="card-action"
+                  {this.props.title}</span></div>
+            <div className="card-content"
                onClick={this.onIconClick.bind(this)} >
-               {this.props.i18n.look_in}</div>
+               <p>{this.props.description}</p></div>
             <div
-               className='modal'
+               className={'modal modal-fixed-footer' + (this.state.showModal ? " open" : "")}
                key={'image-modal'}
                id={'image-popup-modal-' + this.props.uid}
                ref={e => this.$modal = e} >
@@ -116,7 +131,8 @@ export default class Image extends Component {
                         alt={this.props.description}
                         onLoad={this.onImageCompleted.bind(this)} /></div></div>
                <a
-                  className='modal-action modal-close waves-effect btn-flat pulse chip'>
+                  className='modal-action modal-close waves-effect btn-flat pulse chip'
+                  onClick={this.closeModal.bind(this)} >
                   {this.props.i18n.close}</a></div></div>)
    }
 }

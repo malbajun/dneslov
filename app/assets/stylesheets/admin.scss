@@ -29,29 +29,42 @@ html {
       font-size: 1rem;
    }
 
-   .block-item {
-      &.btn-floating {
-         &.btn-large {
-            width: 4rem;
-            height: 4rem;
-         }
+   .block {
+      .wrapper {
+         position: relative;
 
-         &.btn-small {
-            width: 2rem;
-            height: 2rem;
-         }
+         .block-item {
+            position: absolute;
+            right: 0;
+            top: 0;
 
-         i {
-            font-size: 1.25rem;
-            line-height: 2rem;
+            &.btn-floating {
+               &.btn-large {
+                  width: 4rem;
+                  height: 4rem;
+               }
+
+               &.btn-small {
+                  width: 2rem;
+                  height: 2rem;
+               }
+
+               i {
+                  font-size: 1.25rem;
+                  line-height: 2rem;
+               }
+            }
          }
       }
    }
 
-    & > .container {
-      &.admin {
-         width: 95%;
-         padding: 0;
+   main {
+      & > .container {
+         &.admin {
+            margin: 0 auto;
+            width: 95%;
+            padding: 0;
+         }
       }
    }
 }

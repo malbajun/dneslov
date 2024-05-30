@@ -234,9 +234,14 @@ export default class Memory extends Component {
    }
 
    getDescription() {
-      let array = [this.state.order].concat(this.props.names || []).concat(this.state.describedMemoes || [])
+      let array = [this.state.order].concat(this.props.names || []).concat(this.state.describedMemoes || []),
+          desc = array.reduce((res, x) => { return res + " " + x?.text }, "")
 
-      array.reduce((res, x) => { return res + " " + x.text }, "").slice(0, 255)
+      return (this.props.short_name + ": " + desc).slice(0, 255)
+   }
+
+   getInfoClass() {
+      return this.props.picture.thumb_url ? " s8" : " s12"
    }
 
    render() {
@@ -248,29 +253,61 @@ export default class Memory extends Component {
                id="meta-description"
                name="description"
                content={this.getDescription()} /></MetaTags>,
-         <div className='row'>
-            <div className='col s10'>
+         <div className='row memory'>
+            <div className={'col' + this.getInfoClass()}>
                <div className='row'>
-                  <div className='col s12'>
-                     {this.state.order &&
-                        <Chip
-                           color={this.getSlugColor(this.state.order)}
-                           text={this.state.order} />}
-                     <Name
-                        short_name={this.props.short_name}
-                        defaultNameInCalendary={this.state.title}
-                        klugs={this.state.klugs}
-                        names={this.props.names} />
-                     {this.state.happenedAt && <Chip
-                        className='happened-at'
-                        text={this.state.happenedAt} />}</div></div></div></div>,
-         <div className='row'>
-            {this.props.picture.url &&
-               <div className='col s12'>
-                  <div className="card hoverable small">
+               {this.state.order &&
+                  <Chip
+                     color={this.getSlugColor(this.state.order)}
+                     text={this.state.order} />}
+               <Name
+                  short_name={this.props.short_name}
+                  defaultNameInCalendary={this.state.title}
+                  klugs={this.state.klugs}
+                  names={this.props.names} />
+               {this.state.happenedAt && <Chip
+                  className='happened-at'
+                  text={this.state.happenedAt} />}</div>
+               {this.state.links.isPresent() &&
+                  <div className='row'>
+                     <div className='col s12'>
+                        <div className='row'>
+                           <div className='col s12 title'>
+                              {this.props.i18n.externals}</div>
+                           <div className='col s12'>
+                              {this.state.links.map((link) =>
+                                 <Chip
+                                    key={'link-'+link.id}
+                                    url={link.url}
+                                    color={Memory.getColorForLink(link)}
+                                    text={Memory.getLinkText(link)} />)}</div></div></div></div>}
+               {this.state.coverings.isPresent() &&
+                  <div className='row'>
+                     <div className='col s12'>
+                        <div className='row'>
+                           <div className='col s12 title'>
+                              {this.props.i18n.patron}:</div>
+                           <div className='col s12'>
+                              {this.state.coverings.map((c) =>
+                                 <Chip
+                                    key={'covering-' + c.id}
+                                    color={Memory.getColorForLink(c.name)}
+                                    text={c.name} />)}</div></div></div></div>}
+               {this.state.scripta.isPresent() &&
+                  <div className='row'>
+                     <div className='col s12'>
+                        {this.sortedScripta().map((scriptum) =>
+                           <div className='row'>
+                              <div className='col s12 title'>
+                                 {this.getScriptumTitle(scriptum)}</div>
+                              <div className='col s12 scriptum'>
+                                 <Markdown source={scriptum.text} /></div></div>)}</div></div>}</div>
+            {this.props.picture.thumb_url &&
+               <div className='col s4 image'>
+                  <div className="card hoverable medium">
                      <div className="card-image">
                         <img
-                           src={this.props.picture.url}
+                           src={this.props.picture.thumb_url}
                            alt={this.props.picture.title} />
                         <span className="card-title">{this.props.picture.title}</span></div>
                   <div className="card-content">
@@ -293,37 +330,6 @@ export default class Memory extends Component {
                <Description
                   describedMemoes={this.state.describedMemoes}
                   defaultCalendarySlug={this.state.defaultCalendarySlug} />}
-            {this.state.links.isPresent() &&
-               <div className='col s12'>
-                  <div className='row'>
-                     <div className='col s12 title'>
-                        {this.props.i18n.externals}</div>
-                     <div className='col s12'>
-                        {this.state.links.map((link) =>
-                           <Chip
-                              key={'link-'+link.id}
-                              url={link.url}
-                              color={Memory.getColorForLink(link)}
-                              text={Memory.getLinkText(link)} />)}</div></div></div>}
-            {this.state.coverings.isPresent() &&
-               <div className='col s12'>
-                  <div className='row'>
-                     <div className='col s12 title'>
-                        {this.props.i18n.patron}:</div>
-                     <div className='col s12'>
-                        {this.state.coverings.map((c) =>
-                           <Chip
-                              key={'covering-' + c.id}
-                              color={Memory.getColorForLink(c.name)}
-                              text={c.name} />)}</div></div></div>}
-            {this.state.scripta.isPresent() &&
-               <div className='col s12'>
-                  {this.sortedScripta().map((scriptum) =>
-                     <div className='row'>
-                        <div className='col s12 title'>
-                           {this.getScriptumTitle(scriptum)}</div>
-                        <div className='col s12 scriptum'>
-                           <Markdown source={scriptum.text} /></div></div>)}</div>}
             {this.props.events.isPresent() &&
                <div className='col s12'>
                   <div className='row'>

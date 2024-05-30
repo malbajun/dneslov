@@ -52,9 +52,9 @@ class Memory < ActiveRecord::Base
    end
 
    scope :by_token, -> text do
-      left_outer_joins(:names, :descriptions).where( "short_name ~* ?", "\\m#{text}.*" ).or(
+      left_outer_joins(:names, :descriptions, :slug).where("short_name ~* ?", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?) OR unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*", "\\m#{text}.*")).or(merge(
-         Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).distinct
+         Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")})).distinct
    end
 
    scope :by_tokens, -> string_in do
@@ -89,7 +89,7 @@ class Memory < ActiveRecord::Base
    end
 
    scope :with_names, -> (context) do
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
 =begin
 with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (
         with recursive tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (SELECT 0,nm.text,n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,mn.state_code,mn.mode,mn.feasible FROM nomina n JOIN names nm ON nm.id = n.name_id JOIN memory_names mn ON mn.nomen_id = n.id WHERE  mn.memory_id = 2989 UNION SELECT level + 1, path || ' > ' || nm.text, n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,tt.state_code,tt.mode,tt.feasible FROM nomina n JOIN tt ON n.root_id = tt.root_id AND  tt.bond_to_id = n.name_id JOIN names nm ON nm.id = n.name_id JOIN names nm_t ON nm_t.id = tt.name_id AND nm_t.language_code <> nm.language_code LEFT OUTER JOIN memory_names mn ON n.root_id = mn.nomen_id AND mn.memory_id = 2989 ) select * from tt
@@ -190,7 +190,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_scripta, -> (context) do
       as = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:service_languages]].flatten
       alphabeth_codes = context[:codes] || Languageble.alphabeth_list_for(language_codes).flatten
       calendaries_join =
          if context[:calendary_slugs]
@@ -242,7 +242,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_covering_names, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
 
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
@@ -267,7 +267,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_coverings, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
 
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
@@ -292,7 +292,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_memoes, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __memoes AS (
@@ -369,7 +369,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_bond_memories, ->(context) do
       as = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
 
       selector = self.select_values.dup
@@ -405,7 +405,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    # https://efim360.ru/postgresql-tablicza-prisutstvuet-v-zaprose-no-soslatsya-na-neyo-iz-etoj-chasti-zaprosa-nelzya/?ysclid=lqs5tozisb568391387
    scope :with_icon, -> context do
       as = table.table_alias || table.name
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
       selector << "jsonb_build_object(
@@ -462,21 +462,21 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_slug, -> do
+      as = table.table_alias || table.name
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'memories.*'
-      end
+      selector << "#{as}.*" if selector.empty?
+      selector << "jsonb_build_object(
+         'id', #{as}_slugs.id,
+         'text', #{as}_slugs.text) AS _slug"
+      join = "LEFT OUTER JOIN slugs AS #{as}_slugs
+                           ON #{as}_slugs.sluggable_id = #{as}.id
+                          AND #{as}_slugs.sluggable_type = 'Memory'"
 
-      selector << "jsonb_build_object('id', slugs.id, 'text', slugs.text) AS _slug"
-      join = "LEFT OUTER JOIN slugs
-                           ON slugs.sluggable_id = memories.id
-                          AND slugs.sluggable_type = 'Memory'"
-
-      joins(join).select(selector).group(:id, 'slugs.id', 'slugs.text')
+      joins(join).select(selector).group(:id, "#{as}_slugs.id", "#{as}_slugs.text")
    end
 
    scope :with_orders, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       selector = self.select_values.dup
       if self.select_values.dup.empty?
          selector << 'memories.*'
@@ -506,12 +506,37 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_events, -> context do
-      as = table.table_alias || table.name
-      language_codes = [context[:locales]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'memories.*'
+      selector << "#{this}.*" if selector.empty?
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND language_names.language_code IN ('#{language_codes.join("', '")}')",
+            "AND titles.language_code IN ('#{language_codes.join("', '")}')",
+            "AND descriptions.language_code IN ('#{language_codes.join("', '")}')",
+            "AND place_names.language_code IN ('#{language_codes.join("', '")}')",
+            "AND item_names.language_code IN ('#{language_codes.join("', '")}')",
+            "AND #{this}_item_type_names.language_code IN ('#{language_codes.join("', '")}')",
+            "AND event_kind_titles.language_code IN ('#{language_codes.join("', '")}')",
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND descriptions.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND place_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND item_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND #{this}_item_type_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND event_kind_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         ]
       end
 
       selector << "COALESCE((WITH __events AS (
@@ -523,7 +548,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                              events.place_id AS place_id,
                              place_names.text AS place,
                              events.item_id AS item_id,
-                             COALESCE(item_names.text, #{as}_item_type_names.text) AS item,
+                             COALESCE(item_names.text, #{this}_item_type_names.text) AS item,
                              events.person_name AS person_name,
                              events.type_number AS type_number,
                              events.about_string AS about_string,
@@ -544,17 +569,17 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN descriptions AS language_names
                           ON language_names.describable_id = languages.id
                          AND language_names.describable_type = 'Subject'
-                         AND language_names.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.first}
              LEFT OUTER JOIN subjects AS alphabeths
                           ON alphabeths.key = titles.alphabeth_code
              LEFT OUTER JOIN descriptions AS alphabeth_names
                           ON alphabeth_names.describable_id = alphabeths.id
                          AND alphabeth_names.describable_type = 'Subject'
-                         AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                             #{alph_wheres&.first}
                        WHERE titles.describable_id = events.id
                          AND titles.describable_type = 'Event'
-                         AND titles.language_code IN ('#{language_codes.join("', '")}')
                          AND titles.type = 'Title'
+                             #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
                     GROUP BY titles.id, language_names.text, alphabeth_names.text)
                       SELECT jsonb_agg(__titles)
                         FROM __titles), '[]'::jsonb) AS titles,
@@ -572,16 +597,16 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN descriptions AS language_names
                           ON language_names.describable_id = languages.id
                          AND language_names.describable_type = 'Subject'
-                         AND language_names.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.first}
              LEFT OUTER JOIN subjects AS alphabeths
                           ON alphabeths.key = descriptions.alphabeth_code
              LEFT OUTER JOIN descriptions AS alphabeth_names
                           ON alphabeth_names.describable_id = alphabeths.id
                          AND alphabeth_names.describable_type = 'Subject'
-                         AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                             #{alph_wheres&.first}
                        WHERE descriptions.describable_id = events.id
                          AND descriptions.describable_type = 'Event'
-                         AND descriptions.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}
                          AND descriptions.type IN ('Description')
                     GROUP BY descriptions.id, language_names.text, alphabeth_names.text)
                       SELECT jsonb_agg(__descriptions)
@@ -590,17 +615,17 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN descriptions AS place_names
                           ON place_names.describable_id = events.place_id
                          AND place_names.describable_type = 'Place'
-                         AND place_names.language_code IN ('#{language_codes.join("', '")}')
-             LEFT OUTER JOIN items AS #{as}_items
-                          ON #{as}_items.id = events.item_id
+                             #{lang_wheres&.[](3)} #{alph_wheres&.[](3)}
+             LEFT OUTER JOIN items AS #{this}_items
+                          ON #{this}_items.id = events.item_id
              LEFT OUTER JOIN descriptions AS item_names
-                          ON item_names.describable_id = #{as}_items.id
+                          ON item_names.describable_id = #{this}_items.id
                          AND item_names.describable_type = 'Item'
-                         AND item_names.language_code IN ('#{language_codes.join("', '")}')
-             LEFT OUTER JOIN descriptions AS #{as}_item_type_names
-                          ON #{as}_item_type_names.describable_id = #{as}_items.item_type_id
-                         AND #{as}_item_type_names.describable_type = 'ItemType'
-                         AND #{as}_item_type_names.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.[](4)} #{alph_wheres&.[](4)}
+             LEFT OUTER JOIN descriptions AS #{this}_item_type_names
+                          ON #{this}_item_type_names.describable_id = #{this}_items.item_type_id
+                         AND #{this}_item_type_names.describable_type = 'ItemType'
+                             #{lang_wheres&.[](5)} #{alph_wheres&.[](5)}
              LEFT OUTER JOIN subjects AS event_kinds
                           ON event_kinds.kind_code = 'EventKind'
                          AND event_kinds.key = events.kind_code
@@ -608,9 +633,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           ON event_kind_titles.describable_id = event_kinds.id
                          AND event_kind_titles.describable_type = 'Subject'
                          AND event_kind_titles.type = 'Appellation'
-                         AND event_kind_titles.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.[](6)} #{alph_wheres&.[](6)}
                        WHERE events.memory_id = memories.id
-                    GROUP BY events.id, place_names.text, item_names.text, #{as}_item_type_names.text, event_kind_titles.text)
+                    GROUP BY events.id, place_names.text, item_names.text, #{this}_item_type_names.text, event_kind_titles.text)
                       SELECT jsonb_agg(__events)
                         FROM __events), '[]'::jsonb) AS _events"
 
@@ -618,10 +643,26 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_memory_names, -> context do
-      language_codes = [ context[:locales] ].flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'memories.*'
+      selector << "#{this}.*" if selector.empty?
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND memory_name_state_titles.language_code IN ('#{language_codes.join("', '")}')",
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND memory_name_state_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         ]
       end
 
       selector = "COALESCE((
@@ -639,7 +680,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN descriptions AS memory_name_state_titles
                           ON memory_name_state_titles.describable_id = memory_name_states.id
                          AND memory_name_state_titles.describable_type = 'Subject'
-                         AND memory_name_state_titles.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.first} #{alph_wheres&.first}
              LEFT OUTER JOIN nomina
                           ON nomina.id = memory_names.nomen_id
              LEFT OUTER JOIN names

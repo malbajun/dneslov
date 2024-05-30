@@ -17,7 +17,7 @@ if Subject.all.blank?
    models = data.map { |attrs| Subject.create!(attrs) }
 end
 
-unless Subject.find_by(key: 'МХ')
+unless Subject.find_by(key: 'РО')
    langs = YAML.load(IO.read(Rails.root.join('db/seeds/languages.yaml')))
    models = langs.map { |attrs| Subject.new(attrs) }
    # fix cps
@@ -36,5 +36,12 @@ unless Subject.find_by(key: 'МХ')
          end
       end
       AL_MAP.each { |src, tgt| Subject.where(key: src).update_all(key: tgt) }
+   end
+end
+
+if Role.all.blank?
+   Role.transaction do
+      data = YAML.load(IO.read(Rails.root.join('db/seeds/roles.yaml')))
+      models = data.map { |attrs| Role.create!(attrs) }
    end
 end

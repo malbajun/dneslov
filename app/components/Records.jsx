@@ -15,10 +15,12 @@ export default class Records extends Component {
          page: 0,
          total: 0,
       },
+      meta: {}
    }
 
    static propTypes = {
-      object: PropTypes.object.isRequired,
+      records: PropTypes.object.isRequired,
+      meta: PropTypes.object.isRequired,
    }
 
    static getDerivedStateFromProps(props, state) {
@@ -141,27 +143,52 @@ export default class Records extends Component {
    }
 
    onSuccessLoad(response) {
-      let new_records, new_page, new_state, records = response.data
+      let new_records, new_page, new_state, records = response.data, range, m
+      const re = new RegExp("records (?<b>\d+)-(?<e>\d+)/(?<total>\d+)")
 
       console.log("[onSuccessLoad] > response", response)
       console.log("[onSuccessLoad] > records", records)
-      if (records.page > 1 || !this.state.records) {
-         new_records = this.state.records.slice()
-         if (this.state.appended) {
-            let ids = new_records.map((c) => { return c.id })
-            records.list.forEach((c) => {
-               if (ids.indexOf(c.id) < 0) {
-                  new_records.push(c)
-               }
-            })
-            new_page = response.config.params.p
+      if (records.page) {
+         if (records.page > 1 || !this.state.records) {
+            new_records = this.state.records.slice()
+            if (this.state.appended) {
+               let ids = new_records.map((c) => { return c.id })
+               records.list.forEach((c) => {
+                  if (ids.indexOf(c.id) < 0) {
+                     new_records.push(c)
+                  }
+               })
+               new_page = response.config.params.p
+            } else {
+               new_records = new_records.concat(records.list)
+               new_page = response.config.params.p
+            }
          } else {
-            new_records = new_records.concat(records.list)
+            new_records = records.list
             new_page = response.config.params.p
          }
       } else {
-         new_records = records.list
-         new_page = response.config.params.p
+         range = response.headers["content-range"]
+         const { b, e, total } = /records (?<b>\d+)-(?<e>\d+)\/(?<total>\d+)/.exec(range,).groups;
+
+         if (b > 0 || !this.state.records) {
+            new_records = this.state.records.slice()
+            if (this.state.appended) {
+               let ids = new_records.map((c) => { return c.id })
+               records.forEach((c) => {
+                  if (ids.indexOf(c.id) < 0) {
+                     new_records.push(c)
+                  }
+               })
+               new_page = response.config.params.p
+            } else {
+               new_records = new_records.concat(records)
+               new_page = response.config.params.p
+            }
+         } else {
+            new_records = records
+            new_page = response.config.params.p
+         }
       }
 
       new_state = {
@@ -263,7 +290,8 @@ export default class Records extends Component {
                         meta={this.props.meta.row}
                         default={this.props.meta.default}
                         remove={this.props.meta.remove}
-                        locales={this.props.locales || []}
+                        text_languages={this.props.text_languages || []}
+                        service_languages={this.props.service_languages || []}
                         onEdit={this.onRecordEdit.bind(this)}
                         onRemove={this.onRecordRemove.bind(this)} />)}</tbody></table>
             <ReactScrollPagination

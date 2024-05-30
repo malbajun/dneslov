@@ -1,5 +1,4 @@
 import { Component } from 'react'
-import GitHubLogin from 'react-github-login'
 import { merge } from 'merge-anything'
 
 import { calendaryMeta } from 'calendaryMeta'
@@ -10,6 +9,12 @@ import { orderMeta } from 'orderMeta'
 import { subjectMeta } from 'subjectMeta'
 import { scriptumMeta } from 'scriptumMeta'
 import { readingMeta } from 'readingMeta'
+import { roleMeta } from 'roleMeta'
+import { userMeta } from 'userMeta'
+import { homeMeta } from 'homeMeta'
+import Home from 'Home'
+import User from 'User'
+import Login from 'Login'
 import Records from 'Records'
 
 const Metas = {
@@ -21,21 +26,35 @@ const Metas = {
    'readings': readingMeta,
    'orders': orderMeta,
    'subjects': subjectMeta,
+   'roles': roleMeta,
+   'user': [userMeta, User],
+   'home': [homeMeta, Home],
 }
 
 export default class Dashboard extends Component {
-   state = merge({}, this.props, { meta: null })
+   state = merge({}, this.props, { meta: null, page: "user" })
 
    // system
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
-         let parts = window.location.href.split("#")
+         let parts = window.location.href.split("#"),
+             [meta, renderer] = Dashboard.remetaFor(parts[1])
 
          if (parts[1]) {
             return {
                prevProps: props,
-               meta: Metas[parts[1]],
+               user: props.user,
+               meta: meta,
+               renderer: renderer,
                page: parts[1]
+            }
+         } else {
+            return {
+               prevProps: props,
+               user: props.user,
+               meta: null,
+               renderer: null,
+               page: null
             }
          }
       }
@@ -43,48 +62,53 @@ export default class Dashboard extends Component {
       return null
    }
 
-   componentDidMount() {
-      this.avatarTap = M.TapTarget.init(this.$avatarTap, {})
+   static remetaFor(page) {
+      let renderer, meta
+
+      if (page && Metas[page].constructor.name == "Array") {
+         renderer = Metas[page][1]
+         meta = Metas[page][0]
+      } else {
+         renderer = Records
+         meta = Metas[page]
+      }
+
+      return [meta, renderer]
    }
 
-   componentWillUnmount() {
-      if (this.avatarTap) {
-         this.avatarTap.destroy()
-      }
+   onClick(page) {
+      let [meta, renderer] = Dashboard.remetaFor(page)
+
+      this.setState({ meta: meta, page: page, renderer: renderer, meta: meta })
    }
 
    componentDidCatch(error, errorInfo) {
       console.log(error, errorInfo)
    }
 
-   // events
-   onClick(meta, page) {
-      this.setState({ meta: meta, page: page })
+   onSigninUser(user) {
+      this.setState({ user: user })
    }
 
-   onLoginSuccess(data) {
-      this.setState(data)
+   onSignoutUser() {
+      this.setState({ user: null })
    }
 
-   onLoginFailure(e) {
-      console.error("Sign-in error: " + e.error)
-   }
+   metas() {
+      return Object.entries(Metas).map(([path, metaIn]) => {
+         let meta = metaIn, renderer = null
 
-   onAvatarClick(e) {
-      this.avatarTap.open()
-   }
+         if (metaIn && metaIn.constructor.name == "Array") {
+            renderer = metaIn[1]
+            meta = metaIn[0]
+         }
 
-   // props
-   isAvatarTappen() {
-      return !!this.$avatarSignIn.querySelector('.tap-target-wrapper.open')
-   }
-
-   info() {
-      return [ this.state.info, this.state.location ].filter(e => { return e }).join("\n")
+         return meta.title ? [path, meta, renderer] : null
+      }).compact()
    }
 
    render() {
-      console.log("[Dashboard] * state", this.state)
+      console.log("[Dashboard] * props", this.props, "state", this.state)
 
       return (
          [<header>
@@ -95,59 +119,31 @@ export default class Dashboard extends Component {
                      alt="Днеслов">
                      <img
                         src="/dneslov-title.png" /></a>
-                  {this.state.login &&
-                     <ul id="nav-mobile" className="right">
-                        {Object.entries(Metas).map(([path, meta]) =>
-                           <li>
-                              <a
-                                 href={"#" + path}
-                                 onClick={this.onClick.bind(this, meta, path)} >
-                                 {meta.title}</a></li>)}
+                  <ul id="nav-mobile" className="right hide-on-med-and-down">
+                     {this.state.user && this.metas().map(([path, meta, _renderer]) =>
                         <li>
-                           <div
-                              ref={e => this.$avatarSignIn = e}
-                              key='avatarSignIn'
-                              className='sign-in circle signed'>
-                              <img
-                                 id='avatar'
-                                 className='circle z-depth-1 responsive-img'
-                                 onClick={this.onAvatarClick.bind(this)}
-                                 src={this.state.avatar_url} />
-                              <div
-                                 key='avatarTap'
-                                 ref={e => this.$avatarTap = e}
-                                 className='tap-target'
-                                 data-target='avatar'>
-                                 <div
-                                    className='tap-target-content'>
-                                    <h6>
-                                       @{this.state.login}</h6>
-                                    <h5>
-                                       {this.state.name}</h5>
-                                    <p>
-                                       {this.info()}</p></div></div></div></li></ul>}
-                  {!this.state.login && this.state.client_id &&
-                     <div className="right">
-                        <GitHubLogin
-                           clientId={this.state.client_id}
-                           redirectUri={this.state.redirect_url}
-                           className='sign-in btn-floating btn-large waves-effect waves-light'
-                           requireCode={false}
-                           onSuccess={this.onLoginSuccess.bind(this)}
-                           onFailure={this.onLoginFailure.bind(this)}>
-                           <i
-                              className="material-icons">
-                              perm_identity</i></GitHubLogin></div>}
-                  </div></nav></header>,
+                           <a
+                              href={"#" + path}
+                              onClick={this.onClick.bind(this, path)} >
+                              {meta.title}</a></li>)}
+                     <Login
+                        onSigninUser={this.onSigninUser.bind(this)}
+                        onSignoutUser={this.onSignoutUser.bind(this)}
+                        onClick={this.onClick.bind(this, "home")}
+                        user={this.state.user} /></ul></div></nav></header>,
          <main key='main'>
             <div className='container admin'>
-               <div className='row'>
-                  <div className='col s12 m12 l12 xl12'>
-                     <div id='page'>
-                        {this.state.meta && this.state.login &&
-                           <Records
-                              page={this.state.page}
-                              meta={this.state.meta}
-                              locales={this.state.locales} />}</div></div></div></div></main>,
+               {this.state.page &&
+                  <div className='row'>
+                     <div className='col s12 m12 l12 xl12'>
+                        <div id='page'>
+                           {this.state.user &&
+                              <this.state.renderer
+                                 page={this.state.page}
+                                 meta={this.state.meta}
+                                 user={this.state.user}
+                                 text_languages={this.state.text_languages}
+                                 service_languages={this.state.service_languages} />}
+                           </div></div></div>}</div></main>,
          <div className="progress">
             <div className="indeterminate"></div></div> ])}}

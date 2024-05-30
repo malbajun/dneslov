@@ -1,6 +1,7 @@
 import './polifill'
 import './ajax'
 import './ext'
+import './ulogin'
 import 'classlist-polyfill'
 import 'custom-event-polyfill'
 

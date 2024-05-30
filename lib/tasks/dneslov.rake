@@ -40,4 +40,11 @@ namespace :dneslov do
          CalendaryCopy.new(target: args[:target], sources: args[:sources].split(":")).do
       end
    end
+
+   desc "Upload photoes"
+   task :upload, [:path, :short_name, :event_id, :kind, :url] => :environment do |t, args|
+      Tasks.upload_images(args[:path], args[:short_name], args[:event_id], args[:kind], args[:url])
+
+      true
+   end
 end

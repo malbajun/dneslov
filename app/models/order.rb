@@ -1,17 +1,16 @@
 class Order < ActiveRecord::Base
    extend TotalSize
    include WithDescriptions
+   include WithTweets
    include WithLinks
 
    has_one :slug, as: :sluggable, dependent: :destroy
    has_many :notes, as: :describable, dependent: :delete_all, class_name: :Note
-   has_many :tweets, as: :describable, dependent: :delete_all, class_name: :Tweet
    has_many :memo_orders
    has_many :memoes, through: :memo_orders
    has_many :memories, through: :slug
 
    accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
-   accepts_nested_attributes_for :tweets, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank
 
    scope :by_token, -> text do
@@ -44,7 +43,7 @@ class Order < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup
 
@@ -88,5 +87,5 @@ class Order < ActiveRecord::Base
    singleton_class.send(:alias_method, :t, :by_token)
    singleton_class.send(:alias_method, :q, :by_tokens)
 
-   validates_presence_of :slug, :notes, :tweets
+   validates_presence_of :slug, :notes
 end

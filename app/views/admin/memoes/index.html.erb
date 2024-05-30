@@ -1,6 +1,12 @@
-<%= react_component 'Memoes', memoes: Admin::MemoesSerializer.new( @objects,
-                                                                   total: @objects.total_count,
-                                                                   page: @page,
-                                                                   locales: @locales,
-                                                                   serializer: Admin::MemoSerializer ),
-                              locales: @locales %>
+<%= react_component 'Memoes',
+   memoes: Admin::MemoesSerializer.new(
+      @objects,
+      total: @objects.total_count,
+      page: @page,
+      locales: @locales,
+      locale: @locale,
+      text_languages: @text_languages,
+      service_languages: @service_languages,
+      language: @language,
+      serializer: Admin::MemoSerializer ),
+%>

@@ -2,7 +2,7 @@ class Admin::OrdersController < Admin::CommonController
    protected
 
    def index_with_list
-      %w(with_descriptions with_links with_slug)
+      %w(with_descriptions with_links with_tweets with_slug)
    end
 
    def permitted_params

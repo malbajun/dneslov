@@ -1,0 +1,43 @@
+---
+- permissions: ['role_read', 'role_write', 'role_delete', 'user_read', 'user_write', 'user_delete', 'image_read', 'image_write', 'image_delete', 'roundel_read', 'roundel_write', 'roundel_delete']
+  descriptions_attributes:
+   - text: Администратор портала
+     language_code: ру
+     alphabeth_code: РО
+  titles_attributes:
+   - text: Админ
+     language_code: ру
+     alphabeth_code: РО
+  tweets_attributes:
+   - text: админ
+     language_code: ру
+     alphabeth_code: РО
+  members_attributes:
+   - user_id: 1
+- permissions: ['image_read', 'roundel_read', 'user_read']
+  default: true
+  descriptions_attributes:
+   - text: Пользователь по-умолчанию
+     language_code: ру
+     alphabeth_code: РО
+  titles_attributes:
+   - text: По-умолчанию
+     language_code: ру
+     alphabeth_code: РО
+  tweets_attributes:
+   - text: умолч
+     language_code: ру
+     alphabeth_code: РО
+- permissions: ['role_read', 'user_read', 'image_read', 'image_write', 'image_delete', 'roundel_read', 'roundel_write', 'roundel_delete']
+  descriptions_attributes:
+   - text: Управленец портала
+     language_code: ру
+     alphabeth_code: РО
+  titles_attributes:
+   - text: Управсайт
+     language_code: ру
+     alphabeth_code: РО
+  tweets_attributes:
+   - text: управ
+     language_code: ру
+     alphabeth_code: РО

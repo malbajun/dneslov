@@ -1,6 +1,12 @@
-<%= react_component 'Memories', memories: Admin::MemoriesSerializer.new( @objects,
-                                                                  total: @objects.total_count,
-                                                                  page: @page,
-                                                                  locales: @locales,
-                                                                  serializer: Admin::MemorySerializer ),
-                                locales: @locales %>
+<%= react_component 'Memories',
+   memories: Admin::MemoriesSerializer.new(
+      @objects,
+      total: @objects.total_count,
+      page: @page,
+      locales: @locales,
+      locale: @locale,
+      text_languages: @text_languages,
+      service_languages: @service_languages,
+      language: @language,
+      serializer: Admin::MemorySerializer ),
+%>

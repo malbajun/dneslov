@@ -22,7 +22,7 @@ class Place < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
       selector = self.select_values.dup
 

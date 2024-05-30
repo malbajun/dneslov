@@ -10,11 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_13_185132) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_07_225052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
   enable_extension "unaccent"
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "no", null: false
+    t.string "type", null: false
+    t.bigint "user_id", null: false
+    t.index ["no", "type"], name: "index_accounts_on_no_and_type", unique: true
+    t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
 
   create_table "calendaries", id: :serial, force: :cascade do |t|
     t.string "date"
@@ -152,6 +160,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_13_185132) do
     t.index ["scriptum_id", "reading_id", "begin", "end"], name: "index_markups_on_scriptum_id_and_reading_id_and_begin_and_end", unique: true
     t.index ["scriptum_id", "reading_id"], name: "index_markups_on_scriptum_id_and_reading_id"
     t.index ["scriptum_id"], name: "index_markups_on_scriptum_id"
+  end
+
+  create_table "members", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "role_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id"], name: "index_members_on_role_id"
+    t.index ["user_id"], name: "index_members_on_user_id"
   end
 
   create_table "memo_orders", force: :cascade do |t|
@@ -316,6 +333,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_13_185132) do
     t.index ["path"], name: "index_resources_on_path"
   end
 
+  create_table "roles", force: :cascade do |t|
+    t.string "permissions", default: [], array: true
+    t.boolean "default"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["default"], name: "index_roles_on_default", unique: true
+    t.index ["permissions"], name: "index_roles_on_permissions", using: :gin
+  end
+
   create_table "scripta", id: :serial, force: :cascade do |t|
     t.text "text"
     t.string "prosomeion_title"
@@ -418,15 +444,67 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_13_185132) do
     t.index ["url"], name: "index_thumbs_on_url", unique: true
   end
 
+  create_table "tokina", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "type", null: false
+    t.string "tokenable_type", null: false
+    t.bigint "tokenable_id", null: false
+    t.datetime "expires_at"
+    t.datetime "obsoleted_at"
+    t.index ["code"], name: "index_tokina_on_code", unique: true
+    t.index ["expires_at"], name: "index_tokina_on_expires_at"
+    t.index ["obsoleted_at"], name: "index_tokina_on_obsoleted_at"
+    t.index ["tokenable_type", "tokenable_id"], name: "index_tokina_on_tokenable"
+    t.index ["type"], name: "index_tokina_on_type"
+  end
+
+  create_table "user_names", force: :cascade do |t|
+    t.string "kind", null: false
+    t.string "way", null: false
+    t.string "usage", null: false
+    t.string "source", null: false
+    t.boolean "main", default: false, null: false
+    t.string "bindable_type"
+    t.bigint "bindable_id"
+    t.bigint "user_id", null: false
+    t.bigint "nomen_id", null: false
+    t.index ["bindable_type", "bindable_id"], name: "index_user_names_on_bindable"
+    t.index ["kind"], name: "index_user_names_on_kind"
+    t.index ["main"], name: "index_user_names_on_main"
+    t.index ["nomen_id"], name: "index_user_names_on_nomen_id"
+    t.index ["source"], name: "index_user_names_on_source"
+    t.index ["usage"], name: "index_user_names_on_usage"
+    t.index ["user_id"], name: "index_user_names_on_user_id"
+    t.index ["way"], name: "index_user_names_on_way"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.jsonb "settings"
+    t.string "default_name"
+    t.string "encrypted_password"
+    t.string "salt"
+    t.datetime "last_login_at"
+    t.datetime "last_active_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["last_active_at"], name: "index_users_on_last_active_at"
+    t.index ["last_login_at"], name: "index_users_on_last_login_at"
+  end
+
+  add_foreign_key "accounts", "users", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade
   add_foreign_key "coverings", "places", on_delete: :cascade
   add_foreign_key "image_attitudes", "pictures", on_delete: :cascade
   add_foreign_key "links", "resources", on_delete: :cascade
   add_foreign_key "markups", "readings", on_delete: :cascade
   add_foreign_key "markups", "scripta", on_delete: :restrict
+  add_foreign_key "members", "roles", on_delete: :cascade
+  add_foreign_key "members", "users", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", column: "bond_to_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade
   add_foreign_key "service_scripta", "scripta", on_delete: :cascade
   add_foreign_key "service_scripta", "services", on_delete: :cascade
+  add_foreign_key "user_names", "nomina", on_delete: :cascade
+  add_foreign_key "user_names", "users", on_delete: :cascade
 end

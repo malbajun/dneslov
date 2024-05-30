@@ -1,9 +1,9 @@
-<%= react_component 'Dashboard', locales: @locales,
-                                 client_id: ENV["GITHUB_CLIENT_ID"],
-                                 redirect_url: ENV["GITHUB_REDIRECT_URL"],
-                                 login: session['login'],
-                                 name: session['name'],
-                                 avatar_url: session['avatar_url'],
-                                 location: session['location'],
-                                 email: session['email'],
-                                 info: session['info'] %>
+<%=
+   react_component 'Dashboard',
+      user: current_user_data,
+      locales: @locales,
+      locale: @locale,
+      text_languages: @text_languages,
+      service_languages: @service_languages,
+      language: @language
+-%>

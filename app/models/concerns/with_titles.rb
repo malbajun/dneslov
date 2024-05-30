@@ -3,7 +3,7 @@ module WithTitles
 
    def self.included base
       base.class_eval do
-         has_many :titles, -> { title }, as: :describable, class_name: :Title
+         has_many :titles, -> { title }, as: :describable, class_name: :Title, dependent: :delete_all
          has_many :default_titles, -> { distinct }, through: :kind, source: :names, class_name: :Appellation
          has_many :all_titles, ->(this) do
             where( describable_type: model.name, describable_id: this.id, kind: "Title" )
@@ -11,18 +11,24 @@ module WithTitles
            .order( :describable_type )
          end, primary_key: nil, class_name: :Description
 
-         scope :by_title, -> title do
-            joins(:titles).where(titles: { text: title })
+         scope :by_title, ->(title) do
+            this = table.table_alias || table.name
+            as = "by_title_#{this}"
+
+            join = "LEFT JOIN descriptions AS #{as}_titles
+                           ON #{as}_titles.describable_id = #{this}.id
+                          AND #{as}_titles.describable_type = '#{model}'
+                          AND #{as}_titles.type IN ('Title')"
+
+            joins(join).where("#{as}_titles.text ~* ?", title)
          end
 
          scope :with_titles, -> context do
             as = table.table_alias || table.name
-            language_codes = [ context[:locales] ].flatten
-            alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
+            language_codes = [context[:text_languages]].flatten.compact
+            alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
             selector = self.select_values.dup
-            if selector.empty?
-               selector << "#{model.table_name}.*"
-            end
+            selector << "#{model.table_name}.*" if selector.empty?
 
             if self.model.attribute_names.include?("kind_code")
                kind_join =
@@ -32,13 +38,27 @@ module WithTitles
                kind_where =
                                "OR titles.describable_id = #{as}_kinds.id
                                AND titles.describable_type = 'Subject'
-                               AND titles.type = 'Appellation'"
+                               AND titles.type IN ('Title', 'Appellation')"
+            end
+
+            if language_codes.any?
+               lang_wheres = [
+                  "AND language_names.language_code IN ('#{language_codes.join("', '")}')",
+                  "AND titles.language_code IN ('#{language_codes.join("', '")}')"
+               ]
+            end
+
+            if alphabeth_codes.any?
+               alph_wheres = [
+                  "AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+                  "AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+               ]
             end
 
             selector << "COALESCE((WITH __titles AS (
                             SELECT DISTINCT ON(titles.id)
                                    titles.id AS id,
-                                   titles.describable_type AS type,
+                                   titles.type AS type,
                                    titles.text AS text,
                                    titles.language_code AS language_code,
                                    titles.alphabeth_code AS alphabeth_code,
@@ -51,19 +71,18 @@ module WithTitles
                    LEFT OUTER JOIN descriptions AS language_names
                                 ON language_names.describable_id = languages.id
                                AND language_names.describable_type = 'Subject'
-                               AND language_names.language_code IN ('#{language_codes.join("', '")}')
+                                   #{lang_wheres&.first}
                    LEFT OUTER JOIN subjects AS alphabeths
                                 ON alphabeths.key = titles.alphabeth_code
                    LEFT OUTER JOIN descriptions AS alphabeth_names
                                 ON alphabeth_names.describable_id = alphabeths.id
                                AND alphabeth_names.describable_type = 'Subject'
-                               AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                                   #{alph_wheres&.first}
                              WHERE titles.id IS NOT NULL
                                AND (titles.describable_id = #{as}.id
                                AND titles.describable_type = '#{model}'
                                AND titles.type IN ('Title', 'Appellation')
-                                   #{kind_where})
-                               AND titles.language_code IN ('#{language_codes.join("', '")}')
+                                   #{kind_where}) #{lang_wheres&.last} #{alph_wheres&.last}
                           GROUP BY titles.id, titles.describable_type, titles.text,
                                    language_names.text, alphabeth_names.text)
                             SELECT jsonb_agg(__titles)
@@ -75,7 +94,7 @@ module WithTitles
 
          scope :with_title, -> context do
             as = table.table_alias || table.name
-            language_codes = [context[:locales]].flatten
+            language_codes = [context[:text_languages]].flatten
 
             selector = self.select_values.dup
             selector << "#{as}.*" if selector.empty?

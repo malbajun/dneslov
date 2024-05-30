@@ -34,7 +34,7 @@ class EventsController < ApplicationController
                                "memories.id AS memory_id")
                        .group("memories.id",
                               "events_memories.order",
-                              "events_memories.short_name") 
+                              "events_memories.short_name")
 
       @event ||= @events.by_event_code(params[:event]).first || raise(ActiveRecord::RecordNotFound)
    end

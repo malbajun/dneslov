@@ -154,6 +154,54 @@ module Tasks
          end if cal
       end
 
+      def upload_images path, short_name, event_id = nil, kind = nil, url = Rails.application.routes.url_helpers.root_url
+         uri = URI.join(url, "/api/v1/images/create.json")
+         kind ||= "Icon"
+
+         att = event_id ? "#{short_name}##{event_id}" : short_name
+         files =
+            if File.file?(path)
+               [path]
+            elsif File.directory?(path)
+               Dir["#{path}/**/*"]
+            end || []
+
+         sorten =
+            files.reduce({}) do |res, f|
+               res[f] =
+               case `file --mime-type "#{f}"`
+                   when /image/
+                      res[f] ? res[f].merge({ file: f }) : { file: f }
+                   when /text/
+                      res[f] ? res[f].merge({ desc: IO.read(f) }) : { desc: IO.read(f) }
+                   else
+                      puts "E: #{f}"
+
+                      res[f]
+                   end
+
+               res
+            end
+
+         sorten.values.each do |v|
+            curl = "curl -F picture[image]='@#{v[:file]}' -F picture[type]=#{kind} -F picture[attitude_to]='#{att}' --insecure"
+            curl << " -F picture[description]='#{v[:desc]}' -F picture[language]=#{"ру"} -F picture[alphabeth]=#{"РУ"} " if v[:desc]
+
+            tries = 5
+            json =
+               begin
+                  puts "#{curl} #{Addressable::URI.parse(uri).normalize.to_s}"
+                  res = `#{curl} #{Addressable::URI.parse(uri).normalize.to_s}`
+                  JSON.parse(res)
+               rescue
+                  tries -= 1
+                  retry if tries >= 0
+               end
+
+            puts "#{json["error"] ? "[ERROR]" : "[OK]"}: #{json.inspect}\n"
+         end
+      end
+
       def convert_icon_links_into_images
          uri = URI.join(Rails.application.routes.url_helpers.root_url, "/api/v1/images/create.json")
 

@@ -4,5 +4,6 @@
       error: (binding.local_variable_get(:error) rescue nil),
       calendaries_cloud: (binding.local_variable_get(:cloud) rescue nil),
       calendaries_used: @calendary_slugs,
+      user: session["user"],
       memory: (binding.local_variable_get(:memory) rescue nil))
 -%>

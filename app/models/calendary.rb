@@ -39,7 +39,7 @@ class Calendary < ActiveRecord::Base
       select("calendaries.*, slugs.*")
        .from("slugs, calendaries")
        .where( "slugs.sluggable_id = calendaries.id
-            AND slugs.sluggable_type = 'Calendary'
+            AND slugs.sluggable_type = '#{model}'
             AND slugs.text IN (?)", [ slugs ].flatten)
        .reorder("slugs.text")
    end
@@ -96,9 +96,9 @@ class Calendary < ActiveRecord::Base
         selector.unshift( 'calendaries.*' )
       end
 
-      language_codes = [ context[:locales] ].flatten
+      language_codes = [ context[:text_languages] ].flatten
       join = "LEFT OUTER JOIN descriptions ON descriptions.describable_id = calendaries.id
-                          AND descriptions.describable_type = 'Calendary'
+                          AND descriptions.describable_type = '#{model}'
                           AND descriptions.type = 'Appellation'
                           AND descriptions.language_code IN ('#{language_codes.join("', '")}')"
 
@@ -111,17 +111,18 @@ class Calendary < ActiveRecord::Base
       left_outer_joins(:links).select(selector).group('_url')
    end
 
-   scope :with_title, -> language_code do
-      selector = [ 'titles.text AS _title' ]
-      if self.select_values.dup.empty?
-        selector.unshift( 'calendaries.*' )
-      end
+   scope :with_title, ->(context) do
+      as = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten
+      selector = self.select_values.dup
+      selector << "#{as}.*" if selector.empty?
+      selector << "#{as}_titles.text AS _title"
 
-      language_codes = [ language_code ].flatten
-      join = "LEFT OUTER JOIN descriptions AS titles ON titles.describable_id = calendaries.id
-                          AND titles.describable_type = 'Calendary'
-                          AND titles.type = 'Appellation'
-                          AND titles.language_code IN ('#{language_codes.join("', '")}')"
+      join = "LEFT OUTER JOIN descriptions AS #{as}_titles
+                           ON #{as}_titles.describable_id = calendaries.id
+                          AND #{as}_titles.describable_type = '#{model}'
+                          AND #{as}_titles.type = 'Appellation'
+                          AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')"
 
       joins(join).select(selector).group('_title')
    end
@@ -137,33 +138,33 @@ class Calendary < ActiveRecord::Base
       left_outer_joins(:slug).group("slugs.text").select(selector)
    end
 
-   scope :with_description, -> language_code do
-      selector = [ 'descriptions.text AS _description' ]
-      if self.select_values.dup.empty?
-        selector.unshift( 'calendaries.*' )
-      end
+   scope :with_description, ->(context) do
+      as = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten
+      selector = self.select_values.dup
+      selector << "#{as}.*" if selector.empty?
+      selector << "#{as}_descriptions.text AS _description"
 
-      language_codes = [ language_code ].flatten
-      join = "LEFT OUTER JOIN descriptions ON descriptions.describable_id = calendaries.id
-                          AND descriptions.describable_type = 'Calendary'
-                          AND descriptions.type = 'Description'
-                          AND descriptions.language_code IN ('#{language_codes.join("', '")}')"
+      join = "LEFT OUTER JOIN descriptions AS #{as}_descriptions
+                           ON #{as}_descriptions.describable_id = #{as}.id
+                          AND #{as}_descriptions.describable_type = '#{model}'
+                          AND #{as}_descriptions.type = 'Description'
+                          AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')"
 
       joins(join).select(selector.uniq).group('_description')
    end
 
    scope :with_slug, -> do
+      as = table.table_alias || table.name
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'calendaries.*'
-      end
+      selector << "#{as}.*" if selector.empty?
+      selector << "jsonb_build_object('id', #{as}_slugs.id, 'text', #{as}_slugs.text) AS _slug"
 
-      selector << "jsonb_build_object('id', calendary_slugs.id, 'text', calendary_slugs.text) AS _slug"
-      join = "LEFT OUTER JOIN slugs AS calendary_slugs
-                           ON calendary_slugs.sluggable_id = calendaries.id
-                          AND calendary_slugs.sluggable_type = 'Calendary'"
+      join = "LEFT OUTER JOIN slugs AS #{as}_slugs
+                           ON #{as}_slugs.sluggable_id = calendaries.id
+                          AND #{as}_slugs.sluggable_type = '#{model}'"
 
-      joins(join).select(selector).group(:id, 'calendary_slugs.id', 'calendary_slugs.text')
+      joins(join).select(selector).group(:id, "#{as}_slugs.id", "#{as}_slugs.text")
    end
 
    accepts_nested_attributes_for :titles, reject_if: :all_blank, allow_destroy: true

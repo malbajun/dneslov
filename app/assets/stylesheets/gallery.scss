@@ -1,8 +1,50 @@
 .gallery {
+   cursor: pointer;
    .image {
-      .card.large, .card.small, .card.medium {
+      .card {
+         .modal {
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+            filter: alpha(opacity=0);
+            display: none;
+            opacity: 1 !important;
+            max-height: none;
+            top: 0 !important;
+            height: 100%;
+            box-shadow: none !important;
+            border: none !important;
+            max-width: 90%;
+            width: -webkit-stretch;
+            width: -moz-available;
+            width: stretch;
+
+            .modal-content {
+               padding: 0;
+               height: 100%;
+               width: auto;
+            }
+
+            &.open {
+               top: 5% !important;
+               height: 90%;
+               display: block !important;
+            }
+         }
+      }
+   }
+}
+
+.gallery,.memory {
+   .image {
+      .card.large, .card.medium {
          .card-image {
             max-height: 75%;
+         }
+      }
+
+      .card.small {
+         .card-image {
+            max-height: 85%;
          }
       }
    }

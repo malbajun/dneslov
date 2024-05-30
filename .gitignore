@@ -37,6 +37,8 @@ public/javascripts/
 public/stylesheets/
 public/images/
 public/uploads/
+public/thumbs/
+public/audios/
 
 *.log
 *.sql

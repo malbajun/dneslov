@@ -3,8 +3,8 @@ class ThumbUploader < CarrierWave::Uploader::Base
 
    storage :file
 
-   process resize_to_fit: [300, 300], if: :match_size?
    process convert: 'webp'
+   process resize_to_fit: [300, 300], if: :match_size?
 
    def store_dir
       "thumbs/#{model.uid[0..1]}"
@@ -23,13 +23,19 @@ class ThumbUploader < CarrierWave::Uploader::Base
    end
 
    def asset_host
-      case h = Rails.application.config.asset_host
-      when Proc
-         h[]
-      when String, Symbol
-         h
-      else
-         nil
+      self.class.asset_host
+   end
+
+   class << self
+      def asset_host
+         case h = Rails.application.config.asset_host
+         when Proc
+            h[]
+         when String, Symbol
+            h
+         else
+            nil
+         end
       end
    end
 end

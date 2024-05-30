@@ -42,19 +42,19 @@ html {
       background-color: $darken_terracota;
 
       &:hover, .btn-large:hover {
-         background-color: $terracota;
+         opacity: 0.75;
       }
 
       &:focus, .btn-large:focus {
-         background-color: $lighten_terracota;
+         opacity: 0.85;
       }
 
       &.disabled, .btn-large.disabled {
-         background-color: $grayed_terracota !important;
+         opacity: 0.5 !important;
       }
 
       &.close {
-         background-color: $grayed_terracota;
+         opacity: 0.4 !important;
       }
 
    }
@@ -174,7 +174,6 @@ html {
                   position: relative;
                   height: calc(3vh + 0.5 * 4vh);
                   width: calc(3vh + 0.5 * 4vh);
-                  pointer-events: none;
                   line-height: inherit;
 
                   i {
@@ -619,6 +618,11 @@ html {
             left: 25%;
             display: block;
          }
+      }
+
+      .green {
+         color: green;
+         background-color: transparent !important;
       }
    }
 

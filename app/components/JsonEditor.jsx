@@ -19,8 +19,9 @@ export default class JsonEditor extends Component {
       value: "",
       wrapperClassName: null,
       placeholder: null,
-      data: {},
+      data: null,
       validations: {},
+      default: {},
    }
 
    static propTypes = {
@@ -62,14 +63,18 @@ export default class JsonEditor extends Component {
    }
 
    renderValue() {
-      if (this.props.value) {
-         switch (this.props.value.constructor.name) {
+      let value = this.props.value || this.props.default
+
+      if (value) {
+         switch (value.constructor.name) {
             case "String":
                try {
-                  return JSON.parse(this.props.value)
+                  return JSON.parse(value)
                } catch (e) {}
+            case "Array":
+               return value
             case "Object":
-               return this.props.value
+               return value
          }
       }
 
