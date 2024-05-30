@@ -11,6 +11,8 @@ module WithTitles
            .order( :describable_type )
          end, primary_key: nil, class_name: :Description
 
+         scope :titled_as, -> name { joins( :titles ).where( descriptions: { text: name } ) }
+
          scope :by_title, ->(title) do
             this = table.table_alias || table.name
             as = "by_title_#{this}"

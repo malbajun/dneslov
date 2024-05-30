@@ -4,6 +4,7 @@ class Calendary < ActiveRecord::Base
    include Languageble
    include WithLocaleNames
    include WithDescriptions
+   include WithTitles
    include WithLinks
 
    JSON_SCHEMA = Rails.root.join('config', 'schemas', 'calendary.json')
@@ -29,7 +30,6 @@ class Calendary < ActiveRecord::Base
          self.left_outer_joins(:slug).licit.or(self.by_slugs(c))
       end
    end
-   scope :titled_as, -> name { joins( :titles ).where( descriptions: { text: name } ) }
    scope :described_as, -> name { joins( :descriptions ).where( descriptions: { text: name } ) }
    scope :by_slug, -> slug { joins( :slug ).where( slugs: { text: slug.split(",") } ) }
    scope :by_slugs, -> slugs do
@@ -111,22 +111,6 @@ class Calendary < ActiveRecord::Base
       left_outer_joins(:links).select(selector).group('_url')
    end
 
-   scope :with_title, ->(context) do
-      as = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      selector = self.select_values.dup
-      selector << "#{as}.*" if selector.empty?
-      selector << "#{as}_titles.text AS _title"
-
-      join = "LEFT OUTER JOIN descriptions AS #{as}_titles
-                           ON #{as}_titles.describable_id = calendaries.id
-                          AND #{as}_titles.describable_type = '#{model}'
-                          AND #{as}_titles.type = 'Appellation'
-                          AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')"
-
-      joins(join).select(selector).group('_title')
-   end
-
    scope :with_slug_text, -> do
       selector = self.select_values.dup
       if self.select_values.dup.empty?
@@ -167,15 +151,14 @@ class Calendary < ActiveRecord::Base
       joins(join).select(selector).group(:id, "#{as}_slugs.id", "#{as}_slugs.text")
    end
 
-   accepts_nested_attributes_for :titles, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :place, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank, allow_destroy: true
 
    has_alphabeth
    validates :language_code, inclusion: { in: Languageble.language_list }
    validates :alphabeth_code, inclusion: { in: proc { |l| Languageble.alphabeth_list_for(l.language_code)}}
-   validates :slug, :titles, :date, presence: true
-   validates :titles, :place, associated: true
+   validates :slug, :date, presence: true
+   validates :place, associated: true
    validates :meta, json: { schema: JSON_SCHEMA }
 
    def default_title

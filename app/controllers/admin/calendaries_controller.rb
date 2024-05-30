@@ -2,7 +2,7 @@ class Admin::CalendariesController < Admin::CommonController
    protected
 
    def index_with_list
-      %w(with_slug with_locale_names with_descriptions with_links)
+      %w(with_slug with_locale_names with_descriptions with_titles with_links)
    end
 
    def permitted_params
