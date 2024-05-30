@@ -8,7 +8,7 @@ export default class MemorySpan extends Component {
    static defaultProps = {
       slug: null,
       defaultCalendarySlug: null,
-      thumbUrl: null,
+      roundelUrl: null,
       happenedAt: null,
       orders: {},
       description: null,
@@ -22,7 +22,7 @@ export default class MemorySpan extends Component {
    }
 
    state = {
-      thumbUrl: this.props.thumbUrl
+      roundelUrl: this.props.roundelUrl
    }
 
    // system
@@ -63,12 +63,12 @@ export default class MemorySpan extends Component {
 
    onLoadImageError() {
       console.warn("[onLoadImageError] ** image load error")
-      this.setState({ thumbUrl: null })
+      this.setState({ roundelUrl: null })
    }
 
    // props
    hasNoImage() {
-      return !this.state.thumbUrl
+      return !this.state.roundelUrl
    }
 
    hasImage() {
@@ -97,7 +97,7 @@ export default class MemorySpan extends Component {
                      <img
                         className='circle z-depth-1'
                         onError={this.onLoadImageError.bind(this)}
-                        src={this.state.thumbUrl} />}
+                        src={this.state.roundelUrl} />}
                   {this.hasNoImage() &&
                      <i className='material-icons circle terracota z-depth-1'>perm_identity</i>}</a>
                <Chip

@@ -96,7 +96,7 @@ class MemoriesController < ApplicationController
                                   .with_description(context)
                                   .with_title(context)
                                   .with_date
-                                  .with_thumb_url
+                                  .with_roundel_url
                                   .with_bond_to_title(context)
                                   .with_event_title(context)
                                   .with_orders(context)

@@ -22,7 +22,7 @@ class Memory < ActiveRecord::Base
    has_many :service_scripta, through: :services
    has_many :scripta, through: :service_scripta
    has_many :calendaries, -> { distinct.reorder('id') }, through: :memos
-   has_many :thumbs, -> { where(thumbs: { thumbable_type: "Memory" }) }, foreign_key: :thumbable_id, dependent: :destroy
+   has_many :roundels, -> { where(roundels: { roundelable_type: "Memory" }) }, foreign_key: :roundelable_id, dependent: :destroy
    has_many :attitudes, as: :imageable, class_name: :ImageAttitude
    has_many :pictures, through: :attitudes
    has_many :notes, as: :describable, dependent: :destroy, class_name: :Note

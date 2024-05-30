@@ -87,7 +87,7 @@ export default class MemorySpans extends Component {
                         title={memory.title}
                         defaultCalendarySlug={this.props.defaultCalendarySlug}
                         url={memory.url}
-                        thumbUrl={memory.thumb_url}
+                        roundelUrl={memory.roundel_url}
                         happenedAt={memory.happened_at}
                         orders={memory.orders}
                         description={memory.description}

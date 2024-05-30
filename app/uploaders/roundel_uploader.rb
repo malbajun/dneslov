@@ -1,4 +1,4 @@
-class ThumbUploader < CarrierWave::Uploader::Base
+class RoundelUploader < CarrierWave::Uploader::Base
    include CarrierWave::RMagick
 
    storage :file
@@ -7,7 +7,7 @@ class ThumbUploader < CarrierWave::Uploader::Base
    process resize_to_fit: [300, 300], if: :match_size?
 
    def store_dir
-      "thumbs/#{model.uid[0..1]}"
+      "roundels/#{model.uid[0..1]}"
    end
 
    def match_size? file

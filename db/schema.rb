@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_07_225052) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -342,6 +342,21 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_07_225052) do
     t.index ["permissions"], name: "index_roles_on_permissions", using: :gin
   end
 
+  create_table "roundels", force: :cascade do |t|
+    t.uuid "uid", null: false
+    t.binary "digest", null: false
+    t.string "url", null: false
+    t.string "image", null: false
+    t.string "roundelable_type", null: false
+    t.bigint "roundelable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["digest"], name: "index_roundels_on_digest", unique: true
+    t.index ["roundelable_type", "roundelable_id"], name: "index_thumbs_on_thumbable"
+    t.index ["uid"], name: "index_roundels_on_uid", unique: true
+    t.index ["url"], name: "index_roundels_on_url", unique: true
+  end
+
   create_table "scripta", id: :serial, force: :cascade do |t|
     t.text "text"
     t.string "prosomeion_title"
@@ -427,21 +442,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_07_225052) do
     t.index ["kind_code", "key", "id"], name: "index_subjects_on_kind_code_and_key_and_id"
     t.index ["kind_code", "key"], name: "index_subjects_on_kind_code_and_key"
     t.index ["kind_code"], name: "index_subjects_on_kind_code"
-  end
-
-  create_table "thumbs", force: :cascade do |t|
-    t.uuid "uid", null: false
-    t.binary "digest", null: false
-    t.string "url", null: false
-    t.string "thumb", null: false
-    t.string "thumbable_type", null: false
-    t.bigint "thumbable_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["digest"], name: "index_thumbs_on_digest", unique: true
-    t.index ["thumbable_type", "thumbable_id"], name: "index_thumbs_on_thumbable"
-    t.index ["uid"], name: "index_thumbs_on_uid", unique: true
-    t.index ["url"], name: "index_thumbs_on_url", unique: true
   end
 
   create_table "tokina", force: :cascade do |t|

@@ -1,0 +1,128 @@
+---
+types:
+ - name: roundel
+   version: 1.0
+   fields:
+    - name: uid
+      kind: uuid
+      descriptions: :tiun.types.roundel.uid
+    - name: url
+      kind: uri
+      descriptions: :tiun.types.roundel.uri
+    - name: roundelable_name
+      kind: string
+      descriptions: :tiun.types.roundel.roundelable_name
+ - name: full_roundel
+   model: Roundel
+   version: 1.0
+   fields:
+    - name: uid
+      kind: uuid
+      descriptions: :tiun.types.roundel.uid
+    - name: url
+      kind: uri
+      descriptions: :tiun.types.roundel.uri
+    - name: roundelable_name
+      kind: string
+      descriptions: :tiun.types.roundel.roundelable_name
+    - name: event_did
+      kind: string
+      descriptions: :tiun.resources.roundel.get.args.event_did
+    - name: memory_short_name
+      kind: string
+      descriptions: :tiun.resources.roundel.get.args.memory_short_name
+resources:
+ - name: roundel.index
+   path: /api/v1/roundels.json
+   methods:
+    - name: get
+      version: 1.0
+      kind: roundel page
+      descriptions: :tiun.resources.roundel.index
+      auth: no
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.roundel.index.args.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.roundel.index.args.page
+       - name: e
+         kind: string
+         alias: event_did
+         descriptions: :tiun.resources.roundel.get.args.event_did
+       - name: m
+         kind: string
+         alias: memory_short_name
+         descriptions: :tiun.resources.roundel.get.args.memory_short_name
+ - name: create roundel
+   path: /api/v1/roundels/create.json
+   methods:
+    - name: post
+      version: 1.0
+      kind: full_roundel
+      descriptions: :tiun.resources.roundel.create
+      auth: no
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uid
+         kind: string
+         descriptions: :tiun.resources.roundel.put.uid
+       - name: roundelable_name
+         kind: string
+         descriptions: :tiun.types.roundel.roundelable_name
+       - name: image
+         kind: file
+         descriptions: :tiun.resources.roundel.put.image
+ - name: roundel
+   path: /api/v1/roundels/:uid.json
+   methods:
+    - name: get
+      version: 1.0
+      kind: full_roundel
+      descriptions: :tiun.resources.roundel.get
+      auth: no
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: uid
+         kind: string
+         descriptions: :tiun.resources.roundel.get.args.uid
+       - name: e
+         kind: string
+         alias: event_did
+         descriptions: :tiun.resources.roundel.get.args.event_did
+       - name: m
+         kind: string
+         alias: memory_short_name
+         descriptions: :tiun.resources.roundel.get.args.memory_short_name
+    - name: put
+      version: 1.0
+      kind: full_roundel
+      descriptions: :tiun.resources.roundel.put
+      auth: no
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uid
+         kind: string
+         descriptions: :tiun.resources.roundel.put.uid
+       - name: roundelable_name
+         kind: string
+         descriptions: :tiun.types.roundel.roundelable_name
+       - name: image
+         kind: file
+         descriptions: :tiun.resources.roundel.put.image
+    - name: delete
+      version: 1.0
+      kind: full_roundel
+      descriptions: :tiun.resources.roundel.delete
+      auth: no
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uid
+         kind: string
+         descriptions: :tiun.resources.roundel.delete.args.uid
