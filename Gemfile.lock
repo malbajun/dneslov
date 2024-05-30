@@ -1,14 +1,4 @@
 GIT
-  remote: https://bitbucket.com/majioa/prawn.git
-  revision: 10e29240e0e05cc4a908069f72c8f81fa874191e
-  ref: 10e29240e
-  specs:
-    prawn (2.4.0)
-      matrix (~> 0.4)
-      pdf-core (~> 0.9.0)
-      ttfunk (~> 1.7)
-
-GIT
   remote: https://bitbucket.org/majioa/dotenv.git
   revision: 3ebec460c0b195495265b0ce4122172b084853d0
   specs:
@@ -16,6 +6,16 @@ GIT
     dotenv-rails (2.7.6)
       dotenv (= 2.7.6)
       railties (>= 3.2)
+
+GIT
+  remote: https://bitbucket.org/majioa/prawn.git
+  revision: 10e29240e0e05cc4a908069f72c8f81fa874191e
+  ref: 10e29240e
+  specs:
+    prawn (2.4.0)
+      matrix (~> 0.4)
+      pdf-core (~> 0.9.0)
+      ttfunk (~> 1.7)
 
 GIT
   remote: https://bitbucket.org/majioa/rack.git
@@ -60,26 +60,6 @@ GIT
   specs:
     capistrano3-nginx (3.0.4)
       capistrano (~> 3.0)
-
-PATH
-  remote: /usr/local/home/majioa/git/jsonize
-  specs:
-    jsonize (0.2.0)
-      activerecord (>= 4.2)
-      redisize
-
-PATH
-  remote: /usr/local/home/majioa/git/redisize
-  specs:
-    redisize (0.1.5)
-
-PATH
-  remote: /usr/local/home/majioa/git/tiun
-  specs:
-    tiun (0.0.1)
-      activesupport (>= 4.1.0)
-      jsonize (~> 0.2)
-      railties (>= 4.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -165,6 +145,7 @@ GEM
       activerecord (>= 5.0.0, < 8.0.0)
     base64 (0.1.1)
     bcrypt_pbkdf (1.1.0)
+    bigdecimal (3.1.8)
     bindex (0.8.1)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
@@ -348,6 +329,9 @@ GEM
       regexp_parser (~> 2.0)
       simpleidn (~> 0.2)
       uri_template (~> 0.7)
+    jsonize (0.3.0)
+      activerecord (>= 4.2)
+      redisize
     jwt (2.7.1)
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
@@ -499,6 +483,7 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.10.0)
       redis (>= 4, < 6)
+    redisize (0.2.0)
     regexp_parser (2.8.2)
     reline (0.3.9)
       io-console (~> 0.5)
@@ -601,7 +586,12 @@ GEM
     tilt (2.3.0)
     timecop (0.9.8)
     timeout (0.4.0)
-    ttfunk (1.7.0)
+    tiun (0.0.2)
+      activesupport (>= 4.1.0)
+      jsonize (~> 0.2)
+      railties (>= 4.1.0)
+    ttfunk (1.8.0)
+      bigdecimal (~> 3.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     uglifier (4.2.0)
@@ -673,7 +663,7 @@ DEPENDENCIES
   has_scope (>= 0.7.2)
   hiredis (~> 0.6)
   jsbundling-rails
-  jsonize!
+  jsonize (~> 0.3.0)
   jwt
   kaminari (>= 1.1.1)
   launchy
@@ -697,7 +687,7 @@ DEPENDENCIES
   redis (~> 4.0)
   redis-rack-cache
   redis-rails
-  redisize!
+  redisize (~> 0.2.0)
   rmagick
   rspec-expectations
   rubocop
@@ -722,7 +712,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.1)
   sprockets-rails
   timecop (~> 0.9)
-  tiun!
+  tiun (~> 0.0.2)
   uglifier (>= 2.7.2)
   validate_url
   web-console (~> 4.2)

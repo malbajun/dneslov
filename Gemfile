@@ -12,6 +12,11 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
+git_source(:codeberg) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://codeberg.com/#{repo_name}.git"
+end
+
 ## Bundler
 gem 'bundler', '>= 2.3.12'
 
@@ -30,7 +35,7 @@ gem 'uglifier', '>= 2.7.2'
 ### JS and CSS bunding
 gem 'redcarpet'
 
-## Build JSON APIs with ease. Read more: https://bitbucket.com/rails/jbuilder
+## Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.7'
 ## bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 1.0.0', group: :doc
@@ -54,12 +59,10 @@ gem 'redis-rack-cache'
 gem 'sidekiq', ">= 6.4.0", require: %w(sidekiq sidekiq/web)
 gem 'sidekiq-worker-killer'
 gem 'sidekiq-limit_fetch'
-#gem "jsonize", "~> 0.2"
-gem 'jsonize', path: '/usr/local/home/majioa/git/jsonize'
-# gem "jsonize", bitbucket: 'majioa/jsonize', ref: '96c8b77'
-# gem "redisize", ">= 0.1.4", "~> 0.1"
-gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
-#gem 'redisize', '~> 0.1.5'#, bitbucket: 'majioa/redisize', ref: 'be60757'
+gem "jsonize", "~> 0.3.0" # codeberg: 'majioa/jsonize', ref: '96c8b77'
+# gem 'jsonize', path: '/usr/local/home/majioa/git/jsonize'
+gem 'redisize', '~> 0.2.0'#, codeberg: 'majioa/redisize', ref: 'be60757'
+# gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
 
 ## controllers
 gem 'has_scope', '>= 0.7.2'
@@ -84,9 +87,8 @@ gem 'jwt'
 gem 'pundit'
 
 ## logging
-#gem 'rdoba', path: '/usr/local/home/majioa/git/rdoba'
-# gem 'rdoba', git: 'https://bitbucket.com/3aHyga/rdoba.git'
-gem 'rdoba', '~> 0.9.4'
+# gem 'rdoba', path: '/usr/local/home/majioa/git/rdoba'
+gem 'rdoba', '~> 0.9.4' # gem 'rdoba', codeberg: 'majioa/rdoba'
 
 ## orthodox
 gem 'when_easter'
@@ -98,7 +100,7 @@ gem 'zero_downtime_migrations', bitbucket: 'majioa/zero_downtime_migrations', re
 # gem 'active_record_extended'
 
 ## pdf
-gem 'prawn', git: 'https://bitbucket.com/majioa/prawn.git', ref: '10e29240e'
+gem 'prawn', bitbucket: 'majioa/prawn', ref: '10e29240e'
 
 ## deploy start
 gem 'foreman'
@@ -111,9 +113,9 @@ gem 'sassc-rails'
 gem 'sprockets-rails'
 
 ## api
-gem 'tiun', path: '/usr/local/home/majioa/git/tiun'
-# gem 'tiun', bitbucket: 'majioa/tiun', ref: '2820b93'
-#gem 'tiun', '~> 0.0.1'
+# gem 'tiun', path: '/usr/local/home/majioa/git/tiun'
+# gem 'tiun', codeberg: 'majioa/tiun', ref: '2820b93'
+gem 'tiun', '~> 0.0.2'
 
 # sitemap
 gem 'sitemap_generator'
