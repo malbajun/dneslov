@@ -84,7 +84,7 @@ After do
    Timecop.return
    FileUtils.remove_entry_secure(@workdir)
    FileUtils.rm_rf(Dir["#{Rails.root}/public/images"])
-   FileUtils.rm_rf(Dir["#{Rails.root}/public/thumbs"])
+   FileUtils.rm_rf(Dir["#{Rails.root}/public/roundels"])
    FileUtils.rm_rf(Dir["#{Rails.root}/public/uploads"])
 end
 

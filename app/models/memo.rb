@@ -40,7 +40,7 @@ class Memo < ActiveRecord::Base
    has_one :order, through: :memo_order
    has_one :memory, through: :event
    has_one :slug, through: :memory
-   has_one :thumb, -> { order(Arel.sql("random()")).select(:url).limit(1) }, through: :memory, source: :thumbs
+   has_one :roundel, -> { order(Arel.sql("random()")).select(:url).limit(1) }, through: :memory, source: :roundels
    has_one :calendary_slug, through: :calendary, source: :slug, class_name: :Slug
    has_one :memory_slug, through: :memory, source: :slug, class_name: :Slug
 
@@ -257,20 +257,20 @@ class Memo < ActiveRecord::Base
       joins(:event).select(selector).group('_happened_at')
    end
 
-   scope :with_thumb_url, -> do
-      selector = 'thumbs.url AS _thumb_url'
+   scope :with_roundel_url, -> do
+      selector = 'roundels.url AS _roundel_url'
 
-      left_outer_joins(:thumb).select(selector).group('_thumb_url')
+      left_outer_joins(:roundel).select(selector).group('_roundel_url')
 #      as = table.table_alias || table.name
 #      selector = self.select_values.dup
 #      selector << "#{as}.*" if selector.empty?
 #      selector << "COALESCE(
-#                      SELECT #{as}_thumbs.url AS thumb_url
-#                        FROM thumbs AS #{as}_thumbs
-#                       WHERE #{as}_thumbs.thumbable_id = #{as}.id
-#                         AND #{as}_thumbs.thumbable_type = 'Memory'
+#                      SELECT #{as}_roundels.url AS roundel_url
+#                        FROM roundels AS #{as}_roundels
+#                       WHERE #{as}_roundels.roundelable_id = #{as}.id
+#                         AND #{as}_roundels.roundelable_type = 'Memory'
 #                    ORDER BY random()
-#                       LIMIT 1) AS _thumb_url"
+#                       LIMIT 1) AS _roundel_url"
 #
 #      select(selector).group(:id)
    end
