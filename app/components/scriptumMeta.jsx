@@ -182,8 +182,9 @@ export const scriptumMeta = {
             "Irmos", "Troparion", "Stichira", "Kontakion", "Exapostilarion", "SessionalHymn",
             "Kanonion", "Kathismion", "Polileosion", "Apostichus", "CryStichira",
             "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi"] },
+         default: "",
          codeNames: {
-            '': 'Избери глас...',
+            '0': 'Избери глас...',
             '1': '1-й',
             '2': '2-й',
             '3': '3-й',
