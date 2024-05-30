@@ -84,37 +84,49 @@ class Subject < ActiveRecord::Base
    end
 
    scope :with_kind_title, -> context do
-      language_codes = [context[:text_languages]].flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
-      if selector.empty?
-         selector << 'subjects.*'
-      end
+      selector << "#{this}.*" if selector.empty?
       selector << "kind_titles.text AS _kind_title"
 
-      #binding.pry
-      join_name = table.table_alias || table.name
+      if language_codes.any?
+         lang_where = "AND kind_titles.language_code IN ('#{language_codes.join("', '")}')"
+      end
+
+      if alphabeth_codes.any?
+         alph_where = "AND kind_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+      end
+
       join = "LEFT OUTER JOIN subjects AS subject_kinds
                            ON subject_kinds.kind_code = 'SubjectKind'
-                          AND subject_kinds.key = #{join_name}.kind_code
+                          AND subject_kinds.key = #{this}.kind_code
               LEFT OUTER JOIN descriptions AS kind_titles
                            ON kind_titles.describable_id = subject_kinds.id
                           AND kind_titles.describable_type = 'Subject'
                           AND kind_titles.type = 'Appellation'
-                          AND kind_titles.language_code IN ('#{language_codes.join("', '")}')"
+                              #{lang_where} #{alph_where}"
 
       joins(join).select(selector).group(:id, "kind_titles.text")
    end
 
    scope :with_names, -> context do
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'subjects.*'
+      selector << "#{this}.*" if selector.empty?
+
+      if language_codes.any?
+         lang_where = "AND language_names.language_code IN ('#{language_codes.join("', '")}')"
+      end
+
+      if alphabeth_codes.any?
+         alph_where = "AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
       end
 
       #binding.pry
-      join_name = table.table_alias || table.name
       selector << "COALESCE((WITH __names AS (
                       SELECT DISTINCT ON(names.id)
                              names.id AS id,
@@ -130,14 +142,14 @@ class Subject < ActiveRecord::Base
                         JOIN descriptions AS language_names
                           ON language_names.describable_id = languages.id
                          AND language_names.describable_type = 'Subject'
-                         AND language_names.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_where}
              LEFT OUTER JOIN subjects AS alphabeths
                           ON alphabeths.key = names.alphabeth_code
                         JOIN descriptions AS alphabeth_names
                           ON alphabeth_names.describable_id = alphabeths.id
                          AND alphabeth_names.describable_type = 'Subject'
-                         AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-                       WHERE names.describable_id = #{join_name}.id
+                             #{alph_where}
+                       WHERE names.describable_id = #{this}.id
                          AND names.describable_type = 'Subject'
                          AND names.type IN ('Appellation')
                     GROUP BY names.id, language_names.text, alphabeth_names.text)

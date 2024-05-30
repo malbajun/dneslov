@@ -103,10 +103,8 @@ types:
    fields:
     - name: name
       kind: string
+      readonly: true
       descriptions: :tiun.types.short_member.name
-    - name: name_id
-      kind: string
-      descriptions: :tiun.types.short_member.name_id
     - name: account_no
       kind: string
       descriptions: :tiun.types.short_member.account_no

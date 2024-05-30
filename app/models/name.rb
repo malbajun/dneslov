@@ -76,36 +76,62 @@ class Name < ActiveRecord::Base
    end
 
    scope :with_locale_names, -> context do
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
+      join_name = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'names.*'
-      end
+      selector << "#{join_name}.*" if selector.empty?
       selector.concat [ "language_names.text AS _language", "alphabeth_names.text AS _alphabeth" ]
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND language_names.language_code IN ('#{language_codes.join("', '")}')"
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+         ]
+      end
 
       join = "LEFT OUTER JOIN subjects AS languages
                            ON languages.key = names.language_code
               LEFT OUTER JOIN descriptions AS language_names
                            ON language_names.describable_id = languages.id
                           AND language_names.describable_type = 'Subject'
-                          AND language_names.language_code IN ('#{language_codes.join("', '")}')
+                              #{lang_wheres&.last}
               LEFT OUTER JOIN subjects AS alphabeths
                            ON alphabeths.key = names.alphabeth_code
               LEFT OUTER JOIN descriptions AS alphabeth_names
                            ON alphabeth_names.describable_id = alphabeths.id
                           AND alphabeth_names.describable_type = 'Subject'
-                          AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+                              #{alph_wheres&.last}"
 
       joins(join).select(selector).group(:id, 'language_names.text', 'alphabeth_names.text')
    end
 
    scope :with_nomina, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
       selector = self.select_values.dup
-      selector << "#{join_name}.*" if self.select_values.dup.empty?
+      selector << "#{join_name}.*" if selector.empty?
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND bind_kind_names.language_code IN ('#{language_codes.join("', '")}')"
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND bind_kind_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+         ]
+      end
+
       selector << "COALESCE((WITH __nomina AS (
                       SELECT DISTINCT ON(nomina.id)
                              nomina.id AS id,
@@ -124,10 +150,10 @@ class Name < ActiveRecord::Base
              LEFT OUTER JOIN subjects AS bind_kinds
                           ON bind_kinds.kind_code = 'NameBind'
                          AND bind_kinds.key = nomina.bind_kind_name
-                        JOIN descriptions AS bind_kind_names
+             LEFT OUTER JOIN descriptions AS bind_kind_names
                           ON bind_kind_names.describable_id = bind_kinds.id
                          AND bind_kind_names.describable_type = 'Subject'
-                         AND bind_kind_names.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.last} #{alph_wheres&.last}
                        WHERE names.id = nomina.name_id
                     GROUP BY root_names.language_code, root_names.alphabeth_code, root_names.text, bond_to_names.language_code, bond_to_names.alphabeth_code, bond_to_names.text, bind_kind_names.text, nomina.id)
                       SELECT jsonb_agg(__nomina)

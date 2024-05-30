@@ -24,7 +24,7 @@ export const orderMeta = {
       tweet: {
          title: 'Сокращение',
          value: makeTweet,
-         source: 'descriptions',
+         source: 'tweets',
          filter: { type: "Tweet" },
       },
       note: {

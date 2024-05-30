@@ -35,61 +35,74 @@ class Scriptum < ActiveRecord::Base
    end
 
    scope :with_memoried_memoes, -> context do
-      as = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
       selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << "#{as}.*"
+      selector << "#{this}.*" if selector.empty?
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND #{this}_memo_titles.language_code IN ('#{language_codes.join("', '")}')",
+            "AND #{this}_event_titles.language_code IN ('#{language_codes.join("', '")}')",
+            "AND #{this}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')"
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND #{this}_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND #{this}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND #{this}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+         ]
       end
 
       selector = "COALESCE((
                         WITH __memo_scripta AS (
                       SELECT memo_scripta.id AS id,
-                             #{as}_memoes.id AS memo_id,
-                             #{as}_memories.short_name || ' [' ||
-                             COALESCE(#{as}_event_titles.text, '') || ' (' ||
-                             #{as}_events.happened_at || ')]: ' ||
-                             COALESCE(#{as}_memo_titles.text, '') || '[' ||
-                             COALESCE(#{as}_calendary_titles.text, '') || ' (' ||
-                             #{as}_memoes.year_date || ')]' AS memo_name,
+                             #{this}_memoes.id AS memo_id,
+                             #{this}_memories.short_name || ' [' ||
+                             COALESCE(#{this}_event_titles.text, '') || ' (' ||
+                             #{this}_events.happened_at || ')]: ' ||
+                             COALESCE(#{this}_memo_titles.text, '') || '[' ||
+                             COALESCE(#{this}_calendary_titles.text, '') || ' (' ||
+                             #{this}_memoes.year_date || ')]' AS memo_name,
                              memo_scripta.kind AS kind
                         FROM memo_scripta
-             LEFT OUTER JOIN memoes AS #{as}_memoes
-                          ON #{as}_memoes.id = memo_scripta.memo_id
-             LEFT OUTER JOIN descriptions AS #{as}_memo_titles
-                          ON #{as}_memo_titles.describable_id = #{as}_memoes.id
-                         AND #{as}_memo_titles.describable_type = 'Memo'
-                         AND #{as}_memo_titles.type = 'Title'
-                         AND #{as}_memo_titles.language_code IN ('#{language_codes.join("', '")}')
-                         AND #{as}_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-             LEFT OUTER JOIN events AS #{as}_events
-                          ON #{as}_memoes.event_id = #{as}_events.id
-                        JOIN subjects AS #{as}_event_kinds
-                          ON #{as}_event_kinds.key = #{as}_events.kind_code
-                         AND #{as}_event_kinds.kind_code = 'EventKind'
-                        JOIN descriptions AS #{as}_event_titles
-                          ON #{as}_event_titles.id IS NOT NULL
-                         AND (#{as}_event_titles.describable_id = #{as}_events.id
-                         AND #{as}_event_titles.describable_type = 'Event'
-                         AND #{as}_event_titles.type = 'Title'
-                          OR #{as}_event_titles.describable_id = #{as}_event_kinds.id
-                         AND #{as}_event_titles.describable_type = 'Subject'
-                         AND #{as}_event_titles.type = 'Appellation')
-                         AND #{as}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-                         AND #{as}_event_titles.language_code IN ('#{language_codes.join("', '")}')
-             LEFT OUTER JOIN calendaries AS #{as}_calendaries
-                          ON #{as}_calendaries.id = #{as}_memoes.calendary_id
-                        JOIN descriptions AS #{as}_calendary_titles
-                          ON #{as}_calendary_titles.describable_id = #{as}_calendaries.id
-                         AND #{as}_calendary_titles.describable_type = 'Calendary'
-                         AND #{as}_calendary_titles.type = 'Appellation'
-                         AND #{as}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')
-                         AND #{as}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-             LEFT OUTER JOIN memories AS #{as}_memories
-                          ON #{as}_memories.id = #{as}_events.memory_id
-                       WHERE memo_scripta.scriptum_id = #{as}.id
-                    GROUP BY memo_scripta.id, #{as}_memories.short_name, #{as}_memoes.id, memo_scripta.kind, #{as}_memo_titles.text, #{as}_events.happened_at ,#{as}_event_titles.text, #{as}_calendary_titles.text, #{as}_memoes.year_date)
+             LEFT OUTER JOIN memoes AS #{this}_memoes
+                          ON #{this}_memoes.id = memo_scripta.memo_id
+             LEFT OUTER JOIN descriptions AS #{this}_memo_titles
+                          ON #{this}_memo_titles.describable_id = #{this}_memoes.id
+                         AND #{this}_memo_titles.describable_type = 'Memo'
+                         AND #{this}_memo_titles.type = 'Title'
+                             #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
+             LEFT OUTER JOIN events AS #{this}_events
+                          ON #{this}_memoes.event_id = #{this}_events.id
+                        JOIN subjects AS #{this}_event_kinds
+                          ON #{this}_event_kinds.key = #{this}_events.kind_code
+                         AND #{this}_event_kinds.kind_code = 'EventKind'
+                        JOIN descriptions AS #{this}_event_titles
+                          ON #{this}_event_titles.id IS NOT NULL
+                         AND (#{this}_event_titles.describable_id = #{this}_events.id
+                         AND #{this}_event_titles.describable_type = 'Event'
+                         AND #{this}_event_titles.type = 'Title'
+                          OR #{this}_event_titles.describable_id = #{this}_event_kinds.id
+                         AND #{this}_event_titles.describable_type = 'Subject'
+                         AND #{this}_event_titles.type = 'Appellation')
+                             #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
+             LEFT OUTER JOIN calendaries AS #{this}_calendaries
+                          ON #{this}_calendaries.id = #{this}_memoes.calendary_id
+                        JOIN descriptions AS #{this}_calendary_titles
+                          ON #{this}_calendary_titles.describable_id = #{this}_calendaries.id
+                         AND #{this}_calendary_titles.describable_type = 'Calendary'
+                         AND #{this}_calendary_titles.type = 'Appellation'
+                             #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}
+             LEFT OUTER JOIN memories AS #{this}_memories
+                          ON #{this}_memories.id = #{this}_events.memory_id
+                       WHERE memo_scripta.scriptum_id = #{this}.id
+                    GROUP BY memo_scripta.id, #{this}_memories.short_name, #{this}_memoes.id, memo_scripta.kind, #{this}_memo_titles.text, #{this}_events.happened_at ,#{this}_event_titles.text, #{this}_calendary_titles.text, #{this}_memoes.year_date)
                       SELECT jsonb_agg(__memo_scripta)
                         FROM __memo_scripta), '[]'::jsonb) AS _memo_scripta"
 

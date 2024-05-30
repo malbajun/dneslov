@@ -390,12 +390,11 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_bond_to_year_date, -> context do
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
-      if selector.empty?
-         selector << 'memoes.*'
-      end
+      selector << "#{this}.*" if selector.empty?
 
       join = "LEFT OUTER JOIN memoes AS bond_to_memoes
                            ON memoes.bond_to_id = bond_to_memoes.id
@@ -441,11 +440,25 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_memo_orders, -> context do
-      language_codes = [context[:text_languages]].flatten
       this = table.table_alias || table.name
-      /`(?<as>[^']*)'/ =~ caller.grep(/delegation/)[1]
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND memo_order_titles.language_code IN ('#{language_codes.join("', '")}')",
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND memo_order_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         ]
+      end
 
       selector << "COALESCE((WITH __memo_orders AS (
                       SELECT DISTINCT ON(memo_orders.updated_at, memo_orders.order_id)
@@ -459,7 +472,7 @@ class Memo < ActiveRecord::Base
                           ON memo_order_titles.describable_id = orders.id
                          AND memo_order_titles.describable_type = 'Order'
                          AND memo_order_titles.type = 'Note'
-                         AND memo_order_titles.language_code IN ('#{language_codes.join("', '")}')
+                             #{lang_wheres&.last} #{alph_wheres&.last}
                        WHERE memoes.id = memo_orders.memo_id
                     GROUP BY memo_orders.id, memo_order_titles.text
                     ORDER BY memo_orders.updated_at, memo_orders.order_id)
@@ -470,12 +483,24 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_calendary_title, -> context do
-      language_codes = [context[:text_languages]].flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
-      if selector.empty?
-         selector << 'memoes.*'
-      end
+      selector << "#{this}.*" if selector.empty?
       selector << 'calendary_titles.text AS _calendary_title'
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND calendary_titles.language_code IN ('#{language_codes.join("', '")}')",
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         ]
+      end
 
       join = "LEFT OUTER JOIN calendaries
                            ON calendaries.id = memoes.calendary_id
@@ -483,22 +508,35 @@ class Memo < ActiveRecord::Base
                            ON calendary_titles.describable_id = calendaries.id
                           AND calendary_titles.describable_type = 'Calendary'
                           AND calendary_titles.type = 'Appellation'
-                          AND calendary_titles.language_code IN ('#{language_codes.join("', '")}')"
+                          #{lang_wheres&.last} #{alph_wheres&.last}"
 
       joins(join).select(selector).group(:id, 'calendary_titles.text')
    end
 
    scope :with_memory_event, -> context do
-      language_codes = [context[:text_languages]].flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
-      if selector.empty?
-         selector << 'memoes.*'
-      end
+      selector << "#{this}.*" if selector.empty?
+
       [
         "memo_event_memories.id AS _memory_id",
         "memo_event_memories.short_name AS _memory_name",
         "event_kind_titles.text || ' (' || memo_events.happened_at || ')' AS _event_short_title"
       ].reduce(selector) { |s, v| s << v }
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND event_kind_titles.language_code IN ('#{language_codes.join("', '")}')",
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND event_kind_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         ]
+      end
 
       join = "LEFT OUTER JOIN events AS memo_events
                            ON memoes.event_id = memo_events.id
@@ -511,7 +549,7 @@ class Memo < ActiveRecord::Base
                            ON event_kind_titles.describable_id = event_kinds.id
                           AND event_kind_titles.describable_type = 'Subject'
                           AND event_kind_titles.type = 'Appellation'
-                          AND event_kind_titles.language_code IN ('#{language_codes.join("', '")}')"
+                              #{lang_wheres&.last} #{alph_wheres&.last}"
 
       joins(join).select(selector).group(:id, 'memo_event_memories.id',
                                               'memo_events.happened_at',

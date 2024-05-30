@@ -253,16 +253,6 @@ export const roleMeta = {
             id: {
                kind: 'hidden',
             },
-            name_id: {
-               kind: 'dynamic',
-               humanized_name: 'name',
-               title: 'Имя',
-               display_scheme: '12-3-3-4',
-               placeholder: 'Начни ввод имени...',
-               pathname: 'short_names',
-               key_name: 'value',
-               value_name: 'key',
-            },
             account_no: {
                kind: 'tale',
                title: 'Учётка',
@@ -289,6 +279,16 @@ export const roleMeta = {
                validations: {
                   'Пункт из списка должен быть выбран': matchEmptyObject,
                },
+            },
+            name_id: {
+               kind: 'dynamic',
+               humanized_name: 'name',
+               title: 'Имя',
+               display_scheme: '12-3-3-4',
+               placeholder: 'Начни ввод имени...',
+               pathname: 'short_names',
+               key_name: 'value',
+               value_name: 'key',
             },
          }
       },
