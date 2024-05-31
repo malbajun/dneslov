@@ -23,7 +23,7 @@ class UriValidator < ActiveModel::EachValidator
    rescue URI::InvalidURIError, Addressable::URI::InvalidURIError, ArgumentError
       record.errors.add(attribute, :invalid_uri, message: I18n.t('activerecord.errors.invalid_uri', uri: value))
    rescue Errno::ECONNREFUSED, OpenSSL::SSL::SSLError, Net::OpenTimeout
-      record.errors.add(attribute, :inaccessible_uri, message: I18n.t('activerecord.errors.inaccessible_uri', uri: value))
+      # record.errors.add(attribute, :inaccessible_uri, message: I18n.t('activerecord.errors.inaccessible_uri', uri: value))
    rescue SocketError
    end
 end
