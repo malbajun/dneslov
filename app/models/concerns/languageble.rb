@@ -29,7 +29,7 @@ module Languageble
    HIP_STROKE = 'а-яёa-z'
    SERBIAN_CAPITAL = 'ЂЈ-ЋЏА-ИК-Ш'
    SERBIAN_STROKE = 'ђј-ћа-ик-ш'
-   SERBIAN_ACCENT = '̀́̋̏'
+   SERBIAN_ACCENT = '̀́̋̏̀́̋̏'
    GREEK_CAPITAL = 'Ά-ΐΑ-Ϋ'
    GREEK_STROKE = 'ά-ΰα-ώ'
    GREEK_ACCENT = '΄´'

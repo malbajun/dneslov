@@ -58,7 +58,7 @@ export function matchLetters(textIn, context) {
       res = ! text.match(/^[:,.()0-9\r\n \*~`\+\-#=>\[\]\(\)!\|]+$/) //TODO
       break
    case 'СЕ':
-      res = ! text.match(/^[ЂЈ-ЋЏА-ИК-Шђј-ћа-ик-ш:,.!?\-\/()0-9\r\n \*~`\+\-#=>\[\]\(\)!\|]+$/)
+      res = ! text.match(/^[ЂЈ-ЋЏА-ИК-Шђј-ћа-ик-ш:̀́̋̏,.!?\-\/()0-9\r\n \*~`\+\-#=>\[\]\(\)!\|]+$/)
       break
    case 'ХР':
       res = ! text.match(/^[A-PR-VZČĆŽĐŠa-pr-vzčćžđš:,.()0-9\r\n \*~`\+\-#=>\[\]\(\)!\|]+$/) //TODO
