@@ -53,6 +53,7 @@ class Memo < ActiveRecord::Base
    has_many :services, as: :info, inverse_of: :info # TODO додаь задачу превода service_links/ServiceLink во Service
    has_many :titles, -> { title }, as: :describable, dependent: :delete_all
    has_many :notes, as: :describable, dependent: :delete_all, class_name: :Note
+   has_many :calendary_titles, through: :calendary, source: :titles, class_name: :Appellation
 
    delegate :quantity, to: :memory
    delegate :quantity, to: :bond_to, prefix: true, allow_nil: true
@@ -138,12 +139,13 @@ class Memo < ActiveRecord::Base
    end
 
    scope :by_token, -> text do
-      left_outer_joins(:descriptions, :titles, :memory).
+      left_outer_joins(:descriptions, :titles, :memory, :calendary_titles).
          where( "unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*" ).or(
          where( "unaccent(titles_memoes.text) ~* unaccent(?)", "\\m#{text}.*" ).or(
+         where( "unaccent(calendary_titles_memoes.text) ~* unaccent(?)", "\\m#{text}.*" ).or(
          where( "memories.short_name ~* ?", "\\m#{text}.*" ).or(
          where( "memoes.add_date ~* ?", "\\m#{text}.*" ).or(
-         where( "memoes.year_date ~* ?", "\\m#{text}.*" )))))
+         where( "memoes.year_date ~* ?", "\\m#{text}.*" ))))))
    end
 
    scope :by_tokens, -> string_in do
@@ -486,31 +488,29 @@ class Memo < ActiveRecord::Base
       this = table.table_alias || table.name
       language_codes = [context[:text_languages]].flatten.compact
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      _as = model.reflections[rela]&.name
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
-      selector << 'calendary_titles.text AS _calendary_title'
+      selector << "#{this}_calendary_titles.text AS _calendary_title"
 
       if language_codes.any?
-         lang_wheres = [
-            "AND calendary_titles.language_code IN ('#{language_codes.join("', '")}')",
-         ]
+         lang_where = "AND #{this}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')"
       end
 
       if alphabeth_codes.any?
-         alph_wheres = [
-            "AND calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
-         ]
+         alph_where = "AND #{this}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
       end
 
-      join = "LEFT OUTER JOIN calendaries
-                           ON calendaries.id = memoes.calendary_id
-              LEFT OUTER JOIN descriptions AS calendary_titles
-                           ON calendary_titles.describable_id = calendaries.id
-                          AND calendary_titles.describable_type = 'Calendary'
-                          AND calendary_titles.type = 'Appellation'
-                          #{lang_wheres&.last} #{alph_wheres&.last}"
+      join = "LEFT OUTER JOIN calendaries AS #{this}_calendaries
+                           ON #{this}_calendaries.id = memoes.calendary_id
+              LEFT OUTER JOIN descriptions AS #{this}_calendary_titles
+                           ON #{this}_calendary_titles.describable_id = calendaries.id
+                          AND #{this}_calendary_titles.describable_type = 'Calendary'
+                          AND #{this}_calendary_titles.type = 'Appellation'
+                          #{lang_where} #{alph_where}"
 
-      joins(join).select(selector).group(:id, 'calendary_titles.text')
+      joins(join).select(selector).group(:id, "#{this}_calendary_titles.text")
    end
 
    scope :with_memory_event, -> context do

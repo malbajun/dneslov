@@ -161,7 +161,7 @@ class Admin::CommonController < ApplicationController
    def prepare_objects
       pre = include_list.reduce( apply_scopes( model )) { |q, i| q.includes( i ) }
 
-      with_list.reduce( pre ) { |q, with_method| issue_with( q, with_method )}
+      with_list.reduce(pre) { |q, with_method| issue_with(q, with_method) }
    end
 
    def fetch_objects
