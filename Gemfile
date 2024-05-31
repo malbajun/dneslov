@@ -115,7 +115,7 @@ gem 'sprockets-rails'
 ## api
 # gem 'tiun', path: '/usr/local/home/majioa/git/tiun'
 # gem 'tiun', codeberg: 'majioa/tiun', ref: '2820b93'
-gem 'tiun', '~> 0.0.2'
+gem 'tiun', '~> 0.0.2.1'
 
 # sitemap
 gem 'sitemap_generator'
