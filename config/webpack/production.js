@@ -101,7 +101,7 @@ const customConfig = merge(sharedConfig, {
                               edge: 13,
                               firefox: 50,
                            },
-                           "useBuiltIns": "usage"
+                           "useBuiltIns": false
                         },
                      ],
                      [

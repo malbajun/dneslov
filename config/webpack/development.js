@@ -132,4 +132,3 @@ const customConfig = merge(sharedConfig, {
 
 console.log(customConfig)
 module.exports = customConfig
-
