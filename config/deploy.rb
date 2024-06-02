@@ -5,7 +5,7 @@ set :user, 'majioa'
 set :application, "dneslov"
 set :deploy_user, 'www-data'
 
-set :repo_url, "git@github.com:znamenica/dneslov.git"
+set :repo_url, "git@codeberg.org:znamenica/dneslov.git"
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
