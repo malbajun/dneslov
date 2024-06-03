@@ -39,7 +39,7 @@ export default class Memory extends Component {
       }
    }
 
-   static descriptionKindCodes = [ "Appearance", "Writing", "Repose", "Veneration", "Miracle", "Writing", "Resurrection", "Monasticry", "Council", "Marriage" ]
+   static descriptionKindCodes = [ "Appearance", "Writing", "Repose", "Veneration", "Miracle", "Writing", "Resurrection", "Monasticry", "Council", "Marriage", "Family" ]
    static happenedAtKindCodes = [ "Miracle", "Appearance", "Writing", "Veneration", "Repose", "Resurrection" ]
 
    static getDerivedStateFromProps(props, state) {
