@@ -144,6 +144,10 @@ class Admin::CommonController < ApplicationController
       []
    end
 
+   def default_policy_permissions
+      Role.where(default: true).first&.permissions || super
+   end
+
    def issue_with query, with_method
       query.send(with_method, context)
    rescue ArgumentError
@@ -181,5 +185,8 @@ class Admin::CommonController < ApplicationController
       else
          @object ||= prepare_objects.find_by_pk(params[:id])
       end || raise(ActiveRecord::RecordNotFound)
+   end
+
+   def authorize!
    end
 end
