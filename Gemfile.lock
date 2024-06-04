@@ -33,6 +33,16 @@ GIT
       activerecord
 
 GIT
+  remote: https://codeberg.org/znamenica/tiun.git
+  revision: 698267f5af1d35c69543d621fb1a8d2a5756c4e5
+  ref: 698267f
+  specs:
+    tiun (0.0.2.1)
+      activesupport (>= 4.1.0)
+      jsonize (~> 0.2)
+      railties (>= 4.1.0)
+
+GIT
   remote: https://github.com/majioa/capistrano-db-tasks.git
   revision: 978abe880e40dfaf9a85f62215b5f6c747cfb185
   ref: devel
@@ -586,10 +596,6 @@ GEM
     tilt (2.3.0)
     timecop (0.9.8)
     timeout (0.4.0)
-    tiun (0.0.2.1)
-      activesupport (>= 4.1.0)
-      jsonize (~> 0.2)
-      railties (>= 4.1.0)
     ttfunk (1.8.0)
       bigdecimal (~> 3.1)
     tzinfo (2.0.6)
@@ -712,7 +718,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.1)
   sprockets-rails
   timecop (~> 0.9)
-  tiun (~> 0.0.2.1)
+  tiun!
   uglifier (>= 2.7.2)
   validate_url
   web-console (~> 4.2)

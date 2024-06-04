@@ -14,7 +14,7 @@ end
 
 git_source(:codeberg) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
-  "https://codeberg.com/#{repo_name}.git"
+  "https://codeberg.org/#{repo_name}.git"
 end
 
 ## Bundler
@@ -114,8 +114,8 @@ gem 'sprockets-rails'
 
 ## api
 # gem 'tiun', path: '/usr/local/home/majioa/git/tiun'
-# gem 'tiun', codeberg: 'majioa/tiun', ref: '2820b93'
-gem 'tiun', '~> 0.0.2.1'
+gem 'tiun', codeberg: 'znamenica/tiun', ref: '698267f'
+#gem 'tiun', '~> 0.0.2.1'
 
 # sitemap
 gem 'sitemap_generator'
