@@ -113,8 +113,8 @@ gem 'sassc-rails'
 gem 'sprockets-rails'
 
 ## api
-# gem 'tiun', path: '/usr/local/home/majioa/git/tiun'
-gem 'tiun', codeberg: 'znamenica/tiun', ref: '698267f'
+#gem 'tiun', path: '/usr/local/home/majioa/git/tiun'
+gem 'tiun', codeberg: 'znamenica/tiun', ref: 'a5376c7'
 #gem 'tiun', '~> 0.0.2.1'
 
 # sitemap
