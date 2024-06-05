@@ -4,6 +4,6 @@ class Account::Email < Account
    validates :no, format: { with: URI::MailTo::EMAIL_REGEXP }
 
    def validate_url
-      url_for(controller: "sessions", action: "update", token: CGI.escape(validate_token.code))
+      url_for(controller: "sessions", action: "update", token: CGI.escape(validate_token.code), type: "validate")
    end
 end

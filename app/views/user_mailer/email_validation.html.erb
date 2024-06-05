@@ -2,4 +2,4 @@ Hi <%= @user.name %>,
 
 Thanks for registering! To validate your email the URL below.
 
-<%= url_for(controller: "sessions", action: "update", token: CGI.escape(@user.email.validate_token.code)) %>
+<%= url_for(controller: "sessions", action: "update", token: CGI.escape(@user.email.validate_token.code), type: "validate") %>
