@@ -3,7 +3,10 @@ require 'sidekiq/worker_killer'
 Sidekiq.default_job_options = { 'backtrace' => true }
 
 Sidekiq.configure_server do |config|
-   config.redis = { url: "#{ENV["REDIS_URL"]}/4" }
+   config.redis = {
+      url: "#{ENV["REDIS_URL"]}/4",
+      ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+   }
 
    config.server_middleware do |chain|
       chain.add Sidekiq::WorkerKiller, max_rss: 480
@@ -15,5 +18,8 @@ Sidekiq.configure_server do |config|
 end
 
 Sidekiq.configure_client do |config|
-   config.redis = { url: "#{ENV["REDIS_URL"]}/4" }
+   config.redis = {
+      url: "#{ENV["REDIS_URL"]}/4",
+      ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+   }
 end
