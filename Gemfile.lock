@@ -33,6 +33,13 @@ GIT
       activerecord
 
 GIT
+  remote: https://codeberg.org/majioa/redisize.git
+  revision: f7ebef3b9c51a98b8293d59d7dbc4b73129be157
+  ref: f7ebef3
+  specs:
+    redisize (0.2.0)
+
+GIT
   remote: https://codeberg.org/znamenica/tiun.git
   revision: a5376c77bba0f045a49f10d05738542ac7a7e631
   ref: a5376c7
@@ -493,7 +500,6 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.10.0)
       redis (>= 4, < 6)
-    redisize (0.2.0)
     regexp_parser (2.8.2)
     reline (0.3.9)
       io-console (~> 0.5)
@@ -693,7 +699,7 @@ DEPENDENCIES
   redis (~> 4.0)
   redis-rack-cache
   redis-rails
-  redisize (~> 0.2.0)
+  redisize (~> 0.2.0)!
   rmagick
   rspec-expectations
   rubocop

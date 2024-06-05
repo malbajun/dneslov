@@ -60,9 +60,9 @@ gem 'sidekiq', ">= 6.4.0", require: %w(sidekiq sidekiq/web)
 gem 'sidekiq-worker-killer'
 gem 'sidekiq-limit_fetch'
 gem "jsonize", "~> 0.3.0" # codeberg: 'majioa/jsonize', ref: '96c8b77'
-# gem 'jsonize', path: '/usr/local/home/majioa/git/jsonize'
-gem 'redisize', '~> 0.2.0'#, codeberg: 'majioa/redisize', ref: 'be60757'
-# gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
+#gem 'jsonize', path: '/usr/local/home/majioa/git/jsonize'
+gem 'redisize', '~> 0.2.0', codeberg: 'majioa/redisize', ref: 'f7ebef3'
+#gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
 
 ## controllers
 gem 'has_scope', '>= 0.7.2'
