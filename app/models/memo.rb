@@ -505,7 +505,7 @@ class Memo < ActiveRecord::Base
       join = "LEFT OUTER JOIN calendaries AS #{this}_calendaries
                            ON #{this}_calendaries.id = memoes.calendary_id
               LEFT OUTER JOIN descriptions AS #{this}_calendary_titles
-                           ON #{this}_calendary_titles.describable_id = calendaries.id
+                           ON #{this}_calendary_titles.describable_id = #{this}_calendaries.id
                           AND #{this}_calendary_titles.describable_type = 'Calendary'
                           AND #{this}_calendary_titles.type = 'Appellation'
                           #{lang_where} #{alph_where}"
