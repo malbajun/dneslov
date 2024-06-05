@@ -144,9 +144,6 @@ end
 # See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
 Cucumber::Rails::Database.javascript_strategy = :truncation
 
-# rediable processor setup
-Redisable.processor_kind = :inline
-
 # simplecov
 SimpleCov.start 'rails'
 SimpleCov.command_name "features" + (ENV['TEST_ENV_NUMBER'] || '')
