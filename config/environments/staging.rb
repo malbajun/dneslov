@@ -78,7 +78,17 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  config.action_mailer.default_url_options = { host: "http://185.133.40.112" }
+  config.action_mailer.default_url_options = {
+     host: "185.133.40.112",
+     protocol: 'https'
+  }
+
+  config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.sendmail_settings = {
+     location: '/usr/sbin/sendmail',
+     arguments: '-i -t'
+  }
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.action_controller.asset_host = "http://assets.example.com"
   config.asset_host = proc do |file|
