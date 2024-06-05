@@ -3,7 +3,7 @@ class UsersController < Api::CommonController
 
    def send_validation_email
       if @object.email.no
-         UserMailer.email_validation(@object).deliver
+         UserMailer.email_validation(@object).deliver_later
       end
    end
 end
