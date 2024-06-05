@@ -62,6 +62,11 @@ server {
       error_page      403 404 405 = @dneslov;
    }
 
+   # php/asp scripts
+   location ~ ^/([a-z0-9_-]*(.php|.asp|.pl)) {
+      return          404;
+   }
+
    location ~ ^/(?![а-яё0-9]+|dashboard|api|auth|about|index|icons|memories|calendaries|memoes|names|orders|subjects|scripta|readings|roles|token|signout|short_\w+) {
       return          404;
    }
