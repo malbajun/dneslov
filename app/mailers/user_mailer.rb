@@ -8,8 +8,6 @@ class UserMailer < ApplicationMailer
    def email_validation user
       @user = user
 
-      Rails.logger.info("#{user.email.no}: #{user.email.validate_url}")
-
-      mail(to: "#{user.email.no}", subject: "Email validation")
+      mail(to: user.email.no, subject: "Email validation")
    end
 end

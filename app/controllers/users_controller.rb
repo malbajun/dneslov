@@ -3,6 +3,8 @@ class UsersController < Api::CommonController
 
    def send_validation_email
       if @object.email.no
+         logger.info("New User Info: #{@object.email.no}: #{@object.email.validate_url}")
+
          UserMailer.email_validation(@object).deliver_later
       end
    end
