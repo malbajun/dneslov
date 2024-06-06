@@ -54,9 +54,21 @@ class Subject < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
+
+      if language_codes.any?
+         lang_wheres =
+            ["AND titles.language_code IN ('#{language_codes.join("', '")}')",
+             "AND language_names.language_code IN ('#{language_codes.join("', '")}')"]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres =
+            ["AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+             "AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+      end
 
       #binding.pry
       join_name = table.table_alias || table.name
@@ -64,18 +76,19 @@ class Subject < ActiveRecord::Base
                            ON titles.describable_id = #{join_name}.id
                           AND titles.describable_type = '#{model}'
                           AND titles.type IN ('Appellation')
+                          #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
               LEFT OUTER JOIN subjects AS languages
                            ON languages.key = titles.language_code
               LEFT OUTER JOIN descriptions AS language_names
                            ON language_names.describable_id = languages.id
                           AND language_names.describable_type = 'Subject'
-                          AND language_names.language_code IN ('#{language_codes.join("', '")}')
+                          #{lang_wheres&.[](1)}
               LEFT OUTER JOIN subjects AS alphabeths
                            ON alphabeths.key = titles.alphabeth_code
               LEFT OUTER JOIN descriptions AS alphabeth_names
                            ON alphabeth_names.describable_id = alphabeths.id
                           AND alphabeth_names.describable_type = 'Subject'
-                          AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+                          #{alph_wheres&.[](1)}"
 
       selector << "titles.text AS _value"
 

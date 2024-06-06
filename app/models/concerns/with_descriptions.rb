@@ -76,20 +76,30 @@ module WithDescriptions
          end
 
          scope :with_description, -> context do
-            as = table.table_alias || table.name
-            language_codes = [context[:text_languages]].flatten
+            language_codes = [context[:text_languages]].flatten.compact
+            alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+            this = table.table_alias || table.name
 
             selector = self.select_values.dup
-            selector << "#{as}.*" if selector.empty?
-            selector << "#{as}_descriptions.text AS _description"
+            selector << "#{this}.*" if selector.empty?
+            selector << "#{this}_descriptions.text AS _description"
 
-            join = "LEFT OUTER JOIN descriptions AS #{as}_descriptions
-                                 ON #{as}_descriptions.describable_id = #{as}.id
-                                AND #{as}_descriptions.describable_type = '#{model}'
-                                AND #{as}_descriptions.type IN ('Description', 'Note')
-                                AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')"
+            if language_codes.any?
+               lang_where = "AND #{this}_descriptions.language_code IN ('#{language_codes.join("', '")}')"
+            end
 
-            joins(join).select(selector.uniq).group('_description', "#{as}.id")
+            if alphabeth_codes.any?
+               alph_where = "AND #{this}_descriptions.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+            end
+
+            join = "LEFT OUTER JOIN descriptions AS #{this}_descriptions
+                                 ON #{this}_descriptions.describable_id = #{this}.id
+                                AND #{this}_descriptions.describable_type = '#{model}'
+                                AND #{this}_descriptions.type IN ('Description', 'Note')
+                                #{lang_where} #{alph_where}"
+
+
+            joins(join).select(selector.uniq).group('_description', "#{this}.id")
          end
 
          accepts_nested_attributes_for :descriptions, reject_if: :all_blank, allow_destroy: true

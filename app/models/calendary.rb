@@ -91,16 +91,25 @@ class Calendary < ActiveRecord::Base
       select(selector).group('_key') ;end
 
    scope :with_value, -> context do
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       selector = [ 'descriptions.text AS _value' ]
       if self.select_values.dup.empty?
         selector.unshift( 'calendaries.*' )
       end
 
-      language_codes = [ context[:text_languages] ].flatten
+      if language_codes.any?
+         lang_where = "AND descriptions.language_code IN ('#{language_codes.join("', '")}')"
+      end
+
+      if alphabeth_codes.any?
+         alph_where = "AND descriptions.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+      end
+
       join = "LEFT OUTER JOIN descriptions ON descriptions.describable_id = calendaries.id
                           AND descriptions.describable_type = '#{model}'
                           AND descriptions.type = 'Appellation'
-                          AND descriptions.language_code IN ('#{language_codes.join("', '")}')"
+                          #{lang_where} #{alph_where}"
 
       joins(join).select(selector.uniq).group('_value')
    end
@@ -120,22 +129,6 @@ class Calendary < ActiveRecord::Base
       selector << 'slugs.text AS _slug'
 
       left_outer_joins(:slug).group("slugs.text").select(selector)
-   end
-
-   scope :with_description, ->(context) do
-      as = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      selector = self.select_values.dup
-      selector << "#{as}.*" if selector.empty?
-      selector << "#{as}_descriptions.text AS _description"
-
-      join = "LEFT OUTER JOIN descriptions AS #{as}_descriptions
-                           ON #{as}_descriptions.describable_id = #{as}.id
-                          AND #{as}_descriptions.describable_type = '#{model}'
-                          AND #{as}_descriptions.type = 'Description'
-                          AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')"
-
-      joins(join).select(selector.uniq).group('_description')
    end
 
    scope :with_slug, -> do

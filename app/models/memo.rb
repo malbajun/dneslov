@@ -86,18 +86,29 @@ class Memo < ActiveRecord::Base
    end
 
    scope :with_value, -> context do
-      language_codes = [ context[:text_languages] ].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       join_name = table.table_alias || table.name
       selector = self.select_values.dup
+
+      if language_codes.any?
+         lang_wheres =
+            ["AND titles.language_code IN ('#{language_codes.join("', '")}')",
+             "AND event_titles.language_code IN ('#{language_codes.join("', '")}')"]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres =
+            ["AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+             "AND event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+      end
 
       join = "LEFT OUTER JOIN descriptions AS titles
                            ON titles.id IS NOT NULL
                           AND titles.describable_id = #{join_name}.id
                           AND titles.describable_type = 'Memo'
                           AND titles.type = 'Title'
-                          AND titles.language_code IN ('#{language_codes.join("', '")}')
-                          AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                          #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
 
               LEFT OUTER JOIN events AS memo_events
                            ON memo_events.id = #{join_name}.event_id
@@ -112,8 +123,7 @@ class Memo < ActiveRecord::Base
                            OR event_titles.describable_id = event_kinds.id
                           AND event_titles.describable_type = 'Subject'
                           AND event_titles.type = 'Appellation')
-                          AND event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-                          AND event_titles.language_code IN ('#{language_codes.join("', '")}')"
+                          #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}"
 
       selector << "memoes.year_date || ' [' || memo_events.happened_at || ' - ' || COALESCE(event_titles.text, '') || ' - ' || COALESCE(titles.text, '') || ']' AS _value"
 
