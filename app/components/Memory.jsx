@@ -241,7 +241,7 @@ export default class Memory extends Component {
    }
 
    getInfoClass() {
-      return this.props.picture.roundel_url ? " s8" : " s12"
+      return this.props.picture.thumb_url ? " s8" : " s12"
    }
 
    render() {
@@ -302,16 +302,14 @@ export default class Memory extends Component {
                                  {this.getScriptumTitle(scriptum)}</div>
                               <div className='col s12 scriptum'>
                                  <Markdown source={scriptum.text} /></div></div>)}</div></div>}</div>
-            {this.props.picture.roundel_url &&
+            {this.props.picture.thumb_url &&
                <div className='col s4 image'>
                   <div className="card hoverable medium">
                      <div className="card-image">
                         <img
-                           src={this.props.picture.roundel_url}
+                           src={this.props.picture.thumb_url}
                            alt={this.props.picture.title} />
                         <span className="card-title">{this.props.picture.title}</span></div>
-                  <div className="card-content">
-                     <p>{this.props.picture.description}</p></div>
                   <div className="card-action">
                      <a href={this.props.slug + "/gallery"}>{this.props.i18n.gallery}</a></div></div></div>}</div>,
          <div className='row'>

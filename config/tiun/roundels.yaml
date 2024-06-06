@@ -70,9 +70,6 @@ resources:
       auth: no
       allowed_errors: [200, 404, 422.3, 500]
       args:
-       - name: uid
-         kind: string
-         descriptions: :tiun.resources.roundel.put.uid
        - name: roundelable_name
          kind: string
          descriptions: :tiun.types.roundel.roundelable_name
