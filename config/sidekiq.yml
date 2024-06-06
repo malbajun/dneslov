@@ -1,15 +1,18 @@
 ---
-:concurrency: 5
-:verbose: true
+:concurrency: 3
+:verbose: false
+:backtrace: true
 test:
-   :verbose: false
-   :backtrace: false
+   :verbose: true
+   :backtrace: true
 :max_retries: 5
 :poll_interval_average: 2
 :average_scheduled_poll_interval: 2
-:backtrace: true
 :queues:
  - [mailers, 5]
  - [caching, 2]
  - default
  - low
+:timeout: 30
+:logfile: ./log/sidekiq.log
+:pidfile: ./tmp/pids/sidekiq.pid
