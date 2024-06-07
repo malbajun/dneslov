@@ -44,6 +44,12 @@ server {
       gzip_types application/x-javascript text/css image/x-icon image/png image/jpeg image/gif;
    }
 
+   location ~ ^/(audios)/ {
+      add_header Cache-Control public;
+
+      root /mnt/yandex/;
+   }
+
    location ~ ^/(images)/ {
       add_header Cache-Control public;
 
