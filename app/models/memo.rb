@@ -196,17 +196,30 @@ class Memo < ActiveRecord::Base
    singleton_class.send(:alias_method, :c, :in_calendaries)
 
    scope :with_value_memoried, -> context do 
-      language_codes = [ context[:text_languages] ].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       as = table.table_alias || table.name
       selector = self.select_values.dup
+
+      if language_codes.any?
+         lang_wheres =
+            ["AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')",
+             "AND #{as}_event_titles.language_code IN ('#{language_codes.join("', '")}')",
+             "AND #{as}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')"]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres =
+            ["AND #{as}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+             "AND #{as}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+             "AND #{as}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+      end
 
       joi = "LEFT OUTER JOIN descriptions AS #{as}_titles
                           ON #{as}_titles.describable_id = #{as}.id
                          AND #{as}_titles.describable_type = 'Memo'
                          AND #{as}_titles.type = 'Title'
-                         AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')
-                         AND #{as}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                         #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
              LEFT OUTER JOIN events AS #{as}_events
                           ON #{as}.event_id = #{as}_events.id
                         JOIN subjects AS #{as}_event_kinds
@@ -220,16 +233,14 @@ class Memo < ActiveRecord::Base
                           OR #{as}_event_titles.describable_id = #{as}_event_kinds.id
                          AND #{as}_event_titles.describable_type = 'Subject'
                          AND #{as}_event_titles.type = 'Appellation')
-                         AND #{as}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-                         AND #{as}_event_titles.language_code IN ('#{language_codes.join("', '")}')
+                         #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
              LEFT OUTER JOIN calendaries AS #{as}_calendaries
                           ON #{as}_calendaries.id = #{as}.calendary_id
                         JOIN descriptions AS #{as}_calendary_titles
                           ON #{as}_calendary_titles.describable_id = #{as}_calendaries.id
                          AND #{as}_calendary_titles.describable_type = 'Calendary'
                          AND #{as}_calendary_titles.type = 'Appellation'
-                         AND #{as}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')
-                         AND #{as}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                         #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}
              LEFT OUTER JOIN memories AS #{as}_memories
                           ON #{as}_memories.id = #{as}_events.memory_id"
 
