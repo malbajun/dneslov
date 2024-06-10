@@ -6,8 +6,8 @@ class Roundel < ApplicationRecord
    mount_base64_uploader :image, RoundelUploader
 
    belongs_to :roundelable, polymorphic: true
-   belongs_to :event, -> { where(roundels: { roundelable_type: "Event" }) }, foreign_key: 'roundelable_id'
-   belongs_to :memory, -> { where(roundels: { roundelable_type: "Memory" }) }, foreign_key: 'roundelable_id'
+   belongs_to :event, -> { joins(:roundels).where(roundels: { roundelable_type: "Event" }) }, foreign_key: 'roundelable_id'
+   belongs_to :memory, -> { joins(:roundels).where(roundels: { roundelable_type: "Memory" }) }, foreign_key: 'roundelable_id'
 
    validates_presence_of :uid, :image
    validates_uniqueness_of :digest, on: :create
