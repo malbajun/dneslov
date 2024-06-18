@@ -1,4 +1,6 @@
 class Admin::CalendariesController < Admin::CommonController
+   has_scope :l, only: %i(index all)
+
    protected
 
    def index_with_list

@@ -44,6 +44,7 @@ class Calendary < ActiveRecord::Base
        .reorder("slugs.text")
    end
 
+   scope :by_licit, ->(licit) { where(licit: licit) }
    scope :by_token, -> text do
       left_outer_joins( :slug, :descriptions, :titles ).
          where( "unaccent(calendaries.author_name) ~* unaccent(?)", "\\m#{text}.*" ).or(
@@ -69,6 +70,7 @@ class Calendary < ActiveRecord::Base
 
    singleton_class.send(:alias_method, :t, :by_token)
    singleton_class.send(:alias_method, :q, :by_tokens)
+   singleton_class.send(:alias_method, :l, :by_licit)
 
    scope :distinct_by, -> *args do
       _selector = self.select_values.dup
