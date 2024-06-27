@@ -14,7 +14,7 @@ require 'when_easter'
 # bind_kind_code[string]      - тип привязки к опорному помину(может быть не привязан)
 # bond_to_id[int]             - ссылка на опорный помин, если nil, помин первичный
 # id[int]                     - опознаватель
-class Memo < ActiveRecord::Base
+class Memo < ApplicationRecord
    extend TotalSize
    include WithDescriptions
    include WithTitles

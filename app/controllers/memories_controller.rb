@@ -1,10 +1,11 @@
 class MemoriesController < ApplicationController
-   include CoreFeatures
-
    before_action :set_query, :set_page, only: %i(index show)
    before_action :fetch_events, only: %i(show), if: ->(x) { @slug.sluggable_type == "Memory" }
    before_action :fetch_memoes, only: %i(index show), if: ->(x) { not @slug or @slug.sluggable_type == "Calendary" }
 
+   include CoreFeatures
+
+   has_scope :q, only: %i(index show)
    has_scope :q, only: %i(index show)
 
    # GET /memories,/,/index
@@ -42,15 +43,16 @@ class MemoriesController < ApplicationController
          format.html do
             render :index,
                locals: {
-                  memoes: @memoes.jsonize(context),
+                  memoes: @memoes.ranged_with(@range).jsonize(context),
                   total: @memoes.total_size,
                   cloud: @calendary_cloud.jsonize
                }
          end
          format.json do
             render plain: {
-               list: @memoes.jsonize(context),
+               list: @memoes.ranged_with(@range).jsonize(context),
                page: @page,
+               range: @range,
                total: @memoes.total_size
             }.to_json(context)
          end

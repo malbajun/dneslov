@@ -2,7 +2,7 @@
 # short_name[string]    - краткое имя
 # quantity[string]      - количество
 #
-class Memory < ActiveRecord::Base
+class Memory < ApplicationRecord
    extend TotalSize
    extend DefaultKey
    extend Informatible

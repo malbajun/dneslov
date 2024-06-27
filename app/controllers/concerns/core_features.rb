@@ -1,18 +1,21 @@
 module CoreFeatures
    include ActiveSupport::Concern
+   class OutOfRangeError < StandardError; end
 
    def self.included k
       k.class_eval do
          prepend_before_action :set_date, :set_calendary_cloud, :set_julian, :set_languages
          prepend_before_action :set_calendary_slugs, only: %i(index show)
          prepend_before_action :default, only: %i(index show)
-         before_action :set_slug, only: %i(index show)
-         before_action :set_memory, only: %i(show), if: ->(x) { @slug.sluggable_type == "Memory" }
+         prepend_before_action :set_memory, only: %i(show), if: ->(x) { @slug.sluggable_type == "Memory" }
+         prepend_before_action :set_slug, only: %i(index show)
+         before_action :parse_range, only: %i(index show)
 
          rescue_from Exception, with: :render_default_error
          # NOTE https://stackoverflow.com/a/48744792/446267
          rescue_from ActionController::UnknownFormat, with: :render_default_error
          rescue_from ActiveRecord::RecordNotFound, with: :render_not_exist_error
+         rescue_from CoreFeatures::OutOfRangeError, with: :out_of_range
 
          has_scope :d, only: %i(index show) do |_, scope, value|
             if /(?<julian>[ню])?(?<date>[0-9\-\.]+)/ =~ value
@@ -114,6 +117,32 @@ module CoreFeatures
          end
    end
 
+   def per
+      (params[:per] || 25).to_i
+   end
+
+   def page
+      (params[:page] || params[:p] || 1).to_i
+   end
+
+   def parse_range
+      @range =
+         if /(?<b>[0-9]+)-(?<e>[0-9]+)/ =~ request.headers["Range"]
+            (b.to_i..e.to_i - 1)
+         else
+            ((page - 1) * per..(page - 1) * per + per - 1)
+         end
+
+      raise CoreFeatures::OutOfRangeError if total > 0 && @range.begin >= total || @range.end < @range.begin
+   end
+
+   def total
+      @total ||=
+         %i(total_size total_count count).reduce(nil) do |count, method|
+            objects.respond_to?(method) && !count ? objects.send(method) : count
+         end || raise
+   end
+
    def set_memory
       @memorys ||= Memory.with_scripta(context)
                          .with_memoes(context)
@@ -127,5 +156,13 @@ module CoreFeatures
                          .with_slug_text
 
       @memory ||= @memorys.find_by_slug(@slug.text) || raise( ActiveRecord::RecordNotFound )
+   end
+
+   def out_of_range _e
+      render json: {}, status: 416
+   end
+
+   def objects
+      @memoes || @memorys
    end
 end
