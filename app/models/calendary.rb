@@ -159,4 +159,23 @@ class Calendary < ActiveRecord::Base
    def default_title
       titles.first.text
    end
+
+   def datetime_range
+      if /(\d*)\-(\d*)/ =~ date
+         b = Time.parse($1) rescue nil
+         e = Time.parse($2) rescue nil
+         (b || -Float::INFINITY..e || Float::INFINITY)
+      elsif date
+         t = Date.new(date.to_i, 1, 1)
+         (t..t)
+      end
+   end
+
+   def datetime
+      if datetime_range.begin != -Float::INFINITY
+         datetime_range.begin
+      elsif dt.end != Float::INFINITY
+         datetime_range.end
+      end
+   end
 end

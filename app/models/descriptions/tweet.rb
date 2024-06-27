@@ -1,3 +1,9 @@
 class Tweet < Description
-   validates :text, format: { with: /\A[а-яёa-z\-_]+\z/ }, if: :present?
+   validate :all_downcase, if: :present?
+
+   def all_downcase
+      if text != text.downcase && text != "Бог" #TODO
+         errors.add(:text, "has invalid characters '#{text - text.downcase}'")
+      end
+   end
 end

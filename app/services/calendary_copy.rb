@@ -23,6 +23,10 @@ class CalendaryCopy
       errors << text
    end
 
+   def calendaries
+      @calendaries ||= Calendary.by_slug(sources)
+   end
+
    def is_duplicated? memo
       memoes = Memo.where(calendary_id: memo.calendary_id,
                           event_id: memo.event_id,
@@ -59,19 +63,24 @@ class CalendaryCopy
                         year_date: memo_in.year_date).first
    end
 
+   def is_before memo, calendary
+      memo.match_before?(calendary)
+   end
+
    def memoes
       @memoes ||=
          memo_ids.reduce([]) do |res, memo_id_in|
             memo_in = Memo.find_by(id: memo_id_in)
+
+            next res unless is_before(memo_in, target)
+
             memo = memo_in.dup
             memo.calendary_id = target.id
             memo.descriptions = []
-            memo.titles = memo_in.titles.map {|t| t.dup }
-            memo.add_date = Time.zone.now.strftime("%d.%m.%Y %H:%M")
+            memo.titles = memo_in.titles.by_language(target.language_code).map {|t| t.dup }
+            memo.add_date = target.date =~ /\-(\d*)/ ? $1 || Time.zone.now.strftime("%d.%m.%Y %H:%M") : target.date
             memo.orders = memo_in.orders
-            memo.services = memo_in.services.map {|s| s.dup }
-            memo.service_links = memo_in.service_links.map {|s| s.dup }
-            memo.links = memo_in.links.map {|l| l.dup }
+            # memo.services = memo_in.services.map {|s| s.dup }
 
             if memo_in.bond_to_id
                bond_to = Memo.find_by(id: memo_in.bond_to_id)
@@ -83,7 +92,7 @@ class CalendaryCopy
                $stderr.puts("W: Invalid add date for #{memo.memory.short_name}")
             end
 
-            next res if is_duplicated?(memo) or has_critical_error?(memo) or memo.titles.blank?
+            next res if is_duplicated?(memo) or has_critical_error?(memo)
 
             res | [memo]
          end
@@ -94,7 +103,6 @@ class CalendaryCopy
          memoes.each {|m| m.save! }
          # res = Link.import(memoes, validate: false)
          # res.ids
-         binding.pry
       end
    end
 end

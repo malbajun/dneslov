@@ -709,4 +709,12 @@ class Memo < ApplicationRecord
          self.year_date
       end
    end
+
+   def datetime
+      Date.new(memory.base_year, 1, 1)
+   end
+
+   def match_before?(calendary)
+      datetime <= calendary.datetime
+   end
 end
