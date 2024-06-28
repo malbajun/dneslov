@@ -51,7 +51,7 @@ class GalleryController < ApplicationController
    end
 
    def set_images
-      @images = attituded.pictures
+      @images = attituded.all_pictures
                          .with_titles(context)
                          .with_descriptions(context)
    end

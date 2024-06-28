@@ -717,6 +717,10 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    before_create :set_slug
    before_validation :set_base_year, on: :create
 
+   def all_pictures
+     pictures.or(Picture.by_event(events))
+   end
+
    def set_base_year
       types = %w(Resurrection Repose Writing Appearance Translation Sanctification)
 

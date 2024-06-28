@@ -198,12 +198,24 @@ class Event < ActiveRecord::Base
       language_codes = [ context[:text_languages] ].flatten
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
-      selector << "COALESCE((WITH __picture AS (
+      selector << "jsonb_build_object(
+         'url', #{as}_pictures.url,
+         'thumb_url', #{as}_pictures.thumb_url,
+         'width', #{as}_pictures.width,
+         'height,', #{as}_pictures.height,
+         'pos', #{as}_pictures.pos,
+         'description', #{as}_pictures.description,
+         'title', #{as}_pictures.title) AS _picture"
+      join = "LEFT OUTER JOIN LATERAL (
                       SELECT #{as}_pictures.url AS url,
+                             #{as}_pictures.thumb_url AS thumb_url,
                              #{as}_pictures.width AS width,
                              #{as}_pictures.height AS height,
-                             #{as}_image_attitudes.pos AS pos,
-                             #{as}_titles.text AS title
+                             #{as}_image_attitudes.pos::text AS pos,
+                             #{as}_image_attitudes.imageable_id AS imageable_id,
+                             #{as}_image_attitudes.imageable_type AS imageable_type,
+                             #{as}_titles.text AS title,
+                             #{as}_descriptions.text AS description
                         FROM pictures AS #{as}_pictures
              LEFT OUTER JOIN image_attitudes AS #{as}_image_attitudes
                           ON #{as}_image_attitudes.imageable_id = #{as}.id
@@ -213,14 +225,20 @@ class Event < ActiveRecord::Base
                          AND #{as}_titles.describable_type = 'Picture'
                          AND #{as}_titles.type = 'Title'
                          AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')
+             LEFT OUTER JOIN descriptions AS #{as}_descriptions
+                          ON #{as}_descriptions.describable_id = #{as}_pictures.id
+                         AND #{as}_descriptions.describable_type = 'Picture'
+                         AND #{as}_descriptions.type = 'Description'
+                         AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')
                        WHERE #{as}_image_attitudes.picture_id = #{as}_pictures.id
                          AND #{as}_pictures.type = 'Icon'
                     ORDER BY random()
-                       LIMIT 1)
-                      SELECT jsonb_agg(__picture)
-                        FROM __picture), '[]'::jsonb) AS _picture"
+                       LIMIT 1) AS #{as}_pictures
+                          ON #{as}_pictures.imageable_id = #{as}.id
+                         AND #{as}_pictures.imageable_type = 'Event'"
 
-      select(selector).group(:id)
+      joins(join).select(selector).group(:id, "#{as}_pictures.url", "#{as}_pictures.thumb_url", "#{as}_pictures.width",
+         "#{as}_pictures.height", "#{as}_pictures.pos", "#{as}_pictures.title", "#{as}_pictures.description")
    end
 
    scope :with_place, -> context do
@@ -425,6 +443,10 @@ class Event < ActiveRecord::Base
    singleton_class.send(:alias_method, :mid, :by_memory_id)
 
    validates_presence_of :kind, :kind_code
+
+   def all_pictures
+      pictures
+   end
 
    def self.year_date_for year_date, date_in, julian
       return nil if date_in.blank?

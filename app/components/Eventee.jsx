@@ -29,7 +29,18 @@ export default class Eventee extends Component {
       specifiedCalendarySlug: null,
       wrapperYearDateClass: "",
       selectedCalendaries: [],
-      calendarStyle: 'julian'
+      calendarStyle: 'julian',
+
+      i18n: {
+         gallery: "Выставка",
+         base: "Опорная память",
+         externals: "Внешние ссылки",
+         patron: "Покровитель",
+         events: "События",
+         prosomeion: "подобен",
+         tone: "глас",
+         suffix: "-й",
+      }
    }
 
    static propTypes = {
@@ -57,24 +68,46 @@ export default class Eventee extends Component {
 
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
+         let cal = Eventee.calculateDefaultCalendarySlug(props)
          //let memo = Eventee.getMemo(props)
 
          return {
             prevProps: props,
+            defaultCalendarySlug: cal,
             title: Eventee.getTitle(props),
             describedMemoes: Eventee.getDescribedMemoes(props),
             order: Eventee.getOrder(props),
-            //msDate: Event.getMsDate(props),
-            //klugs: Event.collectKlugs(props),
-            //describedMemoIds: Memory.getDescribedMemoIds(describedMemoes),
+            klugs: Eventee.collectKlugs(props),
             links: Eventee.getLinks(props),
             iconLinks: Eventee.getIconLinks(props),
             scripta: Eventee.selectScripta(props),
-            //happenedAt: Event.getHappenedAt(props)
          }
       }
 
       return null
+   }
+
+   static calculateDefaultCalendarySlug(props) {
+      return props.selectedCalendaries &&
+         props.selectedCalendaries.reduce((cal, calendarySlug) => {
+            if (!cal) {
+               cal = props.titles.reduce((cal, title) => {
+                  if (!cal && title.calendary == calendarySlug) {
+                     cal = calendarySlug
+                  }
+
+                  return cal
+               }, null)
+            }
+
+            return cal
+         }, props.defaultCalendarySlug) || props.defaultCalendarySlug
+   }
+
+   static collectKlugs(props) {
+         return props.memoes.map((m) => {
+            return Object.keys(m.orders)
+         }).flat().concat([ props.memory.slug ]).compact().uniq()
    }
 
    static getDescribedMemoes(props) {
@@ -172,72 +205,97 @@ export default class Eventee extends Component {
       }
    }
 
+   sortedScripta() {
+      let keys = Object.keys(this.ScriptumTable)
+
+      return this.state.scripta.sort((a, b) => {
+         return keys.indexOf(a.type) - keys.indexOf(b.type)
+      })
+   }
+
    getDescription() {
       return this.props.short_name + " " +
              this.props.names.reduce((res, x) => { return res + " " + x.name_text }, "") +
              this.props.titles.reduce((res, x) => { return res + " " + x.text }, "")
    }
 
+   getInfoClass() {
+      return this.props.picture.thumb_url ? " s8" : " s12"
+   }
+
    render() {
       console.log("[render] *", { 'this.props': this.props, 'this.state': this.state })
 
-      return (
-         <div className='row'>
+      return [
             <MetaTags>
                <meta id="meta-description" name="description" content={this.getDescription()} />
-            </MetaTags>
-            <div className='col s12'>
-               {! this.props.specific_title && [
-                  this.state.order &&
+            </MetaTags>,
+         <div className='row event'>
+            <div className={'col' + this.getInfoClass()}>
+               <div className='row'>
+                  {! this.props.specific_title && [
+                     this.state.order &&
+                        <Chip
+                           color={this.getSlugColor(this.props.order || this.props.memory?.order)}
+                           text={this.state.order} />,
+                     <Name
+                        short_name={this.props.memory?.short_name}
+                        url={getUrlsFrom(this.props.specifiedCalendarySlug, this.props.memory.slug)[0]}
+                        defaultNameInCalendary={this.state.title}
+                        klugs={this.state.klugs}
+                        names={this.props.names} />,
                      <Chip
-                        color={this.getSlugColor(this.props.order || this.props.memory?.order)}
-                        text={this.state.order} />,
-                  <Name
-                     short_name={this.props.memory?.short_name}
-                     url={getUrlsFrom(this.props.specifiedCalendarySlug, this.props.memory.slug)[0]}
-                     names={this.props.names} />,
-                  <Chip
-                     color={this.getSlugColor(this.state.title)}
-                     text={this.state.title} />,]}
-               {this.props.specific_title &&
-                  <span>
-                     {this.props.specific_title}</span>}
-               {this.props.place?.name &&
-                  <Chip
-                     className='place'
-                     text={this.props.place.name} />}
-               {this.props.happened_at && <Chip
-                  text={this.props.happened_at} />}</div>
+                        color={this.getSlugColor(this.state.title)}
+                        text={this.state.title} />,]}
+                  {this.props.specific_title &&
+                     <span>
+                        {this.props.specific_title}</span>}
+                  {this.props.place?.name &&
+                     <Chip
+                        className='place'
+                        text={this.props.place.name} />}
+                  {this.props.happened_at && <Chip
+                     className='happened-at'
+                     text={this.props.happened_at} />}</div>
             {this.props.date && false && <Chip
                cclassName={this.classNameForYearDate()}
                text={this.props.date} />}
-            {this.state.iconLinks.isPresent() &&
-               <Carousel
-                  images={this.state.iconLinks} />}
-            {this.props.memoes.isPresent() &&
+               {this.state.scripta.isPresent() &&
+                  <div className='row'>
+                     <div className='col s12'>
+                        {this.sortedScripta().map((scriptum) =>
+                           <div className='row'>
+                              <div className='col s12 title'>
+                                 {this.getScriptumTitle(scriptum)}</div>
+                              <div className='col s12 scriptum'>
+                                 <Markdown source={scriptum.text} /></div></div>)}</div></div>}</div>
+            {this.props.picture.thumb_url &&
+               <div className='col s4 image'>
+                  <div className="card hoverable medium">
+                     <div className="card-image">
+                        <img
+                           src={this.props.picture.thumb_url}
+                           alt={this.props.picture.title} />
+                        <span className="card-title">{this.props.picture.title}</span></div>
+                  <div className="card-action">
+                     <a href={"/" + this.props.memory.slug + "/gallery"}>{this.props.i18n.gallery}</a></div></div></div>}</div>,
+         <div className='row'>
+            {this.state.describedMemoes.isPresent() &&
                <Description
-                  describedMemoes={this.props.memoes}
+                  describedMemoes={this.state.describedMemoes}
                   specifiedCalendarySlug={this.props.specifiedCalendarySlug}
-                  defaultCalendarySlug={this.props.defaultCalendarySlug} />}
+                  defaultCalendarySlug={this.state.defaultCalendarySlug} />}
             {this.state.links.isPresent() &&
                <div className='col s12'>
                   <div className='row'>
                      <div className='col s12 title'>
-                        Внешние ссылки</div>
+                        {this.props.i18n.externals}</div>
                      <div className='col s12'>
                         {this.state.links.map((link) =>
                            <Chip
                               key={link.id}
                               url={link.url}
                               color={Memory.getColorForLink(link)}
-                              text={Memory.getLinkText(link)} />)}</div></div></div>}
-            {this.state.scripta.isPresent() &&
-               <div className='col s12'>
-                  {this.sortedScripta().map((scriptum) =>
-                     <div className='row'>
-                        <div className='col s12 title'>
-                           {this.getScriptumTitle(scriptum)}</div>
-                        <div className='col s12'>
-                           {scriptum.text}</div></div>)}</div>}</div>)
+                              text={Memory.getLinkText(link)} />)}</div></div></div>}</div>]
    }
 }
