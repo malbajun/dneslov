@@ -9,7 +9,7 @@ module CoreFeatures
          prepend_before_action :default, only: %i(index show)
          prepend_before_action :set_calendary_slugs, only: %i(index show)
          prepend_before_action :set_date, :set_calendary_cloud, :set_julian, :set_languages
-         before_action :parse_range, only: %i(index show)
+         before_action :parse_range, only: %i(index show), if: ->(x) { total }
 
          rescue_from Exception, with: :render_default_error
          # NOTE https://stackoverflow.com/a/48744792/446267
@@ -140,7 +140,7 @@ module CoreFeatures
       @total ||=
          %i(total_size total_count count).reduce(nil) do |count, method|
             objects.respond_to?(method) && !count ? objects.send(method) : count
-         end || raise
+         end || raise if objects
    end
 
    def set_memory
@@ -163,6 +163,6 @@ module CoreFeatures
    end
 
    def objects
-      @memoes || @memorys
+      @memoes
    end
 end
