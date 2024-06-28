@@ -1,10 +1,9 @@
 class GalleryController < ApplicationController
-   include CoreFeatures
-
    before_action :set_memory, only: %i(show index)
    before_action :set_event, only: %i(index), if: -> { params[:event].present? }
    before_action :set_images, only: %i(index)
-   #before_action :set_picture, only: %i(show)
+
+   include CoreFeatures
 
    # GET /:slug/gallery.json
    # GET /:slug/gallery
