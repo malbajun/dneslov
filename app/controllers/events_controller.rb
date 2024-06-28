@@ -1,8 +1,8 @@
 class EventsController < ApplicationController
-   include CoreFeatures
-
    before_action :set_memory, only: %i(show)
    before_action :set_event, only: %i(show)
+
+   include CoreFeatures
 
    # GET /events/1
    # GET /events/1.json

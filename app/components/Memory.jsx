@@ -256,18 +256,18 @@ export default class Memory extends Component {
          <div className='row memory'>
             <div className={'col' + this.getInfoClass()}>
                <div className='row'>
-               {this.state.order &&
-                  <Chip
-                     color={this.getSlugColor(this.state.order)}
-                     text={this.state.order} />}
-               <Name
-                  short_name={this.props.short_name}
-                  defaultNameInCalendary={this.state.title}
-                  klugs={this.state.klugs}
-                  names={this.props.names} />
-               {this.state.happenedAt && <Chip
-                  className='happened-at'
-                  text={this.state.happenedAt} />}</div>
+                  {this.state.order &&
+                     <Chip
+                        color={this.getSlugColor(this.state.order)}
+                        text={this.state.order} />}
+                  <Name
+                     short_name={this.props.short_name}
+                     defaultNameInCalendary={this.state.title}
+                     klugs={this.state.klugs}
+                     names={this.props.names} />
+                  {this.state.happenedAt && <Chip
+                     className='happened-at'
+                     text={this.state.happenedAt} />}</div>
                {this.state.links.isPresent() &&
                   <div className='row'>
                      <div className='col s12'>
@@ -311,7 +311,7 @@ export default class Memory extends Component {
                            alt={this.props.picture.title} />
                         <span className="card-title">{this.props.picture.title}</span></div>
                   <div className="card-action">
-                     <a href={this.props.slug + "/gallery"}>{this.props.i18n.gallery}</a></div></div></div>}</div>,
+                     <a href={"/" + this.props.slug + "/gallery"}>{this.props.i18n.gallery}</a></div></div></div>}</div>,
          <div className='row'>
             {this.props.bond_memories.length > 0 &&
                <div className='col s12'>

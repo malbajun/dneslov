@@ -28,7 +28,11 @@ class Picture < ApplicationRecord
    end
 
    scope :by_event, ->(e) do
-      joins(:events).merge(Event.by_token(e).reorder(""))
+      if e.respond_to?(:arel)
+         joins(:attitudes).where(image_attitudes: {imageable_type: "Event", imageable_id: e.select(:id) })
+      else
+         joins(:events).merge(Event.by_token(e).reorder(""))
+      end
    end
 
    validates_presence_of :type, :uid, :image
