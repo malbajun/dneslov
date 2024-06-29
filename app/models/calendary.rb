@@ -161,20 +161,21 @@ class Calendary < ActiveRecord::Base
    end
 
    def datetime_range
-      if /(\d*)\-(\d*)/ =~ date
-         b = Time.parse($1) rescue nil
-         e = Time.parse($2) rescue nil
-         (b || -Float::INFINITY..e || Float::INFINITY)
-      elsif date
-         t = Date.new(date.to_i, 1, 1)
-         (t..t)
-      end
+      @datetime_range ||=
+         if /(\d*)\-(\d*)/ =~ date
+            b = $1.blank? ? -Float::INFINITY : Date.new($1.to_i, 1, 1)
+            e = $2.blank? ? Float::INFINITY : Date.new($2.to_i, 1, 1)
+            (b..e)
+         elsif date
+            t = Date.new(date.to_i, 1, 1)
+            (t..t)
+         end
    end
 
    def datetime
       if datetime_range.begin != -Float::INFINITY
          datetime_range.begin
-      elsif dt.end != Float::INFINITY
+      elsif datetime_range.end != Float::INFINITY
          datetime_range.end
       end
    end
