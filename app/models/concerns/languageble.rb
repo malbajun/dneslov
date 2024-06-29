@@ -131,7 +131,7 @@ module Languageble
    HEBREW_ACCENT = '׳״ׇ֑\-ׇ'
    ARAMAIC_STROKE = 'א-תשׁ-זּטּ-לּמּנּסּףּפּצּ-ﭏ'
    ARAMAIC_ACCENT = '׳״ׇ֑\-ׇ'
-   ARABIC_STROKE = 'ء-غف-ي١-٩ٮ-ہۆ-ە۱-۹ﭐ-ﮯﯓ-ﯩﯼ-ﯿ'
+   ARABIC_STROKE = 'ء-𞹾'
    PERSIAN_STROKE = 'ﺍبپﺕﺙﺝچﺡﺥﺩﺫﺭﺯژﺱﺵﺹ	ﺽﻁﻅﻉﻍﻑﻕکگﻝﻡﻥهـﻭﻯ'
    PERSIAN_ACCENT = ''
    OLD_PERSIAN_STROKE = 'a-pr-zāēōūīš'
