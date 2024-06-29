@@ -78,7 +78,7 @@ class CalendaryCopy
             memo.calendary_id = target.id
             memo.descriptions = []
             memo.titles = memo_in.titles.by_language(target.language_code).map {|t| t.dup }
-            memo.add_date = target.date =~ /\-(\d*)/ ? $1 || Time.zone.now.strftime("%d.%m.%Y %H:%M") : target.date
+            memo.add_date = target.datetime_range.end == Float::INFINITY ? Time.zone.now.strftime("%d.%m.%Y %H:%M") : target.date
             memo.orders = memo_in.orders
             # memo.services = memo_in.services.map {|s| s.dup }
 
