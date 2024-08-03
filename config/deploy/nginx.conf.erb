@@ -62,7 +62,11 @@ server {
       root /mnt/yandex/;
    }
 
-   location ~ ^/(dneslov.*png$|robots.txt$|favicons/|fonts/|.*\.json$|.*\.gz$|$) {
+   location ~ ^/(\.json$)/ {
+      try_files $uri @dneslov;
+   }
+
+   location ~ ^/(dneslov.*png$|robots.txt$|favicons/|fonts/|.*\.gz$|$) {
       root            /var/www/dneslov/current/public;
 
       error_page      403 404 405 = @dneslov;
@@ -84,6 +88,7 @@ server {
       proxy_set_header X-Forwarded-Proto $scheme;
       proxy_set_header X-Forwarded-Ssl on;
       proxy_read_timeout 30;
+      proxy_send_timeout 30;
       proxy_redirect off;
       proxy_pass http://dneslov_rails;
    }
