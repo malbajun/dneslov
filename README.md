@@ -42,12 +42,14 @@ List of the requirements (packages are named as in ALT conventions) are the foll
 15. node
 16. yarn
 17. gostsum
-18. sendmail
+18. postfix
+19. dovecot
+20. postfix-dovecot
 
 If you have an ALT installation, just install requirements by single line:
 
 ```bash
-apt-get install libhiredis-devel libsnappy-devel redis xclip sidekiq postgresql15-server-devel postgresql15-server postgresql15-contrib libwebp-tools curl git sudo node yarn gostsum libImageMagick-devel
+apt-get install libhiredis-devel libsnappy-devel redis xclip sidekiq postgresql15-server-devel postgresql15-server postgresql15-contrib libwebp-tools curl git sudo node yarn gostsum libImageMagick-devel postfix dovecot postfix-dovecot gcc-c++
 ```
 It any others, just correlate them for each of packages to your system's ones, and then install as usually.
 
