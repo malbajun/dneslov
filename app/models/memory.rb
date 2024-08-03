@@ -375,7 +375,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
       selector << "COALESCE((WITH __bond_memories AS (
-                      SELECT #{as}_memory_binds.id AS id,
+                      SELECT DISTINCT ON (#{as}_memory_binds.id)
+                             #{as}_memory_binds.id AS id,
                              #{as}_memory_binds.kind AS kind,
                              #{as}_memory_slugs.text AS slug,
                              COALESCE(#{as}_bond_memo_titles.text, #{as}_bond_memories.short_name) AS name
@@ -392,7 +393,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN descriptions AS #{as}_bond_memo_titles
                           ON #{as}_bond_memo_titles.describable_id = #{as}_memoes.id
                          AND #{as}_bond_memo_titles.describable_type = 'Memo'
-                         AND #{as}_bond_memo_titles.type = 'Name'
+                         AND #{as}_bond_memo_titles.type = 'Title'
                          AND #{as}_bond_memo_titles.language_code IN ('#{language_codes.join("', '")}')
                          AND #{as}_bond_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                        WHERE #{as}_memory_binds.memory_id = #{as}.id)
