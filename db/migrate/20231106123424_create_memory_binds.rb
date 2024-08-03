@@ -4,7 +4,8 @@ class CreateMemoryBinds < ActiveRecord::Migration[7.0]
          t.references :memory, foreign_key: { on_delete: :cascade }, comment: "Собственно память"
          t.references :bond_to, foreign_key: { to_table: :memories, on_delete: :cascade }, comment: "Память как целевая связка"
          t.string :kind, comment: "Вид связки: источник (Source) для списков икон, " +
-            "опора (Base) - иконы личностей, подобие (Similar) - для установления подобия"
+            "опора (Base) - иконы личностей, подобие (Similar) - для установления подобия иконы иной иконе" +
+            "владелец (Host) - для владельцев предметов"
 
          t.timestamps
 

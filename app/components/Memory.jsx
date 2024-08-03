@@ -31,7 +31,7 @@ export default class Memory extends Component {
          gallery: "Выставка",
          base: "Опорная память",
          externals: "Внешние ссылки",
-         patron: "Покровитель",
+         patron: "Покровительствует",
          events: "События",
          prosomeion: "подобен",
          tone: "глас",

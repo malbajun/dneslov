@@ -3,5 +3,5 @@ class MemoScriptum < ApplicationRecord
    belongs_to :memo
    has_one :memory, through: :memo
 
-   validates :kind, inclusion: { in: %w(To From About Author) }
+   validates :kind, inclusion: { in: %w(To From About Author Translator) }
 end
