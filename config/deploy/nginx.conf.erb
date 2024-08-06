@@ -66,8 +66,8 @@ server {
       try_files $uri @dneslov;
    }
 
-   location ~ ^/(dneslov.*png$|robots.txt$|favicons/|fonts/|.*\.gz$|$) {
-      root            /var/www/dneslov/current/public;
+   location ~ ^/(dneslov.*png$|robots.txt$|sitemap.xml.gz$|favicons/|fonts/|.*gz$|$) {
+      root            <%= current_path %>/public;
 
       error_page      403 404 405 = @dneslov;
    }

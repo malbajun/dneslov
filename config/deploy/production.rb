@@ -3,7 +3,17 @@
 # Defines a single server with a list of roles and multiple properties.
 # You can define all roles on a single server, or split them:
 
-server "185.133.40.112", port: "222", user: "_nginx", roles: %w{app db web}, primary: true
+server "31.129.57.10", port: "222", user: "_nginx", roles: %w{app db web}, primary: true
+
+set :stage, :production
+set :branch, ENV['BRANCH'] || "master"
+
+set :full_app_name, "#{fetch(:application)}_#{fetch(:stage)}"
+set :server_name, "www.dneslov.org dneslov.org"
+set :deploy_to, "/usr/local/home/www/dneslov"
+
+set :rails_env, :production
+set :enable_ssl, true
 
 set :pty, false
 
@@ -23,6 +33,10 @@ set :nginx_sites_enabled_dir, "/etc/nginx/sites-enabled.d"
 ### database
 set :disallow_pushing, true
 
+### rvm
+set :rvm_type, :system
+set :rvm_custom_path, '/usr'
+#
 # role-based syntax
 # ==================
 
@@ -71,16 +85,6 @@ set :disallow_pushing, true
 #     auth_methods: %w(publickey password)
 #     # password: "please use keys"
 #   }
-set :stage, :production
-set :branch, ENV['BRANCH'] || "master"
-
-set :full_app_name, "#{fetch(:application)}_#{fetch(:stage)}"
-set :server_name, "www.dneslov.org dneslov.org"
-set :deploy_to, "/var/www/dneslov"
-
-set :rails_env, :production
-set :enable_ssl, true
-
 # custom
 namespace :redis do
    task :stop do
@@ -98,8 +102,8 @@ end
 
 before 'bundler:install', 'systemd:sidekiq:stop'
 before 'bundler:install', 'systemd:core:stop'
-before 'bundler:install', 'redis:stop'
+# before 'bundler:install', 'redis:stop'
 before 'bundler:install', 'nginx:stop'
-after 'deploy:assets:precompile', 'redis:start'
+# after 'deploy:assets:precompile', 'redis:start'
 after 'deploy', 'deploy:restart'
 after 'deploy', 'sitemap:refresh'

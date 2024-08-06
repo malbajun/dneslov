@@ -12,7 +12,7 @@ User=_nginx
 Group=_webserver
 Environment=RAILS_ENV=<%= fetch(:rails_env) %>
 WorkingDirectory=<%= current_path %>
-ExecStart=/bin/bash -lc 'bundle exec sidekiq --environment <%= fetch(:rails_env) %> -r . -C ./config/sidekiq.yml'
+ExecStart=/bin/bash -lc '/usr/bin/rvm 3.1.4@dneslov --create do bundle exec sidekiq --environment <%= fetch(:rails_env) %> -r . -C ./config/sidekiq.yml'
 StandardInput=null
 StandardOutput=journal
 StandardError=journal

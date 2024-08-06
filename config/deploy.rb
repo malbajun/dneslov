@@ -3,7 +3,7 @@ lock "3.17.3"
 
 set :user, 'majioa'
 set :application, "dneslov"
-set :deploy_user, 'www-data'
+set :deploy_user, '_nginx'
 
 set :repo_url, "git@codeberg.org:znamenica/dneslov.git"
 
@@ -44,22 +44,22 @@ set(:symlinks, [
 set :migration_role, :app
 
 # Default value for default_env is {}
-set :default_env, { path: "#{release_path}/node_modules/yarn/bin:#{release_path}/bin:$PATH" }
+set :default_env, { path: "#{release_path}/node_modules/.bin:$HOME/node_modules/.bin/:#{release_path}/bin:$PATH" }
 
 set :nginx_roles, :web
 set :nginx_static_dir, "public"
 set :nginx_template, "#{stage_config_path}/nginx.conf.erb"
 
-set :rvm_type, :user                      # Defaults to: :auto
-
+# rvm
 # determine ruby version
 / (?<version>[\d\.]+)?/ =~ Bundler.setup.instance_variable_get(:@definition).locked_gems.ruby_version
+set :rvm_type, :user                      # Defaults to: :auto
 set :rvm_ruby_version, "#{version}@dneslov --create"    # Defaults to: 'default'
 # set :rvm_custom_path, '~/.rvm'          # only needed if not detected
 set :rvm_roles, [:app, :web]
 
+# redis
 set :systemd_redis_service, "redis"
-
 
 ### database
 
@@ -107,6 +107,8 @@ after 'deploy:finishing', 'deploy:cleanup'
 before 'nginx:reload', 'nginx:create_log_paths'
 before 'nginx:site:enable', 'nginx:site:add'
 before 'nginx:restart', 'nginx:site:enable'
+after 'deploy', 'systemd:sidekiq:setup'
+after 'deploy', 'systemd:core:setup'
 before 'deploy:restart', 'nginx:restart'
 after 'deploy:restart', 'systemd:sidekiq:reload-or-restart'
 after 'deploy:restart', 'systemd:core:reload-or-restart'
