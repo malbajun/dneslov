@@ -104,6 +104,7 @@ export const memoMeta = {
          placeholder: 'Введи дату в году',
          data: { length: '7' },
          display_scheme: '12-3-2-2',
+         subscribeTo: '@bind_kind_code',
          validations: {
             "Слишком длинное значение даты в году": /^.{8,}$/,
             "Годовая дата отсутствует": (value, context) => {
@@ -128,14 +129,14 @@ export const memoMeta = {
             'попразднество': 'Попразднество',
          },
          display_scheme: '12-3-3-3',
-         subscribeTo: '@bond_to_id',
+         subscribeTo: ['@bond_to_id', '@year_date'],
          validations: {
             'Пункт из списка должен быть выбран': matchEmptyObject,
-            'Вид привязки не должен иметь значение "Не привязаный" в случае, если привязка задана': (value, context) => {
-               return context.bond_to_id && value == "несвязаный"
+            'Вид привязки не должен иметь значения "Не привязаный" либо "Соборный" в случае, если привязка задана': (value, context) => {
+               return context.bond_to_id && value && value.match(/несвязаный|соборный/)
             },
-            'Вид привязки должен иметь значение "Не привязаный" в случае, если привязка отсутствует': (value, context) => {
-               return !context.bond_to_id && value != "несвязаный"
+            'Вид привязки должен иметь значения "Не привязаный" либо "Соборный" в случае, если привязка отсутствует': (value, context) => {
+               return !context.bond_to_id && value && !value.match(/несвязаный|соборный/)
             },
          }
       },
@@ -149,7 +150,7 @@ export const memoMeta = {
          key_name: 'value',
          value_name: 'key',
          subscribeTo: '@bind_kind_code',
-         visible_if: { bind_kind_code: ["соборный", "навечерие", "предпразднество", "попразднество"] },
+         visible_if: { bind_kind_code: ["навечерие", "предпразднество", "попразднество"] },
          context_names: {
            'calendary_id': true,
            'memory_id': true,

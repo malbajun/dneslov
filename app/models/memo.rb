@@ -583,13 +583,16 @@ class Memo < ApplicationRecord
    accepts_nested_attributes_for :memo_orders, reject_if: :all_blank, allow_destroy: true
 
    validates_presence_of :calendary, :event
-   validates_presence_of :year_date, unless: :bond_to_quantity
-   validates_absence_of :year_date, if: :bond_to_quantity
+   validates_presence_of :year_date, unless: :is_counsil
    validates :year_date, format: { with: /\A((0[1-9]|[1-2][0-9]|3[0-1])\.(0[1-9]|1[0-2])([%<>~][0-6])?|[+-]\d{1,3})\z/ }, if: :year_date
    validate :bind_kind_code_present, :same_calendaries, :same_memories, if: :bond_to_id
 
    before_validation :fix_year_date
    before_create -> { self.bind_kind_code ||= 'несвязаный' }
+
+   def is_counsil
+      bind_kind_code == 'соборный'
+   end
 
    class << self
       def dates_to_days dates_in, julian
