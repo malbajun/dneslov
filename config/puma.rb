@@ -36,7 +36,7 @@ elsif Rails.env.development?
    cert = ENV['SSL_CERT_PATH'] || File.join(root, 'config/server.crt')
 
    worker_timeout 3600
-   workers Integer(ENV['WEB_CONCURRENCY'] || 1)
+   workers(0)
    ssl_bind host, port, {
       key: key,
       cert: cert,
