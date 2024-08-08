@@ -1,17 +1,23 @@
 class RoundelUploader < CarrierWave::Uploader::Base
+   include ::CarrierWave::Backgrounder::Delay
    include CarrierWave::RMagick
 
+   cache_storage CarrierWave::Storage::File
    storage :file
 
    process convert: 'webp'
-   process resize_to_fit: [300, 300], if: :match_size?
+   process resize_to_fit: [400, 400], if: :match_size?
 
    def store_dir
       "roundels/#{model.uid[0..1]}"
    end
 
+   def cache_dir
+      "cache/carrierwave"
+   end
+
    def match_size? file
-      height >= 300 if file
+      height >= 400 if file
    end
 
    def filename

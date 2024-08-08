@@ -25,7 +25,7 @@ set :repo_url, "git@codeberg.org:znamenica/dneslov.git"
 append :linked_files, "config/database.yml", ".env", "config/sidekiq.yml"
 
 # Default value for linked_dirs is []
-append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "node_modules", "public/images", "public/audios", "public/roundels"
+append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "node_modules", "public/images", "public/audios", "public/roundels", "public/cache/carrierwave"
 
 set :tests, []
 

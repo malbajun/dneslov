@@ -123,6 +123,7 @@ gem 'sitemap_generator'
 # images
 gem 'carrierwave', '~> 3.0.5'
 gem 'carrierwave-base64'
+gem 'carrierwave_backgrounder'
 gem 'file_validators'
 gem 'rmagick'
 

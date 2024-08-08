@@ -8,6 +8,8 @@ class Picture < ApplicationRecord
    include WithDescriptions
 
    mount_base64_uploader :image, ImageUploader
+   process_in_background :image
+   store_in_background :image
 
    has_many :attitudes, class_name: :ImageAttitude
    has_many :memories, as: :imageable, through: :attitudes, source: :imageable, source_type: :Memory
@@ -39,7 +41,7 @@ class Picture < ApplicationRecord
    validates_uniqueness_of :digest, on: :create
    validates_uniqueness_of :uid, :url, :thumb_url
    validates :image, presence: true, on: :create, file_size: { less_than: 128.megabytes },
-      size: { height: { min: 600, max: 30000 }, width: { min: 100, max: 30000 }, ratio: { range: (0.1..5.0) }}
+      size: { height: { min: 1500, max: 30000 }, width: { min: 150, max: 30000 }, ratio: { range: (0.1..5.0) }}
 
    before_validation :fill_in_title_description, :fill_in_uid
    before_validation :fill_in_digest, :fill_in_dimensions, :fill_in_url, :fill_in_thumb_url, if: -> { image.file }

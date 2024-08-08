@@ -4,6 +4,8 @@
 #
 class Roundel < ApplicationRecord
    mount_base64_uploader :image, RoundelUploader
+   process_in_background :image
+   store_in_background :image
 
    belongs_to :roundelable, polymorphic: true
    belongs_to :event, -> { joins(:roundels).where(roundels: { roundelable_type: "Event" }) }, foreign_key: 'roundelable_id'
@@ -13,7 +15,7 @@ class Roundel < ApplicationRecord
    validates_uniqueness_of :digest, on: :create
    validates_uniqueness_of :uid, :url
    validates :image, presence: true, on: :create, file_size: { less_than: 1.megabytes },
-      size: { height: { min: 300 }, ratio: { range: (1.0..1.0) }}
+      size: { height: { min: 400 }, ratio: { range: (1.0..1.0) }}
 
    scope :by_uid, ->(uid) { where(uid: uid) }
    scope :by_roundelable_name, ->(name) do

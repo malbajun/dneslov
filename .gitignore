@@ -39,6 +39,7 @@ public/images/
 public/uploads/
 public/roundels/
 public/audios/
+public/cache/carrierwave/
 
 *.log
 *.sql

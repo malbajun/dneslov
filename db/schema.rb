@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_08_164716) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -293,6 +293,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
     t.jsonb "meta", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "image_processing", default: false, null: false
+    t.string "image_tmp"
     t.index ["digest"], name: "index_pictures_on_digest", unique: true
     t.index ["meta"], name: "index_pictures_on_meta", using: :gin
     t.index ["thumb_url"], name: "index_pictures_on_thumb_url", unique: true
@@ -351,6 +353,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
     t.bigint "roundelable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "image_processing", default: false, null: false
+    t.string "image_tmp"
     t.index ["digest"], name: "index_roundels_on_digest", unique: true
     t.index ["roundelable_type", "roundelable_id"], name: "index_thumbs_on_thumbable"
     t.index ["uid"], name: "index_roundels_on_uid", unique: true
