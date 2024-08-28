@@ -10,7 +10,7 @@ set :branch, ENV['BRANCH'] || "master"
 
 set :full_app_name, "#{fetch(:application)}_#{fetch(:stage)}"
 set :server_name, "www.dneslov.org dneslov.org"
-set :deploy_to, "/usr/local/home/www/dneslov"
+set :deploy_to, "/mnt/local/home/www/dneslov"
 
 set :rails_env, :production
 set :enable_ssl, true

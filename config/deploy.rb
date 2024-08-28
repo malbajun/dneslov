@@ -103,12 +103,19 @@ after 'setup', 'systemd:core:enable'
 # deploy
 after 'deploy:finishing', 'deploy:cleanup'
 
+namespace :deploy do
+   task :setup do
+   end
+end
+
 # deploy:restart
 before 'nginx:reload', 'nginx:create_log_paths'
 before 'nginx:site:enable', 'nginx:site:add'
 before 'nginx:restart', 'nginx:site:enable'
-after 'deploy', 'systemd:sidekiq:setup'
-after 'deploy', 'systemd:core:setup'
+after 'deploy:setup', 'systemd:sidekiq:setup'
+after 'deploy:setup', 'systemd:core:setup'
+after 'deploy:setup', 'nginx:site:add'
+after 'deploy:setup', 'nginx:site:enable'
 before 'deploy:restart', 'nginx:restart'
 after 'deploy:restart', 'systemd:sidekiq:reload-or-restart'
 after 'deploy:restart', 'systemd:core:reload-or-restart'
