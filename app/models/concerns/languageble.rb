@@ -16,6 +16,42 @@ module Languageble
    CSLAV_CAPITAL = 'А-ЬЮЄЅІѠѢѦѮѰѲѴѶѸѺѼѾꙖꙊ'
    CSLAV_STROKE = 'а-ьюєѕіѡѣѧѯѱѳѵѷѹѻѽѿꙗꙋ'
    CSLAV_ACCENT = '̀́̑͛҅҆҆҃҄҇҈҉ⷠⷡⷢⷣⷤⷥⷦⷧⷨⷩⷪⷫⷬⷭⷮⷯⷰⷱⷲⷳⷴⷵⷶⷷⷸⷹⷺⷼⷻⷽⷾⷿ꙯꙰꙱꙲꙳ꙴꙵꙶꙷꙸꙹꙺꙻ꙼꙽꙾ꙿꚜꚝꚞꚟ︮'
+   # м - *m /m/
+   # н - *n /n/
+   # п - *p /p/
+   # т - *t /t/
+   # ч - *ḱ /kʲ/
+   # к - *k /k/
+   # ф - *kʷ /kʷ/
+   # б - (*b) /b/
+   # д - *d /d/
+   # ꙉ - *ǵ /gʲ/
+   # ґ - *g /g/ 
+   # в - *gʷ /gʷ/ 			
+   # β - *bʰ /bʱ/
+   # ѕ - *dʰ /dʱ/
+   # ж - *ǵʰ /gʲʱ/ 
+   # г - *gʰ /gʱ/
+   # ѳ - *gʷʰ /gʷʱ/
+   # с - *s /s/
+   # х - *h₁ /h/~/ʔ/, *h₂ /x/~/qː/, *h₃ /ɣʷ/~/qʷː/
+   # ꙏ - [ə]
+   # a - [ɐ]
+   # ѹ - [ɵ]
+   # р - *r /r/ 							
+   # л - *l /l/ 						
+   # ј - *y /j/ 
+   # ў - *w /w/ 			
+   # и - *i [i]
+   # у - *u [u]
+   # е - *e
+   # о - *o
+   # ԑ - *ē
+   # ъ - *ō
+   ARIES_STROKE = 'мнптчкфбдꙉґвβѕжгѳсхꙏаѹрлјўиуеоԑъ'
+   ARIES_ACCENT = '̀́̑͛҅҆҆҃҄҇҈҉ⷠⷡⷢⷣⷤⷥⷦⷧⷨⷩⷪⷫⷬⷭⷮⷯⷰⷱⷲⷳⷴⷵⷶⷷⷸⷹⷺⷼⷻⷽⷾⷿ꙯꙰꙱꙲꙳ꙴꙵꙶꙷꙸꙹꙺꙻ꙼꙽꙾ꙿꚜꚝꚞꚟ︮'
+   PSLAV_STROKE = 'а-ьюѕіѡѣѧѯѱѳѵѷѹѻѽѿꙗꙋѻѿҁѡѥѩѫѭꙁꙃꙅꙇꙉꙋꙍꙏꙑꙓꙕꙗꙙꙛꙝ'
+   PSLAV_ACCENT = '̀́̑͛҅҆҆҃҄҇҈҉ⷠⷡⷢⷣⷤⷥⷦⷧⷨⷩⷪⷫⷬⷭⷮⷯⷰⷱⷲⷳⷴⷵⷶⷷⷸⷹⷺⷼⷻⷽⷾⷿ꙯꙰꙱꙲꙳ꙴꙵꙶꙷꙸꙹꙺꙻ꙼꙽꙾ꙿꚜꚝꚞꚟ︮'
    SSLAV_CAPITAL = 'А-ЬЮЅІѠѢѦѮѰѲѴѶѸѺѼѾꙖꙊѺѾҀѠѤѨѪѬꙀꙂꙄꙆꙈꙊꙌꙎꙐꙒꙔꙖꙘꙚꙜꙞ'
    SSLAV_STROKE = 'а-ьюѕіѡѣѧѯѱѳѵѷѹѻѽѿꙗꙋѻѿҁѡѥѩѫѭꙁꙃꙅꙇꙉꙋꙍꙏꙑꙓꙕꙗꙙꙛꙝꙟ'
    SSLAV_ACCENT = '̀́̑͛҅҆҆҃҄҇҈҉ⷠⷡⷢⷣⷤⷥⷦⷧⷨⷩⷪⷫⷬⷭⷮⷯⷰⷱⷲⷳⷴⷵⷶⷷⷸⷹⷺⷼⷻⷽⷾⷿ꙯꙰꙱꙲꙳ꙴꙵꙶꙷꙸꙹꙺꙻ꙼꙽꙾ꙿꚜꚝꚞꚟ︮'
@@ -50,8 +86,8 @@ module Languageble
    ANCIENT_GREEK_ACCENT = 'ͺ͵΄᾽ι᾿῀῁῍῎῏῝῞῟῭΅`´῾'
    BULGARIAN_CAPITAL = 'А-ЪЬЮЯ'
    BULGARIAN_STROKE = 'а-ъьюя'
-   LATIN_CAPITAL = 'A-IK-TVX-ZÆ'
-   LATIN_STROKE = 'a-ik-tvx-zæ'
+   LATIN_CAPITAL = 'A-IK-TVX-ZÆĀĒĪŌŪ'
+   LATIN_STROKE = 'a-ik-tvx-zæāēīōū'
    LATIN_ACCENT = '̄̏̀́̅̋'
    IRISH_CAPITAL = 'A-IL-PR-U'
    IRISH_STROKE = 'a-il-pr-u'
@@ -160,10 +196,12 @@ module Languageble
 
    ANCIENT_RUSSIAN_SYNTAX = ' ҃\<\>\[\]\.,:;·⁖჻᛭⁘⁙\/\-\—\–†'
    OLD_RUSSIAN_SYNTAX = ' ҃\<\>\[\]\.,:;·⁖჻᛭⁘⁙\/\-\—\–†'
-   RUSSIAN_SYNTAX = ' ҃\(\)\.,:;!\/\-«»\—\?\–№†IVXLCDM'
+   RUSSIAN_SYNTAX = ' ҃\(\)\.,:;\!\/\-«»_\—\?†IVXLCDM©–№\'\[\]&^'
    MODERN_RUSSIAN_SYNTAX = ' ҃\(\)\.,:;\!\/\-«»_\—\?†IVXLCDM©–№\'\[\]&^'
    HIP_SYNTAX = ' \(\[\{\/\'\+\.\:\!"=~@#\$%\^&\*_\)\]\}\\\\`\-,;?\|'
    CSLAV_SYNTAX = ' \(\)\.,:;'
+   ARIES_SYNTAX = ' \(\)\.,:;·⁖჻᛭⁘⁙'
+   PSLAV_SYNTAX = ' \(\)\.,:;·⁖჻᛭⁘⁙'
    SSLAV_SYNTAX = ' \(\)\.,:;·⁖჻᛭⁘⁙'
    ASLAV_SYNTAX = ' \(\)\.,:;·⁖჻᛭⁘⁙'
    NCSLAV_SYNTAX = ' \(\)\.,:;·⁖჻᛭⁘⁙'
@@ -221,6 +259,8 @@ module Languageble
       :СР => OLD_RUSSIAN_SYNTAX,
       :ДР => ANCIENT_RUSSIAN_SYNTAX,
       :ЦР => HIP_SYNTAX,
+      :ПА => ARIES_SYNTAX,#праарийск/индоевропейский
+      :ПС => PSLAV_SYNTAX,
       :ЦС => CSLAV_SYNTAX,
       :СС => SSLAV_SYNTAX,
       :ВС => ASLAV_SYNTAX,
@@ -271,6 +311,8 @@ module Languageble
       :СР => "#{OLD_RUSSIAN_CAPITAL}#{OLD_RUSSIAN_STROKE}#{OLD_RUSSIAN_ACCENT}#{OLD_RUSSIAN_SYNTAX}",
       :РУ => "#{RUSSIAN_CAPITAL}#{RUSSIAN_STROKE}#{RUSSIAN_ACCENT}#{RUSSIAN_SYNTAX}#{DIGITS}",
       :РО => "#{MODERN_RUSSIAN_CAPITAL}#{MODERN_RUSSIAN_STROKE}#{MODERN_RUSSIAN_ACCENT}#{MODERN_RUSSIAN_SYNTAX}#{DIGITS}",
+      :ПА => "#{ARIES_STROKE}#{ARIES_ACCENT}#{ARIES_SYNTAX}",
+      :ПС => "#{PSLAV_STROKE}#{PSLAV_ACCENT}#{PSLAV_SYNTAX}",
       :СС => "#{SSLAV_CAPITAL}#{SSLAV_STROKE}#{SSLAV_ACCENT}#{SSLAV_SYNTAX}",
       :ЦС => "#{CSLAV_CAPITAL}#{CSLAV_STROKE}#{CSLAV_ACCENT}#{CSLAV_SYNTAX}",
       :ВС => "#{ASLAV_CAPITAL}#{ASLAV_STROKE}#{ASLAV_ACCENT}#{ASLAV_SYNTAX}",
@@ -342,6 +384,8 @@ module Languageble
       др: %i(ДР), #древнерусскій
       цс: %i(ЦС РУ РО ЦР),#церковнославянскій
       сс: %i(СС ЦР), #старославянскій
+      пс: %i(ПС), #праславянскій
+      па: %i(ПА), #праарійскій/праиндоевропейскій
       вс: %i(ВС НЦ), #всеславянскій, новоцерковнославянскій
       ан: %i(АН АА), #англійскій, американскій
       са: %i(СА), #староанглийскій
