@@ -22,7 +22,10 @@ class Roundel < ApplicationRecord
       if /(?<short_name>.*)#(?<event>.*)/ =~ name
          joins(:event).merge(Event.by_did_and_short_name(event, short_name))
       else
-         joins(:memory).merge(Memory.by_short_name(name))
+         sub = m =~ /^\d+$/ ? Memory.where(id: name) : Memory.by_token(name)
+
+         joins(:memory).merge(sub.reorder(""))
+
       end
    end
 

@@ -6,6 +6,7 @@ class Calendary < ActiveRecord::Base
    include WithDescriptions
    include WithTitles
    include WithLinks
+   include ByToken
 
    JSON_SCHEMA = Rails.root.join('config', 'schemas', 'calendary.json')
    JSONIZE_ATTRS = {
