@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_08_08_164716) do
+ActiveRecord::Schema[7.0].define(version: 2024_12_21_150900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -213,14 +213,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_08_164716) do
   end
 
   create_table "memories", id: :serial, force: :cascade do |t|
-    t.string "short_name", null: false
+    t.string "short_name"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "quantity"
-    t.string "order"
     t.string "council"
     t.integer "base_year"
+    t.string "type", default: "Memory", null: false
+    t.string "kind"
+    t.index ["kind"], name: "index_memories_on_kind"
     t.index ["short_name"], name: "index_memories_on_short_name", unique: true
+    t.index ["type"], name: "index_memories_on_type"
   end
 
   create_table "memory_binds", force: :cascade do |t|

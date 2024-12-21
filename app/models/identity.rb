@@ -1,0 +1,2 @@
+class Identity < Memory
+end

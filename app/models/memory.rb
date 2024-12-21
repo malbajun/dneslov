@@ -8,6 +8,7 @@ class Memory < ApplicationRecord
    extend Informatible
    include WithTitles
    include WithDescriptions
+   include WithTweets
    include WithLinks
    include ByToken
 
@@ -53,9 +54,11 @@ class Memory < ApplicationRecord
    end
 
    scope :by_token, -> text do
-      left_outer_joins(:names, :descriptions, :slug).where("short_name ~* ?", "\\m#{text}.*").or(
-         where("unaccent(descriptions.text) ~* unaccent(?) OR unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*", "\\m#{text}.*")).or(merge(
-         Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")})).distinct
+      left_outer_joins(:names, :descriptions, :notes, :tweets, :slug).where("short_name ~* ?", "\\m#{text}.*").or(
+         where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(tweets_orders.text) ~* unaccent(?)", "\\m#{text}.*").or(
+            where("unaccent(notes_orders.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
+         Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
 
    # required for short list

@@ -1,0 +1,2 @@
+class Subsisten < Memory
+end
