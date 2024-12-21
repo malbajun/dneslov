@@ -1,0 +1,2724 @@
+---
+settings:
+   vowels: айоюыиеьъꙋѹѧѡієѽꙗꙙ
+   chars: Ѐ-ҁꙀ-ꙧ
+   #chars: А-ЯЁѸѪѦꙘѠІЇЄꙊѴѺѼꙖꙗа-яёѹѫѧꙙѡіїєꙋѵѻѽЅЄѠѢѦѮѰѲѴѶѾꙀꙂꙆꙈѕєѡѣѧѯѱѳѵѷѿꙁꙃꙇꙉ
+   signs: 
+
+marks:
+# - code:
+#   title:
+#   desc:
+#   type: основная|вспомогательная|потребовательная|согласная
+#
+# - codes: {} (съ расшифровкою)
+#    - code: 
+#      kind: ядро|пред|по
+#  text:
+#  title:
+#  desc:
+#   type: основная|вспомогательная|потребовательная|согласная
+
+# notes:
+# 1/2/4 доля 1/x
+# звуковысотность от уровня: сунгЦНГмпвМПВр
+# наследование звуковысотности от крюков * - по верху, _ по низу
+# прибавление звуковысотности от предыдущей на строку "+" , убавление "-"
+# пример: с1н2с4н4г2н4
+# непрерывный звук - Ф вкл ф выкл
+ - code: /
+   desc: крюк
+   title: крюк
+   type: основная
+ - code: l
+   desc: стопица
+   title: стопица
+   type: основная
+ - code: "!"
+   desc: стопица с очком
+   title: стопица с очком
+   type: основная
+ - code: "\\"
+   desc: палка
+   title: палка
+   type: основная
+ - code: ","
+   desc: запятая
+   title: запятая
+   type: основная
+ - code: "~"
+   desc: подчашие
+   title: подчашие
+   type: основная
+ - code: ">"
+   desc: чаша
+   title: чаша
+   type: основная
+ - code: "+"
+   desc: крыж
+   title: крыж
+   type: основная
+ - code: "="
+   desc: статья
+   title: статья
+   type: основная
+ - code: z
+   desc: зела / рог
+   title: зела / рог
+   type: основная
+ - code: "$"
+   desc: фита
+   title: фита
+   type: основная
+ - code: "&"
+   desc: параклит
+   title: параклит
+   type: основная
+ - code: "|"
+   desc: отсечка (позади знамени); розсек (внутри знамени)
+   title: отсечка (позади знамени); розсек (внутри знамени)
+   type: вспомогательная
+ - code: "*"
+   desc: задержка
+   title: задержка
+   type: вспомогательная
+ - code: "^"
+   desc: облачко
+   title: облачко
+   type: вспомогательная
+ - code: ":"
+   desc: сложитья; часть скамейцы
+   title: сложитья; часть скамейцы
+   type: вспомогательная
+ - code: "."
+   desc: очко; часть сложитьи
+   title: очко; часть сложитьи
+   type: вспомогательная
+ - code: "'"
+   desc: светелко / кокиза
+   title: светелко / кокиза, добавляет светлость знамени, т.е. ступень гласового звукоряда в тон
+   type: вспомогательная
+ - code: "\""
+   desc: двусветелко или двукокиза
+   title: двусветелко или двукокиза
+   type: вспомогательная
+ - code: f
+   desc: часть параклита
+   title: часть параклита
+   type: вспомогательная
+ - code: w
+   desc: двое
+   title: двое (часть двух в челну, перед крюком)
+   type: вспомогательная
+ - code: ш
+   desc: соколец
+   title: соколец (после крюка)
+   type: вспомогательная
+ - code: r
+   desc: припучь / пучина
+   title: припучь (пучина, часть паука, вар. сам паук, или так ж)
+   type: вспомогательная
+ - code: "#"
+   desc: ключевик / приключие
+   title: ключевик (приключие, часть ключа, вар. сам ключ)
+   type: вспомогательная
+ - code: (
+   desc: отверстие дуды
+   title: отверстие дуды
+   type: вспомогательная
+ - code: )
+   desc: затвор дуды
+   title: затвор дуды
+   type: вспомогательная
+ - code: "?"
+   desc: громка
+   title: громка (?дубликат на тихий голубчик)
+   type: вспомогательная
+ - code: "-"
+   alias: т
+   desc: тихая
+   title: "тихая, может быть одновременно и до и по знамени, напр. стрела возводная с подчашием и подвёрткою `-::/uv-`"
+   type: потребовательная
+ - code: б
+   desc: борзая / борзо / буки
+   title: борзая / борзо / буки
+   type: потребовательная
+ - code: у
+   desc: ударка
+   title: ударка
+   type: потребовательная
+ - code: к
+   desc: качка (по умолчанию сверху у воздёрнутой)
+   title: качка (по умолчанию сверху у воздёрнутой)
+   type: потребовательная
+ - code: з
+   desc: зевок
+   title: зевок
+   type: потребовательная
+ - code: v
+   desc: подвёртка / вывертка
+   title: подвёртка / вывертка
+   type: потребовательная
+ - code: л
+   desc: ломка
+   title: ломка
+   type: потребовательная
+ - code: Г
+   desc: гораздо ниже
+   title: гораздо ниже
+   type: согласная
+ - code: Н
+   desc: низко
+   title: низко
+   type: согласная
+ - code: ц
+   desc: 
+   title: 
+   type: согласная
+ - code: г
+   desc: гораздо ниже
+   title: гораздо ниже
+   type: согласная
+ - code: н
+   desc: низко
+   title: низко
+   type: согласная
+ - code: с
+   desc: строка
+   title: строка
+   type: согласная
+ - code: м
+   desc: мал повыше
+   title: мал повыше
+   type: согласная
+ - code: п
+   desc: повыше
+   title: повыше
+   type: согласная
+ - code: в
+   desc: высоко, веди
+   title: высоко, веди
+   type: согласная
+ - code: М
+   desc: мал повыше (глаголь с точкою, глаголь с ведем)
+   title: мал повыше (глаголь с точкою, глаголь с ведем)
+   type: согласная
+ - code: П
+   desc: повыше
+   title: повыше
+   type: согласная
+ - code: К
+   desc: "высоко крайне (веди с точкою)"
+   title: "высоко крайне (веди с точкою)"
+   type: согласная
+ - code: _
+   desc: функциональная связка
+   title: функциональная связка звуковысотных помет, перерасполагает их на рисунке
+   type: согласная
+
+# - codes: {} (съ расшифровкою)
+#    - code: 
+#      kind: ядро|пред|по
+#text:
+#title:
+#desc:
+#type: крюк|фита|лицо|попевка
+#context: глас-1,глас-2
+
+rules:
+ - codes:
+    - code: l
+      kind: ядро
+   text: l
+   note:
+   desc: стопица
+   title: стопица
+   type: крюк
+   context:
+ - codes:
+    - code: l|
+      kind: ядро
+   text: l|
+   note:
+   desc: стопица с отсечкою
+   title: стопица с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: lб
+      kind: ядро
+   text: lб
+   note:
+   desc: стопица с борзою
+   title: стопица с борзою
+   type: крюк
+   context:
+ - codes:
+    - code: lv
+      kind: ядро
+   text: lv
+   note:
+   desc: стопица с подвёрткою
+   title: стопица с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "!"
+      kind: ядро
+   aliases:
+    - - code: l.
+        kind: ядро
+   text: "!"
+   note:
+   desc: стопица с очком
+   title: стопица с очком
+   type: крюк
+   context:
+ - codes:
+    - code: "!|"
+      kind: ядро
+   aliases:
+    - - code: l.|
+        kind: ядро
+   text: "!|"
+   note:
+   desc: стопица с очком и отсечкою
+   title: стопица с очком и отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "!б"
+      kind: ядро
+   aliases:
+    - - code: l.б
+        kind: ядро
+   text: "!б"
+   note:
+   desc: стопица с очком и борзою
+   title: стопица с очком и борзою
+   type: крюк
+   context:
+ - codes:
+    - code: "!."
+      kind: ядро
+   aliases:
+    - - code: l..
+        kind: ядро
+   text: "!."
+   note:
+   desc: стопица с двема очкы
+   title: стопица с двема очкы
+   type: крюк
+   context:
+ - codes:
+    - code: "!.|"
+      kind: ядро
+   aliases:
+    - - code: l..|
+        kind: ядро
+   text: "!.|"
+   note:
+   desc: стопица с двема очкы и отсечкою
+   title: стопица с двема очкы и отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "!.б"
+      kind: ядро
+   aliases:
+    - - code: l..б
+        kind: ядро
+   text: "!.б"
+   note:
+   desc: стопица с двема очкы и борзою
+   title: стопица с двема очкы и борзою
+   type: крюк
+   context:
+ - codes:
+    - code: l,
+      kind: ядро
+   text: l,
+   note:
+   desc: челюстка
+   title: челюстка
+   type: крюк
+   context:
+ - codes:
+    - code: "!.б"
+      kind: ядро
+   aliases:
+    - - code: l..б
+        kind: ядро
+   text: "!.б"
+   note:
+   desc: переводка с борзою
+   title: переводка с борзою
+   type: крюк
+   context:
+ - codes:
+    - code: "!."
+      kind: ядро
+   aliases:
+    - - code: "-!."
+        kind: ядро
+    - - code: "-l.."
+        kind: ядро
+   text: "!."
+   note:
+   desc: переводка с тихою
+   title: переводка с тихою
+   type: крюк
+   context:
+ - codes:
+    - code: "!.|б"
+      kind: ядро
+   aliases:
+    - - code: "l..|б"
+        kind: ядро
+   text: "!.|б"
+   note:
+   desc: переводка с отсечкою и борзою
+   title: переводка с отсечкою и борзою
+   type: крюк
+   context:
+ - codes:
+    - code: "\\"
+      kind: ядро
+   aliases:
+    - - code: "\\-"
+        kind: ядро
+   text: "\\"
+   note:
+   desc: палка
+   title: палка
+   type: крюк
+   context:
+ - codes:
+    - code: "\\v"
+      kind: ядро
+   text: "\\v"
+   note:
+   desc: палка с подвёрткою
+   title: палка с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "л\\"
+      kind: ядро
+   text: "л\\"
+   note:
+   desc: палка с ломкою
+   title: палка с ломкою
+   type: крюк
+   context:
+ - codes:
+    - code: "\\|"
+      kind: ядро
+   text: "\\|"
+   note:
+   desc: палка с отсечкою
+   title: палка с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "\\:"
+      kind: ядро
+   text: "\\:"
+   note:
+   desc: воздёрнутая
+   title: воздёрнутая
+   type: крюк
+   context:
+ - codes:
+    - code: "\\:к"
+      kind: ядро
+   text: "\\:к"
+   note:
+   desc: воздёрнутая с качкою
+   title: воздёрнутая с качкою
+   type: крюк
+   context:
+ - codes:
+    - code: ","
+      kind: ядро
+   text: ","
+   note:
+   desc: запятая
+   title: запятая
+   type: крюк
+   context:
+ - codes:
+    - code: ",|"
+      kind: ядро
+   text: ",|"
+   note:
+   desc: запятая с отсечкою
+   title: запятая с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: ",+"
+      kind: ядро
+   text: ",+"
+   note:
+   desc: запятая с крыжом
+   title: запятая с крыжом
+   type: крюк
+   context:
+ - codes:
+    - code: ",+|"
+      kind: ядро
+   text: ",+|"
+   note:
+   desc: запятая с крыжом и отсечкою
+   title: запятая с крыжом и отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: ",:"
+      kind: ядро
+   text: ",:"
+   note:
+   desc: голубчик
+   title: голубчик
+   type: крюк
+   context:
+ - codes:
+    - code: ",:|"
+      kind: ядро
+   text: ",:|"
+   note:
+   desc: голубчик с отсечкою
+   title: голубчик с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: ",:л"
+      kind: ядро
+   text: ",:л"
+   note:
+   desc: голубчик с ломкою
+   title: голубчик с ломкою
+   type: крюк
+   context:
+ - codes:
+    - code: ";"
+      kind: ядро
+   aliases:
+    - - code: ",."
+        kind: ядро
+    - - code: ",.-"
+        kind: ядро
+    - - code: ";-"
+        kind: ядро
+   text: ";"
+   notes:
+    - tone: "-"
+      duration: 2
+    - tone: "+"
+      duration: 2
+   desc: голубчик тихой
+   title: голубчик тихой
+   type: крюк
+   context:
+ - codes:
+    - code: ",,`"
+      kind: ядро
+   aliases:
+    - - code: ",,~"
+        kind: ядро
+    - - code: ",,>"
+        kind: ядро
+   text: ",,`"
+   note:
+   desc: хамила
+   title: хамила
+   type: крюк
+   context:
+ - codes:
+    - code: "/"
+      kind: ядро
+   text: "/"
+   note:
+   desc: крюк простой
+   title: крюк простой
+   type: крюк
+   context:
+ - codes:
+    - code: "'/"
+      kind: ядро
+   text: "'/"
+   note:
+   desc: крюк мрачный
+   title: крюк мрачный
+   type: крюк
+   context:
+ - codes:
+    - code: "\"/"
+      kind: ядро
+   text: "\"/"
+   note:
+   desc: крюк светлый
+   title: крюк светлый
+   type: крюк
+   context:
+ - codes:
+    - code: "\"'/"
+      kind: ядро
+   text: "\"'/"
+   note:
+   desc: крюк тресветлый
+   title: крюк тресветлый
+   type: крюк
+   context:
+ - codes:
+    - code: "/ш"
+      kind: ядро
+   text: "/ш"
+   note:
+   desc: крюк с сокольцем
+   title: крюк с сокольцем
+   type: крюк
+   context:
+ - codes:
+    - code: /л
+      kind: ядро
+   text: /л
+   note:
+   desc: крюк с ломкою
+   title: крюк с ломкою
+   type: крюк
+   context:
+ - codes:
+    - code: /шз
+      kind: ядро
+   aliases:
+    - - code: "\"/шз"
+        kind: ядро
+   text: /шз
+   note:
+   desc: крюк с сокольцем и зевком
+   title: крюк с сокольцем и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: "/|"
+      kind: ядро
+   text: "/|"
+   note:
+   desc: крюк с отсечкою
+   title: крюк с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: /*
+      kind: ядро
+   text: /*
+   note:
+   desc: крюк с задержкою
+   title: крюк с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: /|у
+      kind: ядро
+   text: /|у
+   note:
+   desc: крюк с отсечкою и ударкою
+   title: крюк с отсечкою и ударкою
+   type: крюк
+   context:
+ - codes:
+    - code: /v
+      kind: ядро
+   text: /v
+   note:
+   desc: крюк с подвёрткою
+   title: крюк с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: /*v
+      kind: ядро
+   text: /*v
+   note:
+   desc: крюк с задержкою и подвёрткою
+   title: крюк с задержкою и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "/`"
+      kind: ядро
+   aliases:
+    - - code: "-/`"
+        kind: ядро
+   text: "/`"
+   note:
+   desc: крюк с подчашием
+   title: крюк с подчашием
+   type: крюк
+   context:
+ - codes:
+    - code: "/`*"
+      kind: ядро
+   aliases:
+    - - code: "-/`*"
+        kind: ядро
+   text: "/`*"
+   note:
+   desc: крюк с подчашием и задержкою
+   title: крюк с подчашием и задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: "/`v"
+      kind: ядро
+   aliases:
+    - - code: "-/`v"
+        kind: ядро
+   text: "/`v"
+   note:
+   desc: крюк с подчашием и подвёрткою
+   title: крюк с подчашием и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "/`*v"
+      kind: ядро
+   aliases:
+    - - code: "-`*v"
+        kind: ядро
+   text: "/`*v"
+   note:
+   desc: крюк с подчашием, задержкою и подвёрткою
+   title: крюк с подчашием, задержкою и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: f/
+      kind: ядро
+   aliases:
+    - - code: "&"
+        kind: ядро
+   text: f/
+   notes:
+    - tone: с
+      duration: 2
+   desc: параклит
+   title: параклит
+   type: крюк
+   context:
+ - codes:
+    - code: "f/|"
+      kind: ядро
+   text: "f/|"
+   note:
+   desc: параклит с отсечкою
+   title: параклит с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: f/*
+      kind: ядро
+   text: f/*
+   note:
+   desc: параклит с задержкою
+   title: параклит с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: f/v
+      kind: ядро
+   text: f/v
+   note:
+   desc: параклит с подвёрткою
+   title: параклит с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: f/*v
+      kind: ядро
+   text: f/*v
+   note:
+   desc: параклит с задержкою и подвёрткою
+   title: параклит с задержкою и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: /#
+      kind: ядро
+   text: /#
+   note:
+   desc: ключ
+   title: ключ
+   type: крюк
+   context:
+ - codes:
+    - code: ./
+      kind: ядро
+   text: ./
+   note:
+   desc: мечик
+   title: мечик
+   type: крюк
+   context:
+ - codes:
+    - code: w/
+      kind: ядро
+   aliases:
+    - - code: кw/
+        kind: ядро
+   text: w/
+   note:
+   desc: два в челну
+   title: два в челну
+   type: крюк
+   context:
+ - codes:
+    - code: w/*
+      kind: ядро
+   aliases:
+    - - code: кw/*
+        kind: ядро
+   text: w/*
+   note:
+   desc: два в челну с задержкою
+   title: два в челну с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: "-w/*"
+      kind: ядро
+   aliases:
+    - - code: "-кw/*"
+        kind: ядро
+   text: "-w/*"
+   note:
+   desc: два в челну тихой с задержкою
+   title: два в челну тихой с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: "w/|"
+      kind: ядро
+   aliases:
+    - - code: "кw/|"
+        kind: ядро
+   text: "w/|"
+   note:
+   desc: два в челну с отсечкою
+   title: два в челну с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "w/v"
+      kind: ядро
+   aliases:
+    - - code: "кw/v"
+        kind: ядро
+   text: "w/v"
+   note:
+   desc: два в челну с подвёрткою
+   title: два в челну с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "w/`"
+      kind: ядро
+   aliases:
+    - - code: "кw/`"
+        kind: ядро
+    - - code: "-кw/`"
+        kind: ядро
+   text: "w/`"
+   note:
+   desc: два в челну с подчашием
+   title: два в челну с подчашием
+   type: крюк
+   context:
+ - codes:
+    - code: "w/`v"
+      kind: ядро
+   aliases:
+    - - code: "кw/`v"
+        kind: ядро
+    - - code: "-кw/`v"
+        kind: ядро
+   text: "w/`v"
+   note:
+   desc: два в челну с подчашием и подвёрткою
+   title: два в челну с подчашием и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "г/"
+      kind: ядро
+   aliases:
+    - - code: r
+        kind: ядро
+   text: "г/"
+   note:
+   desc: паук
+   title: паук
+   type: крюк
+   context:
+ - codes:
+    - code: "г/б"
+      kind: ядро
+   text: "г/б"
+   note:
+   desc: паук с борзой
+   title: паук с борзой (в 5-м гласе)
+   type: крюк
+   context: глас-5
+ - codes:
+    - code: =г/
+      kind: ядро
+   text: =г/
+   note:
+   desc: паук большой
+   title: паук большой
+   type: крюк
+   context:
+ - codes:
+    - code: =г/б
+      kind: ядро
+   text: =г/б
+   note:
+   desc: паук большой с борзой
+   title: паук большой с борзой
+   type: крюк
+   context:
+ - codes:
+    - code: "%"
+      kind: ядро
+   aliases:
+    - - code: "/`"
+        kind: ядро
+    - - code: "/~"
+        kind: ядро
+   text: "%"
+   note:
+   desc: подчашие
+   title: подчашие
+   type: крюк
+   context:
+ - codes:
+    - code: "'%"
+      kind: ядро
+   aliases:
+    - - code: "'/`"
+        kind: ядро
+    - - code: "'/~"
+        kind: ядро
+    - - code: "/>"
+        kind: ядро
+   text: "'%"
+   note:
+   desc: подчашие мрачное
+   title: подчашие мрачное
+   type: крюк
+   context:
+ - codes:
+    - code: "\"%"
+      kind: ядро
+   aliases:
+    - - code: ":%"
+        kind: ядро
+    - - code: "..~"
+        kind: ядро
+    - - code: "..>"
+        kind: ядро
+   text: "\"%"
+   note:
+   desc: подчашие светлое
+   title: подчашие светлое
+   type: крюк
+   context:
+ - codes:
+    - code: "\"'%"
+      kind: ядро
+   aliases:
+    - - code: ".:~"
+        kind: ядро
+    - - code: "\"'~"
+        kind: ядро
+   text: "\"'%"
+   note:
+   desc: подчашие тресветлое
+   title: подчашие тресветлое
+   type: крюк
+   context:
+ - codes:
+    - code: "%|"
+      kind: ядро
+   aliases:
+    - - code: "~|"
+        kind: ядро
+   text: "%|"
+   note:
+   desc: подчашие с отсечкою
+   title: подчашие с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "'%|"
+      kind: ядро
+   aliases:
+    - - code: "'~|"
+        kind: ядро
+   text: "'%|"
+   note:
+   desc: подчашие мрачное с отсечкою
+   title: подчашие мрачное с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "\"%|"
+      kind: ядро
+   aliases:
+    - - code: ":~|"
+        kind: ядро
+    - - code: "\"~|"
+        kind: ядро
+   text: "\"%|"
+   note:
+   desc: подчашие светлое с отсечкою
+   title: подчашие светлое с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "\"'%|"
+      kind: ядро
+   aliases:
+    - - code: .:~|
+        kind: ядро
+    - - code: "\"'~|"
+        kind: ядро
+   text: "\"'%|"
+   note:
+   desc: подчашие тресветлое с отсечкою
+   title: подчашие тресветлое с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "/:"
+      kind: ядро
+   text: "/:"
+   note:
+   desc: скамейца
+   title: скамейца
+   type: крюк
+   context:
+ - codes:
+    - code: "/:|"
+      kind: ядро
+   text: "/:|"
+   note:
+   desc: скамейца с отсечкою
+   title: скамейца с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "/:*"
+      kind: ядро
+   text: "/:*"
+   note:
+   desc: скамейца с задержкою
+   title: скамейца с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: "-/:"
+      kind: ядро
+   text: "-/:"
+   note:
+   desc: скамейца тихая
+   title: скамейца тихая
+   type: крюк
+   context:
+ - codes:
+    - code: "-/:|"
+      kind: ядро
+   text: "-/:|"
+   note:
+   desc: скамейца тихая с отсечкою
+   title: скамейца тихая с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "`"
+      kind: ядро
+   aliases:
+    - - code: "~"
+        kind: ядро
+    - - code: ">"
+        kind: ядро
+    - - code: "u"
+        kind: ядро
+   text: "`"
+   note:
+   desc: чашка
+   title: чашка
+   type: крюк
+   context:
+ - codes:
+    - code: "'`"
+      kind: ядро
+   aliases:
+    - - code: "'~"
+        kind: ядро
+    - - code: "'>"
+        kind: ядро
+    - - code: "'u"
+        kind: ядро
+   text: "`'` `"
+   note:
+   desc: чашка полная
+   title: чашка полная
+   type: крюк
+   context:
+ - codes:
+    - code: "+"
+      kind: ядро
+   text: "+"
+   note:
+   desc: крыж
+   title: крыж
+   type: крюк
+   context:
+ - codes:
+    - code: "="
+      kind: ядро
+   text: "="
+   note:
+   desc: статья простая
+   title: статья простая
+   type: крюк
+   context:
+ - codes:
+    - code: "=,"
+      kind: ядро
+   text: "=,"
+   note:
+   desc: статья с запятою
+   title: статья с запятою
+   type: крюк
+   context:
+ - codes:
+    - code: "=+"
+      kind: ядро
+   text: "=+"
+   note:
+   desc: статья с крыжом
+   title: статья с крыжом
+   type: крюк
+   context:
+ - codes:
+    - code: "='"
+      kind: ядро
+   text: "='"
+   note:
+   desc: статья мрачная
+   title: статья мрачная
+   type: крюк
+   context:
+ - codes:
+    - code: "=\""
+      kind: ядро
+   text: "=\""
+   note:
+   desc: статья светлая
+   title: статья светлая
+   type: крюк
+   context:
+ - codes:
+    - code: "-='"
+      kind: ядро
+   text: "-='"
+   note:
+   desc: статья тайнозамкненная
+   title: статья тайнозамкненная
+   type: крюк
+   context:
+ - codes:
+    - code: "-=\""
+      kind: ядро
+   text: "-=\""
+   note:
+   desc: статья тайнозамкненная
+   title: статья тайнозамкненная
+   type: крюк
+   context:
+ - codes:
+    - code: "='^"
+      kind: ядро
+   text: "='^"
+   note:
+   desc: статья мрачная с облачком
+   title: статья мрачная с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: "=\"^"
+      kind: ядро
+   text: "=\"^"
+   note:
+   desc: статья светлая с облачком
+   title: статья светлая с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: ='ш
+      kind: ядро
+   aliases:
+    - - code: "='ш"
+        kind: ядро
+   text: ='ш
+   note:
+   desc: статья мрачная с сокольцем
+   title: статья мрачная с сокольцем
+   type: крюк
+   context:
+ - codes:
+    - code: ="ш
+      kind: ядро
+   aliases:
+    - - code: "=\"ш"
+        kind: ядро
+   text: ="ш
+   note:
+   desc: статья светлая с сокольцем
+   title: статья светлая с сокольцем
+   type: крюк
+   context:
+ - codes:
+    - code: "='з"
+      kind: ядро
+   text: "='з"
+   note:
+   desc: статья мрачная с зевком
+   title: статья мрачная с зевком
+   type: крюк
+   context:
+ - codes:
+    - code: "=\"з"
+      kind: ядро
+   text: "=\"з"
+   note:
+   desc: статья светлая с зевком
+   title: статья светлая с зевком
+   type: крюк
+   context:
+ - codes:
+    - code: ='v
+      kind: ядро
+   text: ='v
+   note:
+   desc: статья мрачная с подвёрткою
+   title: статья мрачная с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "=\"v"
+      kind: ядро
+   text: "=\"v"
+   note:
+   desc: статья светлая с подвёрткою
+   title: статья светлая с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: =|
+      kind: ядро
+   text: =|
+   note:
+   desc: статья малозакрытая
+   title: статья малозакрытая
+   type: крюк
+   context:
+ - codes:
+    - code: ='|
+      kind: ядро
+   text: ='|
+   note:
+   desc: статья среднезакрытая
+   title: статья среднезакрытая
+   type: крюк
+   context:
+ - codes:
+    - code: -='|
+      kind: ядро
+   text: -='|
+   note:
+   desc: статья среднезакрытая тихая
+   title: статья среднезакрытая тихая
+   type: крюк
+   context:
+ - codes:
+    - code: "=^:"
+      kind: ядро
+   text: "=^:"
+   note:
+   desc: змеица
+   title: змеица
+   type: крюк
+   context:
+ - codes:
+    - code: "='|-"
+      kind: ядро
+   text: "='|-"
+   note:
+   desc: фотиза
+   title: фотиза
+   type: крюк
+   context:
+ - codes:
+    - code: "=`"
+      kind: ядро
+   text: "=`"
+   note:
+   desc: полкулисмы
+   title: полкулисмы
+   type: крюк
+   context:
+ - codes:
+    - code: "=`к"
+      kind: ядро
+   text: "=`к"
+   note:
+   desc: полкулисмы с качкою, или полдолинки, или полповоротки
+   title: полкулисмы с качкою, или полдолинки, или полповоротки
+   type: крюк
+   context:
+ - codes:
+    - code: "='`"
+      kind: ядро
+   text: "='`"
+   note:
+   desc: полкулисмы большой
+   title: полкулисмы большой
+   type: крюк
+   context:
+ - codes:
+    - code: "-='`"
+      kind: ядро
+   text: "-='`"
+   note:
+   desc: полкулисмы большой тихой
+   title: полкулисмы большой тихой
+   type: крюк
+   context:
+ - codes:
+    - code: ":"
+      kind: ядро
+   text: ":"
+   note:
+   desc: сложитья
+   title: сложитья
+   type: крюк
+   context:
+ - codes:
+    - code: "|:"
+      kind: ядро
+   text: "|:"
+   note:
+   desc: сложитья с розсекою
+   title: сложитья с розсекою
+   type: крюк
+   context:
+ - codes:
+    - code: ":*"
+      kind: ядро
+   text: ":*"
+   note:
+   desc: сложитья с задержкою
+   title: сложитья с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: "-:"
+      kind: ядро
+   text: "-:"
+   note:
+   desc: сложитья тихая
+   title: сложитья тихая
+   type: крюк
+   context:
+ - codes:
+    - code: ":|"
+      kind: ядро
+   text: ":|"
+   note:
+   desc: сложитья с отсечкою
+   title: сложитья с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: ":б"
+      kind: ядро
+   aliases:
+    - - code: ":|б"
+        kind: ядро
+   text: ":б"
+   note:
+   desc: сложитья с борзою
+   title: сложитья с борзою
+   type: крюк
+   context:
+ - codes:
+    - code: ":`"
+      kind: ядро
+   text: ":`"
+   note:
+   desc: сложитья с подчашием
+   title: сложитья с подчашием
+   type: крюк
+   context:
+ - codes:
+    - code: ":к"
+      kind: ядро
+   text: ":к"
+   note:
+   desc: сложитья с купною
+   title: сложитья с купною
+   type: крюк
+   context:
+ - codes:
+    - code: "б:"
+      kind: ядро
+   text: "б:"
+   note:
+   desc: сложитья борзая
+   title: сложитья борзая
+   type: крюк
+   context:
+ - codes:
+    - code: "у:"
+      kind: ядро
+   text: "у:"
+   note:
+   desc: сложитья с ударкою
+   title: сложитья с ударкою
+   type: крюк
+   context:
+ - codes:
+    - code: к:*
+      kind: ядро
+   aliases:
+    - - code: "к-:*"
+        kind: ядро
+   text: к:*
+   note:
+   desc: сложитья тихая с задержкою
+   title: сложитья тихая с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: к:|
+      kind: ядро
+   aliases:
+    - - code: "к-:|"
+        kind: ядро
+   text: к:|
+   note:
+   desc: сложитья с отсечкою
+   title: сложитья с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "к:`"
+      kind: ядро
+   text: "к:`"
+   note:
+   desc: сложитья с подчашием и качкою
+   title: сложитья с подчашием и качкою
+   type: крюк
+   context:
+ - codes:
+    - code: ":v"
+      kind: ядро
+   text: ":v"
+   note:
+   desc: сложитья с подвёрткою
+   title: сложитья с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: ":,"
+      kind: ядро
+   text: ":,"
+   note:
+   desc: сложитья с запятою
+   title: сложитья с запятою
+   type: крюк
+   context:
+ - codes:
+    - code: ":,|б"
+      kind: ядро
+   text: ":,|б"
+   note:
+   desc: сложитья с запятою и отсечкою
+   title: сложитья с запятою и отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: ":,б"
+      kind: ядро
+   text: ":,б"
+   note:
+   desc: сложитья с запятою борзая
+   title: сложитья с запятою борзая
+   type: крюк
+   context:
+ - codes:
+    - code: ":,v"
+      kind: ядро
+   aliases:
+    - - code: ":,v-"
+        kind: ядро
+   text: ":,v"
+   note:
+   desc: сложитья с запятой и подвёрткой
+   title: сложитья с запятой и подвёрткой
+   type: крюк
+   context:
+ - codes:
+    - code: "^:"
+      kind: ядро
+   text: "^:"
+   note:
+   desc: змейка
+   title: змейка
+   type: крюк
+   context:
+ - codes:
+    - code: ":/б"
+      kind: ядро
+   text: ":/б"
+   note:
+   desc: тряска
+   title: тряска
+   type: крюк
+   context:
+ - codes:
+    - code: "-:/"
+      kind: ядро
+   text: "-:/"
+   note:
+   desc: тряска тихая
+   title: тряска тихая
+   type: крюк
+   context:
+ - codes:
+    - code: "б:^/:"
+      kind: ядро
+   text: "б:^/:"
+   note:
+   desc: стрела трясовозводная
+   title: стрела трясовозводная
+   type: крюк
+   context:
+ - codes:
+    - code: ":^/+"
+      kind: ядро
+   text: ":^/+"
+   note:
+   desc: трясострельная
+   title: трясострельная
+   type: крюк
+   context:
+ - codes:
+    - code: ":/-"
+      kind: ядро
+   text: ":/-"
+   note:
+   desc: осока
+   title: осока
+   type: крюк
+   context:
+ - codes:
+    - code: "=/"
+      kind: ядро
+   text: "=/"
+   note:
+   desc: стрела проста
+   title: стрела проста
+   type: крюк
+   context:
+ - codes:
+    - code: "=^/"
+      kind: ядро
+   text: "=^/"
+   note:
+   desc: стрела с облачком
+   title: стрела с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: =ш/з
+      kind: ядро
+   text: =ш/з
+   note:
+   desc: стрела с зевком
+   title: стрела с зевком
+   type: крюк
+   context:
+ - codes:
+    - code: "к=/`"
+      kind: ядро
+   text: "к=/`"
+   note:
+   desc: стрела с подчашием и качкою
+   title: стрела с подчашием и качкою
+   type: крюк
+   context:
+ - codes:
+    - code: =/к
+      kind: ядро
+   text: =/к
+   note:
+   desc: стрела с качкою
+   title: стрела с качкою
+   type: крюк
+   context:
+ - codes:
+    - code: "к=/`з"
+      kind: ядро
+   text: "к=/`з"
+   note:
+   desc: стрела с подчашием, качкою и зевком
+   title: стрела с подчашием, качкою и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: б=/v
+      kind: ядро
+   text: б=/v
+   note:
+   desc: стрела с борзой и подвёрткою
+   title: стрела с борзой и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: -=/vк
+      kind: ядро
+   text: -=/vк
+   note:
+   desc: стрела с тихою, качкою и подвёрткою
+   title: стрела с тихою, качкою и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: ;/
+      kind: ядро
+   aliases:
+    - - code: ",,/"
+        kind: ядро
+   text: ;/
+   note:
+   desc: стрела громная
+   title: стрела громная
+   type: крюк
+   context:
+ - codes:
+    - code: ;/к
+      kind: ядро
+   text: ;/к
+   note:
+   desc: стрела громная с качкою
+   title: стрела громная с качкою
+   type: крюк
+   context:
+ - codes:
+    - code: ;/*
+      kind: ядро
+   text: ;/*
+   note:
+   desc: стрела громная с задержкою
+   title: стрела громная с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: ;/|к
+      kind: ядро
+   text: ;/|к
+   note:
+   desc: стрела громная с отсечкою и качкою
+   title: стрела громная с отсечкою и качкою
+   type: крюк
+   context:
+ - codes:
+    - code: ;/кv
+      kind: ядро
+   text: ;/кv
+   note:
+   desc: стрела громная с качкою и подвёрткою
+   title: стрела громная с качкою и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: ";/`к-"
+      kind: ядро
+   text: ";/`к-"
+   note:
+   desc: стрела громная с подчашием, качкою и тихою
+   title: стрела громная с подчашием, качкою и тихою
+   type: крюк
+   context:
+ - codes:
+    - code: ;/шз
+      kind: ядро
+   text: ;/шз
+   note:
+   desc: стрела громная с сокольцем и зевком
+   title: стрела громная с сокольцем и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: "б='/"
+      kind: ядро
+   text: "б='/"
+   note:
+   desc: стрела мрачная борзая
+   title: стрела мрачная борзая
+   type: крюк
+   context:
+ - codes:
+    - code: "б='/+"
+      kind: ядро
+   text: "б='/+"
+   note:
+   desc: стрела полукрыжевая борзая
+   title: стрела полукрыжевая борзая
+   type: крюк
+   context:
+ - codes:
+    - code: б='^/
+      kind: ядро
+   aliases:
+    - - code: "б;'^/+"
+        kind: ядро
+   text: б='^/
+   note:
+   desc: стрела мрачная с облачком
+   title: стрела мрачная с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: б='/*
+      kind: ядро
+   text: б='/*
+   note:
+   desc: стрела мрачная с задержкою
+   title: стрела мрачная с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: б='/|
+      kind: ядро
+   text: б='/|
+   note:
+   desc: стрела мрачная с отсечкою
+   title: стрела мрачная с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: б='^/*
+      kind: ядро
+   text: б='^/*
+   note:
+   desc: стрела мрачная с облачком и задержкою
+   title: стрела мрачная с облачком и задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: б='ш/*з
+      kind: ядро
+   text: б='ш/*з
+   note:
+   desc: стрела мрачная с задержкою и зевком
+   title: стрела мрачная с задержкою и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: б='/шз
+      kind: ядро
+   text: б='/шз
+   note:
+   desc: стрела мрачная с сокольцем и зевком
+   title: стрела мрачная с сокольцем и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: б='/v
+      kind: ядро
+   text: б='/v
+   note:
+   desc: стрела мрачная с подвёрткою
+   title: стрела мрачная с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: -='/
+      kind: ядро
+   aliases:
+    - - code: "-;'/+"
+        kind: ядро
+   text: -='/
+   note:
+   desc: стрела мрачная тихая
+   title: стрела мрачная тихая
+   type: крюк
+   context:
+ - codes:
+    - code: -='^/
+      kind: ядро
+   text: -='^/
+   note:
+   desc: стрела мрачная тихая с облачком
+   title: стрела мрачная тихая с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: -='/*
+      kind: ядро
+   text: -='/*
+   note:
+   desc: стрела мрачная тихая с задержкою
+   title: стрела мрачная тихая с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: -='/|
+      kind: ядро
+   text: -='/|
+   note:
+   desc: стрела мрачная тихая с отсечкою
+   title: стрела мрачная тихая с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: -='^/*
+      kind: ядро
+   text: -='^/*
+   note:
+   desc: стрела мрачная тихая с задержкою и облачком
+   title: стрела мрачная тихая с задержкою и облачком
+   type: крюк
+   context:
+ - codes:
+    - code: -='/шз
+      kind: ядро
+   text: -='/шз
+   note:
+   desc: стрела мрачная тихая с сокольцем и зевком
+   title: стрела мрачная тихая с сокольцем и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: -='/v
+      kind: ядро
+   text: -='/v
+   note:
+   desc: стрела мрачная тихая с подвёрткою
+   title: стрела мрачная тихая с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: -='/*v
+      kind: ядро
+   text: -='/*v
+   note:
+   desc: стрела мрачная тихая с задержкою и подвёрткою
+   title: стрела мрачная тихая с задержкою и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: б="/
+      kind: ядро
+   text: б="/
+   note:
+   desc: стрела светлая борзая
+   title: стрела светлая борзая
+   type: крюк
+   context:
+ - codes:
+    - code: б;"/
+      kind: ядро
+   text: б;"/
+   note:
+   desc: стрела громосветлая борзая
+   title: стрела громосветлая борзая
+   type: крюк
+   context:
+ - codes:
+    - code: "б=/:"
+      kind: ядро
+   aliases:
+    - - code: "=/:"
+        kind: ядро
+   text: "б=/:"
+   note:
+   desc: стрела поводная борзая
+   title: стрела поводная борзая
+   type: крюк
+   context:
+ - codes:
+    - code: "б;/:"
+      kind: ядро
+   text: "б;/:"
+   note:
+   desc: стрела возводная борзая
+   title: стрела возводная борзая
+   type: крюк
+   context:
+ - codes:
+    - code: б="^/
+      kind: ядро
+   aliases:
+    - - code: "б;\"^/"
+        kind: ядро
+    - - code: "б=^/:"
+        kind: ядро
+    - - code: "б;^/:"
+        kind: ядро
+   text: "б=\"^/"
+   note:
+   desc: стрела светлая с облачком
+   title: стрела светлая с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: б="/|
+      kind: ядро
+   aliases:
+    - - code: "б;\"/|"
+        kind: ядро
+    - - code: "б=/:|"
+        kind: ядро
+    - - code: "б;/:|"
+        kind: ядро
+   text: б="/|
+   note:
+   desc: стрела светлая с отсечкою
+   title: стрела светлая с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: "б=\"/*"
+      kind: ядро
+   aliases:
+    - - code: "б;\"/*"
+        kind: ядро
+    - - code: "б=/:*"
+        kind: ядро
+    - - code: "б;/:*"
+        kind: ядро
+   text: "б=\"/*"
+   note:
+   desc: стрела светлая с задержкою
+   title: стрела светлая с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: б="^/*
+      kind: ядро
+   aliases:
+    - - code: "б;\"^/*"
+        kind: ядро
+    - - code: "б=^/:*"
+        kind: ядро
+    - - code: "б;^/:*"
+        kind: ядро
+   text: б="^/*
+   note:
+   desc: стрела светлая с облачком и задержкою
+   title: стрела светлая с облачком и задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: б="/v
+      kind: ядро
+   aliases:
+    - - code: "б;\"^/v"
+        kind: ядро
+    - - code: "б=^/:v"
+        kind: ядро
+    - - code: "б;^/:v"
+        kind: ядро
+   text: б="/v
+   note:
+   desc: стрела светлая с подверткою
+   title: стрела светлая с подверткою
+   type: крюк
+   context:
+ - codes:
+    - code: б="/*v
+      kind: ядро
+   aliases:
+    - - code: "б;\"/*v"
+        kind: ядро
+    - - code: "б=/:*v"
+        kind: ядро
+    - - code: "б;/:*v"
+        kind: ядро
+   text: б="/*v
+   note:
+   desc: стрела светлая с задержкою и подверткою
+   title: стрела светлая с задержкою и подверткою
+   type: крюк
+   context:
+ - codes:
+    - code: "б=\"/`-"
+      kind: ядро
+   aliases:
+    - - code: "б;\"/`-"
+        kind: ядро
+   text: "б=\"/`-"
+   note:
+   desc: стрела светлая с подчашием
+   title: стрела светлая с подчашием
+   type: крюк
+   context:
+ - codes:
+    - code: "б=\"/`v-"
+      kind: ядро
+   aliases:
+    - - code: "б;\"/`v-"
+        kind: ядро
+   text: "б=\"/`v-"
+   note:
+   desc: стрела светлая с подчашием и подвёрткою
+   title: стрела светлая с подчашием и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: "б=\"/ш"
+      kind: ядро
+   aliases:
+    - - code: "б;\"/ш"
+        kind: ядро
+   text: "б=\"/ш"
+   note:
+   desc: стрела светлая с сокольцем
+   title: стрела светлая с сокольцем
+   type: крюк
+   context:
+ - codes:
+    - code: б="/з
+      kind: ядро
+   aliases:
+    - - code: "б;\"/з"
+        kind: ядро
+   text: б="/з
+   note:
+   desc: стрела светлая с зевком
+   title: стрела светлая с зевком
+   type: крюк
+   context:
+ - codes:
+    - code: б="/*з
+      kind: ядро
+   aliases:
+    - - code: "б;\"/*з"
+        kind: ядро
+   text: б="/*з
+   note:
+   desc: стрела светлая с задержкою и зевком
+   title: стрела светлая с задержкою и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: -="/
+      kind: ядро
+   aliases:
+    - - code: "-;\"/"
+        kind: ядро
+    - - code: "-=/:"
+        kind: ядро
+    - - code: "-;/:"
+        kind: ядро
+   text: -="/
+   note:
+   desc: стрела светлая тихая
+   title: стрела светлая тихая
+   type: крюк
+   context:
+ - codes:
+    - code: -="^/
+      kind: ядро
+   aliases:
+    - - code: "-=^/:"
+        kind: ядро
+    - - code: "-;^/:"
+        kind: ядро
+   text: -="^/
+   note:
+   desc: стрела светлая тихая с облачком
+   title: стрела светлая тихая с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: -="/|
+      kind: ядро
+   aliases:
+    - - code: "-=/:|"
+        kind: ядро
+    - - code: "-;/:|"
+        kind: ядро
+   text: -="/|
+   note:
+   desc: стрела светлая тихая с отсечкою
+   title: стрела светлая тихая с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: -="/*
+      kind: ядро
+   aliases:
+    - - code: "-=/:*"
+        kind: ядро
+    - - code: "-;/:*"
+        kind: ядро
+   text: -="/*
+   note:
+   desc: стрела светлая тихая с задержкою
+   title: стрела светлая тихая с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: -="^/*
+      kind: ядро
+   aliases:
+    - - code: "-=^/:*"
+        kind: ядро
+    - - code: "-;^/:*"
+        kind: ядро
+   text: -="^/*
+   note:
+   desc: стрела светлая тихая с облачком и задержкою
+   title: стрела светлая тихая с облачком и задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: -="/v
+      kind: ядро
+   aliases:
+    - - code: "-=/:v"
+        kind: ядро
+    - - code: "-;/:v"
+        kind: ядро
+   text: -="/v
+   note:
+   desc: стрела светлая тихая с подверткою
+   title: стрела светлая тихая с подверткою
+   type: крюк
+   context:
+ - codes:
+    - code: -="/*v
+      kind: ядро
+   aliases:
+    - - code: "-=^/:*v"
+        kind: ядро
+    - - code: "-;^/:*v"
+        kind: ядро
+   text: -="/*v
+   note:
+   desc: стрела светлая тихая с задержкою и подверткою
+   title: стрела светлая тихая с задержкою и подверткою
+   type: крюк
+   context:
+ - codes:
+    - code: "-=\"/`-"
+      kind: ядро
+   aliases:
+    - - code: "-;\"/`-"
+        kind: ядро
+   text: "-=\"/`-"
+   note:
+   desc: стрела светлая тихая с подчашием
+   title: стрела светлая тихая с подчашием
+   type: крюк
+   context:
+ - codes:
+    - code: "-=\"/`v-"
+      kind: ядро
+   aliases:
+    - - code: "-;\"/`v-"
+        kind: ядро
+   text: "-=\"/`v-"
+   note:
+   desc: стрела светлая тихая с подчашием и подвёрткою
+   title: стрела светлая тихая с подчашием и подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: -="/*з
+      kind: ядро
+   aliases:
+    - - code: "-;\"/*з"
+        kind: ядро
+   text: -="/*з
+   note:
+   desc: стрела светлая тихая с задержкою и зевком
+   title: стрела светлая тихая с задержкою и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"/
+      kind: ядро
+   text: б,+"/
+   note:
+   desc: стрела крыжевая (или громокрыжная)
+   title: стрела крыжевая (или громокрыжная)
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"^/
+      kind: ядро
+   text: б,+"^/
+   note:
+   desc: стрела крыжевая с облачком
+   title: стрела крыжевая с облачком
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"/v
+      kind: ядро
+   text: б,+"/v
+   note:
+   desc: стрела крыжевая с подверткою
+   title: стрела крыжевая с подверткою
+   type: крюк
+   context:
+ - codes:
+    - code: '`б,+"/` `'
+      kind: ядро
+   text: '`б,+"/` `'
+   note:
+   desc: стрела крыжевая с подчашием
+   title: стрела крыжевая с подчашием
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"/|
+      kind: ядро
+   text: б,+"/|
+   note:
+   desc: стрела крыжевая с отсечкою
+   title: стрела крыжевая с отсечкою
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"/*
+      kind: ядро
+   text: б,+"/*
+   note:
+   desc: стрела крыжевая с задержкою
+   title: стрела крыжевая с задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"^/*
+      kind: ядро
+   text: б,+"^/*
+   note:
+   desc: стрела крыжевая с облачком и задержкою
+   title: стрела крыжевая с облачком и задержкою
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"/*v
+      kind: ядро
+   text: б,+"/*v
+   note:
+   desc: стрела крыжевая с задержкою и подверткою
+   title: стрела крыжевая с задержкою и подверткою
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"/ш
+      kind: ядро
+   text: б,+"/ш
+   note:
+   desc: стрела крыжевая с сокольцем
+   title: стрела крыжевая с сокольцем
+   type: крюк
+   context:
+ - codes:
+    - code: б,+"ш/*з
+      kind: ядро
+   text: б,+"ш/*з
+   note:
+   desc: стрела крыжевая с задержкою и зевком
+   title: стрела крыжевая с задержкою и зевком
+   type: крюк
+   context:
+ - codes:
+    - code: ()=/
+      kind: ядро
+   text: ()=/
+   note:
+   desc: дуда (вар. `Q=/`)
+   title: дуда (вар. `Q=/`)
+   type: крюк
+   context:
+ - codes:
+    - code: ()=/v
+      kind: ядро
+   aliases:
+    - - code: "Q=/v"
+        kind: ядро
+   text: ()=/v
+   note:
+   desc: дуда с подвёрткою
+   title: дуда с подвёрткою
+   type: крюк
+   context:
+ - codes:
+    - code: ()=,
+      kind: ядро
+   aliases:
+    - - code: "Q=,"
+        kind: ядро
+   text: ()=,
+   note:
+   desc: немка
+   title: немка
+   type: крюк
+   context:
+ - codes:
+    - code: z
+      kind: ядро
+   text: z
+   note:
+   desc: зела / рог
+   title: зела / рог
+   type: крюк
+   context:
+ - codes:
+    - code: "$"
+      kind: ядро
+   text: "$"
+   note:
+   desc: фита
+   title: фита
+   type: крюк
+   context:
+ - codes:
+    - code: d
+      kind: ядро
+   text: d
+   note:
+   desc: дербица / подъём / воспица
+   title: дербица / подъём / воспица
+   type: крюк
+   context:
+
+#### лица
+ - codes:
+    - code: ше=~в
+      kind: ядро
+    - code: сте=|
+      kind: ядро
+    - code: зю=
+      kind: ядро
+   text: '"/>в "/в -/~п =п'
+   note:
+   desc:
+   title: кулисма
+   type: лицо
+   context: глас-3
+
+ - codes:
+    - code: по=~в
+      kind: ядро
+    - code: ѧ=|
+      kind: ядро
+    - code: "хꙋ=^:"
+      kind: ядро
+   text: '"/>в -/~п =^:м'
+   note:
+   desc:
+   title: со змеицею
+   type: лицо
+   context: глас-3
+
+ - codes:
+    - code: "бы\\v"
+      kind: пред
+    - code: ва=~п
+      kind: ядро
+    - code: є,,/к
+      kind: ядро
+    - code: те=
+      kind: ядро
+   text: "\\vп =:/бп w/км =с"
+   note:
+   desc:
+   title: перевивка
+   type: лицо
+   context: глас-3
+
+ - codes:
+    - code: ве:=^в
+      kind: ядро
+    - code: ли-:/~п
+      kind: по
+   text: '"/|в |: "/|в [="п]'
+   note:
+   desc:
+   title: вели[чица]
+   type: лицо
+   context: глас-3
+
+#### фиты
+ - codes:
+    - code: \_=,н
+      kind: ядро
+    - code: '\_:"/wф="'
+      kind: ядро
+   text: "/>н- :\"/-в \"/М \"/>р \"/>п \"/в \"/>р \"/>м ,+н ;- \"/>в- /:М =\\'в =п"
+   note:
+   desc:
+   title: пятогласна
+   type: фита
+   context: глас-3
+
+#### попевки
+ - codes:
+    - code: ѡf/vп
+      kind: ядро
+    - code: "со,:"
+      kind: ядро
+    - code: ка"/в
+      kind: ядро
+    - code: по!р
+      kind: ядро
+    - code: "лъ,:"
+      kind: ядро
+    - code: на\\в
+      kind: ядро
+    - code: ѧ=п
+      kind: ядро
+   type: лицо
+   context: глас-3
+   text: 
+   note:
+   desc:
+   title: ѡсока полная
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: "ѡ,:"
+      kind: ядро
+    - code: со"/в
+      kind: ядро
+    - code: ка!р
+      kind: ядро
+    - code: "бо,:"
+      kind: ядро
+    - code: лша\\в
+      kind: ядро
+    - code: ѧ=п
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: ѡсока большая
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: ѡ"/в
+      kind: ядро
+    - code: со!р
+      kind: ядро
+    - code: "ка,:"
+      kind: ядро
+    - code: ма\\в
+      kind: ядро
+    - code: ла=п
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: ѡсока малая
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: "и,:"
+      kind: ядро
+    - code: нѣ"/в
+      kind: ядро
+    - code: сть!п
+      kind: ядро
+    - code: пра=^:в
+      kind: ядро
+    - code: "вь,:"
+      kind: ядро
+    - code: дь\\в
+      kind: ядро
+    - code: на=п
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: средняя
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: 'спа[f/п "/п]'
+      kind: ядро
+    - code: сти,м
+      kind: ядро
+    - code: сѧ"/в
+      kind: ядро
+    - code: дꙋ=~мпм
+      kind: ядро
+    - code: ша/:в
+      kind: ядро
+    - code: мъ\\vп
+      kind: ядро
+    - code: на=~мп
+      kind: ядро
+    - code: шы,,/км
+      kind: ядро
+    - code: мъ=с
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: перевивка
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: жи:'^/-пв
+      kind: ядро
+    - code: зне!м
+      kind: ядро
+    - code: мо\\м
+      kind: ядро
+    - code: "ю[+с =с]"
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: ѡгибка
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: "по,:"
+      kind: ядро
+    - code: ще"/П
+      kind: ядро
+    - code: ні'/М
+      kind: ядро
+    - code: еlв
+      kind: ядро
+    - code: мъlр
+      kind: ядро
+    - code: же:,-р
+      kind: ядро
+    - code: "и,:"
+      kind: ядро
+    - code: бдѣ\\М
+      kind: ядро
+    - code: ні=~кв
+      kind: ядро
+    - code: е=|п
+      kind: ядро
+    - code: мъ=п
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: кулизма средняя
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: "вь!с"
+      kind: пред
+    - code: "сѧ,:"
+      kind: ядро
+    - code: че"/п
+      kind: ядро
+    - code: ска!м
+      kind: ядро
+    - code: ѧl,н
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: возмѣръ
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: доlв
+      kind: пред
+    - code: броlр
+      kind: пред
+    - code: дѣ!р
+      kind: пред
+    - code: те,м
+      kind: ядро
+    - code: лей:'/прм
+      kind: ядро
+    - code: ти!с
+      kind: ядро
+    - code: хри\\м
+      kind: ядро
+    - code: сте=с
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: "*добродѣтельна*"
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: иlм
+      kind: ядро
+    - code: боlр
+      kind: ядро
+    - code: го!р
+      kind: ядро
+    - code: "ꙋ,:"
+      kind: ядро
+    - code: го"/п
+      kind: ядро
+    - code: дь!м
+      kind: ядро
+    - code: но,н
+      kind: ядро
+    - code: по!м
+      kind: ядро
+    - code: ю,,"/бв
+      kind: ядро
+    - code: щи'/~-п
+      kind: ядро
+    - code: мъ='п
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: поѣздка
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: ꙗ[f/с /с]
+      kind: ядро
+    - code: ко,н
+      kind: ядро
+    - code: во:'/+брп
+      kind: ядро
+    - code: го:|в\_пр
+      kind: ядро
+    - code: рꙋ"/в
+      kind: ядро
+    - code: и!п
+      kind: ядро
+    - code: зра"/п
+      kind: ядро
+    - code: и\\л
+      kind: ядро
+    - code: лѧ=с
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: пригласка заводнаѧ
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: це,н
+      kind: ядро
+    - code: рко"/с
+      kind: ядро
+    - code: вьlр
+      kind: ядро
+    - code: си!р
+      kind: ядро
+    - code: "ѹ,:"
+      kind: ядро
+    - code: тве:'/прм
+      kind: ядро
+    - code: рди,с
+      kind: ядро
+    - code: хри\\м
+      kind: ядро
+    - code: сте=с
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: "*утвержательна*"
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: и[f/с /с]
+      kind: ядро
+    - code: ро,н
+      kind: ядро
+    - code: "же,:"
+      kind: ядро
+    - code: ство"/в
+      kind: ядро
+    - code: дѣ!п
+      kind: ядро
+    - code: ви\\п
+      kind: ядро
+    - code: че=с
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: таганец большой
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: "срѣ,:"
+      kind: ядро
+    - code: дній"/в
+      kind: ядро
+    - code: та!п
+      kind: ядро
+    - code: га\\п
+      kind: ядро
+    - code: нец=с
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: таганец средний
+   type: попевка
+   context: глас-3
+
+ - codes:
+    - code: та"/в
+      kind: ядро
+    - code: га!п
+      kind: ядро
+    - code: не\\п
+      kind: ядро
+    - code: цъ=с
+      kind: ядро
+   text: 
+   note:
+   desc:
+   title: таганец малый
+   type: попевка
+   context: глас-3

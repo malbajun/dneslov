@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 3.1 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="3.1">
+  <work>
+    <work-title><%= title -%></work-title>
+    </work>
+  <identification>
+    <creator type="composer"><%= composer -%></creator>
+    <encoding>
+      <software>Znamenar</software>
+      <encoding-date><%= date -%></encoding-date>
+      <supports element="accidental" type="yes"/>
+      <supports element="beam" type="yes"/>
+      <supports element="print" attribute="new-page" type="yes" value="yes"/>
+      <supports element="print" attribute="new-system" type="yes" value="yes"/>
+      <supports element="stem" type="yes"/>
+      </encoding>
+    </identification>
+  <defaults>
+    <scaling>
+      <millimeters>6.99911</millimeters>
+      <tenths>40</tenths>
+      </scaling>
+    <page-layout>
+      <page-height>1696.94</page-height>
+      <page-width>1200.48</page-width>
+      <page-margins type="even">
+        <left-margin>85.7252</left-margin>
+        <right-margin>85.7252</right-margin>
+        <top-margin>85.7252</top-margin>
+        <bottom-margin>85.7252</bottom-margin>
+        </page-margins>
+      <page-margins type="odd">
+        <left-margin>85.7252</left-margin>
+        <right-margin>85.7252</right-margin>
+        <top-margin>85.7252</top-margin>
+        <bottom-margin>85.7252</bottom-margin>
+        </page-margins>
+      </page-layout>
+    <word-font font-family="Edwin" font-size="10"/>
+    <lyric-font font-family="Edwin" font-size="10"/>
+    </defaults>
+  <credit page="1">
+    <credit-type>title</credit-type>
+    <credit-words default-x="600.24" default-y="1611.42" justify="center" valign="top" font-size="22"><%= title -%></credit-words>
+    </credit>
+  <credit page="1">
+    <credit-type>composer</credit-type>
+    <credit-words default-x="1114.75" default-y="1511.42" justify="right" valign="top"><%= composer -%></credit-words>
+    </credit>
+  <part-list>
+    <score-part id="P1">
+      <part-name>Глас</part-name>
+      <part-abbreviation>Гл.</part-abbreviation>
+      <score-instrument id="P1-I1">
+        <instrument-name>Глас</instrument-name>
+        </score-instrument>
+      <midi-device id="P1-I1" port="1"></midi-device>
+      <midi-instrument id="P1-I1">
+        <midi-channel>1</midi-channel>
+        <midi-program>1</midi-program>
+        <volume>78.7402</volume>
+        <pan>0</pan>
+        </midi-instrument>
+      </score-part>
+    </part-list>
+<% parts.each do |part| -%>
+  <part id="<%= part.id -%>">
+<% part.measures.each do |measure, index| -%>
+  <measure number="<%= measure.index -%>" width="<%= measure.width -%>">
+<% if measure.has_print? -%>
+      <print>
+        <system-layout>
+          <system-margins>
+            <left-margin>50.00</left-margin>
+            <right-margin>0.00</right-margin>
+            </system-margins>
+          <top-system-distance>170.00</top-system-distance>
+          </system-layout>
+        </print>
+<% end -%>
+<% if measure.has_attributes? -%>
+      <attributes>
+        <divisions>1</divisions>
+        <key>
+          <fifths>0</fifths>
+          </key>
+        <time>
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+          </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+          </clef>
+        </attributes>
+<% end -%>
+<% measure.notes.each do |note| -%>
+      <note <%= note.attrs {|name, value| "#{name}=\"#{value}\"" }.join(" ") -%>>
+<% if note.is_present? -%>
+        <pitch>
+          <step><%= note.step -%></step>
+          <octave><%= note.octave -%></octave>
+          </pitch>
+        <duration><%= note.duration -%></duration>
+        <voice><%= note.voice -%></voice>
+        <type><%= note.type -%></type>
+        <stem><%= note.stem -%></stem>
+        <lyric number="1" default-x="6.50" default-y="-41.07" relative-y="-30.00">
+          <syllabic>single</syllabic>
+          <text><%= note.text -%></text>
+          </lyric>
+<% else -%>
+        <rest measure="yes"/>
+        <duration>4</duration>
+        <voice>1</voice>
+<% end -%>
+        </note>
+<% end -%>
+      </measure>
+<% end -%>
+    </part>
+<% end -%>
+  </score-partwise>
