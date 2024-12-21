@@ -362,7 +362,7 @@ module Languageble
       :ЛИ => "#{LITHUANIAN_CAPITAL}#{LITHUANIAN_STROKE}#{LITHUANIAN_ACCENT}#{DIGITS}",
       :ВН => "#{UPPER_ANCIENT_GERMANIC_CAPITAL}#{UPPER_ANCIENT_GERMANIC_STROKE}",
       :НН => "#{LOWER_ANCIENT_GERMANIC_CAPITAL}#{LOWER_ANCIENT_GERMANIC_STROKE}",
-      :ПС => "#{PERSIAN_STROKE}#{PERSIAN_ACCENT}",
+      :ПЕ => "#{PERSIAN_STROKE}#{PERSIAN_ACCENT}",
       :СП => "#{OLD_PERSIAN_STROKE}#{OLD_PERSIAN_ACCENT}",
       :ПФ => "#{OLD_PERSIAN_HIEROGLYPH}",
       :ДП => "#{ANCIENT_PERSIAN_STROKE}#{ANCIENT_PERSIAN_ACCENT}",
@@ -437,7 +437,7 @@ module Languageble
       вн: :ВН, #древневерхненѣмецкій
       нн: :НН, #древненижненѣмецкій
       кп: :КП, #коптскій
-      пс: :ПС, #персскій/фарси
+      пе: :ПЕ, #персскій/фарси
       сп: %i(СП ПФ), #староперсскій/парфянскій/пехлевійскій: латиница, парфяница
       дп: %i(ДП ДИ), #древнеперсскій: латиница, иероглифика
       ки: %i(КИ КУ), #китайскій традиціонный, упрощённый
