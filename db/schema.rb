@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_12_21_150900) do
+ActiveRecord::Schema[7.0].define(version: 2024_12_22_194700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -499,14 +499,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_21_150900) do
   end
 
   add_foreign_key "accounts", "users", on_delete: :cascade
+  add_foreign_key "calendaries", "memories", column: "place_id", on_delete: :cascade
+  add_foreign_key "coverings", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade
-  add_foreign_key "coverings", "places", on_delete: :cascade
+  add_foreign_key "events", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "image_attitudes", "pictures", on_delete: :cascade
   add_foreign_key "links", "resources", on_delete: :cascade
   add_foreign_key "markups", "readings", on_delete: :cascade
   add_foreign_key "markups", "scripta", on_delete: :restrict
   add_foreign_key "members", "roles", on_delete: :cascade
   add_foreign_key "members", "users", on_delete: :cascade
+  add_foreign_key "memo_orders", "memories", column: "order_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", column: "bond_to_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade

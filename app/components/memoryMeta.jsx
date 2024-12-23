@@ -1,5 +1,5 @@
 import { matchLanguages, matchAlphabeths, matchLetters, matchEmptyObject, matchCodes, matchEmptyCollection, matchValidUrl } from 'matchers'
-import { makeCouncil, makeDate, makeDescription } from 'makers'
+import { makeCouncil, makeDate, makeDescription, makeTweet } from 'makers'
 
 export const memoryMeta = {
    default: 'short_name',
@@ -15,13 +15,17 @@ export const memoryMeta = {
       yes: "Да"
    },
    row: {
+      slug: {
+         title: 'Плашка',
+         value: (value) => { return value.slug.text }
+      },
       short_name: {
          title: 'Краткое имя',
       },
       order: {
          title: 'Чин',
          value: (value) => {
-            return value.memo_orders && value.memo_orders[0]?.order || value.order
+            return value.memo_orders && value.memo_orders[0]?.order
          },
       },
       council: {
@@ -34,6 +38,12 @@ export const memoryMeta = {
       date: {
          title: 'Пора',
          value: makeDate
+      },
+      tweet: {
+         title: 'Скрщ',
+         value: makeTweet,
+         source: 'tweets',
+         filter: { type: "Tweet" },
       },
       description: {
          title: 'Описание',
@@ -66,7 +76,7 @@ export const memoryMeta = {
       },
       short_name: {
          kind: 'text',
-         display_scheme: '12-6-3-3',
+         display_scheme: '12-3-2-2',
          title: 'Краткое имя',
          placeholder: 'Введи краткое имя',
          validations: {
@@ -75,9 +85,56 @@ export const memoryMeta = {
             "Все слова должны начинаться либо с заглавной буквы, либо с цифры": /(^[^0-9А-ЯЁ]|\s[^0-9А-ЯЁа-яё])/g,
          }
       },
+      type: {
+         kind: 'select',
+         title: 'Вид памяти',
+         display_scheme: '12-3-2-2',
+         codeNames: {
+            '': 'Избери вид памяти...',
+            'Identity': 'Личность',
+            'Order': 'Чин',
+            'Building': 'Здание',
+            'Council': 'Собор',
+            'Group': 'Группа',
+            'Place': 'Место',
+            'Subsisten': 'Источник бытия',
+            'Concept': 'Понятие',
+            'Thing': 'Предмет',
+         },
+         validations: {
+            'Пункт из списка должен быть выбран': matchEmptyObject,
+         },
+      },
+      kind: {
+         kind: 'select',
+         title: 'Подвид памяти',
+         display_scheme: '12-3-2-2',
+         codeNames: {
+            '': 'Без подвида',
+            'Chains': 'Вериги',
+            'Icon': 'Икона',
+            'Belt': 'Пояс',
+            'Shroud': 'Покров',
+            'Wilderness': 'Урочище',
+            'Village': 'Деревня',
+            'Settlement': 'Село',
+            'Town': 'Посёлок',
+            'City': 'Град',
+            'Monastery': 'Обитель',
+            'World': 'Мир',
+            'Church': 'Храм',
+            'Cathedral': 'Собор',
+            'Chapel': 'Часовня',
+            'Soul': 'Душа',
+            'Society': 'Общество',
+            'Worldie': 'Мір',
+            'Navia': 'Усопшие',
+            'Appear': 'Явление',
+         },
+      },
       base_year: {
          kind: 'text',
-         display_scheme: '12-3-2-2',
+         display_scheme: '12-3-1-1',
          title: 'Опорный год',
          placeholder: 'Введи опорный год',
          data: {length: '5'},
@@ -93,7 +150,7 @@ export const memoryMeta = {
          kind: 'text',
          title: 'Количество',
          placeholder: 'Введи количество',
-         display_scheme: '12-6-1-1',
+         display_scheme: '12-3-1-1',
          validations: {
             'Неверный формат поля: допустимые знаки - цифры, вопрос и плюс': /[^0-9\?\+]/,
          }
@@ -102,7 +159,13 @@ export const memoryMeta = {
          kind: 'text',
          title: 'Собор',
          placeholder: 'Введи сокращение собора',
-         display_scheme: '12-6-4-4',
+         display_scheme: '12-3-1-1',
+      },
+      significance: {
+         kind: 'text',
+         title: 'Значимость',
+         placeholder: 'Введи значимость',
+         display_scheme: '12-3-1-1',
       },
       coverings: {
          kind: 'collection',
@@ -177,6 +240,66 @@ export const memoryMeta = {
                placeholder: 'Начни ввод связанной памяти...',
                validations: {
                   'Связанная память должна быть выбрана': matchEmptyObject,
+               }
+            },
+         }
+      },
+      tweets: {
+         kind: 'collection',
+         title: "Сокращения",
+         action: "Добавь сокращение",
+         filter: { type: "Tweet" },
+         source: "descriptions",
+         display_scheme: '12-12-12-12',
+         validations: {
+            "Языки в сокращеньях не могут совпадать": matchLanguages,
+            "Азбуки в сокращеньях не могут совпадать": matchAlphabeths,
+         },
+         meta: {
+            id: {
+               kind: 'hidden',
+            },
+            text: {
+               kind: 'text',
+               title: 'Краткое имя',
+               placeholder: 'Введи краткое имя',
+               display_scheme: '12-12-6-6',
+               subscribeTo: '@alphabeth_code',
+               validations: {
+                  "Краткое имя отсутствует": matchEmptyObject,
+                  'Краткое имя содержит знаки вне перечня избранной азбуки': matchLetters,
+               }
+            },
+            language_code: {
+               kind: 'dynamic',
+               title: 'Язык',
+               display_scheme: '12-6-3-3',
+               pathname: 'short_subjects',
+               humanized_name: 'language',
+               context_value: { k: "Language" },
+               key_name: 'value',
+               value_name: 'key',
+               placeholder: 'Начни ввод наименования языка...',
+               subscribeTo: '@alphabeth_code',
+               validations: {
+                  'Избранный язык не соотвествует избранной азбуке': matchCodes,
+                  'Язык из списка должен быть выбран': matchEmptyObject,
+               }
+            },
+            alphabeth_code: {
+               kind: 'dynamic',
+               title: 'Азбука',
+               display_scheme: '12-6-3-3',
+               pathname: 'short_subjects',
+               humanized_name: 'alphabeth',
+               context_value: { k: "Alphabeth" },
+               key_name: 'value',
+               value_name: 'key',
+               placeholder: 'Начни ввод наименования азбуки...',
+               subscribeTo: '@language_code',
+               validations: {
+                  'Избранная азбука не соотвествует избранному языку': matchCodes,
+                  'Азбука из списка должна быть выбрана': matchEmptyObject,
                }
             },
          }
@@ -385,7 +508,7 @@ export const memoryMeta = {
          subscribeTo: '@quantity',
          validations: {
             'Минимум одно имя должно быть задано': (value, context) => {
-               if (!context.quantity && matchEmptyObject(value, context)) { return true }
+               if (!context.quantity && context.type != 'Order' && matchEmptyObject(value, context)) { return true }
             }
          },
          meta: {

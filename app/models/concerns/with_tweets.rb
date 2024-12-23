@@ -111,7 +111,6 @@ module WithTweets
          accepts_nested_attributes_for :tweets, reject_if: :all_blank, allow_destroy: true
 
          validates :tweets, associated: true
-         validates_presence_of :tweets
       end
    end
 end

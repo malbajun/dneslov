@@ -363,19 +363,19 @@ class Memo < ApplicationRecord
          "COALESCE(jsonb_object_agg(
           DISTINCT COALESCE(slugs_#{scope_name}.text, ''), titles_#{scope_name}.text)
             FILTER (
-             WHERE slugs_#{scope_name}.id IS NOT NULL
-               AND titles_#{scope_name}.id IS NOT NULL), '{}')
+             WHERE titles_#{scope_name}.id IS NOT NULL), '{}')
                 AS _orders"
       join =
          "LEFT OUTER JOIN memo_orders AS memo_orders_#{scope_name}
                        ON memo_orders_#{scope_name}.memo_id = #{join_name}.id
-          LEFT OUTER JOIN orders AS orders_#{scope_name}
+          LEFT OUTER JOIN memories AS orders_#{scope_name}
                        ON orders_#{scope_name}.id = memo_orders_#{scope_name}.order_id
+                      AND orders_#{scope_name}.type = 'Order'
           LEFT OUTER JOIN slugs AS slugs_#{scope_name}
-                       ON slugs_#{scope_name}.sluggable_type = 'Order'
+                       ON slugs_#{scope_name}.sluggable_type = 'Memory'
                       AND slugs_#{scope_name}.sluggable_id = orders_#{scope_name}.id
           LEFT OUTER JOIN descriptions AS titles_#{scope_name}
-                       ON titles_#{scope_name}.describable_type = 'Order'
+                       ON titles_#{scope_name}.describable_type = 'Memory'
                       AND titles_#{scope_name}.describable_id = orders_#{scope_name}.id
                       AND titles_#{scope_name}.type = 'Tweet'
                       AND titles_#{scope_name}.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
@@ -489,11 +489,12 @@ class Memo < ApplicationRecord
                              memo_orders.order_id AS order_id,
                              memo_order_titles.text AS order
                         FROM memo_orders
-             LEFT OUTER JOIN orders
+             LEFT OUTER JOIN memories AS orders
                           ON orders.id = memo_orders.order_id
+                         AND orders.type = 'Order'
                         JOIN descriptions AS memo_order_titles
                           ON memo_order_titles.describable_id = orders.id
-                         AND memo_order_titles.describable_type = 'Order'
+                         AND memo_order_titles.describable_type = 'Memory'
                          AND memo_order_titles.type = 'Note'
                              #{lang_wheres&.last} #{alph_wheres&.last}
                        WHERE memoes.id = memo_orders.memo_id

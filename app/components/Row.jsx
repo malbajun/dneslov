@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import PropTypes from 'prop-types'
+import Cell from 'Cell'
 
 export default class Row extends Component {
    shouldComponentUpdate(nextProps, nextState) {
@@ -45,8 +46,8 @@ export default class Row extends Component {
          return null
       }
 
-      return element.value &&
-         element.value(this.props.value, this.props.text_languages, element.source, element.filter) ||
+      return element.value ?
+         element.value(this.props.value, this.props.text_languages, element.source, element.filter) :
          this.props.value[name]
    }
 
@@ -56,8 +57,13 @@ export default class Row extends Component {
       return (
          <tr>
             {Object.entries(this.props.meta).map(([name, element]) => {
-               return <td>{this.value(name, element)}</td>
-            })}
+               return <td>
+                  <Cell
+                     name={name}
+                     element={element}
+                     text_languages={this.props.text_languages}
+                     value={this.props.value}
+                     default={this.props.value[name]} /></td>})}
             <td className='actions'>
                <i
                   className='small material-icons'

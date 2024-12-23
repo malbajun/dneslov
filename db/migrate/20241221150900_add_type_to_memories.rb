@@ -179,42 +179,6 @@ class AddTypeToMemories < ActiveRecord::Migration[5.2]
                WHERE descriptions.describable_type = 'Place'
                  AND descriptions.describable_id IN (SELECT id FROM places)",
 
-             ####### identities
-
-               "WITH _memory_ids AS (
-              SELECT memories.id
-                FROM memories, memories AS om
-     LEFT OUTER JOIN slugs ON om.id = slugs.sluggable_id
-                 AND 'Memory' = slugs.sluggable_type
-               WHERE memories.council !~ slugs.text),
-                     _slug_ids AS (
-              SELECT slugs.id
-                FROM slugs
-               WHERE slugs.sluggable_id IN (SELECT * FROM _memory_ids)
-                 AND 'Memory' = slugs.sluggable_type),
-                     _identities AS (
-              SELECT DISTINCT ON (memories.id)
-                     memories.id, memories.base_year, memories.short_name, memories.quantity
-                FROM memories
-                JOIN slugs
-                  ON slugs.sluggable_id = memories.id
-                 AND 'Memory' = slugs.sluggable_type
-                JOIN events
-                  ON memories.id = events.memory_id
-                JOIN memoes
-                  ON memoes.event_id = events.id
-                JOIN memo_orders
-                  ON memoes.id = memo_orders.memo_id
-                JOIN slugs AS memo_slugs
-                  ON memo_orders.order_id = memo_slugs.sluggable_id
-                 AND 'Order' = memo_slugs.sluggable_type
-                 AND memo_slugs.text NOT IN ('храм', 'место', 'град', 'обит', 'древо', 'вещь', 'оспс', 'обрбо', 'оник', 'озпр', 'обр')
-               WHERE slugs.id IN (SELECT * FROM _slug_ids)
-                 AND memories.quantity IS NULL)
-              UPDATE memories
-                 SET type = 'Identity'
-               WHERE memories.id IN (SELECT id FROM _identities)",
-
              ####### concepts
 
                "WITH _memory_ids AS (
@@ -287,6 +251,12 @@ class AddTypeToMemories < ActiveRecord::Migration[5.2]
               UPDATE memories
                  SET type = 'Thing'
                WHERE memories.id IN (SELECT id FROM _items)",
+
+             ####### identities
+
+             "UPDATE memories
+                 SET type = 'Identity'
+               WHERE memories.type IN ('Memory')",
 
               ].each { |q| Order.connection.execute(q) }
             end

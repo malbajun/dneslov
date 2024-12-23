@@ -40,16 +40,6 @@ GIT
     redisize (0.2.0)
 
 GIT
-  remote: https://codeberg.org/znamenica/tiun.git
-  revision: 3978838599b24e0c193dadf337884827999c3767
-  ref: 3978838
-  specs:
-    tiun (0.0.2.1)
-      activesupport (>= 4.1.0)
-      jsonize (~> 0.2)
-      railties (>= 4.1.0)
-
-GIT
   remote: https://github.com/majioa/capistrano-db-tasks.git
   revision: 978abe880e40dfaf9a85f62215b5f6c747cfb185
   ref: devel
@@ -77,6 +67,14 @@ GIT
   specs:
     capistrano3-nginx (3.0.4)
       capistrano (~> 3.0)
+
+PATH
+  remote: /usr/local/home/majioa/git/tiun
+  specs:
+    tiun (0.0.2.1)
+      activesupport (>= 4.1.0)
+      jsonize (~> 0.2)
+      railties (>= 4.1.0)
 
 GEM
   remote: https://rubygems.org/

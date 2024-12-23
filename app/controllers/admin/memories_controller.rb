@@ -17,7 +17,7 @@ class Admin::MemoriesController < Admin::CommonController
    protected
 
    def index_with_list
-      %w(with_slug with_descriptions with_links with_events with_memory_names with_orders with_memory_binds with_covering_names)
+      %w(with_slug with_descriptions with_tweets with_links with_events with_memory_names with_orders with_memory_binds with_covering_names)
    end
 
    def permitted_params

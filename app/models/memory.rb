@@ -9,6 +9,7 @@ class Memory < ApplicationRecord
    include WithTitles
    include WithDescriptions
    include WithTweets
+   include WithNotes
    include WithLinks
    include ByToken
 
@@ -56,8 +57,8 @@ class Memory < ApplicationRecord
    scope :by_token, -> text do
       left_outer_joins(:names, :descriptions, :notes, :tweets, :slug).where("short_name ~* ?", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(tweets_orders.text) ~* unaccent(?)", "\\m#{text}.*").or(
-            where("unaccent(notes_orders.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
+         where("unaccent(tweets_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(notes_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
          Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
 
@@ -239,8 +240,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{as}_coverings.place_id AS place_id,
                               #{as}_place_descriptions.text || ' (' || #{as}_place_descriptions.language_code || '_' || #{as}_place_descriptions.alphabeth_code || ')' AS place_name
                          FROM coverings AS #{as}_coverings
-                         JOIN places AS #{as}_places
+                         JOIN memories AS #{as}_places
                            ON #{as}_places.id = #{as}_coverings.place_id
+                          AND #{as}_places.type = 'Place'
               LEFT OUTER JOIN descriptions AS #{as}_place_descriptions
                            ON #{as}_place_descriptions.describable_id = #{as}_places.id
                           AND #{as}_place_descriptions.describable_type = 'Place'
@@ -264,8 +266,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{as}_coverings.place_id AS place_id,
                               #{as}_place_descriptions.text AS name
                          FROM coverings AS #{as}_coverings
-                         JOIN places AS #{as}_places
+                         JOIN memories AS #{as}_places
                            ON #{as}_places.id = #{as}_coverings.place_id
+                          AND #{as}_places.type = 'Place'
               LEFT OUTER JOIN descriptions AS #{as}_place_descriptions
                            ON #{as}_place_descriptions.describable_id = #{as}_places.id
                           AND #{as}_place_descriptions.describable_type = 'Place'
@@ -328,18 +331,20 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND calendary_titles.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN memo_orders
                            ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN orders
+              LEFT OUTER JOIN memories AS orders
                            ON orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN memo_orders AS memo_orders_memoes_join
                            ON memo_orders_memoes_join.memo_id = memoes.id
-              LEFT OUTER JOIN orders AS orders_memoes_join
+              LEFT OUTER JOIN memories AS orders_memoes_join
                            ON orders_memoes_join.id = memo_orders_memoes_join.order_id
+                          AND orders_memoes_join.type = 'Memory'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders_memoes_join.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE events.memory_id = #{as}.id
@@ -474,16 +479,17 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                        SELECT DISTINCT ON(orders.id)
                               orders.id AS id,
                               order_names.text AS name
-                         FROM orders
+                         FROM memories AS orders
                          JOIN memo_orders
                            ON memo_orders.order_id = orders.id
+                          AND orders.type = 'Order'
                          JOIN memoes
                            ON memoes.id = memo_orders.memo_id
                          JOIN events
                            ON events.id = event_id
               LEFT OUTER JOIN descriptions AS order_names
                            ON order_names.describable_id = orders.id
-                          AND order_names.describable_type = 'Order'
+                          AND order_names.describable_type = 'Memory'
                           AND order_names.language_code IN ('#{language_codes.join("', '")}')
                         WHERE events.memory_id = memories.id
                      GROUP BY orders.id, order_names.text)
@@ -602,7 +608,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                         FROM events
              LEFT OUTER JOIN descriptions AS place_names
                           ON place_names.describable_id = events.place_id
-                         AND place_names.describable_type = 'Place'
+                         AND place_names.describable_type = 'Memory'
                              #{lang_wheres&.[](3)} #{alph_wheres&.[](3)}
              LEFT OUTER JOIN items AS #{this}_items
                           ON #{this}_items.id = events.item_id

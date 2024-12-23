@@ -244,8 +244,9 @@ class Event < ActiveRecord::Base
    scope :with_place, -> context do
       language_codes = [ context[:text_languages] ].flatten
       selector = "jsonb_build_object('id', places.id, 'name', place_descriptions.text) AS _place"
-      join = "LEFT OUTER JOIN places
+      join = "LEFT OUTER JOIN memories AS places
                            ON events.place_id = places.id
+                          AND places.type = 'Place'
                           AND places.id IS NOT NULL
               LEFT OUTER JOIN descriptions AS place_descriptions
                            ON place_descriptions.describable_id = places.id
@@ -280,18 +281,20 @@ class Event < ActiveRecord::Base
                           AND memo_titles.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN memo_orders
                            ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN orders
+              LEFT OUTER JOIN memories AS orders
                            ON orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN memo_orders AS memo_orders_memoes_join
                            ON memo_orders_memoes_join.memo_id = memoes.id
-              LEFT OUTER JOIN orders AS orders_memoes_join
+              LEFT OUTER JOIN memories AS orders_memoes_join
                            ON orders_memoes_join.id = memo_orders_memoes_join.order_id
+                          AND orders_memoes_join.type = 'Order'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders_memoes_join.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE memoes.event_id = events.id
@@ -314,7 +317,7 @@ class Event < ActiveRecord::Base
                        SELECT DISTINCT ON(memo_slugs.text)
                               memo_slugs.text AS slug,
                               order_titles_memoes.text AS name
-                         FROM orders
+                         FROM memories AS orders
               LEFT OUTER JOIN memoes
                            ON #{as}.id = memoes.event_id
               LEFT OUTER JOIN calendaries
@@ -327,13 +330,14 @@ class Event < ActiveRecord::Base
                            ON memo_orders.memo_id = memoes.id
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
                           AND calendaries.licit = 't'
                      GROUP BY order_titles_memoes.text, memo_slugs.text)
                        SELECT jsonb_agg(__orders)
@@ -389,18 +393,20 @@ class Event < ActiveRecord::Base
                           AND calendary_titles.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN memo_orders
                            ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN orders
+              LEFT OUTER JOIN memories AS orders
                            ON orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN memo_orders AS memo_orders_memoes_join
                            ON memo_orders_memoes_join.memo_id = memoes.id
-              LEFT OUTER JOIN orders AS orders_memoes_join
+              LEFT OUTER JOIN memories AS orders_memoes_join
                            ON orders_memoes_join.id = memo_orders_memoes_join.order_id
+                          AND orders_memoes_join.type = 'Order'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders_memoes_join.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE memoes.event_id = events.id

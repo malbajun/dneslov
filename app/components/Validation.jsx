@@ -11,13 +11,13 @@ const Validation = {
       return this.validations
    },
 
-   getErrorText(value_in, context_in = {}) {
-      let context = merge(this.props.validation_context || {}, context_in),
+   getErrorText(valueIn, contextIn = {}) {
+      let context = merge(this.props.validation_context || {}, contextIn),
           errors = [],
-          value = value_in || ''
+          value = valueIn === undefined || valueIn === null ? '' : valueIn
 
       Object.entries(this.getValidations()).forEach(([e, rule]) => {
-         console.debug("[getErrorText] > rule:", rule.constructor.name, "error:", e)
+         console.debug("[getErrorText] > rule:", rule.constructor.name, "value:", value.constructor.name, "error:", e)
          switch(rule.constructor.name) {
          case 'RegExp':
             switch(value.constructor.name) {
@@ -35,6 +35,10 @@ const Validation = {
                if (typeof value.match !== "undefined" && value.match(rule)) {
                   errors.push(e)
                }
+            case 'Number':
+               if (typeof value.match !== "undefined" && value.toString().match(rule)) {
+                  errors.push(e)
+               }
             }
             break
          case 'Array':
@@ -43,8 +47,8 @@ const Validation = {
             }
             break
          case 'Function':
-            console.debug("[getErrorText] > value_in", value_in, "context:", context)
-            if (rule(value_in, context, this.state)) {
+            console.debug("[getErrorText] > valueIn", valueIn, "context:", context)
+            if (rule(valueIn, context, this.state)) {
                errors.push(e)
             }
          }
