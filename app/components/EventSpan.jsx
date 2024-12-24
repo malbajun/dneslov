@@ -4,6 +4,7 @@ import Chip from 'Chip'
 import Name from 'Name'
 import Markdown from 'Markdown'
 import { getUrlsFrom } from 'support'
+import { generateFullName } from 'mixins/namegen'
 
 export default class EventSpan extends Component {
    static defaultProps = {
@@ -52,6 +53,16 @@ export default class EventSpan extends Component {
       return 'year-date right ' + (this.props.active && "nearby" || "")
    }
 
+   placeUrl() {
+      let url
+
+      if (this.props.place?.slug) {
+         url = getUrlsFrom(this.props.specifiedCalendarySlug, this.props.place?.slug)[0]
+      }
+
+      return url
+   }
+
    render() {
       console.log("[render] * this.props:", this.props, "this.state:", this.state)
 
@@ -66,10 +77,11 @@ export default class EventSpan extends Component {
                <Chip
                   className='happened-at'
                   text={this.props.happenedAt} />
-               {this.props.place?.name &&
+               {(!this.props.place?.names?.isBlank() || this.props.place?.description) &&
                   <Chip
                      className='place'
-                     text={this.props.place.name} />}
+                     url={this.placeUrl()}
+                     text={generateFullName(this.props.place.names) || this.props.place?.description} />}
                {this.props.date && <Chip
                   className={this.classNameForYearDate()}
                   text={this.props.date} />}</div>

@@ -159,7 +159,7 @@ export default class Eventee extends Component {
    static getOrder(props) {
       return props.memoes.reduce((order, m) => {
          return order || this.isInCalendaries(props, m) && Object.values(m.orders)[0]
-      }, null) || props.order
+      }, null)
    }
 
    // system

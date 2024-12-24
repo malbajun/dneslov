@@ -78,6 +78,7 @@ class Memory < ApplicationRecord
 
    scope :with_names, -> (context) do
       language_codes = [context[:text_languages]].flatten
+      alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
 =begin
 with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (
         with recursive tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (SELECT 0,nm.text,n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,mn.state_code,mn.mode,mn.feasible FROM nomina n JOIN names nm ON nm.id = n.name_id JOIN memory_names mn ON mn.nomen_id = n.id WHERE  mn.memory_id = 2989 UNION SELECT level + 1, path || ' > ' || nm.text, n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,tt.state_code,tt.mode,tt.feasible FROM nomina n JOIN tt ON n.root_id = tt.root_id AND  tt.bond_to_id = n.name_id JOIN names nm ON nm.id = n.name_id JOIN names nm_t ON nm_t.id = tt.name_id AND nm_t.language_code <> nm.language_code LEFT OUTER JOIN memory_names mn ON n.root_id = mn.nomen_id AND mn.memory_id = 2989 ) select * from tt
@@ -171,7 +172,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                          AND mn.memory_id = memories.id)
                       SELECT jsonb_agg(__names)
                         FROM __names
-                       WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')), '[]'::jsonb) AS _names"
+                       WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')
+                         AND __names.name_alphabeth_code IN ('#{alphabeth_codes.join("', '")}')), '[]'::jsonb) AS _names"
 
       select(selector).group(:id)
    end

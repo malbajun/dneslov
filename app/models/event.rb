@@ -11,6 +11,7 @@
 class Event < ActiveRecord::Base
    extend Informatible
    extend TotalSize
+   include DistinctBy
    include WithTitles
    include WithDescriptions
 
@@ -121,6 +122,7 @@ class Event < ActiveRecord::Base
          by_title(did)
       end.joins(:memory).merge(Memory.by_short_name(short_name))
    end
+
    # required for short list
    scope :with_key, -> _ do
       selector = [ 'events.id AS _key' ]
@@ -181,7 +183,6 @@ class Event < ActiveRecord::Base
       selector = self.select_values.dup << "#{join_name}.*" <<
          "COALESCE(jsonb_build_object(
             'slug', memory_slugs.text,
-            'order', #{join_name}_memories.order,
             'short_name', #{join_name}_memories.short_name)) AS _memory"
 
       join = "LEFT OUTER JOIN memories AS #{join_name}_memories
@@ -242,18 +243,130 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_place, -> context do
-      language_codes = [ context[:text_languages] ].flatten
-      selector = "jsonb_build_object('id', places.id, 'name', place_descriptions.text) AS _place"
-      join = "LEFT OUTER JOIN memories AS places
-                           ON events.place_id = places.id
-                          AND places.type = 'Place'
-                          AND places.id IS NOT NULL
-              LEFT OUTER JOIN descriptions AS place_descriptions
-                           ON place_descriptions.describable_id = places.id
-                          AND place_descriptions.describable_type = 'Place'
-                          AND place_descriptions.language_code IN ('#{language_codes.join("', '")}')"
+      language_codes = [context[:text_languages]].flatten
+      alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
+      this = table.table_alias || table.name
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      as_table = as.to_s.tableize
+      as_model = as.to_s.camelize
 
-      joins(join).select(selector).group(:id, 'places.id', 'place_descriptions.text')
+      selector = "jsonb_build_object('id', #{as_table}.id, 'names', COALESCE((
+              WITH RECURSIVE ____names(level,path,id,name_id,name_bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
+              WITH RECURSIVE tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
+                      SELECT 0,
+                             nm.text,
+                             n.id,
+                             n.name_id,
+                             n.bind_kind_name,
+                             n.bond_to_id,
+                             n.root_id,
+                             nm.alphabeth_code,
+                             nm.language_code,
+                             nm.text,
+                             mn.state_code,
+                             mn.mode,
+                             mn.feasible
+                        FROM nomina n
+                        JOIN names nm
+                          ON nm.id = n.name_id
+                        JOIN memory_names mn
+                          ON mn.nomen_id = n.id
+                         AND mn.memory_id = #{as_table}.id
+                       UNION
+
+                      SELECT 0,
+                             nm.text,
+                             n.id,
+                             n.name_id,
+                             n.bind_kind_name,
+                             n.bond_to_id,
+                             n.root_id,
+                             nm.alphabeth_code,
+                             nm.language_code,
+                             nm.text,
+                             tt.state_code,
+                             tt.mode,
+                             tt.feasible
+                        FROM nomina n
+                        JOIN tt
+                          ON n.root_id = tt.root_id AND tt.bond_to_id = n.name_id
+                        JOIN names nm
+                          ON nm.id = n.name_id
+                        JOIN names nm_t
+                          ON nm_t.id = tt.name_id
+                         AND nm_t.language_code <> nm.language_code
+             LEFT OUTER JOIN memory_names mn
+                          ON n.root_id = mn.nomen_id
+                         AND mn.memory_id = #{as_table}.id)
+                      SELECT *
+                        FROM tt
+
+                       UNION
+                      SELECT level + 1,
+                             path || ' > ' || nm.text,
+                             n.id,
+                             n.name_id,
+                             n.bind_kind_name,
+                             n.bond_to_id,
+                             n.root_id,
+                             nm.alphabeth_code,
+                             nm.language_code,
+                             nm.text,
+                             t.state_code,
+                             t.mode,
+                             t.feasible
+                        FROM nomina n
+                        JOIN ____names t
+                          ON n.bond_to_id = t.name_id
+                         AND n.root_id = t.root_id
+                        JOIN names nm
+                          ON nm.id = n.name_id
+                        JOIN names nm_t
+                          ON nm_t.id = t.name_id
+                         AND nm_t.language_code <> nm.language_code
+             LEFT OUTER JOIN memory_names mn
+                          ON n.root_id = mn.nomen_id
+                         AND mn.memory_id = #{as_table}.id),
+                             ___names AS (
+                      SELECT t.*
+                        FROM
+                     (SELECT *,
+                ROW_NUMBER() OVER(PARTITION BY id ORDER BY level DESC) as r
+                        FROM ____names) AS t
+                       WHERE t.r = 1),
+                             __names AS (
+                      SELECT DISTINCT ON(id)
+                             id, 
+                             feasible,
+                             mode,
+                             name_alphabeth_code,
+                             name_bind_kind_name,
+                             name_language_code,
+                             name_text,
+                             level,
+                             path,
+                             state_code
+                        FROM ___names
+                       GROUP BY id, feasible, mode, name_alphabeth_code, name_bind_kind_name, name_language_code, name_text, level, path, state_code)
+                      SELECT jsonb_agg(__names)
+                        FROM __names
+                       WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')
+                         AND __names.name_alphabeth_code IN ('#{alphabeth_codes.join("', '")}')), '[]'::jsonb), 'description', #{as}_descriptions.text, 'short_name', #{as_table}.short_name, 'slug', #{as}_slugs.text) AS _#{as}"
+
+      join = "LEFT OUTER JOIN memories AS #{as_table}
+                           ON #{this}.#{as}_id = #{as_table}.id
+                          AND #{as_table}.type = '#{as_model}'
+              LEFT OUTER JOIN slugs AS #{as}_slugs
+                           ON #{as}_slugs.sluggable_id = #{as_table}.id
+                          AND #{as}_slugs.sluggable_type = 'Memory'
+              LEFT OUTER JOIN descriptions AS #{as}_descriptions
+                           ON #{as}_descriptions.describable_id = #{as_table}.id
+                          AND #{as}_descriptions.describable_type = 'Memory'
+                          AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_descriptions.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{as_table}.id", "#{as}_descriptions.text", "#{as}_slugs.text")
    end
 
    scope :with_short_memoes, -> context do
@@ -311,15 +424,15 @@ class Event < ActiveRecord::Base
    scope :with_orders, -> context do
       language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
-      as = table.table_alias || table.name
+      this = table.table_alias || table.name
 
       selector = "COALESCE((WITH __orders AS (
                        SELECT DISTINCT ON(memo_slugs.text)
-                              memo_slugs.text AS slug,
+                              COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
                               order_titles_memoes.text AS name
                          FROM memories AS orders
               LEFT OUTER JOIN memoes
-                           ON #{as}.id = memoes.event_id
+                           ON #{this}.id = memoes.event_id
               LEFT OUTER JOIN calendaries
                            ON calendaries.id = memoes.calendary_id
               LEFT OUTER JOIN slugs AS calendary_slugs

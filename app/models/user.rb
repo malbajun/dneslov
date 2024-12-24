@@ -167,7 +167,6 @@ class User < ApplicationRecord
                         FROM __names
                        WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')), '[]'::jsonb) AS _user_names"
 
-      binding.pry
       select(selector).group(:id)
    end
 

@@ -1,6 +1,7 @@
 #licit[boolean]         - действительный календарь (не в разработке)
 class Calendary < ActiveRecord::Base
    extend TotalSize
+   include DistinctBy
    include Languageble
    include WithLocaleNames
    include WithDescriptions
@@ -72,20 +73,6 @@ class Calendary < ActiveRecord::Base
    singleton_class.send(:alias_method, :t, :by_token)
    singleton_class.send(:alias_method, :q, :by_tokens)
    singleton_class.send(:alias_method, :l, :by_licit)
-
-   scope :distinct_by, -> *args do
-      _selector = self.select_values.dup
-      if _selector.empty?
-        _selector << "ON (#{args.join(', ')}) memoes.*"
-      else
-         selector = _selector.uniq
-         selector.unshift( "ON (#{args.join(', ')}) " + selector.shift )
-      end
-
-      rela = self.distinct
-      rela.select_values = selector
-      rela
-   end
 
    # required for short list
    scope :with_key, -> _ do
