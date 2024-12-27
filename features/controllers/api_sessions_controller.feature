@@ -137,14 +137,6 @@
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
-         ---
-         session_token:
-           code: wwwwwwwee
-           type: Token::Session
-           expires_at: '2024-01-14 06:15:55 +0300'
-         refresh_token:
-           code: ыыыыыы
-           type: Token::Refresh
-           expires_at: '2024-02-14 05:15:55 +0300'
+         --- []
          """
       И сꙛчасна наряда не будє єствовати

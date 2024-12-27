@@ -17,14 +17,14 @@ class AlphabethValidator < ActiveModel::EachValidator
    def validate_each(record, attribute, value)
       o = plain_options
       code = record.alphabeth_code.to_s.to_sym
-      res = Languageble::MATCH_TABLE[ code ]
+      res = Languageble::MATCH_TABLE[code]
       if res
-         if ! o.keys.include?( :nosyntax )
-            res += Languageble::SYNTAX_TABLE[ code ]
+         if ! o.keys.include?(:nosyntax)
+            res += Languageble::SYNTAX_TABLE[code] || ""
          end
 
-         if o.keys.include?( :allow )
-            res += o[ :allow ]
+         if o.keys.include?(:allow)
+            res += o[:allow]
          end
 
          res += '\<\>' + Languageble::SPECIFIC_SYNTAX

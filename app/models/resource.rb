@@ -6,7 +6,7 @@ class Resource < ApplicationRecord
    end
 
    scope :image, ->() do
-      json_re = '$.** ? (@ like_regex "(thumb|icon|both)")'
+      json_re = '$.** ? (@ like_regex "(roundel|icon|both)")'
       where("jsonb_path_exists(resources.props, '#{json_re}')")
    end
 end

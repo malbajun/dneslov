@@ -2,7 +2,7 @@ class AuthController < ApplicationController
    class InvalidTokenError < StandardError; end
    class UloginError < StandardError; end
 
-   before_action :validate_csrf, only: %i(ulogin)
+   #before_action :validate_csrf, only: %i(ulogin)
    before_action :fetch_info, only: %i(ulogin)
 
    rescue_from Exception, with: :exception

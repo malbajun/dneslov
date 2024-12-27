@@ -5,7 +5,11 @@ FactoryBot.define do
       kind { association :event_kind }
       association :item
       association :memory
-      association :place
+      place factory: :place, without_place: true, without_events: true
+
+      transient do
+         without_place { nil }
+      end
 
       transient do
          title { FFaker::NameRU.name }

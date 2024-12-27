@@ -30,7 +30,7 @@
 
    Сценарий: Действительная запись
       Допустим создадим новую слику с полями:
-        | image_path    | features/fixtures/y1000-blue.jpg     |
+        | image_path    | features/fixtures/y2000-green.webp   |
         | title         | Картинка                             |
         | uid           | 20eb27ef-368e-4815-b053-645b8fa4d6e4 |
         | type          | Photo                                |

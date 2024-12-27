@@ -1,5 +1,5 @@
 class ImageUploader < CarrierWave::Uploader::Base
-   include ::CarrierWave::Backgrounder::Delay
+   #include ::CarrierWave::Backgrounder::Delay
    include CarrierWave::RMagick
 
    cache_storage CarrierWave::Storage::File
@@ -7,14 +7,9 @@ class ImageUploader < CarrierWave::Uploader::Base
 
    process convert: 'webp'
    process :auto_orient
-   process upfit: [150,1500], if: :match_size?
 
    version :thumb do
       process thumbnail: [400,400]
-   end
-
-   def match_size? file
-      height < 1500 if file
    end
 
    def store_dir
@@ -66,19 +61,6 @@ class ImageUploader < CarrierWave::Uploader::Base
          destroy_image(white_bg)
 
          thumbnail
-      end
-   end
-
-   def upfit *to
-      s = [to, [width, height]].transpose.map {|x| x.max }
-      ro = width.to_f / height
-      r = s[0].to_f / s[1]
-      sizes = (ro < r ? [s[0], s[1] * r / ro] : [s[0] * ro / r, s[1]])
-
-      manipulate! do |img|
-         img.resize!(*sizes, Magick::LagrangeFilter) unless ro == r
-
-         img
       end
    end
 

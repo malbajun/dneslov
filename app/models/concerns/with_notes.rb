@@ -111,7 +111,6 @@ module WithNotes
          accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
 
          validates :notes, associated: true
-         validates_presence_of :notes
       end
    end
 end

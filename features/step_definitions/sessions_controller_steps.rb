@@ -4,7 +4,7 @@
 end
 
 Допустим('є учетка для ужила {string} сѫ даными:') do |crdi, table|
-   user = User.by_credentials_or_id(crdi).first
+   user = User.find(crdi)
    attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
    @current = FactoryBot.create(:account, attrs.merge(user: user))
 end
@@ -49,22 +49,22 @@ end
 end
 
 Если('поновям дане наряде в {string} сꙛ завѣрным токном для ужила {string}') do |path, croi|
-   token = User.by_credentials_or_id(croi).first.email.validate_token
+   token = Account.by_credentials_or_id(croi).first.user.email.validate_token
    header("Authorization", "Validate #{token.code}")
    @response = put(path)
 end
 
 То('завѣрям одсланје писма для ужила {string} сꙛ завѣрным токном') do |croi|
-   user = User.by_credentials_or_id(croi).first
+   user = Account.by_credentials_or_id(croi).first.user
    expect(ActionMailer::Base.deliveries).to include(Mail::Message)
    expect(ActionMailer::Base.deliveries.first.to.first).to eql(user.email.no)
 end
 
 То('одсланја писма для ужила {string} сꙛ завѣрным токном не бѫдє') do |croi|
-   user = User.by_credentials_or_id(croi).first
+   user = Account.by_credentials_or_id(croi).first&.user
    ActionMailer::Base.deliveries.each do |dela|
       expect(dela&.to&.first).to_not eql(user.email.no)
-   end
+   end if user
 end
 
 Если('поновям дане и заглавкъ наряде в {string}:') do |path, table|

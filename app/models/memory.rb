@@ -704,7 +704,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank
 
-   validates_presence_of :short_name, :events
+   validates_presence_of :short_name
    validates :base_year, format: { with: /\A-?\d+\z/ }
    validates :quantity, format: { with: /\A[0-9?+]+?\z/ }, allow_blank: true
 

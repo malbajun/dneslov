@@ -14,7 +14,6 @@ class User < ApplicationRecord
 
    before_validation :fill_in_account
 
-   validates_presence_of :accounts
    validates_presence_of :user_names, if: ->{ self.default_name.blank? && !self.password }
    accepts_nested_attributes_for :accounts, :user_names
 

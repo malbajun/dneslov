@@ -142,6 +142,7 @@ class Calendary < ActiveRecord::Base
    validates :alphabeth_code, inclusion: { in: proc { |l| Languageble.alphabeth_list_for(l.language_code)}}
    validates :slug, :date, presence: true
    validates :place, associated: true
+   validates_presence_of :titles
    validates :meta, json: { schema: JSON_SCHEMA }
 
    def default_title

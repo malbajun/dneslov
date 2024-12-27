@@ -20,9 +20,12 @@ FactoryBot.define do
 
    factory :tweet, parent: :description, class: :Tweet do
       type { 'Tweet' }
+      text { FFaker::NameRU.name.downcase }
    end
 
    factory :invalid_description, parent: :description do
       text { 'ЈὴⰅ' }
+      language_code { "вс" }
+      alphabeth_code { "ВС" }
    end
 end

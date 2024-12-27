@@ -44,7 +44,8 @@ class Picture < ApplicationRecord
       size: { height: { min: 1500, max: 30000 }, width: { min: 150, max: 30000 }, ratio: { range: (0.1..5.0) }}
 
    before_validation :fill_in_title_description, :fill_in_uid
-   before_validation :fill_in_digest, :fill_in_dimensions, :fill_in_url, :fill_in_thumb_url, if: -> { image.file }
+   before_validation :fill_in_digest, :fill_in_dimensions, :fill_in_url, :fill_in_thumb_url,
+      if: -> { image.file && File.exist?(image.file.file) }
 
    def fill_in_dimensions
       self.height = image.height

@@ -10,4 +10,8 @@ class Account < ApplicationRecord
       joins(:user).where(no: croi)
       # joins(:user).where(no: croi).or(where("users.settings @> ?", "{\"name\": \"#{croi}\"}"))
    end
+
+   def validated
+      false
+   end
 end

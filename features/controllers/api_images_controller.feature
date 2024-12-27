@@ -7,7 +7,7 @@
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053 |
          | type         | Picture                              |
          | meta         | {}                                   |
-         | image_path   | features/fixtures/y1000-blue.jpg     |
+         | image_path   | features/fixtures/y2000-green.webp   |
          | title        | Картинка                             |
       * єствує памѧть "Памѧтно"
       * є картинка сѫ даными:
@@ -15,7 +15,7 @@
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063 |
          | type         | Photo                                |
          | meta         | {}                                   |
-         | image_path   | features/fixtures/y1000.png          |
+         | image_path   | features/fixtures/y1500.png          |
          | title        | Фотка                                |
          | attitude_to  | Памѧтно(10,100)                      |
 
@@ -36,7 +36,7 @@
    Пример: Користник добыває списъ картинок
       Если запытаю добыванје из изнахоѕи "/api/v1/images.json"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -57,7 +57,6 @@
            type: Photo
          """
       А добѫдꙛ охватъ "0-9/2"
-      И добѫдꙛ длину охвата "2"
 
    @get @collection
    Пример: Запрос постраничный к контроллеру картинок в АПИ
@@ -67,25 +66,25 @@
          - id: 200002
            uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
            type: Icon
-           image_path: features/fixtures/y2000-green.webp
+           image_path: features/fixtures/y1500-blue.jpg
            meta: {}
            title: Картинка 2
          - id: 200003
            uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
            type: Painting
-           image_path: features/fixtures/y1000-green.gif
+           image_path: features/fixtures/y1500-green.gif
            meta: {}
            title: Picture 3
          - id: 200004
            uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f056
            type: Photo
-           image_path: features/fixtures/y1000-green.webp
+           image_path: features/fixtures/y1500-green.webp
            meta: {}
            title: Aperçu 4
          """
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3"
       То добѫдꙛ кодъ поврата "206"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ приблизнъ изводъ:
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -114,10 +113,9 @@
            type: Icon
          """
       А добѫдꙛ охватъ "0-2/5"
-      И добѫдꙛ длину охвата "3"
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3&page=2"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ приблизнъ изводъ:
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
@@ -138,13 +136,12 @@
            type: Photo
          """
       А добѫдꙛ охватъ "3-5/5"
-      И добѫдꙛ длину охвата "2"
 
    @get @collection @error @416
    Пример: Запрос к контроллеру картинок в АПИ
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "page=111111"
       То добѫдꙛ кодъ поврата "416"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ приблизнъ изводъ:
          """
          ---
          args:
@@ -159,7 +156,7 @@
          Range: records=100000-200000
          """
       То добѫдꙛ кодъ поврата "416"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ приблизнъ изводъ:
          """
          ---
          args: {}
@@ -179,7 +176,7 @@
          | alphabeth    | РУ                                      |
          | attitude_to  | Памѧтно(100,10)                         |
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
@@ -189,8 +186,8 @@
          description: Описание
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
-         width: 166
-         height: 1000
+         width: 250
+         height: 1500
          meta: {}
          type: Picture
          attitudes:
@@ -204,14 +201,13 @@
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
          type: Picture
          meta: {}
-         width: 166
-         height: 1000
+         width: 250
+         height: 1500
          language: ру
          alphabeth: РУ
          title: Картинка 1
          description: Описание
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
-         image: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
          attitudes:
          - attitude_to: Памѧтно
            pos: "<(100,10),30>"
@@ -224,19 +220,18 @@
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054 |
          | type         | Picture                              |
          | meta         | {}                                   |
-         | image_path   | features/fixtures/y1000-blue.jpg     |
+         | image_path   | features/fixtures/y2000-green.webp   |
          | title        | Картинка 1                           |
          | description  | Описание                             |
          | language     | ру                                   |
          | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "422"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          args: {}
          error:
-           digest:
-           - has already been taken
+         - Digest has already been taken
          """
       А изнахоѕи картинци "Картинка 1" не бѫдє
 
@@ -252,13 +247,13 @@
          | language     | ру                                   |
          | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "422"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          args: {}
          error:
-           image:
-           - has 100 px. height less than 600 px.
+         - Image has 100 px. height less than 1500 px.
+         - Image has 100 px. width less than 150 px.
          """
       А изнахоѕи картинци "Картинка 1" не бѫдє
 
@@ -274,7 +269,7 @@
          | language     | ру                                   |
          | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
@@ -292,7 +287,7 @@
          """
       Если запытаю добыванје из изнахоѕи "/api/v1/images/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.json"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
@@ -314,7 +309,7 @@
    @get @object
    Пример: Користник добыває дане картинке
       Если запытаю добыванје из изнахоѕи "/api/v1/images/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
-      То добѫдꙛ вывод:
+      То добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -324,8 +319,8 @@
          description:
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-         width: 800
-         height: 1000
+         width: 300
+         height: 2000
          meta: {}
          type: Picture
          attitudes: []
@@ -335,7 +330,7 @@
    Пример: Користник изтьрає иззначену картинку
       Если запытаю изтрѣнје изнахоѕи "/api/v1/images/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -345,8 +340,8 @@
          description:
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-         width: 800
-         height: 1000
+         width: 300
+         height: 2000
          meta: {}
          type: Picture
          attitudes: []
