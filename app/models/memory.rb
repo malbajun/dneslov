@@ -62,6 +62,18 @@ class Memory < ApplicationRecord
          Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
 
+   scope :by_title, -> text do
+      this = table.table_alias || table.name
+      join = "LEFT OUTER JOIN descriptions AS #{this}_titles
+           ON #{this}.id = #{this}_titles.describable_id
+          AND #{this}_titles.describable_type = 'Memory'"
+
+      selector = "unaccent(#{this}_titles.text) ~* unaccent(?)
+             OR #{this}.short_name ~* ?", "\\m#{text}.*", "\\m#{text}.*"
+
+      joins(join).where(selector).distinct
+   end
+
    # required for short list
    scope :with_key, -> _ do
       selector = [ 'memories.id AS _key' ]

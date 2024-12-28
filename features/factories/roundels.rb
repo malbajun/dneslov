@@ -4,7 +4,7 @@ FactoryBot.define do
       uid { Faker::Internet.uuid }
 
       transient do
-         roundel_path { "features/fixtures/401x401-yellow.bmp" }
+         roundel_path { "features/fixtures/600x600-cyan.png" }
          short_name { nil }
          event_title { nil }
       end

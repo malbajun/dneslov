@@ -1,7 +1,3 @@
-Допустим('єствує памѧть {string}') do |string|
-   FactoryBot.create(:memory, short_name: string)
-end
-
 Допустим('єствує личинка сѫ даными:') do |table|
    attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
    @current = FactoryBot.create(:roundel, attrs)

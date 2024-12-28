@@ -25,9 +25,9 @@ types:
     - name: roundelable_name
       kind: string
       descriptions: :tiun.types.roundel.roundelable_name
-    - name: event_did
+    - name: event_id
       kind: string
-      descriptions: :tiun.resources.roundel.get.args.event_did
+      descriptions: :tiun.resources.roundel.get.args.event_id
     - name: memory_short_name
       kind: string
       descriptions: :tiun.resources.roundel.get.args.memory_short_name
@@ -54,12 +54,15 @@ resources:
          descriptions: :tiun.resources.roundel.index.args.page
        - name: e
          kind: string
-         alias: event_did
-         descriptions: :tiun.resources.roundel.get.args.event_did
+         alias: event
+         descriptions: :tiun.resources.roundel.get.args.event
        - name: m
          kind: string
-         alias: memory_short_name
-         descriptions: :tiun.resources.roundel.get.args.memory_short_name
+         alias: memory
+         descriptions: :tiun.resources.roundel.get.args.memory
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.roundel.get.args.uno
  - name: create roundel
    path: /api/v1/roundels/create.json
    methods:
@@ -92,14 +95,6 @@ resources:
        - name: uid
          kind: string
          descriptions: :tiun.resources.roundel.get.args.uid
-       - name: e
-         kind: string
-         alias: event_did
-         descriptions: :tiun.resources.roundel.get.args.event_did
-       - name: m
-         kind: string
-         alias: memory_short_name
-         descriptions: :tiun.resources.roundel.get.args.memory_short_name
     - name: put
       version: 1.0
       kind: full_roundel

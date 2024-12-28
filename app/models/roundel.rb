@@ -8,8 +8,8 @@ class Roundel < ApplicationRecord
    store_in_background :image
 
    belongs_to :roundelable, polymorphic: true
-   belongs_to :event, -> { joins(:roundels).where(roundels: { roundelable_type: "Event" }) }, foreign_key: 'roundelable_id'
-   belongs_to :memory, -> { joins(:roundels).where(roundels: { roundelable_type: "Memory" }) }, foreign_key: 'roundelable_id'
+   belongs_to :event, -> { left_outer_joins(:roundels).where(roundels: { roundelable_type: "Event" }) }, foreign_key: 'roundelable_id'
+   belongs_to :memory, -> { left_outer_joins(:roundels).where(roundels: { roundelable_type: "Memory" }) }, foreign_key: 'roundelable_id'
 
    validates_presence_of :uid, :image
    validates_uniqueness_of :digest, on: :create
@@ -17,15 +17,80 @@ class Roundel < ApplicationRecord
    validates :image, presence: true, on: :create, file_size: { less_than: 1.megabytes },
       size: { height: { min: 400 }, ratio: { range: (1.0..1.0) }}
 
+   default_scope { order(created_at: :asc) }
+
    scope :by_uid, ->(uid) { where(uid: uid) }
-   scope :by_roundelable_name, ->(name) do
-      if /(?<short_name>.*)#(?<event>.*)/ =~ name
-         joins(:event).merge(Event.by_did_and_short_name(event, short_name))
+   scope :by_id, ->(id) { where(id: id) }
+   scope :by_memory_id, ->(id) do
+      this = table.table_alias || table.name
+      join = "LEFT OUTER JOIN events AS #{this}_events ON #{this}_events.id = roundels.roundelable_id
+              LEFT OUTER JOIN memories AS #{this}_memories ON #{this}_memories.id = roundels.roundelable_id"
+
+      wherec = "#{this}_events.memory_id = ? OR #{this}_memories.id = ?"
+
+      joins(join).where(wherec, id, id)
+   end
+
+   # search by short_name or slug with/out event name or id
+   scope :by_roundelable_name, ->(name_in) do
+      if /(?<name>.*)#(?<event>.*)/ =~ name_in
+         by_uno(name).joins(:event).merge(Event.by_uno(event))
       else
-         sub = name =~ /^\d+$/ ? Memory.where(id: name) : Memory.by_token(name)
+         by_uno(name_in)
+      end
+   end
 
-         joins(:memory).merge(sub.reorder(""))
+   # title with or without event
+   scope :by_default_or_specific_title, ->(title) do
+      this = table.table_alias || table.name
+      sub_m =
+         case title
+         when /^[а-яё0-9]+$/
+            Memory.by_slug(slugs: { text: title})
+         else
+            Memory.by_title(title)
+         end
+      sub_e = Event.by_of_two_title(title)
 
+      left_outer_joins(:event, :memory).
+      joins(sub_m.joins_values, sub_e.joins_values).
+         merge(sub_m.reorder("")).or(merge(sub_e)).
+         distinct
+   end
+
+   scope :by_memory, ->(m) do
+      joins(:memory)
+      case m.to_s
+      when /^\s*$/
+         none
+      when /^\d+$/
+         by_memory_id(m)
+      else
+         by_default_or_specific_title(m)
+      end
+   end
+
+   scope :by_event, ->(e) do
+      if e.respond_to?(:arel)
+         joins(:attitudes).where(image_attitudes: {imageable_type: "Event", imageable_id: e.select(:id) })
+      else
+         joins(:event).merge(Event.by_uno(e).reorder(""))
+      end
+   end
+
+   # by universal numbering object: by id, by slug, by short_name or by title
+   scope :by_uno, ->(uno) do
+      case uno
+      when /^\s*$/
+         none
+      when /^\d+$/
+         by_memory_id(uno)
+      when /^.+-.+-.+-.+-.+$/
+         by_uid(uno)
+      when /(.+)#(.+)/
+         by_roundelable_name(uno)
+      else
+         by_default_or_specific_title(uno)
       end
    end
 
@@ -33,6 +98,9 @@ class Roundel < ApplicationRecord
    before_validation :fill_in_digest, :fill_in_url, if: -> { image.file }
 
    delegate :width, :height, to: :image
+
+   singleton_class.send(:alias_method, :by_m, :by_memory)
+   singleton_class.send(:alias_method, :by_e, :by_event)
 
    # callbacks
    def fill_in_digest
@@ -79,7 +147,7 @@ class Roundel < ApplicationRecord
          end
    end
 
-   def event_did
+   def event_id
       @event ||=
          if roundelable_type == 'Event'
             roundelable.id

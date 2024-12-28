@@ -37,6 +37,20 @@ class Picture < ApplicationRecord
       end
    end
 
+   # by universal numbering object: by id, by slug, by short_name or by title
+   scope :by_uno, ->(uno) do
+      case uno
+      when /^\s*$/
+         none
+      when /^\d+$/
+         by_uid(uno)
+      when /(.+)#(.+)/
+         by_roundelable_name(uno)
+      else
+         by_title(uno)
+      end
+   end
+
    validates_presence_of :type, :uid, :image
    validates_uniqueness_of :digest, on: :create
    validates_uniqueness_of :uid, :url, :thumb_url
