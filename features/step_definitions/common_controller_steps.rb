@@ -1,3 +1,8 @@
+Допустим('єствує памѧть сꙛ даными:') do |table|
+   attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
+   FactoryBot.create(:memory, attrs)
+end
+
 Допустим('єствує памѧть {string}') do |string|
    FactoryBot.create(:memory, short_name: string)
 end

@@ -55,15 +55,15 @@ resources:
        - name: e
          kind: string
          alias: event
-         descriptions: :tiun.resources.roundel.get.args.event
+         descriptions: :tiun.resources.roundel.index.args.event
        - name: m
          kind: string
          alias: memory
-         descriptions: :tiun.resources.roundel.get.args.memory
+         descriptions: :tiun.resources.roundel.index.args.memory
        - name: uno
          kind: string
-         descriptions: :tiun.resources.roundel.get.args.uno
- - name: create roundel
+         descriptions: :tiun.resources.roundel.index.args.uno
+ - name: roundel.create
    path: /api/v1/roundels/create.json
    methods:
     - name: post
@@ -74,7 +74,7 @@ resources:
       allowed_errors: [200, 404, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.roundel.post.uid
        - name: roundelable_name
          kind: string
@@ -93,7 +93,7 @@ resources:
       allowed_errors: [200, 404, 406, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.roundel.get.args.uid
     - name: put
       version: 1.0
@@ -103,7 +103,7 @@ resources:
       allowed_errors: [200, 404, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.roundel.put.uid
        - name: roundelable_name
          kind: string
@@ -119,5 +119,5 @@ resources:
       allowed_errors: [200, 404, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.roundel.delete.args.uid

@@ -113,7 +113,7 @@ gem 'sassc-rails'
 gem 'sprockets-rails'
 
 ## api
-opts = ENV["MY_RUBY_HOME"].to_s =~ /local/ ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'ff3662152b0490a83bba82564edadbf52e7ea264' }
+opts = ENV["MY_RUBY_HOME"].to_s =~ /local/ ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'bff2175' }
 gem 'tiun', opts
 
 # sitemap

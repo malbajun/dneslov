@@ -42,7 +42,14 @@ class Memory < ApplicationRecord
 
    scope :by_short_name, -> name { where( short_name: name ) }
    scope :by_slug, -> slug do
-      unscoped.joins(:slug).where(slugs: {text: slug.split(",")})
+      this = table.table_alias || table.name
+      join = "LEFT OUTER JOIN slugs AS #{this}_slugs
+           ON #{this}.id = #{this}_slugs.sluggable_id
+          AND #{this}_slugs.sluggable_type = 'Memory'"
+
+      selector = "#{this}_slugs.text = ?", slug
+
+      joins(join).where(selector).distinct
    end
 
    scope :in_calendaries, -> calendaries_in do

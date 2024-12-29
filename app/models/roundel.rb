@@ -11,20 +11,14 @@ class Roundel < ApplicationRecord
    belongs_to :event, -> { left_outer_joins(:roundels).where(roundels: { roundelable_type: "Event" }) }, foreign_key: 'roundelable_id'
    belongs_to :memory, -> { left_outer_joins(:roundels).where(roundels: { roundelable_type: "Memory" }) }, foreign_key: 'roundelable_id'
 
-   validates_presence_of :uid, :image
-   validates_uniqueness_of :digest, on: :create
-   validates_uniqueness_of :uid, :url
-   validates :image, presence: true, on: :create, file_size: { less_than: 1.megabytes },
-      size: { height: { min: 400 }, ratio: { range: (1.0..1.0) }}
-
    default_scope { order(created_at: :asc) }
 
    scope :by_uid, ->(uid) { where(uid: uid) }
    scope :by_id, ->(id) { where(id: id) }
    scope :by_memory_id, ->(id) do
       this = table.table_alias || table.name
-      join = "LEFT OUTER JOIN events AS #{this}_events ON #{this}_events.id = roundels.roundelable_id
-              LEFT OUTER JOIN memories AS #{this}_memories ON #{this}_memories.id = roundels.roundelable_id"
+      join = "LEFT OUTER JOIN events AS #{this}_events ON #{this}_events.id = roundels.roundelable_id AND roundels.roundelable_type = 'Event'
+              LEFT OUTER JOIN memories AS #{this}_memories ON #{this}_memories.id = roundels.roundelable_id AND roundels.roundelable_type = 'Memory'"
 
       wherec = "#{this}_events.memory_id = ? OR #{this}_memories.id = ?"
 
@@ -46,7 +40,7 @@ class Roundel < ApplicationRecord
       sub_m =
          case title
          when /^[а-яё0-9]+$/
-            Memory.by_slug(slugs: { text: title})
+            Memory.by_slug(title)
          else
             Memory.by_title(title)
          end
@@ -59,7 +53,6 @@ class Roundel < ApplicationRecord
    end
 
    scope :by_memory, ->(m) do
-      joins(:memory)
       case m.to_s
       when /^\s*$/
          none
@@ -72,7 +65,7 @@ class Roundel < ApplicationRecord
 
    scope :by_event, ->(e) do
       if e.respond_to?(:arel)
-         joins(:attitudes).where(image_attitudes: {imageable_type: "Event", imageable_id: e.select(:id) })
+         where(roundels: {roundelable_type: "Event", roundelable_id: e.select(:id) })
       else
          joins(:event).merge(Event.by_uno(e).reorder(""))
       end
@@ -94,13 +87,16 @@ class Roundel < ApplicationRecord
       end
    end
 
+   validates_presence_of :uid, :image
+   validates_uniqueness_of :digest, on: :create
+   validates_uniqueness_of :uid, :url
+   validates :image, presence: true, on: :create, file_size: { less_than: 1.megabytes },
+      size: { height: { min: 400 }, ratio: { range: (1.0..1.0) }}
+
    before_validation :fill_in_uid
-   before_validation :fill_in_digest, :fill_in_url, if: -> { image.file }
+   before_validation :fill_in_digest, :fill_in_url, if: -> { image.file && File.exist?(image.file.file) }
 
    delegate :width, :height, to: :image
-
-   singleton_class.send(:alias_method, :by_m, :by_memory)
-   singleton_class.send(:alias_method, :by_e, :by_event)
 
    # callbacks
    def fill_in_digest

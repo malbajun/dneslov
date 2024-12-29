@@ -112,20 +112,30 @@ class Event < ActiveRecord::Base
    scope :by_of_two_title, -> text do
       this = table.table_alias || table.name
       join = "
-  LEFT OUTER JOIN descriptions AS #{this}_titles
-               ON #{this}.id = #{this}_titles.describable_id
-              AND #{this}_titles.describable_type = 'Memory'
+  LEFT OUTER JOIN descriptions AS #{this}_event_titles
+               ON #{this}.id = #{this}_event_titles.describable_id
+              AND #{this}_event_titles.describable_type = 'Event'
   LEFT OUTER JOIN subjects AS #{this}_kinds
                ON #{this}.kind_code = #{this}_kinds.key
   LEFT OUTER JOIN descriptions AS #{this}_default_titles
                ON #{this}_kinds.id = #{this}_default_titles.describable_id
               AND #{this}_default_titles.describable_type = 'Subject'
   LEFT OUTER JOIN memories AS #{this}_memories
-               ON #{this}.memory_id = #{this}_memories.id"
-      selector = "unaccent(#{this}_titles.text) ~* unaccent(?)
+               ON #{this}.memory_id = #{this}_memories.id
+  LEFT OUTER JOIN slugs AS #{this}_memory_slugs
+               ON #{this}_memories.id = #{this}_memory_slugs.sluggable_id
+              AND #{this}_memory_slugs.sluggable_type = 'Memory'
+  LEFT OUTER JOIN descriptions AS #{this}_memory_titles
+               ON #{this}_memories.id = #{this}_memory_titles.describable_id
+              AND #{this}_memory_titles.describable_type = 'Memory'"
+
+      selector = "unaccent(#{this}_event_titles.text) ~* unaccent(?)
+               OR unaccent(#{this}_default_titles.text) ~* unaccent(?)
+               OR unaccent(#{this}_memory_titles.text) ~* unaccent(?)
+               OR #{this}_memory_slugs.text = ?
                OR #{this}_memories.short_name ~* ?",
-               "\\m#{text}.*", "\\m#{text}.*"
- 
+               "\\m#{text}.*", "\\m#{text}.*", "\\m#{text}.*", text, "\\m#{text}.*"
+
       joins(join).where(selector).distinct
    end
 
