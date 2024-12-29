@@ -6,6 +6,7 @@ FactoryBot.define do
       transient do
          without_place { nil }
          without_events { nil }
+         slug { build(:slug) }
       end
 
       after(:build) do |m, e|
@@ -16,6 +17,7 @@ FactoryBot.define do
          end
 
          m.events << build(:event, memory: m, **opts) unless e.without_events
+         m.slug = e.slug.is_a?(String) ? build(:slug, text: e.slug) : e.slug if e.slug
       end
    end
 end

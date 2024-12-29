@@ -42,7 +42,14 @@ class Memory < ApplicationRecord
 
    scope :by_short_name, -> name { where( short_name: name ) }
    scope :by_slug, -> slug do
-      unscoped.joins(:slug).where(slugs: {text: slug.split(",")})
+      this = table.table_alias || table.name
+      join = "LEFT OUTER JOIN slugs AS #{this}_slugs
+           ON #{this}.id = #{this}_slugs.sluggable_id
+          AND #{this}_slugs.sluggable_type = 'Memory'"
+
+      selector = "#{this}_slugs.text = ?", slug
+
+      joins(join).where(selector).distinct
    end
 
    scope :in_calendaries, -> calendaries_in do
@@ -60,6 +67,18 @@ class Memory < ApplicationRecord
          where("unaccent(tweets_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(notes_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
          Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
+   end
+
+   scope :by_title, -> text do
+      this = table.table_alias || table.name
+      join = "LEFT OUTER JOIN descriptions AS #{this}_titles
+           ON #{this}.id = #{this}_titles.describable_id
+          AND #{this}_titles.describable_type = 'Memory'"
+
+      selector = "unaccent(#{this}_titles.text) ~* unaccent(?)
+             OR #{this}.short_name ~* ?", "\\m#{text}.*", "\\m#{text}.*"
+
+      joins(join).where(selector).distinct
    end
 
    # required for short list

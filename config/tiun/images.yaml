@@ -94,11 +94,12 @@ resources:
       args:
        - name: per
          kind: natural
-         default: 10 
+         default: 10
          maximum: 50
          descriptions: :tiun.resources.image.index.args.per_page
        - name: page
          kind: natural
+         alias: p
          default: 1
          descriptions: :tiun.resources.image.index.args.page
        - name: l
@@ -109,17 +110,20 @@ resources:
          kind: string
          alias: alphabeth
          descriptions: :tiun.resources.image.index.args.alphabeth
-       - name: m
+       - name: event
          kind: string
-         alias: memory
-         descriptions: :tiun.resources.image.index.args.memory
-       - name: e
-         kind: string
-         alias: event
+         alias: e
          descriptions: :tiun.resources.image.index.args.event
-       - name: t
+       - name: memory
          kind: string
-         alias: type
+         alias: m
+         descriptions: :tiun.resources.image.index.args.memory
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.image.index.args.uno
+       - name: type
+         kind: string
+         alias: t
          descriptions: :tiun.resources.image.index.args.type
  - name: image.create
    path: /api/v1/images/create.json
@@ -132,7 +136,7 @@ resources:
       allowed_errors: [200, 404, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.image.post.uid
        - name: language
          kind: string
@@ -172,7 +176,7 @@ resources:
       allowed_errors: [200, 404, 406, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.image.get.args.uid
        - name: l
          kind: string
@@ -190,7 +194,7 @@ resources:
       allowed_errors: [200, 404, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.image.put.uid
        - name: language
          kind: string
@@ -227,5 +231,5 @@ resources:
       allowed_errors: [200, 404, 422.3, 500]
       args:
        - name: uid
-         kind: string
+         kind: uuid
          descriptions: :tiun.resources.image.delete.args.uid

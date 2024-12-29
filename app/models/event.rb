@@ -86,6 +86,7 @@ class Event < ActiveRecord::Base
       end
    end
    has_many :calendaries, -> { distinct }, through: :memos
+
    scope :notice, -> { where(kind_code: NOTICE) }
    scope :usual, -> { where(kind_code: USUAL) }
    scope :calendaried, ->(calendary_slugs) { self.joins(:memos).where(memoes: { calendary_id: Calendary.by_slugs(calendary_slugs).unscope(:select).select(:id) }) }
@@ -108,19 +109,68 @@ class Event < ActiveRecord::Base
       end
    end
 
+   scope :by_of_two_title, -> text do
+      this = table.table_alias || table.name
+      join = "
+  LEFT OUTER JOIN descriptions AS #{this}_event_titles
+               ON #{this}.id = #{this}_event_titles.describable_id
+              AND #{this}_event_titles.describable_type = 'Event'
+  LEFT OUTER JOIN subjects AS #{this}_kinds
+               ON #{this}.kind_code = #{this}_kinds.key
+  LEFT OUTER JOIN descriptions AS #{this}_default_titles
+               ON #{this}_kinds.id = #{this}_default_titles.describable_id
+              AND #{this}_default_titles.describable_type = 'Subject'
+  LEFT OUTER JOIN memories AS #{this}_memories
+               ON #{this}.memory_id = #{this}_memories.id
+  LEFT OUTER JOIN slugs AS #{this}_memory_slugs
+               ON #{this}_memories.id = #{this}_memory_slugs.sluggable_id
+              AND #{this}_memory_slugs.sluggable_type = 'Memory'
+  LEFT OUTER JOIN descriptions AS #{this}_memory_titles
+               ON #{this}_memories.id = #{this}_memory_titles.describable_id
+              AND #{this}_memory_titles.describable_type = 'Memory'"
+
+      selector = "unaccent(#{this}_event_titles.text) ~* unaccent(?)
+               OR unaccent(#{this}_default_titles.text) ~* unaccent(?)
+               OR unaccent(#{this}_memory_titles.text) ~* unaccent(?)
+               OR #{this}_memory_slugs.text = ?
+               OR #{this}_memories.short_name ~* ?",
+               "\\m#{text}.*", "\\m#{text}.*", "\\m#{text}.*", text, "\\m#{text}.*"
+
+      joins(join).where(selector).distinct
+   end
+
    scope :by_memory_id, -> memory_id do
       where(memory_id: memory_id)
    end
 
+   scope :by_id, ->(id) { where(id: id) }
+
    scope :by_title_and_short_name, -> title, short_name do
       joins(:memory).merge(Memory.by_short_name(short_name)).by_title(title)
    end
+
    scope :by_did_and_short_name, -> did, short_name do
       if /^[0-9]+$/ =~ did
          where(id: did)
       else
-         by_title(did)
+         by_default_or_specific_title(did)
       end.joins(:memory).merge(Memory.by_short_name(short_name))
+   end
+
+   # search by event title common via subject or event-specific
+   scope :by_default_or_specific_title, ->(title) do
+      left_outer_joins(:kind_titles, :titles).where(titles: {text: title}).or(where(kind_titles: {text: title}))
+   end
+
+   scope :by_uno, ->(uno) do
+      case uno.to_s
+      when /^\s*$/
+         none
+      when /^\d+$/
+         by_id(uno)
+      else
+         by_default_or_specific_title(uno)
+      end
    end
 
    # required for short list

@@ -1,3 +1,16 @@
+Допустим('єствує памѧть сꙛ даными:') do |table|
+   attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
+   FactoryBot.create(:memory, attrs)
+end
+
+Допустим('єствує памѧть {string}') do |string|
+   FactoryBot.create(:memory, short_name: string)
+end
+
+Допустим('єствує памѧть {string} сꙛ озом {string}') do |string, number|
+   FactoryBot.create(:memory, short_name: string, id: number)
+end
+
 Если('сдѣлаю {string} запытъ до адреса {string}') do |proto, address|
    @response = send(proto.downcase, address)
 end
