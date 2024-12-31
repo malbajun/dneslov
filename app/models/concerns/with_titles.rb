@@ -3,6 +3,8 @@ module WithTitles
 
    def self.included base
       base.class_eval do
+         attr_writer :title, :language, :alphabeth
+
          has_many :titles, -> { title }, as: :describable, class_name: :Title, dependent: :delete_all
          has_many :default_titles, -> { distinct }, through: :kind, source: :names, class_name: :Appellation
          has_many :all_titles, ->(this) do
@@ -114,6 +116,40 @@ module WithTitles
          accepts_nested_attributes_for :titles, reject_if: :all_blank, allow_destroy: true
 
          validates :titles, associated: true
+
+         before_validation :fill_in_title
+
+         def title
+            @title ||= titles.where(language_code: language, alphabeth_code: alphabeth).first&.text
+         end
+
+         if self.instance_methods.include?(:language)
+            alias_method :tit_language, :language
+            alias_method :tit_alphabeth, :alphabeth
+         else
+            define_method :tit_language do
+            end
+            define_method :tit_alphabeth do
+            end
+         end
+
+         def language
+           @language ||= tit_language || titles.first&.language_code
+         end
+
+         def alphabeth
+            @alphabeth ||= tit_alphabeth || titles.first&.alphabeth_code
+         end
+
+         def fill_in_title
+            if @title
+               if title = titles.where(language_code: language, alphabeth_code: alphabeth).first
+                  title.update_attribute(:text, @title)
+               else
+                  titles << Title.new(text: @title, language_code: language, alphabeth_code: alphabeth)
+               end
+            end
+         end
       end
    end
 end

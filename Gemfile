@@ -17,6 +17,8 @@ git_source(:codeberg) do |repo_name|
   "https://codeberg.org/#{repo_name}.git"
 end
 
+local = ENV["MY_RUBY_HOME"].to_s =~ /usr/
+
 ## Bundler
 gem 'bundler', '>= 2.3.12'
 
@@ -59,8 +61,8 @@ gem 'redis-rack-cache'
 gem 'sidekiq', ">= 6.4.0", require: %w(sidekiq sidekiq/web)
 gem 'sidekiq-worker-killer'
 gem 'sidekiq-limit_fetch'
-gem "jsonize", "~> 0.3.0" # codeberg: 'majioa/jsonize', ref: '96c8b77'
-#gem 'jsonize', path: '/usr/local/home/majioa/git/jsonize'
+# opts = local ? { path: ENV["HOME"] + '/git/jsonize' } : { codeberg: 'majioa/jsonize', ref: '59b2b9e' }
+gem 'jsonize', codeberg: 'majioa/jsonize', ref: '59b2b9e'
 gem 'redisize', '~> 0.2.0', codeberg: 'majioa/redisize', ref: 'f7ebef3'
 #gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
 
@@ -113,16 +115,16 @@ gem 'sassc-rails'
 gem 'sprockets-rails'
 
 ## api
-#gem 'tiun', path: '/usr/local/home/majioa/git/tiun'
-gem 'tiun', codeberg: 'znamenica/tiun', ref: '3978838'
-#gem 'tiun', '~> 0.0.2.1'
+#opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
+gem 'tiun', codeberg: 'znamenica/tiun', ref: 'daa3b5b'
 
 # sitemap
 gem 'sitemap_generator'
 
 # images
-gem 'carrierwave', '~> 3.0.5'
+gem 'carrierwave', '~> 3.1.0'
 gem 'carrierwave-base64'
+gem 'carrierwave_backgrounder'
 gem 'file_validators'
 gem 'rmagick'
 
@@ -168,6 +170,9 @@ group :development, :test do
    gem 'bundler-audit'
    gem 'faraday', '~> 1.0'
    gem 'timecop', '~> 0.9'
+   #gem "rack-test", "~> 2.2.0"
+   #opts = local ? { path: ENV["HOME"] + '/git/rack-test' } : { codeberg: 'majioa/rack-test', ref: 'main' }
+   gem "rack-test", codeberg: 'majioa/rack-test', ref: 'main'
 end
 
 group :test do

@@ -14,7 +14,6 @@ class User < ApplicationRecord
 
    before_validation :fill_in_account
 
-   validates_presence_of :accounts
    validates_presence_of :user_names, if: ->{ self.default_name.blank? && !self.password }
    accepts_nested_attributes_for :accounts, :user_names
 
@@ -167,7 +166,6 @@ class User < ApplicationRecord
                         FROM __names
                        WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')), '[]'::jsonb) AS _user_names"
 
-      binding.pry
       select(selector).group(:id)
    end
 
@@ -176,8 +174,8 @@ class User < ApplicationRecord
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = model.reflections[rela].name
       attrs = context[:only] || model.reflections[rela].klass.attribute_names
-      selects = attrs.map { |x| "#{as}.#{x} AS #{x}" }
-      groups = attrs.map { |x| "#{as}.#{x}" }
+      selects = attrs.map { |x| "#{as}.#{x} AS #{x}" } | ["FALSE AS validated"]
+      groups = attrs.map { |x| "#{as}.#{x}" } | ["validated"]
 
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?

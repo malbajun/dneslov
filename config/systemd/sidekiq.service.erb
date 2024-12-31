@@ -1,7 +1,7 @@
 [Unit]
 Description=<%= fetch(:application) %> application sidekiq server
 After=network.target remote-fs.target nss-lookup.target
-Requires=redis.service postgresql.service
+Requires=redis.service postgresql.service dneslov_core.service
 # restart on failure https://ma.ttias.be/auto-restart-crashed-service-systemd/
 StartLimitIntervalSec=500
 StartLimitBurst=35
@@ -9,13 +9,13 @@ StartLimitBurst=35
 [Service]
 Type=simple
 User=_nginx
-Group=_webserver
+Group=_nginx
 Environment=RAILS_ENV=<%= fetch(:rails_env) %>
 WorkingDirectory=<%= current_path %>
-ExecStart=/bin/bash -lc 'bundle exec sidekiq --environment <%= fetch(:rails_env) %> -r . -C ./config/sidekiq.yml'
+ExecStart=/bin/bash -lc '/usr/bin/rvm 3.1.4@dneslov --create do bundle exec sidekiq --environment <%= fetch(:rails_env) %> -r . -C ./config/sidekiq.yml'
 StandardInput=null
 StandardOutput=journal
-StandardError=journal
+StandardError=journal+console
 TimeoutSec=10
 Restart=always
 RestartSec=30s

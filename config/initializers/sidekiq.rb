@@ -9,7 +9,7 @@ Sidekiq.configure_server do |config|
    }
 
    config.server_middleware do |chain|
-      chain.add Sidekiq::WorkerKiller, max_rss: 512
+      chain.add Sidekiq::WorkerKiller, max_rss: 1280
    end
 
    config.average_scheduled_poll_interval = 2

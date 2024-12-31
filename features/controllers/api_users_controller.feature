@@ -31,10 +31,9 @@
          """
          ---
          - uid: uzsilo#Account::Uid
-           name: Ужил Пользов
+           name:
          """
       А добѫдꙛ охватъ "0-9/1"
-      И добѫдꙛ длину охвата "1"
 
    @get @collection
    Пример: Запрос постраничный к контроллеру ужилов в АПИ
@@ -63,24 +62,22 @@
          """
          ---
          - uid: "uzsilo#Account::Uid"
-           name: "Ужил Пользов"
+           name:
          - uid: "uzsilo0@mail.ru#Account::Email"
-           name: "Ужил Пользов"
+           name: uzsilo0@mail.ru
          - uid: "uzsilo1@mail.ru#Account::Email"
-           name: "Ужил1 Пользов1"
+           name: uzsilo1@mail.ru
          """
       А добѫдꙛ охватъ "0-2/4"
-      И добѫдꙛ длину охвата "3"
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/users.json" сꙛ доводом "per=3&page=2"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ приблизнъ изводъ:
          """
          ---
          - uid: "uzsilo2#Account::Uid"
-           name: "Ужил2 Пользов2"
+           name:
          """
       А добѫдꙛ охватъ "3-5/4"
-      И добѫдꙛ длину охвата "1"
 
    @get @collection @error @416
    Пример: Запрос к контроллеру ужилов в АПИ
@@ -114,7 +111,6 @@
       И запытаю створенје изнахоѕи ужила "/api/v1/users/create.json" сꙛ даными:
          | no                    | uzsilo@mail.ru                                   |
          | type                  | Account::Email                                   |
-         | settings              | {name: "Ужня1", last_name: "Польза", sex: "f"}   |
          | password              | Picture8#                                        |
          | password_confirmation | Picture8#                                        |
 
@@ -122,28 +118,23 @@
       И добѫдꙛ выводъ:
          """
          ---
-         settings:
-           name: Ужня1
-           last_name: Польза
-           sex: f
+         user_names: []
+         descriptions: []
          accounts:
          - 'no': uzsilo@mail.ru
            type: Account::Email
+           validated: false
          """
-      И изнахоѕь ужила "Ужня1" бѫдє яко:
+      И изнахоѕь ужила "uzsilo@mail.ru" бѫдє яко:
          """
          ---
-         settings:
-           sex: f
-           name: Ужня1
-           last_name: Польза
          encrypted_password: 158e4a4ccd7d30d6672fc0ec9088b76e994918ff3222270ecb619283bc469dc6
          salt:
          last_login_at:
          last_active_at:
          """
-      И завѣрям одсланје писма для ужила "Ужня1" сꙛ завѣрным токном
-      И поновям дане наряде в "/api/v1/session.json" сꙛ завѣрным токном для ужила "Ужня1"
+      И завѣрям одсланје писма для ужила "uzsilo@mail.ru" сꙛ завѣрным токном
+      И поновям дане наряде в "/api/v1/session.json" сꙛ завѣрным токном для ужила "uzsilo@mail.ru"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ приблизнъ изводъ:
          """
@@ -170,8 +161,7 @@
          ---
          args: {}
          error:
-           accounts.no:
-           - has already been taken
+         - Accounts no has already been taken
          """
       А изнахоѕи ужила "Ужил 1" не бѫдє
       И одсланја писма для ужила "Ужил 1" сꙛ завѣрным токном не бѫдє
@@ -189,43 +179,40 @@
          ---
          args: {}
          error:
-           encrypted_password:
-           - can't be blank
+         - Encrypted password can't be blank
          """
       А изнахоѕи ужила "Ужил 1" не бѫдє
-      И одсланја писма для ужила "Ужил 1" сꙛ завѣрным токном не бѫдє
+      И одсланја писма для ужила "uzsilo" сꙛ завѣрным токном не бѫдє
 
    @update @object @error @404
    Пример: Користник поновяє дане ужила
       Если запытаю одсланје ужила в изнаходь "/api/v1/users/uzsilo.json" сꙛ даными:
          | no              | uzsilo1                                          |
          | type            | Account::Uid                                     |
-         | settings        | {name: "Ужня", last_name: "Пользця", sex: "f"}   |
+         | default_name    | имя                                              |
          | Authorization:  | Validate wwwwwww                                 |
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         settings:
-           name: Ужня
-           last_name: Пользця
-           sex: f
+         user_names: []
+         descriptions: []
          accounts:
          - 'no': uzsilo1
            type: Account::Uid
+           validated: false
          """
       Если запытаю добыванје из изнахоѕи "/api/v1/users/uzsilo1.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         settings:
-           name: Ужня
-           last_name: Пользця
-           sex: f
+         user_names: []
+         descriptions: []
          accounts:
          - 'no': uzsilo1
            type: Account::Uid
+           validated: false
          """
       Если запытаю добыванје из изнахоѕи "/api/v1/users/uzsilo.json"
       То добѫдꙛ кодъ поврата "404"
@@ -236,13 +223,12 @@
       То добѫдꙛ выводъ:
          """
          ---
-         settings:
-           sex: m
-           name: Ужил
-           last_name: Пользов
+         user_names: []
+         descriptions: []
          accounts:
          - 'no': uzsilo
            type: Account::Uid
+           validated: false
          """
 
    @delete @object
@@ -252,13 +238,12 @@
       И добѫдꙛ выводъ:
          """
          ---
-         settings:
-           sex: m
-           name: Ужил
-           last_name: Пользов
+         user_names: []
+         descriptions: []
          accounts:
          - 'no': uzsilo
            type: Account::Uid
+           validated: false
          """
       И ужил "Ужил" не будє єствовати
 

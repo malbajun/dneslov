@@ -7,7 +7,7 @@
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053 |
          | type         | Picture                              |
          | meta         | {}                                   |
-         | image_path   | features/fixtures/y1000-blue.jpg     |
+         | image_path   | features/fixtures/y2000-green.webp   |
          | title        | Картинка                             |
       * єствує памѧть "Памѧтно"
       * є картинка сѫ даными:
@@ -15,9 +15,41 @@
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063 |
          | type         | Photo                                |
          | meta         | {}                                   |
-         | image_path   | features/fixtures/y1000.png          |
+         | image_path   | features/fixtures/y1500.png          |
          | title        | Фотка                                |
-         | attitude_to  | Памѧтно(10,100)                      |
+         | attitude_to  | Памѧтно(40,100)                      |
+      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200201" ѫ памѧти "Памѧтно"
+      * є картинка сѫ даными:
+         | id           | 200013                               |
+         | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064 |
+         | type         | Painting                             |
+         | meta         | {}                                   |
+         | image_path   | features/fixtures/y1500-blue.jpg     |
+         | title        | Картина                              |
+         | attitude_to  | Памѧтно#Сꙛбытие(100,10)              |
+      * єствує памѧть сꙛ даными:
+         | id           | 101                                  |
+         | short_name   | Памѧтна 1                            |
+         | title        | Титуло                               |
+         | slug         | слуг                                 |
+      * є картинка сѫ даными:
+         | id           | 200014                               |
+         | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065 |
+         | type         | Photo                                |
+         | meta         | {}                                   |
+         | image_path   | features/fixtures/y1500-green.gif    |
+         | title        | Фотка 1                              |
+         | attitude_to  | Памѧтна 1(30,100)                    |
+      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200202" ѫ памѧти "Памѧтна 1"
+      * є картинка сѫ даными:
+         | id           | 200015                               |
+         | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066 |
+         | type         | Icon                                 |
+         | meta         | {}                                   |
+         | image_path   | features/fixtures/y1500-green.webp   |
+         | title        | Иконка                               |
+         | description  | Иконка 1                             |
+         | attitude_to  | Памѧтна 1#Сꙛбытие(20,100)            |
 
    @get @collection
    Пример: Запрос к контроллеру картинок в АПИ при отсутствии картинок
@@ -36,7 +68,7 @@
    Пример: Користник добыває списъ картинок
       Если запытаю добыванје из изнахоѕи "/api/v1/images.json"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -55,37 +87,143 @@
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
            url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
            type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           language: ру
+           alphabeth: РУ
+           title: Картина
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           type: Painting
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+           language: ру
+           alphabeth: РУ
+           title: Фотка 1
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           language: ру
+           alphabeth: РУ
+           title: Иконка
+           description: Иконка 1
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           type: Icon
+         """
+      А добѫдꙛ охватъ "0-9/5"
+
+   @get @collection @search
+   Пример: Користник искає во спису картинок по памѧтному едозу (єдином опозонавателю) во взору id
+      Если запытаю добыванје из изнахоѕи "/api/v1/images.json?m=101"
+      То добѫдꙛ кодъ поврата "200"
+      И добѫдꙛ выводъ:
+         """
+         ---
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+           language: ру
+           alphabeth: РУ
+           title: Фотка 1
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           language: ру
+           alphabeth: РУ
+           title: Иконка
+           description: Иконка 1
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           type: Icon
          """
       А добѫдꙛ охватъ "0-9/2"
-      И добѫдꙛ длину охвата "2"
+
+   @get @collection @search
+   Пример: Користник искає во спису личинок по памѧтному кратку имени
+      Если запытаю добыванје из изнахоѕи "/api/v1/images.json?m=Памѧтно"
+      То добѫдꙛ кодъ поврата "200"
+      И добѫдꙛ выводъ:
+         """
+         ---
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
+           language: ру
+           alphabeth: РУ
+           title: Фотка
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           language: ру
+           alphabeth: РУ
+           title: Картина
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           type: Painting
+         """
+      А добѫдꙛ охватъ "0-9/2"
+
+   @get @collection @search
+   Пример: Користник искає во спису личинок по событијну опозонавателю
+      Если запытаю добыванје из изнахоѕи "/api/v1/images.json?e=200201"
+      То добѫдꙛ кодъ поврата "200"
+      И добѫдꙛ выводъ:
+         """
+         ---
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           language: ру
+           alphabeth: РУ
+           title: Картина
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           type: Painting
+         """
+      А добѫдꙛ охватъ "0-9/1"
+
+   @get @collection @search
+   Пример: Користник искає во спису личинок по памѧтну и событијну опозонавателєм
+      Если запытаю добыванје из изнахоѕи "/api/v1/images.json?m=слуг&e=200201"
+      То добѫдꙛ кодъ поврата "204"
+      И добѫдꙛ пустъ выводъ
+      А добѫдꙛ охватъ "0-9/0"
+
+   @get @collection @search
+   Пример: Користник искає во спису личинок по памѧтному едозу
+      Если запытаю добыванје из изнахоѕи "/api/v1/images.json?uno=Титуло#Сꙛбытие"
+      То добѫдꙛ кодъ поврата "200"
+      И добѫдꙛ выводъ:
+         """
+         ---
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           language: ру
+           alphabeth: РУ
+           title: Иконка
+           description: Иконка 1
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           type: Icon
+         """
+      А добѫдꙛ охватъ "0-9/1"
 
    @get @collection
    Пример: Запрос постраничный к контроллеру картинок в АПИ
       Пусть сѫ слике:
          """
          ---
-         - id: 200002
-           uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
-           type: Icon
-           image_path: features/fixtures/y2000-green.webp
-           meta: {}
-           title: Картинка 2
-         - id: 200003
-           uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
-           type: Painting
-           image_path: features/fixtures/y1000-green.gif
-           meta: {}
-           title: Picture 3
          - id: 200004
-           uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f056
+           uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f057
            type: Photo
-           image_path: features/fixtures/y1000-green.webp
+           image_path: features/fixtures/y2000-cyan.webp
            meta: {}
            title: Aperçu 4
          """
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3"
       То добѫдꙛ кодъ поврата "206"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ приблизнъ изводъ:
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -104,47 +242,55 @@
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
            url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
            type: Photo
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
            language: ру
            alphabeth: РУ
-           title: Картинка 2
+           title: Картина
            description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
-           type: Icon
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           type: Painting
          """
-      А добѫдꙛ охватъ "0-2/5"
-      И добѫдꙛ длину охвата "3"
-      Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3&page=2"
+      А добѫдꙛ охватъ "0-2/6"
+      Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3&p=2"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
-           language: ан
-           alphabeth: АН
-           title: Picture 3
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+           language: ру
+           alphabeth: РУ
+           title: Фотка 1
            description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f055.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f055.webp"
-           type: Painting
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f056
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           language: ру
+           alphabeth: РУ
+           title: Иконка
+           description: Иконка 1
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           type: Icon
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f057
            language: фр
            alphabeth: ФР
            title: Aperçu 4
            description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f056.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f056.webp"
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f057.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f057.webp"
            type: Photo
          """
-      А добѫдꙛ охватъ "3-5/5"
-      И добѫдꙛ длину охвата "2"
+      А добѫдꙛ охватъ "3-5/6"
+      Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3&p=3"
+      То добѫдꙛ кодъ поврата "416"
 
    @get @collection @error @416
    Пример: Запрос к контроллеру картинок в АПИ
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "page=111111"
       То добѫдꙛ кодъ поврата "416"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ приблизнъ изводъ:
          """
          ---
          args:
@@ -159,7 +305,7 @@
          Range: records=100000-200000
          """
       То добѫдꙛ кодъ поврата "416"
-      И добѫдꙛ приблизнъ извод:
+      И добѫдꙛ приблизнъ изводъ:
          """
          ---
          args: {}
@@ -179,7 +325,7 @@
          | alphabeth    | РУ                                      |
          | attitude_to  | Памѧтно(100,10)                         |
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
@@ -189,8 +335,8 @@
          description: Описание
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
-         width: 166
-         height: 1000
+         width: 250
+         height: 1500
          meta: {}
          type: Picture
          attitudes:
@@ -204,14 +350,13 @@
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
          type: Picture
          meta: {}
-         width: 166
-         height: 1000
+         width: 250
+         height: 1500
          language: ру
          alphabeth: РУ
          title: Картинка 1
          description: Описание
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
-         image: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
          attitudes:
          - attitude_to: Памѧтно
            pos: "<(100,10),30>"
@@ -224,19 +369,18 @@
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054 |
          | type         | Picture                              |
          | meta         | {}                                   |
-         | image_path   | features/fixtures/y1000-blue.jpg     |
+         | image_path   | features/fixtures/y2000-green.webp   |
          | title        | Картинка 1                           |
          | description  | Описание                             |
          | language     | ру                                   |
          | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "422"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          args: {}
          error:
-           digest:
-           - has already been taken
+         - Digest has already been taken
          """
       А изнахоѕи картинци "Картинка 1" не бѫдє
 
@@ -252,13 +396,13 @@
          | language     | ру                                   |
          | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "422"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          args: {}
          error:
-           image:
-           - has 100 px. height less than 600 px.
+         - Image has 100 px. height less than 1500 px.
+         - Image has 100 px. width less than 150 px.
          """
       А изнахоѕи картинци "Картинка 1" не бѫдє
 
@@ -274,7 +418,7 @@
          | language     | ру                                   |
          | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
@@ -292,7 +436,7 @@
          """
       Если запытаю добыванје из изнахоѕи "/api/v1/images/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.json"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
@@ -314,7 +458,7 @@
    @get @object
    Пример: Користник добыває дане картинке
       Если запытаю добыванје из изнахоѕи "/api/v1/images/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
-      То добѫдꙛ вывод:
+      То добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -324,8 +468,8 @@
          description:
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-         width: 800
-         height: 1000
+         width: 300
+         height: 2000
          meta: {}
          type: Picture
          attitudes: []
@@ -335,7 +479,7 @@
    Пример: Користник изтьрає иззначену картинку
       Если запытаю изтрѣнје изнахоѕи "/api/v1/images/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ вывод:
+      И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
@@ -345,8 +489,8 @@
          description:
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-         width: 800
-         height: 1000
+         width: 300
+         height: 2000
          meta: {}
          type: Picture
          attitudes: []

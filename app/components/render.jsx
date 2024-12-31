@@ -84,7 +84,7 @@ export function renderElement(element, meta) {
                                 wrapperClassName: displaySchemeToWrapperClass(sub.display_scheme) })
 
          console.debug("[renderElement] ****** source:", sub["source"], "filter:", sub["filter"], "value:", value, sourcedValue, element.value[sub["source"]], sourcedValue && sourcedValue.select((_, h) => {
-               return h.intersectWith(sub["filter"]).isPresent()
+               return (h || {}).intersectWith(sub["filter"]).isPresent()
             }))
          self.klass = kindToKlass(sub['kind'])
          console.debug("[renderElement] ** result object", res, "klass:", self.klass)

@@ -47,4 +47,11 @@ namespace :dneslov do
 
       true
    end
+
+   namespace :music do
+      desc "render znamen xml"
+      task :render_xml, [:source, :target] => :environment do |t, args|
+         Znamenar.new(source: args[:source], target: args[:target]).render_xml
+      end
+   end
 end

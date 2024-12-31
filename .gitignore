@@ -33,14 +33,18 @@ app/web
 config/secrets.yml
 config/secrets.*.yml
 config/database.yml
+config/sidekiq.yml
+
 webpack.config.js
 public/webpack/manifest.json
+
 public/javascripts/
 public/stylesheets/
 public/images/
 public/uploads/
 public/roundels/
 public/audios/
+public/cache/carrierwave/
 
 *.log
 *.sql

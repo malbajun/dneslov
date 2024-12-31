@@ -23,6 +23,8 @@ SitemapGenerator::Sitemap.create do
    add('/about', priority: 1, changefreq: 'monthly')
 
    Memory.find_each do |memory|
+      next unless memory.slug
+
       add(slug_path(memory.slug.text), lastmod: memory.updated_at, changefreq: 'daily')
       add(gallery_path(memory.slug.text), lastmod: memory.updated_at, changefreq: 'monthly')
 

@@ -9,9 +9,20 @@ end
 end
 
 Допустим('є учетка для ужила {string} сꙛ даными:') do |croi, table|
-   user = User.by_credentials_or_id(croi).first
+   user = User.find(croi)
    attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
    @current = FactoryBot.create(:account, user: user, **attrs)
+end
+
+Допустим('є учетка сꙛ даными:') do |table|
+   attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
+   @current = FactoryBot.create(:account, **attrs)
+end
+
+Допустим('є ужил сꙛ токнами и даными и учеткој {string}:') do |uno, table|
+   acc = Account.by_credentials_or_id(uno)
+   attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
+   @current = FactoryBot.create(:user, account: acc, **attrs)
 end
 
 Пусть('сѫ {string} ужилов') do |number|
@@ -42,13 +53,13 @@ end
 end
 
 То('изнахоѕь ужила {string} бѫдє яко:') do |croi, doc_string|
-   user = User.by_credentials_or_id(croi).first
+   user = Account.by_credentials_or_id(croi).first.user
    expect(user).to match_record_yaml(doc_string)
 end
 
 То('изнахоѕи ужила {string} не бѫдє') do |croi|
-   user = User.by_credentials_or_id(croi).first
-   expect(user).to be_blank
+   acc = Account.by_credentials_or_id(croi).first
+   expect(acc).to be_blank
 end
 
 Если('запытаю одсланје ужила в изнаходь {string} сꙛ даными:') do |path, table|
@@ -66,6 +77,6 @@ end
 end
 
 То('ужил {string} не будє єствовати') do |croi|
-   user = User.by_credentials_or_id(croi).first
-   expect(user).to be_blank
+   acc = Account.by_credentials_or_id(croi).first
+   expect(acc).to be_blank
 end

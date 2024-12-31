@@ -7,7 +7,7 @@ FactoryBot.define do
       transient do
          memory_title { nil }
          event_title { nil }
-         image_path { 'features/fixtures/y2000-green.webp' }
+         image_path { 'features/fixtures/y2000-cyan.webp' }
       end
 
       image { Rack::Test::UploadedFile.new(File.open(File.join(Rails.root, image_path))) }

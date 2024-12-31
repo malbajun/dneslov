@@ -62,16 +62,15 @@ class Name < ActiveRecord::Base
                            ON languages.key = #{model.table_name}.language_code
               LEFT OUTER JOIN descriptions AS language_names
                            ON language_names.describable_id = languages.id
-                          AND language_names.describable_type = 'Order'
+                          AND language_names.describable_type = 'Memory'
                           AND language_names.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN subjects AS alphabeths
                            ON alphabeths.key = #{model.table_name}.alphabeth_code
               LEFT OUTER JOIN descriptions AS alphabeth_names
                            ON alphabeth_names.describable_id = alphabeths.id
-                          AND alphabeth_names.describable_type = 'Order'
+                          AND alphabeth_names.describable_type = 'Memory'
                           AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
 
-      # binding.pry
       joins(join).select(selector).group(:id, "#{model.table_name}.text", "languages.key", "alphabeths.key")
    end
 

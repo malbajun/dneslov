@@ -24,7 +24,6 @@ const Metas = {
    'memoes': memoMeta,
    'scripta': scriptumMeta,
    'readings': readingMeta,
-   'orders': orderMeta,
    'subjects': subjectMeta,
    'roles': roleMeta,
    'user': [userMeta, User],

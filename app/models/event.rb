@@ -11,6 +11,7 @@
 class Event < ActiveRecord::Base
    extend Informatible
    extend TotalSize
+   include DistinctBy
    include WithTitles
    include WithDescriptions
 
@@ -85,6 +86,7 @@ class Event < ActiveRecord::Base
       end
    end
    has_many :calendaries, -> { distinct }, through: :memos
+
    scope :notice, -> { where(kind_code: NOTICE) }
    scope :usual, -> { where(kind_code: USUAL) }
    scope :calendaried, ->(calendary_slugs) { self.joins(:memos).where(memoes: { calendary_id: Calendary.by_slugs(calendary_slugs).unscope(:select).select(:id) }) }
@@ -107,20 +109,70 @@ class Event < ActiveRecord::Base
       end
    end
 
+   scope :by_of_two_title, -> text do
+      this = table.table_alias || table.name
+      join = "
+  LEFT OUTER JOIN descriptions AS #{this}_event_titles
+               ON #{this}.id = #{this}_event_titles.describable_id
+              AND #{this}_event_titles.describable_type = 'Event'
+  LEFT OUTER JOIN subjects AS #{this}_kinds
+               ON #{this}.kind_code = #{this}_kinds.key
+  LEFT OUTER JOIN descriptions AS #{this}_default_titles
+               ON #{this}_kinds.id = #{this}_default_titles.describable_id
+              AND #{this}_default_titles.describable_type = 'Subject'
+  LEFT OUTER JOIN memories AS #{this}_memories
+               ON #{this}.memory_id = #{this}_memories.id
+  LEFT OUTER JOIN slugs AS #{this}_memory_slugs
+               ON #{this}_memories.id = #{this}_memory_slugs.sluggable_id
+              AND #{this}_memory_slugs.sluggable_type = 'Memory'
+  LEFT OUTER JOIN descriptions AS #{this}_memory_titles
+               ON #{this}_memories.id = #{this}_memory_titles.describable_id
+              AND #{this}_memory_titles.describable_type = 'Memory'"
+
+      selector = "unaccent(#{this}_event_titles.text) ~* unaccent(?)
+               OR unaccent(#{this}_default_titles.text) ~* unaccent(?)
+               OR unaccent(#{this}_memory_titles.text) ~* unaccent(?)
+               OR #{this}_memory_slugs.text = ?
+               OR #{this}_memories.short_name ~* ?",
+               "\\m#{text}.*", "\\m#{text}.*", "\\m#{text}.*", text, "\\m#{text}.*"
+
+      joins(join).where(selector).distinct
+   end
+
    scope :by_memory_id, -> memory_id do
       where(memory_id: memory_id)
    end
 
+   scope :by_id, ->(id) { where(id: id) }
+
    scope :by_title_and_short_name, -> title, short_name do
       joins(:memory).merge(Memory.by_short_name(short_name)).by_title(title)
    end
+
    scope :by_did_and_short_name, -> did, short_name do
       if /^[0-9]+$/ =~ did
          where(id: did)
       else
-         by_title(did)
+         by_default_or_specific_title(did)
       end.joins(:memory).merge(Memory.by_short_name(short_name))
    end
+
+   # search by event title common via subject or event-specific
+   scope :by_default_or_specific_title, ->(title) do
+      left_outer_joins(:kind_titles, :titles).where(titles: {text: title}).or(where(kind_titles: {text: title}))
+   end
+
+   scope :by_uno, ->(uno) do
+      case uno.to_s
+      when /^\s*$/
+         none
+      when /^\d+$/
+         by_id(uno)
+      else
+         by_default_or_specific_title(uno)
+      end
+   end
+
    # required for short list
    scope :with_key, -> _ do
       selector = [ 'events.id AS _key' ]
@@ -181,7 +233,6 @@ class Event < ActiveRecord::Base
       selector = self.select_values.dup << "#{join_name}.*" <<
          "COALESCE(jsonb_build_object(
             'slug', memory_slugs.text,
-            'order', #{join_name}_memories.order,
             'short_name', #{join_name}_memories.short_name)) AS _memory"
 
       join = "LEFT OUTER JOIN memories AS #{join_name}_memories
@@ -242,17 +293,130 @@ class Event < ActiveRecord::Base
    end
 
    scope :with_place, -> context do
-      language_codes = [ context[:text_languages] ].flatten
-      selector = "jsonb_build_object('id', places.id, 'name', place_descriptions.text) AS _place"
-      join = "LEFT OUTER JOIN places
-                           ON events.place_id = places.id
-                          AND places.id IS NOT NULL
-              LEFT OUTER JOIN descriptions AS place_descriptions
-                           ON place_descriptions.describable_id = places.id
-                          AND place_descriptions.describable_type = 'Place'
-                          AND place_descriptions.language_code IN ('#{language_codes.join("', '")}')"
+      language_codes = [context[:text_languages]].flatten
+      alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
+      this = table.table_alias || table.name
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      as_table = as.to_s.tableize
+      as_model = as.to_s.camelize
 
-      joins(join).select(selector).group(:id, 'places.id', 'place_descriptions.text')
+      selector = "jsonb_build_object('id', #{as_table}.id, 'names', COALESCE((
+              WITH RECURSIVE ____names(level,path,id,name_id,name_bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
+              WITH RECURSIVE tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
+                      SELECT 0,
+                             nm.text,
+                             n.id,
+                             n.name_id,
+                             n.bind_kind_name,
+                             n.bond_to_id,
+                             n.root_id,
+                             nm.alphabeth_code,
+                             nm.language_code,
+                             nm.text,
+                             mn.state_code,
+                             mn.mode,
+                             mn.feasible
+                        FROM nomina n
+                        JOIN names nm
+                          ON nm.id = n.name_id
+                        JOIN memory_names mn
+                          ON mn.nomen_id = n.id
+                         AND mn.memory_id = #{as_table}.id
+                       UNION
+
+                      SELECT 0,
+                             nm.text,
+                             n.id,
+                             n.name_id,
+                             n.bind_kind_name,
+                             n.bond_to_id,
+                             n.root_id,
+                             nm.alphabeth_code,
+                             nm.language_code,
+                             nm.text,
+                             tt.state_code,
+                             tt.mode,
+                             tt.feasible
+                        FROM nomina n
+                        JOIN tt
+                          ON n.root_id = tt.root_id AND tt.bond_to_id = n.name_id
+                        JOIN names nm
+                          ON nm.id = n.name_id
+                        JOIN names nm_t
+                          ON nm_t.id = tt.name_id
+                         AND nm_t.language_code <> nm.language_code
+             LEFT OUTER JOIN memory_names mn
+                          ON n.root_id = mn.nomen_id
+                         AND mn.memory_id = #{as_table}.id)
+                      SELECT *
+                        FROM tt
+
+                       UNION
+                      SELECT level + 1,
+                             path || ' > ' || nm.text,
+                             n.id,
+                             n.name_id,
+                             n.bind_kind_name,
+                             n.bond_to_id,
+                             n.root_id,
+                             nm.alphabeth_code,
+                             nm.language_code,
+                             nm.text,
+                             t.state_code,
+                             t.mode,
+                             t.feasible
+                        FROM nomina n
+                        JOIN ____names t
+                          ON n.bond_to_id = t.name_id
+                         AND n.root_id = t.root_id
+                        JOIN names nm
+                          ON nm.id = n.name_id
+                        JOIN names nm_t
+                          ON nm_t.id = t.name_id
+                         AND nm_t.language_code <> nm.language_code
+             LEFT OUTER JOIN memory_names mn
+                          ON n.root_id = mn.nomen_id
+                         AND mn.memory_id = #{as_table}.id),
+                             ___names AS (
+                      SELECT t.*
+                        FROM
+                     (SELECT *,
+                ROW_NUMBER() OVER(PARTITION BY id ORDER BY level DESC) as r
+                        FROM ____names) AS t
+                       WHERE t.r = 1),
+                             __names AS (
+                      SELECT DISTINCT ON(id)
+                             id, 
+                             feasible,
+                             mode,
+                             name_alphabeth_code,
+                             name_bind_kind_name,
+                             name_language_code,
+                             name_text,
+                             level,
+                             path,
+                             state_code
+                        FROM ___names
+                       GROUP BY id, feasible, mode, name_alphabeth_code, name_bind_kind_name, name_language_code, name_text, level, path, state_code)
+                      SELECT jsonb_agg(__names)
+                        FROM __names
+                       WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')
+                         AND __names.name_alphabeth_code IN ('#{alphabeth_codes.join("', '")}')), '[]'::jsonb), 'description', #{as}_descriptions.text, 'short_name', #{as_table}.short_name, 'slug', #{as}_slugs.text) AS _#{as}"
+
+      join = "LEFT OUTER JOIN memories AS #{as_table}
+                           ON #{this}.#{as}_id = #{as_table}.id
+                          AND #{as_table}.type = '#{as_model}'
+              LEFT OUTER JOIN slugs AS #{as}_slugs
+                           ON #{as}_slugs.sluggable_id = #{as_table}.id
+                          AND #{as}_slugs.sluggable_type = 'Memory'
+              LEFT OUTER JOIN descriptions AS #{as}_descriptions
+                           ON #{as}_descriptions.describable_id = #{as_table}.id
+                          AND #{as}_descriptions.describable_type = 'Memory'
+                          AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_descriptions.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{as_table}.id", "#{as}_descriptions.text", "#{as}_slugs.text")
    end
 
    scope :with_short_memoes, -> context do
@@ -280,18 +444,20 @@ class Event < ActiveRecord::Base
                           AND memo_titles.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN memo_orders
                            ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN orders
+              LEFT OUTER JOIN memories AS orders
                            ON orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN memo_orders AS memo_orders_memoes_join
                            ON memo_orders_memoes_join.memo_id = memoes.id
-              LEFT OUTER JOIN orders AS orders_memoes_join
+              LEFT OUTER JOIN memories AS orders_memoes_join
                            ON orders_memoes_join.id = memo_orders_memoes_join.order_id
+                          AND orders_memoes_join.type = 'Order'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders_memoes_join.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE memoes.event_id = events.id
@@ -308,15 +474,15 @@ class Event < ActiveRecord::Base
    scope :with_orders, -> context do
       language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
-      as = table.table_alias || table.name
+      this = table.table_alias || table.name
 
       selector = "COALESCE((WITH __orders AS (
                        SELECT DISTINCT ON(memo_slugs.text)
-                              memo_slugs.text AS slug,
+                              COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
                               order_titles_memoes.text AS name
-                         FROM orders
+                         FROM memories AS orders
               LEFT OUTER JOIN memoes
-                           ON #{as}.id = memoes.event_id
+                           ON #{this}.id = memoes.event_id
               LEFT OUTER JOIN calendaries
                            ON calendaries.id = memoes.calendary_id
               LEFT OUTER JOIN slugs AS calendary_slugs
@@ -327,13 +493,14 @@ class Event < ActiveRecord::Base
                            ON memo_orders.memo_id = memoes.id
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
                           AND calendaries.licit = 't'
                      GROUP BY order_titles_memoes.text, memo_slugs.text)
                        SELECT jsonb_agg(__orders)
@@ -389,18 +556,20 @@ class Event < ActiveRecord::Base
                           AND calendary_titles.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN memo_orders
                            ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN orders
+              LEFT OUTER JOIN memories AS orders
                            ON orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN memo_orders AS memo_orders_memoes_join
                            ON memo_orders_memoes_join.memo_id = memoes.id
-              LEFT OUTER JOIN orders AS orders_memoes_join
+              LEFT OUTER JOIN memories AS orders_memoes_join
                            ON orders_memoes_join.id = memo_orders_memoes_join.order_id
+                          AND orders_memoes_join.type = 'Order'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders_memoes_join.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE memoes.event_id = events.id

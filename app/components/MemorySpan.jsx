@@ -100,9 +100,10 @@ export default class MemorySpan extends Component {
                         src={this.state.roundelUrl} />}
                   {this.hasNoImage() &&
                      <i className='material-icons circle terracota z-depth-1'>perm_identity</i>}</a>
-               <Chip
-                  color={'gray'}
-                  text={Object.values(this.props.orders)[0]} />
+               {Object.values(this.props.orders).isPresent() &&
+                  <Chip
+                     color={'gray'}
+                     text={Object.values(this.props.orders)[0]} />}
                <span
                   className='name short'>
                   {this.props.title}</span>

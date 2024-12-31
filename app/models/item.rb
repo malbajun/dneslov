@@ -43,13 +43,13 @@ class Item < ActiveRecord::Base
                            ON languages.key = titles.language_code
               LEFT OUTER JOIN descriptions AS language_names
                            ON language_names.describable_id = languages.id
-                          AND language_names.describable_type = 'Order'
+                          AND language_names.describable_type = 'Memory'
                           #{lang_wheres&.[](1)}
               LEFT OUTER JOIN subjects AS alphabeths
                            ON alphabeths.key = titles.alphabeth_code
               LEFT OUTER JOIN descriptions AS alphabeth_names
                            ON alphabeth_names.describable_id = alphabeths.id
-                          AND alphabeth_names.describable_type = 'Order'
+                          AND alphabeth_names.describable_type = 'Memory'
                           #{alph_wheres&.[](1)}"
 
       selector << "titles.text AS _value"

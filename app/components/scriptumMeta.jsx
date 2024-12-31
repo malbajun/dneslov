@@ -250,6 +250,7 @@ export const scriptumMeta = {
                   'To': 'Обращение к...',
                   'About': 'Текст о...',
                   'Author': 'Автор',
+                  'Translator': 'Переводчик',
                },
                validations: {
                   'Пункт из списка должен быть выбран': matchEmptyObject,

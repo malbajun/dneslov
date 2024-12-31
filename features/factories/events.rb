@@ -4,8 +4,11 @@ FactoryBot.define do
 
       kind { association :event_kind }
       association :item
-      association :memory
-      association :place
+      place factory: :place, without_place: true, without_events: true
+
+      transient do
+         without_place { nil }
+      end
 
       transient do
          title { FFaker::NameRU.name }
@@ -14,7 +17,12 @@ FactoryBot.define do
 
       after(:build) do |o, e|
          o.titles << build(:title, text: e.title)
-         o.memory = Memory.by_short_name(e.memory_title).first || build(:memory, short_name: e.memory_title) if e.memory_title
+         o.memory =
+            if e.memory_title
+               Memory.by_short_name(e.memory_title).first || build(:memory, without_events: true, short_name: e.memory_title)
+            else
+               build(:memory, without_events: true)
+            end
       end
    end
 end

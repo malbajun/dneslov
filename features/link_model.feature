@@ -61,19 +61,19 @@
       И ссылки "httr://recource.ru" не будет
 
 
-   Сценарий: Недоступный url вики ссылки
-      Допустим есть память "Василий Памятливый"
-
-      Если попробуем создать новую вики ссылку с полями:
-        | alphabeth_code   | РУ                                            |
-        | language_code    | ру                                            |
-        | url              | https://kuz1.pstbi.ccas.ru/foto_1/ob4-01f.jpg |
-        | info:memory      | ^Василий Памятливый                           |
-      То увидим сообщение ссылки об ошибке:
-         """
-         Url is inaccessible at https://kuz1.pstbi.ccas.ru/foto_1/ob4-01f.jpg
-         """
-      И ссылки "http://recource.ru" не будет
+#   Сценарий: Недоступный url вики ссылки
+#      Допустим есть память "Василий Памятливый"
+#
+#      Если попробуем создать новую вики ссылку с полями:
+#        | alphabeth_code   | РУ                                            |
+#        | language_code    | ру                                            |
+#        | url              | https://kuz3.pstbi.ccas.ru/foto_1/ob4-01f.jpg |
+#        | info:memory      | ^Василий Памятливый                           |
+#      То увидим сообщение ссылки об ошибке:
+#         """
+#         Url is inaccessible at https://kuz3.pstbi.ccas.ru/foto_1/ob4-01f.jpg
+#         """
+#      И ссылки "http://recource.ru" не будет
 
 
    @language

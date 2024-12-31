@@ -81,6 +81,7 @@ class MemoriesController < ApplicationController
                        .with_titles(context)
                        .with_description(context)
                        .select("events.*")
+                       .distinct_by('events.id')
    end
 
    def cslugs

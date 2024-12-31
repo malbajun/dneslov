@@ -31,7 +31,7 @@ export default class Memory extends Component {
          gallery: "Выставка",
          base: "Опорная память",
          externals: "Внешние ссылки",
-         patron: "Покровитель",
+         patron: "Покровительствует",
          events: "События",
          prosomeion: "подобен",
          tone: "глас",
@@ -165,11 +165,13 @@ export default class Memory extends Component {
    }
 
    static getOrder(props) {
-      return props.memoes.reduce((order, m) => {
-         return Object.values(m.orders).reduce((_order, o) => {
-            return _order || o
+      return props.events.reduce((order, e) => {
+         return Object.values(e.memoes).reduce((order, m) => {
+            return Object.values(m.orders).reduce((_order, o) => {
+               return _order || o
+            }, order)
          }, order)
-      }, null) || props.order
+      }, null)
    }
 
    static getHappenedAt(props) {

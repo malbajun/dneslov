@@ -1,5 +1,7 @@
 FactoryBot.define do
-   factory :order do
+   factory :order, parent: :memory, class: :Order do
+      type { 'Order' }
+
       transient do
          order { 'Чин' }
       end

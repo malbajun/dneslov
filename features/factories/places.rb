@@ -1,10 +1,17 @@
 FactoryBot.define do
-   factory :place do
-      transient do
-         ru_description { 'Текст' } ;end
+   factory :place, parent: :memory, class: :Place do
+      type { 'Place' }
 
-      after( :build ) do |place, e|
+      transient do
+         ru_description { 'Текст' }
+      end
+
+      after(:build) do |place, e|
          if e.ru_description.present? && place.descriptions.blank?
-            place.descriptions = build_list( :description, 1,
+            place.descriptions = build_list(:description, 1,
                describable: place, text: e.ru_description, alphabeth_code: :РУ,
-               language_code: :ру ) end;end;end;end
+               language_code: :ру)
+         end
+      end
+   end
+end

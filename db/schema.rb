@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
+ActiveRecord::Schema[7.0].define(version: 2024_12_22_194700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -213,14 +213,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
   end
 
   create_table "memories", id: :serial, force: :cascade do |t|
-    t.string "short_name", null: false
+    t.string "short_name"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "quantity"
-    t.string "order"
     t.string "council"
     t.integer "base_year"
+    t.string "type", default: "Memory", null: false
+    t.string "kind"
+    t.index ["kind"], name: "index_memories_on_kind"
     t.index ["short_name"], name: "index_memories_on_short_name", unique: true
+    t.index ["type"], name: "index_memories_on_type"
   end
 
   create_table "memory_binds", force: :cascade do |t|
@@ -293,6 +296,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
     t.jsonb "meta", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "image_processing", default: false, null: false
+    t.string "image_tmp"
     t.index ["digest"], name: "index_pictures_on_digest", unique: true
     t.index ["meta"], name: "index_pictures_on_meta", using: :gin
     t.index ["thumb_url"], name: "index_pictures_on_thumb_url", unique: true
@@ -351,6 +356,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
     t.bigint "roundelable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "image_processing", default: false, null: false
+    t.string "image_tmp"
     t.index ["digest"], name: "index_roundels_on_digest", unique: true
     t.index ["roundelable_type", "roundelable_id"], name: "index_thumbs_on_thumbable"
     t.index ["uid"], name: "index_roundels_on_uid", unique: true
@@ -492,14 +499,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_30_201032) do
   end
 
   add_foreign_key "accounts", "users", on_delete: :cascade
+  add_foreign_key "calendaries", "memories", column: "place_id", on_delete: :cascade
+  add_foreign_key "coverings", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade
-  add_foreign_key "coverings", "places", on_delete: :cascade
+  add_foreign_key "events", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "image_attitudes", "pictures", on_delete: :cascade
   add_foreign_key "links", "resources", on_delete: :cascade
   add_foreign_key "markups", "readings", on_delete: :cascade
   add_foreign_key "markups", "scripta", on_delete: :restrict
   add_foreign_key "members", "roles", on_delete: :cascade
   add_foreign_key "members", "users", on_delete: :cascade
+  add_foreign_key "memo_orders", "memories", column: "order_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", column: "bond_to_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade

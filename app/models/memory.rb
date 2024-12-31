@@ -8,7 +8,10 @@ class Memory < ApplicationRecord
    extend Informatible
    include WithTitles
    include WithDescriptions
+   include WithTweets
+   include WithNotes
    include WithLinks
+   include ByToken
 
    has_default_key :short_name
 
@@ -39,7 +42,14 @@ class Memory < ApplicationRecord
 
    scope :by_short_name, -> name { where( short_name: name ) }
    scope :by_slug, -> slug do
-      unscoped.joins(:slug).where(slugs: {text: slug.split(",")})
+      this = table.table_alias || table.name
+      join = "LEFT OUTER JOIN slugs AS #{this}_slugs
+           ON #{this}.id = #{this}_slugs.sluggable_id
+          AND #{this}_slugs.sluggable_type = 'Memory'"
+
+      selector = "#{this}_slugs.text = ?", slug
+
+      joins(join).where(selector).distinct
    end
 
    scope :in_calendaries, -> calendaries_in do
@@ -52,26 +62,40 @@ class Memory < ApplicationRecord
    end
 
    scope :by_token, -> text do
-      left_outer_joins(:names, :descriptions, :slug).where("short_name ~* ?", "\\m#{text}.*").or(
-         where("unaccent(descriptions.text) ~* unaccent(?) OR unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*", "\\m#{text}.*")).or(merge(
-         Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")})).distinct
+      left_outer_joins(:names, :descriptions, :notes, :tweets, :slug).where("short_name ~* ?", "\\m#{text}.*").or(
+         where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(tweets_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(notes_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
+         Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
 
-   scope :by_tokens, -> string_in do
-      return self if string_in.blank?
-      # TODO fix the correctness of the query
-      klass = self.model_name.name.constantize
-      or_rel_tokens = string_in.split(/\//).map do |or_token|
-         # OR operation
-         or_token.strip.split(/\s+/).reduce(nil) do |rel, and_token|
-            # AND operation
-            and_rel = klass.by_token(and_token)
-            rel && rel.merge(and_rel) || and_rel
-         end
-      end
+   # by title with short_name
+   scope :by_title, -> text do
+      this = table.table_alias || table.name
+      join = "LEFT OUTER JOIN descriptions AS #{this}_titles
+           ON #{this}.id = #{this}_titles.describable_id
+          AND #{this}_titles.describable_type = 'Memory'"
 
-      or_rel = or_rel_tokens.reduce { |sum_rel, rel| sum_rel.or(rel) }
-      self.merge(or_rel).distinct
+      selector = "unaccent(#{this}_titles.text) ~* unaccent(?)
+             OR #{this}.short_name ~* ?", "\\m#{text}.*", "\\m#{text}.*"
+
+      joins(join).where(selector).distinct
+   end
+
+   scope :by_id, ->(id) { where(id: id.strip) }
+
+   # by unique universal numbering object: by id, by slug, by short_name
+   scope :by_uno, ->(uno) do
+      case uno
+      when /^\s*$/
+         none
+      when /^\s*\d+\s*$/
+         by_id(uno)
+      when /^[а-яё0-9]+$/
+         by_slug(uno)
+      else
+         by_short_name(uno)
+      end
    end
 
    # required for short list
@@ -90,6 +114,7 @@ class Memory < ApplicationRecord
 
    scope :with_names, -> (context) do
       language_codes = [context[:text_languages]].flatten
+      alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
 =begin
 with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (
         with recursive tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) as (SELECT 0,nm.text,n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,mn.state_code,mn.mode,mn.feasible FROM nomina n JOIN names nm ON nm.id = n.name_id JOIN memory_names mn ON mn.nomen_id = n.id WHERE  mn.memory_id = 2989 UNION SELECT level + 1, path || ' > ' || nm.text, n.id,n.name_id,n.bind_kind_name,n.bond_to_id,n.root_id,nm.alphabeth_code,nm.language_code,nm.text,tt.state_code,tt.mode,tt.feasible FROM nomina n JOIN tt ON n.root_id = tt.root_id AND  tt.bond_to_id = n.name_id JOIN names nm ON nm.id = n.name_id JOIN names nm_t ON nm_t.id = tt.name_id AND nm_t.language_code <> nm.language_code LEFT OUTER JOIN memory_names mn ON n.root_id = mn.nomen_id AND mn.memory_id = 2989 ) select * from tt
@@ -183,7 +208,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                          AND mn.memory_id = memories.id)
                       SELECT jsonb_agg(__names)
                         FROM __names
-                       WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')), '[]'::jsonb) AS _names"
+                       WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')
+                         AND __names.name_alphabeth_code IN ('#{alphabeth_codes.join("', '")}')), '[]'::jsonb) AS _names"
 
       select(selector).group(:id)
    end
@@ -252,8 +278,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{as}_coverings.place_id AS place_id,
                               #{as}_place_descriptions.text || ' (' || #{as}_place_descriptions.language_code || '_' || #{as}_place_descriptions.alphabeth_code || ')' AS place_name
                          FROM coverings AS #{as}_coverings
-                         JOIN places AS #{as}_places
+                         JOIN memories AS #{as}_places
                            ON #{as}_places.id = #{as}_coverings.place_id
+                          AND #{as}_places.type = 'Place'
               LEFT OUTER JOIN descriptions AS #{as}_place_descriptions
                            ON #{as}_place_descriptions.describable_id = #{as}_places.id
                           AND #{as}_place_descriptions.describable_type = 'Place'
@@ -277,8 +304,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{as}_coverings.place_id AS place_id,
                               #{as}_place_descriptions.text AS name
                          FROM coverings AS #{as}_coverings
-                         JOIN places AS #{as}_places
+                         JOIN memories AS #{as}_places
                            ON #{as}_places.id = #{as}_coverings.place_id
+                          AND #{as}_places.type = 'Place'
               LEFT OUTER JOIN descriptions AS #{as}_place_descriptions
                            ON #{as}_place_descriptions.describable_id = #{as}_places.id
                           AND #{as}_place_descriptions.describable_type = 'Place'
@@ -341,18 +369,20 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND calendary_titles.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN memo_orders
                            ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN orders
+              LEFT OUTER JOIN memories AS orders
                            ON orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
               LEFT OUTER JOIN slugs AS memo_slugs
                            ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Order'
+                          AND memo_slugs.sluggable_type = 'Memory'
               LEFT OUTER JOIN memo_orders AS memo_orders_memoes_join
                            ON memo_orders_memoes_join.memo_id = memoes.id
-              LEFT OUTER JOIN orders AS orders_memoes_join
+              LEFT OUTER JOIN memories AS orders_memoes_join
                            ON orders_memoes_join.id = memo_orders_memoes_join.order_id
+                          AND orders_memoes_join.type = 'Memory'
               LEFT OUTER JOIN descriptions AS order_titles_memoes
                            ON order_titles_memoes.describable_id = orders_memoes_join.id
-                          AND order_titles_memoes.describable_type = 'Order'
+                          AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE events.memory_id = #{as}.id
@@ -375,7 +405,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
       selector << "COALESCE((WITH __bond_memories AS (
-                      SELECT #{as}_memory_binds.id AS id,
+                      SELECT DISTINCT ON (#{as}_memory_binds.id)
+                             #{as}_memory_binds.id AS id,
                              #{as}_memory_binds.kind AS kind,
                              #{as}_memory_slugs.text AS slug,
                              COALESCE(#{as}_bond_memo_titles.text, #{as}_bond_memories.short_name) AS name
@@ -392,7 +423,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN descriptions AS #{as}_bond_memo_titles
                           ON #{as}_bond_memo_titles.describable_id = #{as}_memoes.id
                          AND #{as}_bond_memo_titles.describable_type = 'Memo'
-                         AND #{as}_bond_memo_titles.type = 'Name'
+                         AND #{as}_bond_memo_titles.type = 'Title'
                          AND #{as}_bond_memo_titles.language_code IN ('#{language_codes.join("', '")}')
                          AND #{as}_bond_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                        WHERE #{as}_memory_binds.memory_id = #{as}.id)
@@ -461,6 +492,21 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       left_outer_joins(:slug).select(selector.uniq).group('_slug').order('_slug')
    end
 
+   scope :with_pure_slug, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || "slug"
+      asr = model.reflections[rela]&.name
+      this = table.table_alias || table.name
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{asr}_#{this}_slugs.text AS _#{as}"
+      join = "LEFT OUTER JOIN slugs AS #{asr}_#{this}_slugs
+                           ON #{asr}_#{this}_slugs.sluggable_id = #{this}.id
+                          AND #{asr}_#{this}_slugs.sluggable_type = 'Memory'"
+
+      joins(join).select(selector).group(:id, "#{asr}_#{this}_slugs.id", "#{asr}_#{this}_slugs.text")
+   end
+
    scope :with_slug, -> do
       as = table.table_alias || table.name
       selector = self.select_values.dup
@@ -486,16 +532,17 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                        SELECT DISTINCT ON(orders.id)
                               orders.id AS id,
                               order_names.text AS name
-                         FROM orders
+                         FROM memories AS orders
                          JOIN memo_orders
                            ON memo_orders.order_id = orders.id
+                          AND orders.type = 'Order'
                          JOIN memoes
                            ON memoes.id = memo_orders.memo_id
                          JOIN events
                            ON events.id = event_id
               LEFT OUTER JOIN descriptions AS order_names
                            ON order_names.describable_id = orders.id
-                          AND order_names.describable_type = 'Order'
+                          AND order_names.describable_type = 'Memory'
                           AND order_names.language_code IN ('#{language_codes.join("', '")}')
                         WHERE events.memory_id = memories.id
                      GROUP BY orders.id, order_names.text)
@@ -614,7 +661,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                         FROM events
              LEFT OUTER JOIN descriptions AS place_names
                           ON place_names.describable_id = events.place_id
-                         AND place_names.describable_type = 'Place'
+                         AND place_names.describable_type = 'Memory'
                              #{lang_wheres&.[](3)} #{alph_wheres&.[](3)}
              LEFT OUTER JOIN items AS #{this}_items
                           ON #{this}_items.id = events.item_id
@@ -696,8 +743,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       select(selector).group(:id)
    end
 
-   singleton_class.send(:alias_method, :t, :by_token)
-   singleton_class.send(:alias_method, :q, :by_tokens)
    singleton_class.send(:alias_method, :d, :by_date)
    singleton_class.send(:alias_method, :c, :in_calendaries)
 
@@ -710,7 +755,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank
 
-   validates_presence_of :short_name, :events
+   validates_presence_of :short_name
    validates :base_year, format: { with: /\A-?\d+\z/ }
    validates :quantity, format: { with: /\A[0-9?+]+?\z/ }, allow_blank: true
 
@@ -757,6 +802,20 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    def quantity= value_in
       value = value_in.present? && value_in || nil
+
+      super(value)
+   end
+
+   def slug= value_in
+      value =
+         case value_in
+         when NilClass
+            nil
+         when String
+            self.slug ? self.slug.assign_attributes(text: value_in) : Slug.new(text: value_in)
+         else
+            value_in
+         end || self.slug
 
       super(value)
    end
