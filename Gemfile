@@ -17,6 +17,8 @@ git_source(:codeberg) do |repo_name|
   "https://codeberg.org/#{repo_name}.git"
 end
 
+local = ENV["MY_RUBY_HOME"].to_s =~ /usr/
+
 ## Bundler
 gem 'bundler', '>= 2.3.12'
 
@@ -59,8 +61,8 @@ gem 'redis-rack-cache'
 gem 'sidekiq', ">= 6.4.0", require: %w(sidekiq sidekiq/web)
 gem 'sidekiq-worker-killer'
 gem 'sidekiq-limit_fetch'
-gem "jsonize", "~> 0.3.0", codeberg: 'majioa/jsonize', ref: '006d17279cc00e6b89befc8568d27c92096b3e03'
-# gem 'jsonize', path: '/usr/local/home/majioa/git/jsonize'
+opts = local ? { path: ENV["HOME"] + '/git/jsonize' } : { codeberg: 'majioa/jsonize', ref: '59b2b9e' }
+gem 'jsonize', opts
 gem 'redisize', '~> 0.2.0', codeberg: 'majioa/redisize', ref: 'f7ebef3'
 #gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
 
@@ -113,7 +115,7 @@ gem 'sassc-rails'
 gem 'sprockets-rails'
 
 ## api
-opts = ENV["MY_RUBY_HOME"].to_s =~ /local/ ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'bff2175' }
+opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
 gem 'tiun', opts
 
 # sitemap
@@ -169,7 +171,8 @@ group :development, :test do
    gem 'faraday', '~> 1.0'
    gem 'timecop', '~> 0.9'
    #gem "rack-test", "~> 2.2.0"
-   gem "rack-test", path: "/usr/local/home/majioa/git/rack-test"
+   opts = local ? { path: ENV["HOME"] + '/git/rack-test' } : { codeberg: 'majioa/rack-test', ref: 'main' }
+   gem "rack-test", opts
 end
 
 group :test do

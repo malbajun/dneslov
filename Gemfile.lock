@@ -33,15 +33,6 @@ GIT
       activerecord
 
 GIT
-  remote: https://codeberg.org/majioa/jsonize.git
-  revision: 006d17279cc00e6b89befc8568d27c92096b3e03
-  ref: 006d17279cc00e6b89befc8568d27c92096b3e03
-  specs:
-    jsonize (0.3.0)
-      activerecord (>= 4.2)
-      redisize
-
-GIT
   remote: https://codeberg.org/majioa/redisize.git
   revision: f7ebef3b9c51a98b8293d59d7dbc4b73129be157
   ref: f7ebef3
@@ -76,6 +67,13 @@ GIT
   specs:
     capistrano3-nginx (3.0.4)
       capistrano (~> 3.0)
+
+PATH
+  remote: /usr/local/home/majioa/git/jsonize
+  specs:
+    jsonize (0.3.0)
+      activerecord (>= 4.2)
+      redisize
 
 PATH
   remote: /usr/local/home/majioa/git/rack-test
@@ -689,7 +687,7 @@ DEPENDENCIES
   has_scope (>= 0.7.2)
   hiredis (~> 0.6)
   jsbundling-rails
-  jsonize (~> 0.3.0)!
+  jsonize!
   jwt
   kaminari (>= 1.1.1)
   launchy

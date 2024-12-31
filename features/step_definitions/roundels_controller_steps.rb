@@ -7,14 +7,6 @@ end
    FactoryBot.create_list(:roundel, count.to_i)
 end
 
-Допустим('єствує сꙛбытие {string} ѫ памѧти {string}') do |event_name, short_name|
-   FactoryBot.create(:event, title: event_name, memory_title: short_name)
-end
-
-Допустим('єствує сꙛбытие {string} сꙛ озом {string} ѫ памѧти {string}') do |event_name, id, short_name|
-   FactoryBot.create(:event, id: id, title: event_name, memory_title: short_name)
-end
-
 Пусть('не єствує ни єдне личинке') do
    Roundel.destroy_all
 end

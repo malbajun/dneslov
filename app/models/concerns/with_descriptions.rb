@@ -2,6 +2,8 @@ module WithDescriptions
    extend ActiveSupport::Concern
 
    def self.included base
+      attr_writer :language, :alphabeth, :description
+
       base.class_eval do
          has_many :descriptions, -> { where(type: :Description) }, as: :describable, dependent: :delete_all do
             def for language_codes
@@ -105,6 +107,41 @@ module WithDescriptions
          accepts_nested_attributes_for :descriptions, reject_if: :all_blank, allow_destroy: true
 
          validates :descriptions, associated: true
+
+         before_validation :fill_in_description
+
+         # serialized
+         def description
+            @description ||= descriptions.where(language_code: language, alphabeth_code: alphabeth).first&.text
+         end
+
+         if self.instance_methods.include?(:language)
+            alias_method :desc_language, :language
+            alias_method :desc_alphabeth, :alphabeth
+         else
+            define_method :desc_language do
+            end
+            define_method :desc_alphabeth do
+            end
+         end
+
+         def language
+           @language ||= desc_language || descriptions.first&.language_code
+         end
+
+         def alphabeth
+            @alphabeth ||= desc_alphabeth || descriptions.first&.language_code
+         end
+
+         def fill_in_description
+            if @description
+               if desc = descriptions.where(language_code: language, alphabeth_code: alphabeth).first
+                  desc.update_attribute(:text, @description)
+               else
+                  descriptions << Description.new(text: @description, language_code: language, alphabeth_code: alphabeth)
+               end
+            end
+         end
       end
    end
 end

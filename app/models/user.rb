@@ -174,8 +174,8 @@ class User < ApplicationRecord
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = model.reflections[rela].name
       attrs = context[:only] || model.reflections[rela].klass.attribute_names
-      selects = attrs.map { |x| "#{as}.#{x} AS #{x}" }
-      groups = attrs.map { |x| "#{as}.#{x}" }
+      selects = attrs.map { |x| "#{as}.#{x} AS #{x}" } | ["FALSE AS validated"]
+      groups = attrs.map { |x| "#{as}.#{x}" } | ["validated"]
 
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
