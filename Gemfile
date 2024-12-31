@@ -61,8 +61,8 @@ gem 'redis-rack-cache'
 gem 'sidekiq', ">= 6.4.0", require: %w(sidekiq sidekiq/web)
 gem 'sidekiq-worker-killer'
 gem 'sidekiq-limit_fetch'
-opts = local ? { path: ENV["HOME"] + '/git/jsonize' } : { codeberg: 'majioa/jsonize', ref: '59b2b9e' }
-gem 'jsonize', opts
+# opts = local ? { path: ENV["HOME"] + '/git/jsonize' } : { codeberg: 'majioa/jsonize', ref: '59b2b9e' }
+gem 'jsonize', codeberg: 'majioa/jsonize', ref: '59b2b9e'
 gem 'redisize', '~> 0.2.0', codeberg: 'majioa/redisize', ref: 'f7ebef3'
 #gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
 
@@ -115,8 +115,8 @@ gem 'sassc-rails'
 gem 'sprockets-rails'
 
 ## api
-opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
-gem 'tiun', opts
+#opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
+gem 'tiun', codeberg: 'znamenica/tiun', ref: 'daa3b5b'
 
 # sitemap
 gem 'sitemap_generator'
@@ -171,8 +171,8 @@ group :development, :test do
    gem 'faraday', '~> 1.0'
    gem 'timecop', '~> 0.9'
    #gem "rack-test", "~> 2.2.0"
-   opts = local ? { path: ENV["HOME"] + '/git/rack-test' } : { codeberg: 'majioa/rack-test', ref: 'main' }
-   gem "rack-test", opts
+   #opts = local ? { path: ENV["HOME"] + '/git/rack-test' } : { codeberg: 'majioa/rack-test', ref: 'main' }
+   gem "rack-test", codeberg: 'majioa/rack-test', ref: 'main'
 end
 
 group :test do
