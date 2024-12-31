@@ -1,0 +1,214 @@
+---
+types:
+ - name: short_memory
+   model: Memory
+   version: 0.1
+   with: pure_slug
+   fields:
+    - name: slug
+      kind: string
+      descriptions: :tiun.types.memory.slug
+    - name: short_name
+      kind: string
+      descriptions: :tiun.types.memory.short_name
+    - name: quantity
+      kind: string
+      descriptions: :tiun.types.memory.quantity
+    - name: base_year
+      kind: integer
+      descriptions: :tiun.types.memory.base_year
+    - name: type
+      kind: enum <Building, Concept, Council, Group, Identity, Order, Place, Subsisten, Thing>
+      descriptions: :tiun.types.memory.type
+    - name: kind
+      kind: enum <Chains, Icon, Belt, Shroud, Wilderness, Village, Settlement, Town, City, Monastery, World, Church, Cathedral, Chapel, Soul, Society, Worldie, Navia, Appear>
+      descriptions: :tiun.types.memory.kind
+ - name: memory
+   model: Memory
+   version: 0.1
+   with: pure_slug
+   fields:
+    - name: id
+      kind: integer
+      descriptions: :tiun.types.memory.id
+    - name: slug
+      kind: string
+      descriptions: :tiun.types.memory.slug
+    - name: short_name
+      kind: string
+      descriptions: :tiun.types.memory.short_name
+    - name: quantity
+      kind: string
+      descriptions: :tiun.types.memory.quantity
+    - name: base_year
+      kind: integer
+      descriptions: :tiun.types.memory.base_year
+    - name: type
+      kind: enum <Building, Concept, Council, Group, Identity, Order, Place, Subsisten, Thing>
+      descriptions: :tiun.types.memory.type
+    - name: kind
+      kind: enum <Chains, Icon, Belt, Shroud, Wilderness, Village, Settlement, Town, City, Monastery, World, Church, Cathedral, Chapel, Soul, Society, Worldie, Navia, Appear>
+      descriptions: :tiun.types.memory.kind
+    - name: language
+      kind: string
+      descriptions: :tiun.types.memory.language
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.memory.alphabeth
+    - name: title
+      kind: string
+      descriptions: :tiun.types.memory.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.memory.description
+resources:
+ - name: memory.index
+   path: /api/v0/memories.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: short_memory page
+      descriptions: :tiun.resources.memory.index
+      auth: no
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.memory.index.args.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.memory.index.args.page
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.memory.index.args.uno
+       - name: title
+         kind: string
+         alias: tt
+         descriptions: :tiun.resources.memory.index.args.title
+       - name: description
+         kind: string
+         alias: d
+         descriptions: :tiun.resources.memory.index.args.description
+       - name: type
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.memory.index.args.type
+       - name: kind
+         kind: string
+         alias: k
+         descriptions: :tiun.resources.memory.index.args.kind
+ - name: memory.create
+   path: /api/v0/memories/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: memory
+      descriptions: :tiun.resources.memory.create
+      auth: memory.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.memory.create.id
+       - name: slug
+         kind: string
+         descriptions: :tiun.resources.memory.create.slug
+       - name: short_name
+         kind: string
+         descriptions: :tiun.resources.memory.create.short_name
+       - name: quantity
+         kind: string
+         descriptions: :tiun.resources.memory.create.quantity
+       - name: base_year
+         kind: integer
+         descriptions: :tiun.resources.memory.create.base_year
+       - name: type
+         kind: enum <Building, Concept, Council, Group, Identity, Order, Place, Subsisten, Thing>
+         descriptions: :tiun.resources.memory.create.type
+       - name: kind
+         kind: enum <>
+         descriptions: :tiun.resources.memory.create.kind
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memory.create.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memory.create.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.memory.create.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.memory.create.description
+ - name: memory
+   path: /api/v0/memories/:uno.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: memory
+      descriptions: :tiun.resources.memory.get
+      auth: no
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.memory.get.args.uid
+       - name: l
+         kind: string
+         alias: language
+         descriptions: :tiun.resources.memory.get.args.language
+       - name: a
+         kind: string
+         alias: alphabeth
+         descriptions: :tiun.resources.memory.get.args.alphabeth
+    - name: put
+      version: 0.1
+      kind: memory
+      descriptions: :tiun.resources.memory.put
+      auth: memory.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: slug
+         kind: string
+         descriptions: :tiun.resources.memory.put.slug
+       - name: short_name
+         kind: string
+         descriptions: :tiun.resources.memory.put.short_name
+       - name: quantity
+         kind: string
+         descriptions: :tiun.resources.memory.put.quantity
+       - name: base_year
+         kind: integer
+         descriptions: :tiun.resources.memory.put.base_year
+       - name: type
+         kind: enum <Building, Concept, Council, Group, Identity, Order, Place, Subsisten, Thing>
+         descriptions: :tiun.resources.memory.put.type
+       - name: kind
+         kind: enum <>
+         descriptions: :tiun.resources.memory.put.kind
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memory.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memory.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.memory.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.memory.put.description
+    - name: delete
+      version: 0.1
+      kind: memory
+      descriptions: :tiun.resources.memory.delete
+      auth: memory.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.memory.delete.uno

@@ -2,8 +2,6 @@
 require 'securerandom'
 
 class Picture < ApplicationRecord
-   attr_writer :language, :alphabeth, :description
-
    include WithTitles
    include WithDescriptions
 
@@ -106,7 +104,7 @@ class Picture < ApplicationRecord
    validates :image, presence: true, on: :create, file_size: { less_than: 128.megabytes },
       size: { height: { min: 1500, max: 30000 }, width: { min: 150, max: 30000 }, ratio: { range: (0.1..5.0) }}
 
-   before_validation :fill_in_description, :fill_in_uid
+   before_validation :fill_in_uid
    before_validation :fill_in_digest, :fill_in_dimensions, :fill_in_url, :fill_in_thumb_url,
       if: -> { image.file && File.exist?(image.file.file) }
 
@@ -130,21 +128,6 @@ class Picture < ApplicationRecord
 
    def fill_in_thumb_url
       self.thumb_url = File.join *[image.asset_host.to_s, image.store_dir, "thumb_" + image.filename]
-   end
-
-   def fill_in_description
-      if @description
-         if desc = descriptions.where(language_code: @language, alphabeth_code: @alphabeth).first
-            desc.update_attribute(:text, @description)
-         else
-            descriptions << Description.new(text: @description, language_code: @language, alphabeth_code: @alphabeth)
-         end
-      end
-   end
-
-   # serialized
-   def description
-      @description ||= descriptions.where(language_code: language, alphabeth_code: alphabeth).first&.text
    end
 
    def attitude_to= value

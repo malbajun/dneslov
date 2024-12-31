@@ -6,7 +6,6 @@ FactoryBot.define do
       transient do
          without_place { nil }
          without_events { nil }
-         slug { build(:slug) }
       end
 
       after(:build) do |m, e|

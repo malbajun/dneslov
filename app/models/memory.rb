@@ -69,6 +69,7 @@ class Memory < ApplicationRecord
          Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
 
+   # by title with short_name
    scope :by_title, -> text do
       this = table.table_alias || table.name
       join = "LEFT OUTER JOIN descriptions AS #{this}_titles
@@ -79,6 +80,22 @@ class Memory < ApplicationRecord
              OR #{this}.short_name ~* ?", "\\m#{text}.*", "\\m#{text}.*"
 
       joins(join).where(selector).distinct
+   end
+
+   scope :by_id, ->(id) { where(id: id.strip) }
+
+   # by unique universal numbering object: by id, by slug, by short_name
+   scope :by_uno, ->(uno) do
+      case uno
+      when /^\s*$/
+         none
+      when /^\s*\d+\s*$/
+         by_id(uno)
+      when /^[а-яё0-9]+$/
+         by_slug(uno)
+      else
+         by_short_name(uno)
+      end
    end
 
    # required for short list
@@ -475,6 +492,21 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       left_outer_joins(:slug).select(selector.uniq).group('_slug').order('_slug')
    end
 
+   scope :with_pure_slug, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || "slug"
+      asr = model.reflections[rela]&.name
+      this = table.table_alias || table.name
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{asr}_#{this}_slugs.text AS _#{as}"
+      join = "LEFT OUTER JOIN slugs AS #{asr}_#{this}_slugs
+                           ON #{asr}_#{this}_slugs.sluggable_id = #{this}.id
+                          AND #{asr}_#{this}_slugs.sluggable_type = 'Memory'"
+
+      joins(join).select(selector).group(:id, "#{asr}_#{this}_slugs.id", "#{asr}_#{this}_slugs.text")
+   end
+
    scope :with_slug, -> do
       as = table.table_alias || table.name
       selector = self.select_values.dup
@@ -770,6 +802,20 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    def quantity= value_in
       value = value_in.present? && value_in || nil
+
+      super(value)
+   end
+
+   def slug= value_in
+      value =
+         case value_in
+         when NilClass
+            nil
+         when String
+            self.slug ? self.slug.assign_attributes(text: value_in) : Slug.new(text: value_in)
+         else
+            value_in
+         end || self.slug
 
       super(value)
    end
