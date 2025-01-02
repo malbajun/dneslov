@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
    # The priority is based upon order of creation: first created -> highest priority.
    # See how all your routes lay out with "rake routes".
+   get '/sitemap.xml', to: 'sitemap#index', defaults: { format: 'xml' }
 
    #authenticate :user, lambda { |u| u.admin? } do
       mount Sidekiq::Web => "/dashboard/sidekiq"

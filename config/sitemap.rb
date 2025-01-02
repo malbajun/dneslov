@@ -1,8 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+require 'rails'
+require 'dotenv/load'
+require 'sitemap_generator'
+
 # Set the host name for URL creation
 SitemapGenerator::Sitemap.default_host = "https://dneslov.org"
 
+ink = ENV["INDEXNOW_KEY"]
+
 engines = {
-   yandex: 'http://webmaster.yandex.com/site/map.xml?host=%s'
+   yandex: 'http://webmaster.yandex.com/site/map.xml?host=%s',
+   index_now: "https://api.indexnow.org/indexnow?url=https://dneslov.org/sitemap.xml&key=#{ink}",
+   bing: "https://www.bing.com/indexnow?url=https://dneslov.org/sitemap.xml&key=#{ink}",
+   naver: "https://searchadvisor.naver.com/indexnow?url=https://dneslov.org/sitemap.xml&key=#{ink}",
+   seznam: "https://search.seznam.cz/indexnow?url=https://dneslov.org/sitemap.xml&key=#{ink}",
+   yep: "https://indexnow.yep.com/indexnow?url=https://dneslov.org/sitemap.xml&key=#{ink}"
 }
 
 SitemapGenerator::Sitemap.search_engines =
@@ -13,7 +27,7 @@ if Rails.env.production? or Rails.env.staging?
    SitemapGenerator::Sitemap.public_path = 'public/'
 else
    SitemapGenerator::Sitemap.verbose = true
-   SitemapGenerator::Sitemap.public_path = 'tmp/'
+   SitemapGenerator::Sitemap.public_path = 'public/'
 end
 
 # Set this to a directory/path if you don't want to upload to the root of your `sitemaps_host`
