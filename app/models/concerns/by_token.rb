@@ -3,10 +3,6 @@ module ByToken
 
    def self.included base
       base.class_eval do
-         scope :by_token, -> string_in do
-           binding.pry
-         end
-
          scope :by_tokens, -> string_in do
             return self if string_in.blank?
 
@@ -25,7 +21,6 @@ module ByToken
             self.merge(or_rel).distinct
          end
 
-         singleton_class.send(:alias_method, :t, :by_token)
          singleton_class.send(:alias_method, :q, :by_tokens)
       end
    end

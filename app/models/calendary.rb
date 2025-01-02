@@ -134,6 +134,7 @@ class Calendary < ActiveRecord::Base
       joins(join).select(selector).group(:id, "#{as}_slugs.id", "#{as}_slugs.text")
    end
 
+   singleton_class.send(:alias_method, :t, :by_token)
    accepts_nested_attributes_for :place, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank, allow_destroy: true
 
