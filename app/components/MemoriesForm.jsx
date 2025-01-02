@@ -11,6 +11,7 @@ import MemorySpans from 'MemorySpans'
 import Memory from 'Memory'
 import Eventee from 'Eventee'
 import Gallery from 'Gallery'
+import Image from 'Image'
 import Login from 'Login'
 import Intro from 'Intro'
 import Error from 'Error'
@@ -30,6 +31,7 @@ export default class MemoriesForm extends Component {
       },
       memory: null,
       gallery: null,
+      image: null,
       error: null
    }
 
@@ -47,6 +49,7 @@ export default class MemoriesForm extends Component {
                memory: props.memory,
                eventee: props.eventee,
                gallery: props.gallery,
+               image: props.image,
                user: props.user,
                error: props.error,
                calendarySlug: props.calendaries_used?.length == 1 ? props.calendaries_used[0] : null,
@@ -226,8 +229,10 @@ export default class MemoriesForm extends Component {
          this.memoriesParse(response.data, response.config)
       } else if (response.data.events) {
          this.memoryParse(response.data, response.config)
-      } else {
+      } else if (response.data.event) {
          this.eventParse(response.data, response.config)
+      } else if (response.data.image) {
+         this.imageParse(response.data, response.config)
       }
    }
 
@@ -241,6 +246,7 @@ export default class MemoriesForm extends Component {
             memory: null,
             eventee: null,
             gallery: null,
+            image: null,
             error: {
                message: err.response.data.message,
                code: err.response.status
@@ -264,6 +270,7 @@ export default class MemoriesForm extends Component {
             memory: null,
             eventee: null,
             gallery: null,
+            image: null,
             error: null})
       } else {
          state = merge(this.state, {
@@ -272,6 +279,7 @@ export default class MemoriesForm extends Component {
             memory: null,
             eventee: null,
             gallery: null,
+            image: null,
             error: null})
       }
 
@@ -287,6 +295,7 @@ export default class MemoriesForm extends Component {
                           query: config.params,
                           eventee: null,
                           gallery: null,
+                          image: null,
                           error: null})
 
       document.body.classList.remove('in-progress')
@@ -300,6 +309,7 @@ export default class MemoriesForm extends Component {
                           query: config.params,
                           eventee: eventee,
                           gallery: null,
+                          image: null,
                           error: null})
 
       document.body.classList.remove('in-progress')
@@ -313,6 +323,20 @@ export default class MemoriesForm extends Component {
                           query: config.params,
                           eventee: null,
                           gallery: gallery,
+                          error: null})
+
+      document.body.classList.remove('in-progress')
+      this.updateState(state)
+   }
+
+   imageParse(image, config) {
+      let state = merge(this.state,
+                        { memory: null,
+                          memories: [],
+                          query: config.params,
+                          eventee: null,
+                          gallery: null,
+                          image: image,
                           error: null})
 
       document.body.classList.remove('in-progress')
@@ -414,8 +438,18 @@ export default class MemoriesForm extends Component {
                               defaultCalendarySlug={this.defaultCalendarySlug()}
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
+                              event_id={this.props.eventee?.id}
                               {...this.state.gallery} />}
-                        {this.props.memories.list && !this.state.error && !this.state.eventee && !this.state.gallery && !this.state.memory &&
+                        {this.state.image &&
+                           <Image
+                              key='image'
+                              date={parseDateString(this.state.query.d).pop()}
+                              calendarStyle={this.calendarStyleFromQuery()}
+                              defaultCalendarySlug={this.defaultCalendarySlug()}
+                              specifiedCalendarySlug={this.state.calendarySlug}
+                              selectedCalendaries={this.state.query.c?.split(",")}
+                              {...this.state.image} />}
+                        {this.props.memories.list && !this.state.error && !this.state.eventee && !this.state.gallery && !this.state.image && !this.state.memory &&
                            <div>
                               <div className='row'>
                                  <SearchField

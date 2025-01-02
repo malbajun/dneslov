@@ -1,7 +1,7 @@
 import { Component } from 'react'
 
 import IconLoryModal from 'IconLoryModal'
-import Image from 'Image'
+import ImageCard from 'ImageCard'
 
 export default class Carousel extends Component {
    static defaultProps = {
@@ -116,7 +116,7 @@ export default class Carousel extends Component {
                   style={this.carouselStyle()}
                   ref={e => this.$carousel = e} >
                   {this.images().map((image, index) =>
-                     <Image
+                     <ImageCard
                         key={'image-' + image.id}
                         wrapperClassName='carousel-item'
                         alt={image.description}

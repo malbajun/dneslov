@@ -216,6 +216,12 @@ export default class Memory extends Component {
       'Scriptum': 'Текст',
    }
 
+   constructor(props) {
+      super(props)
+
+      this.onImageClick = this.onImageClick.bind(this)
+   }
+
    getScriptumTitle(scriptum) {
       return [
          [
@@ -243,7 +249,16 @@ export default class Memory extends Component {
    }
 
    getInfoClass() {
-      return this.props.picture.thumb_url ? " s8" : " s12"
+      return this.props.image_url ? " x10 l9 m8 s7" : " s12"
+   }
+
+   onImageClick(e) {
+      let url = "/" + this.props.slug + "/gallery"
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      window.open(url, "_self")
    }
 
    render() {
@@ -304,16 +319,14 @@ export default class Memory extends Component {
                                  {this.getScriptumTitle(scriptum)}</div>
                               <div className='col s12 scriptum'>
                                  <Markdown source={scriptum.text} /></div></div>)}</div></div>}</div>
-            {this.props.picture.thumb_url &&
-               <div className='col s4 image'>
-                  <div className="card hoverable medium">
-                     <div className="card-image">
-                        <img
-                           src={this.props.picture.thumb_url}
-                           alt={this.props.picture.title} />
-                        <span className="card-title">{this.props.picture.title}</span></div>
-                  <div className="card-action">
-                     <a href={"/" + this.props.slug + "/gallery"}>{this.props.i18n.gallery}</a></div></div></div>}</div>,
+            {this.props.image_url &&
+               <div className='col x2 l3 m4 s5 image'>
+                  <a
+                     className={"btn btn-image"}
+                     onClick={this.onImageClick}>
+                     <img
+                        src={this.props.image_url}
+                        onClick={this.onImageClick} /></a></div>}</div>,
          <div className='row'>
             {this.props.bond_memories.length > 0 &&
                <div className='col s12'>

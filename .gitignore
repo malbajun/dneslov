@@ -40,10 +40,10 @@ public/webpack/manifest.json
 
 public/javascripts/
 public/stylesheets/
-public/images/
+public/images
 public/uploads/
-public/roundels/
-public/audios/
+public/roundels
+public/audios
 public/cache/carrierwave/
 
 *.log

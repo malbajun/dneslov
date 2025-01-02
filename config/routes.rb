@@ -56,9 +56,10 @@ Rails.application.routes.draw do
 
    get '/:slug' => 'memories#show', as: :slug#, constraints: { slug: /[ёа-я0-9]{1,6}/ }
    get '/:slug/gallery' => 'gallery#index', as: :gallery#, constraints: { slug: /[ёа-я0-9]{1,6}/ }
-   #get '/:slug/gallery/:uid' => 'gallery#show', as: :picture#, constraints: { slug: /[ёа-я0-9]{1,6}/ }
+   get '/:slug/gallery/:uid' => 'gallery#show', as: :picture#, constraints: { slug: /[ёа-я0-9]{1,6}/ }
    get '/:slug/:event' => 'events#show', as: :slug_event, constraints: { event: /[0-9]{1,6}/ }
    get '/:slug/:event/gallery' => 'gallery#index', as: :event_gallery, constraints: { event: /[0-9]{1,6}/ }
+   get '/:slug/:event/gallery/:uid' => 'gallery#show', as: :event_picture, constraints: { event: /[0-9]{1,6}/ }
    get '/:c/:slug' => 'memories#show', as: :cslug
    get '/:c/:slug/:event' => 'events#show', as: :cslug_event, constraints: { event: /[0-9]{1,6}/ }
 end

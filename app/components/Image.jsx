@@ -13,9 +13,9 @@ export default class Image extends Component {
       wrapperClassName: "",
       onLoad: null,
       onError: null,
+
       i18n: {
-         look_in: "Посмотреть",
-         close: "Закрыть"
+         description: "Описание:",
       }
    }
 
@@ -64,9 +64,6 @@ export default class Image extends Component {
    onDocumentClick(e) {
       // TODO click to transparent area of the modal, get fired to the modal, not the
       // page. Fix it then.
-      if (! e.cancelBubble && this.isOpen() && ! e.target.closest('.modal')) {
-         this.modal.close()
-      }
    }
 
    onImageCompleted(e) {
@@ -79,18 +76,22 @@ export default class Image extends Component {
       this.setState((prevState) => { return { loaded: !errored, errored: errored }}, this.stateChanged.bind(this))
    }
 
-   onIconClick(e) {
-      this.modal.open()
-      this.setState({ showModal: true })
+   title() {
+      let languages = this.props.context.text_languages
+
+      return this.props.picture.titles.find((x) => languages.includes(x.language_code))?.text
    }
 
-   closeModal() {
-      this.modal.close()
-      this.setState({ showModal: false })
-   }
+   description() {
+      if (this.descriptionText) {
+         return this.descriptionText
+      }
 
-   isOpen() {
-      return this.$modal && this.$modal.classList.contains('open')
+      let languages = this.props.context.text_languages
+
+      this.descriptionText = this.props.picture.descriptions.find((x) => languages.includes(x.language_code))?.text
+
+      return this.descriptionText
    }
 
    render() {
@@ -98,41 +99,20 @@ export default class Image extends Component {
 
       return (
          !this.state.errored && <div
-            className="card hoverable medium">
+            className="card hoverable">
+            <h5><div className="center">{this.title()}</div></h5>
             <div
-               className="card-image"
-               onClick={this.onIconClick.bind(this)} >
+               className="card-image">
                <img
-                  alt={this.props.title}
-                  src={this.props.thumb}
+                  alt={this.title()}
+                  src={this.props.picture.url}
                   className={this.props.wrapperClassName}
-                  data-index={this.props.index}
                   onLoad={this.onImageCompleted.bind(this)}
-                  onError={this.onImageCompleted.bind(this)} />
-               <span
-                  className="card-title">
-                  {this.props.title}</span></div>
-            <div className="card-content"
-               onClick={this.onIconClick.bind(this)} >
-               <p>{this.props.description}</p></div>
-            <div
-               className={'modal modal-fixed-footer' + (this.state.showModal ? " open" : "")}
-               key={'image-modal'}
-               id={'image-popup-modal-' + this.props.uid}
-               ref={e => this.$modal = e} >
-               <div className='modal-content'>
-                  <div
-                     className='frame js_frame'>
-                     <PureImage
-                        key={this.props.uid}
-                        id={this.props.uid}
-                        wrapperClassName='icon'
-                        src={this.props.url}
-                        alt={this.props.description}
-                        onLoad={this.onImageCompleted.bind(this)} /></div></div>
-               <a
-                  className='modal-action modal-close waves-effect btn-flat pulse chip'
-                  onClick={this.closeModal.bind(this)} >
-                  {this.props.i18n.close}</a></div></div>)
+                  onError={this.onImageCompleted.bind(this)} /></div>
+            {this.props.picture.descriptions.isPresent() &&
+               <div
+                     className="card-content">
+                     <p><b>{this.props.i18n.description}</b></p>
+                     <p>{this.description()}</p></div>}</div>)
    }
 }
