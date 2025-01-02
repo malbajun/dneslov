@@ -2,7 +2,7 @@ import { Component } from 'react'
 import { mixin } from 'lodash-decorators'
 import PropTypes from 'prop-types'
 
-import Image from 'Image'
+import ImageCard from 'ImageCard'
 import Markdown from 'Markdown'
 import MetaTags from 'react-meta-tags'
 import { getUrlsFrom } from 'support'
@@ -74,10 +74,12 @@ export default class Gallery extends Component {
          <div className='row gallery'>
             {this.state.images.isPresent() && this.state.images.map((picture, index) =>
                <div className='col s4 image'>
-                  <Image
+                  <ImageCard
                      key={picture.uid}
                      uid={picture.uid}
                      url={picture.url}
+                     slug={this.props.slug}
+                     event_id={this.props.event_id}
                      thumb={picture.thumb_url}
                      title={picture.titles[0]?.text}
                      index={index}

@@ -435,51 +435,28 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    # https://efim360.ru/postgresql-tablicza-prisutstvuet-v-zaprose-no-soslatsya-na-neyo-iz-etoj-chasti-zaprosa-nelzya/?ysclid=lqs5tozisb568391387
    scope :with_icon, -> context do
-      as = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
+      this = table.table_alias || table.name
       selector = self.select_values.dup
-      selector << "#{as}.*" if selector.empty?
-      selector << "jsonb_build_object(
-         'url', #{as}_pictures.url,
-         'thumb_url', #{as}_pictures.thumb_url,
-         'width', #{as}_pictures.width,
-         'height,', #{as}_pictures.height,
-         'pos', #{as}_pictures.pos,
-         'description', #{as}_pictures.description,
-         'title', #{as}_pictures.title) AS _picture"
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{this}_roundels.url AS image_url"
       join = "LEFT OUTER JOIN LATERAL (
-                      SELECT #{as}_pictures.url AS url,
-                             #{as}_pictures.thumb_url AS thumb_url,
-                             #{as}_pictures.width AS width,
-                             #{as}_pictures.height AS height,
-                             #{as}_image_attitudes.pos::text AS pos,
-                             #{as}_image_attitudes.imageable_id AS imageable_id,
-                             #{as}_image_attitudes.imageable_type AS imageable_type,
-                             #{as}_titles.text AS title,
-                             #{as}_descriptions.text AS description
-                        FROM pictures AS #{as}_pictures
-             LEFT OUTER JOIN image_attitudes AS #{as}_image_attitudes
-                          ON #{as}_image_attitudes.imageable_id = #{as}.id
-                         AND #{as}_image_attitudes.imageable_type = 'Memory'
-             LEFT OUTER JOIN descriptions AS #{as}_descriptions
-                          ON #{as}_descriptions.describable_id = #{as}_pictures.id
-                         AND #{as}_descriptions.describable_type = 'Picture'
-                         AND #{as}_descriptions.type = 'Description'
-                         AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')
-             LEFT OUTER JOIN descriptions AS #{as}_titles
-                          ON #{as}_titles.describable_id = #{as}_pictures.id
-                         AND #{as}_titles.describable_type = 'Picture'
-                         AND #{as}_titles.type = 'Title'
-                         AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')
-                       WHERE #{as}_image_attitudes.picture_id = #{as}_pictures.id
-                         AND #{as}_pictures.type = 'Icon'
+                      SELECT #{this}_roundels.url AS url,
+                             #{this}_roundels.roundelable_id AS id,
+                             #{this}_roundels.roundelable_type AS type
+                        FROM roundels AS #{this}_roundels
+             LEFT OUTER JOIN events AS #{this}_events
+                          ON #{this}_events.memory_id = #{this}.id
+                       WHERE #{this}_roundels.url IS NOT NULL
+                         AND (#{this}.id = #{this}_roundels.roundelable_id
+                         AND 'Memory' = #{this}_roundels.roundelable_type
+                          OR #{this}_events.id = #{this}_roundels.roundelable_id
+                         AND 'Event' = #{this}_roundels.roundelable_type)
                     ORDER BY random()
-                       LIMIT 1) AS #{as}_pictures
-                          ON #{as}_pictures.imageable_id = #{as}.id
-                         AND #{as}_pictures.imageable_type = 'Memory'"
+                       LIMIT 1) AS #{this}_roundels
+                          ON #{this}_roundels.id = #{this}.id
+                         AND #{this}_roundels.type IN ('Memory', 'Event')"
 
-      joins(join).select(selector).group(:id, "#{as}_pictures.url", "#{as}_pictures.thumb_url", "#{as}_pictures.width",
-         "#{as}_pictures.height", "#{as}_pictures.pos", "#{as}_pictures.title", "#{as}_pictures.description")
+      joins(join).select(selector).group(:id, "#{this}_roundels.url")
    end
 
    scope :with_slug_text, -> do
