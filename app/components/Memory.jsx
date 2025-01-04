@@ -23,6 +23,7 @@ export default class Memory extends Component {
       memoes: [],
       scripta: [],
       coverings: [],
+      audios: [],
       selectedCalendaries: [],
       defaultCalendarySlug: null,
       specifiedCalendarySlug: null,

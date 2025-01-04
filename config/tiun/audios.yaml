@@ -1,0 +1,219 @@
+---
+types:
+ - name: audiee
+   model: Audio
+   version: 0.1
+   fields:
+    - name: uid
+      kind: uuid
+      descriptions: :tiun.types.audio.uid
+    - name: language
+      kind: string
+      descriptions: :tiun.types.audio.language
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.audio.alphabeth
+    - name: title
+      kind: string
+      descriptions: :tiun.types.audio.title
+    - name: url
+      kind: uri
+      descriptions: :tiun.types.audio.uri
+ - name: audio
+   version: 0.1
+   fields:
+    - name: uid
+      kind: uuid
+      readonly: true
+      descriptions: :tiun.types.audio.uid
+    - name: digest
+      kind: digest
+      readonly: true
+      descriptions: :tiun.types.audio.digest
+    - name: language
+      kind: string
+      descriptions: :tiun.types.audio.language
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.audio.alphabeth
+    - name: title
+      kind: string
+      descriptions: :tiun.types.audio.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.audio.description
+    - name: url
+      kind: uri
+      descriptions: :tiun.types.audio.uri
+    - name: meta
+      kind: json
+      descriptions: :tiun.types.audio.meta
+    - name: kind
+      kind: string
+      descriptions: :tiun.types.audio.kind
+    - name: reading
+      kind: string
+      source: readingee
+      descriptions: :tiun.types.audio.reading
+    - name: attitudes
+      kind: audio_attitude array
+      descriptions: :tiun.types.audio.attitudes
+ - name: audio_attitude
+   version: 0.1
+   fields:
+    - name: attitude_to
+      kind: string array
+      descriptions: :tiun.types.attitude.attitude_to
+    - name: poses
+      kind: path
+      descriptions: :tiun.types.attitude.poses
+    - name: meta
+      kind: json
+      descriptions: :tiun.types.attitude.meta
+resources:
+ - name: audio.index
+   path: /api/v0/audios.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: audiee page
+      descriptions: :tiun.resources.audio.index
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.audio.index.args.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.audio.index.args.page
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.audio.index.args.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.audio.index.args.alphabeth
+       - name: event
+         kind: string
+         alias: e
+         descriptions: :tiun.resources.audio.index.args.event
+       - name: memory
+         kind: string
+         alias: m
+         descriptions: :tiun.resources.audio.index.args.memory
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.audio.index.args.uno
+       - name: kind
+         kind: string
+         alias: k
+         descriptions: :tiun.resources.audio.index.args.kind
+ - name: audio.create
+   path: /api/v0/audios/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: audiee
+      descriptions: :tiun.resources.audio.create
+      policy: audio.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uid
+         kind: uuid
+         descriptions: :tiun.resources.audio.post.uid
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.audio.post.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.audio.post.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.audio.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.audio.post.description
+       - name: audio
+         kind: file
+         descriptions: :tiun.resources.audio.post.audio
+       - name: meta
+         kind: json
+         descriptions: :tiun.resources.audio.post.meta
+       - name: kind
+         kind: string
+         descriptions: :tiun.resources.audio.post.kind
+       - name: attitude_to
+         kind: string
+         descriptions: :tiun.resources.audio.post.attitude_to
+       - name: attitudes
+         kind: attitude array
+         descriptions: :tiun.resources.audio.post.attitudes
+ - name: audio
+   path: /api/v0/audios/:uid.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: audio
+      descriptions: :tiun.resources.audio.get
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: uid
+         kind: uuid
+         descriptions: :tiun.resources.audio.get.args.uid
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.audio.get.args.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.audio.get.args.alphabeth
+    - name: put
+      version: 0.1
+      kind: audio
+      descriptions: :tiun.resources.audio.put
+      policy: audio.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.audio.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.audio.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.audio.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.audio.put.description
+       - name: audio
+         kind: file
+         descriptions: :tiun.resources.audio.put.audio
+       - name: meta
+         kind: json
+         descriptions: :tiun.resources.audio.put.meta
+       - name: kind
+         kind: string
+         descriptions: :tiun.resources.audio.put.kind
+       - name: attitude_to
+         kind: string
+         descriptions: :tiun.resources.audio.put.attitude_to
+       - name: attitudes
+         kind: attitude array
+         descriptions: :tiun.resources.audio.put.attitudes
+    - name: delete
+      version: 0.1
+      kind: audio
+      descriptions: :tiun.resources.audio.delete
+      policy: audio.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uid
+         kind: uuid
+         descriptions: :tiun.resources.audio.delete.args.uid

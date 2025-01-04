@@ -120,7 +120,7 @@ module WithTitles
          before_validation :fill_in_title
 
          def title
-            @title ||= titles.where(language_code: language, alphabeth_code: alphabeth).first&.text
+            @title ||= titles.where(language_code: language, alphabeth_code: alphabeth).last&.text
          end
 
          if self.instance_methods.include?(:language)
@@ -134,11 +134,11 @@ module WithTitles
          end
 
          def language
-           @language ||= tit_language || titles.first&.language_code
+           @language ||= tit_language || titles.last&.language_code
          end
 
          def alphabeth
-            @alphabeth ||= tit_alphabeth || titles.first&.alphabeth_code
+            @alphabeth ||= tit_alphabeth || titles.last&.alphabeth_code
          end
 
          def fill_in_title

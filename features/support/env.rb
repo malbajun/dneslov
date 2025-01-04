@@ -22,6 +22,8 @@ FactoryBot.lint
 World(FactoryBot::Syntax::Methods)
 World(Rack::Test::Methods)
 
+FFMPEG.logger = Logger.new(nil)
+
 Shoulda::Matchers.configure do |config|
    config.integrate do |with|
       with.test_framework :cucumber

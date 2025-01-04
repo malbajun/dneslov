@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_12_22_194700) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_03_044300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -22,6 +22,38 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_22_194700) do
     t.bigint "user_id", null: false
     t.index ["no", "type"], name: "index_accounts_on_no_and_type", unique: true
     t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "audio_attitudes", force: :cascade do |t|
+    t.bigint "audio_id", null: false, comment: "Квѧзка на табеку сꙛ звѫчями"
+    t.string "audioable_type"
+    t.bigint "audioable_id", comment: "Квѧзка на табелке, коє сѧ упоминаѫ во звѫчєх"
+    t.jsonb "meta", default: {}, comment: "Наддана упоминанјев"
+    t.path "poses", comment: "Одмѣтке упоминанјев в звѫчю"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["audio_id"], name: "index_audio_attitudes_on_audio_id"
+    t.index ["audioable_type", "audioable_id"], name: "index_audio_attitudes_on_audioable"
+    t.index ["meta"], name: "index_audio_attitudes_on_meta", using: :gin
+  end
+
+  create_table "audios", force: :cascade do |t|
+    t.uuid "uid", null: false, comment: "Заєдньн опознач"
+    t.binary "digest", null: false, comment: "Броєсть єднотна"
+    t.string "url", null: false, comment: "Квѧзка єднотна"
+    t.string "kind", comment: "Род записа"
+    t.string "audio", null: false, comment: "Звѫчєва внутреня дана"
+    t.jsonb "meta", default: {}, comment: "Наддана звѫчєва"
+    t.bigint "reading_id", comment: "Начьтјє або напѣвје нѣкъ букъ"
+    t.boolean "audio_processing", default: false, null: false, comment: "Звѫчєва обработка"
+    t.string "audio_tmp", comment: "Врѣмянка звѫчєва"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["digest"], name: "index_audios_on_digest", unique: true
+    t.index ["meta"], name: "index_audios_on_meta", using: :gin
+    t.index ["reading_id"], name: "index_audios_on_reading_id"
+    t.index ["uid"], name: "index_audios_on_uid", unique: true
+    t.index ["url"], name: "index_audios_on_url", unique: true
   end
 
   create_table "calendaries", id: :serial, force: :cascade do |t|
@@ -499,6 +531,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_22_194700) do
   end
 
   add_foreign_key "accounts", "users", on_delete: :cascade
+  add_foreign_key "audio_attitudes", "audios", on_delete: :cascade
+  add_foreign_key "audios", "readings", on_delete: :restrict
   add_foreign_key "calendaries", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade

@@ -33,9 +33,17 @@ GIT
       activerecord
 
 GIT
+  remote: https://codeberg.org/majioa/carrierwave-ffmpeg.git
+  revision: fb82565782a928caf7ca6d8b78c53fc5e56a4712
+  specs:
+    carrierwave-ffmpeg (1.0.0)
+      carrierwave
+      streamio-ffmpeg
+
+GIT
   remote: https://codeberg.org/majioa/jsonize.git
-  revision: 59b2b9eb64f029d32b6c50dbae12082f0d2c63ce
-  ref: 59b2b9e
+  revision: 03f55ab40c5f68227873569b3bc9807b0c1ecb01
+  ref: 03f55ab
   specs:
     jsonize (0.3.0)
       activerecord (>= 4.2)
@@ -43,10 +51,11 @@ GIT
 
 GIT
   remote: https://codeberg.org/majioa/rack-test.git
-  revision: 467e548c856f8414d3475d4a17913a2238b1934b
+  revision: 0990aecb0eb00004e43718f59ef0ef395e2c618f
   ref: main
   specs:
     rack-test (2.2.0)
+      mimemagic (~> 0.4)
       rack (>= 1.3)
 
 GIT
@@ -57,9 +66,16 @@ GIT
     redisize (0.2.0)
 
 GIT
+  remote: https://codeberg.org/majioa/streamio-ffmpeg.git
+  revision: e65e4d544f9fd41b51b2afc80d59eed4805e201c
+  specs:
+    streamio-ffmpeg (3.0.2)
+      multi_json (~> 1.8)
+
+GIT
   remote: https://codeberg.org/znamenica/tiun.git
-  revision: daa3b5bbf957fc1cc39ff2d3dcaeb15c20f88ff4
-  ref: daa3b5b
+  revision: d140b167e3b42f4b93d08f874fa499654f6c0888
+  ref: d140b16
   specs:
     tiun (0.0.2.1)
       activesupport (>= 4.1.0)
@@ -401,10 +417,14 @@ GEM
     mime-types (3.5.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2023.1003)
+    mimemagic (0.4.3)
+      nokogiri (~> 1)
+      rake
     mini_magick (4.13.2)
     mini_mime (1.1.5)
     minitest (5.20.0)
     msgpack (1.7.2)
+    multi_json (1.15.0)
     multi_test (0.1.2)
     multipart-post (2.3.0)
     net-imap (0.4.2)
@@ -673,6 +693,7 @@ DEPENDENCIES
   capybara
   carrierwave (~> 3.1.0)
   carrierwave-base64
+  carrierwave-ffmpeg!
   carrierwave_backgrounder
   cssbundling-rails
   cucumber-rails (~> 2.6.1)
@@ -742,6 +763,7 @@ DEPENDENCIES
   spring-commands-cucumber
   spring-watcher-listen (~> 2.1)
   sprockets-rails
+  streamio-ffmpeg!
   timecop (~> 0.9)
   tiun!
   uglifier (>= 2.7.2)

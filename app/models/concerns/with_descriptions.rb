@@ -112,7 +112,7 @@ module WithDescriptions
 
          # serialized
          def description
-            @description ||= descriptions.where(language_code: language, alphabeth_code: alphabeth).first&.text
+            @description ||= descriptions.where(language_code: language, alphabeth_code: alphabeth).last&.text
          end
 
          if self.instance_methods.include?(:language)
@@ -126,11 +126,11 @@ module WithDescriptions
          end
 
          def language
-           @language ||= desc_language || descriptions.first&.language_code
+            @language ||= desc_language || descriptions.last&.language_code
          end
 
          def alphabeth
-            @alphabeth ||= desc_alphabeth || descriptions.first&.language_code
+            @alphabeth ||= desc_alphabeth || descriptions.last&.language_code
          end
 
          def fill_in_description
