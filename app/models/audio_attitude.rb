@@ -1,5 +1,5 @@
 # class keeping attitudes from a class to audio
-# audioable is reference to a class: event, memory
+# audioable is reference to a class: scriptum, patch, or patchset
 # audio is reference to an audio
 class AudioAttitude < ApplicationRecord
    belongs_to :audioable, polymorphic: true

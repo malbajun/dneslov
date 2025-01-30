@@ -9,7 +9,9 @@ class Audio < ApplicationRecord
    process_in_background :audio
    store_in_background :audio
 
-   belongs_to :reading, optional: true
+   has_many :scriptum_scribables, as: :scribable, dependent: :delete_all
+   has_many :sources, -> { where.not(type: :Transcript) }, through: :scriptum_scribables, source: :scriptum
+   has_many :transcripts, -> { where(type: :Transcript) }, through: :scriptum_scribables, source: :scriptum, dependent: :delete_all
    has_many :attitudes, class_name: :AudioAttitude
    has_many :memories, as: :audioable, through: :attitudes, source: :audioable, source_type: :Memory
    has_many :events, as: :audioable, through: :attitudes, source: :audioable, source_type: :Event
@@ -134,15 +136,15 @@ class Audio < ApplicationRecord
       end
    end
 
-   def readingee
-      reading&.abbreviation
+   def reading
+      sources.first&.title
    end
 
    def reading_in= value
-      if reading = Reading.where(abbreviation: value).first
-         self.reading = reading
+      if reading = Scriptum.where(title: value).where.not(type: "Transcript").first
+         self.sources << reading
       else
-         errors.add(:reading, "Unable to find abbreviation as: '#{value}'")
+         errors.add(:sources, "Unable to find abbreviation as: '#{value}'")
       end
    end
 end

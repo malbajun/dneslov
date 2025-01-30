@@ -17,7 +17,7 @@ app/web
 /log/*.log
 /tmp
 
-*~
+**/**/*~
 *.sw*
 
 .ruby-gemset

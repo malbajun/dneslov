@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_03_044300) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -44,14 +44,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_03_044300) do
     t.string "kind", comment: "Род записа"
     t.string "audio", null: false, comment: "Звѫчєва внутреня дана"
     t.jsonb "meta", default: {}, comment: "Наддана звѫчєва"
-    t.bigint "reading_id", comment: "Начьтјє або напѣвје нѣкъ букъ"
     t.boolean "audio_processing", default: false, null: false, comment: "Звѫчєва обработка"
     t.string "audio_tmp", comment: "Врѣмянка звѫчєва"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["digest"], name: "index_audios_on_digest", unique: true
     t.index ["meta"], name: "index_audios_on_meta", using: :gin
-    t.index ["reading_id"], name: "index_audios_on_reading_id"
     t.index ["uid"], name: "index_audios_on_uid", unique: true
     t.index ["url"], name: "index_audios_on_url", unique: true
   end
@@ -419,6 +417,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_03_044300) do
     t.index ["type"], name: "index_scripta_on_type"
   end
 
+  create_table "scriptum_scribables", force: :cascade do |t|
+    t.string "scribable_type"
+    t.bigint "scribable_id", comment: "Квѧзка до описуема прѣдмѣта"
+    t.bigint "scriptum_id", comment: "Квѧзка до бука"
+    t.index ["scribable_type", "scribable_id"], name: "index_scriptum_scribables_on_scribable"
+    t.index ["scriptum_id"], name: "index_scriptum_scribables_on_scriptum_id"
+  end
+
   create_table "service_scripta", id: :serial, force: :cascade do |t|
     t.integer "service_id", null: false
     t.integer "scriptum_id", null: false
@@ -532,7 +538,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_03_044300) do
 
   add_foreign_key "accounts", "users", on_delete: :cascade
   add_foreign_key "audio_attitudes", "audios", on_delete: :cascade
-  add_foreign_key "audios", "readings", on_delete: :restrict
   add_foreign_key "calendaries", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade

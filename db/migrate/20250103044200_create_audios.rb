@@ -7,7 +7,6 @@ class CreateAudios < ActiveRecord::Migration[7.0]
          t.string :kind, comment: "Род записа"
          t.string :audio, null: false, comment: "Звѫчєва внутреня дана"
          t.jsonb :meta, index: { using: :gin }, default: {}, comment: "Наддана звѫчєва"
-         t.references :reading, index: true, foreign_key: { on_delete: :restrict }, comment: "Начьтјє або напѣвје нѣкъ букъ"
          t.boolean "audio_processing", default: false, null: false, comment: "Звѫчєва обработка"
          t.string "audio_tmp", comment: "Врѣмянка звѫчєва"
 
