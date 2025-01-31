@@ -1,6 +1,6 @@
 class CreateMemories < ActiveRecord::Migration[5.2]
    def change
-      create_table :memories do |t|
+      create_table :memories, id: :serial do |t|
          t.string :short_name, index: { unique: true }
 
          t.timestamps null: false

@@ -1,6 +1,6 @@
 class CreateEvents < ActiveRecord::Migration[5.2]
    def change
-      create_table :events do |t|
+      create_table :events, id: :serial do |t|
          t.string :happened_at
          t.string :subject # or belongs_to
          t.belongs_to :memory, null: false

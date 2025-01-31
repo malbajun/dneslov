@@ -1,6 +1,6 @@
 class CreateServices < ActiveRecord::Migration[5.2]
    def change
-      create_table :services do |t|
+      create_table :services, id: :serial do |t|
          t.string  :name, null: false
          t.integer :language_code, null: false
          t.belongs_to :memory, null: false

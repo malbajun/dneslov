@@ -1,6 +1,6 @@
 class CreateChants < ActiveRecord::Migration[5.2]
    def change
-      create_table :chants do |t|
+      create_table :chants, id: :serial do |t|
          t.string  :text, null: false
          t.string  :prosomeion_title
          t.integer :language_code, null: false

@@ -1,6 +1,6 @@
 class CreateDescriptions < ActiveRecord::Migration[5.2]
    def change
-      create_table :descriptions do |t|
+      create_table :descriptions, id: :serial do |t|
          t.string :text, null: false
          t.integer :language_code, null: false
          t.belongs_to :memory, null: false

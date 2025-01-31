@@ -1,6 +1,6 @@
 class CreateOrders < ActiveRecord::Migration[5.2]
    def change
-      create_table :orders do |t|
+      create_table :orders, id: :serial do |t|
          t.string :order, index: true
          t.string :text, index: true
          t.string :alphabeth_code

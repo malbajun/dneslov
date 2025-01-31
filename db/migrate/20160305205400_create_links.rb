@@ -1,6 +1,6 @@
 class CreateLinks < ActiveRecord::Migration[5.2]
    def change
-      create_table :links do |t|
+      create_table :links, id: :serial do |t|
          t.string :url, null: false
          t.integer :language_code, null: false
          t.belongs_to :memory, null: false

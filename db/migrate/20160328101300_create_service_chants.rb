@@ -1,6 +1,6 @@
 class CreateServiceChants < ActiveRecord::Migration[5.2]
    def change
-      create_table :service_chants do |t|
+      create_table :service_chants, id: :serial do |t|
          t.belongs_to  :service, null: false
          t.belongs_to  :chant, null: false
 
