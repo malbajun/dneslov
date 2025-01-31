@@ -230,8 +230,34 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
-      selector << "COALESCE((SELECT jsonb_agg(DISTINCT scripta)
-                               FROM scripta
+      selector << "COALESCE((WITH
+                                    __texted_audios AS (
+                             SELECT #{as}_scripta.id AS id,
+                                    #{as}_audios.uid AS audio_uid,
+                                    #{as}_audios.url AS audio_url,
+                                    #{as}_audios.kind AS audio_kind
+                               FROM scripta AS #{as}_scripta
+                    LEFT OUTER JOIN scriptum_scribables AS #{as}_scriptum_scribables
+                                 ON #{as}_scripta.id = #{as}_scriptum_scribables.scriptum_id
+                                AND 'source' = #{as}_scriptum_scribables.kind
+                    LEFT OUTER JOIN audios AS #{as}_audios
+                                 ON #{as}_audios.id = #{as}_scriptum_scribables.scribable_id
+                                AND 'Audio' = #{as}_scriptum_scribables.scribable_type),
+                                    __scripta AS (
+                             SELECT DISTINCT ON (#{as}_scripta.id)
+                                    #{as}_scripta.id AS id,
+                                    #{as}_scripta.text AS text,
+                                    #{as}_scripta.tone AS tone,
+                                    #{as}_scripta.type AS type,
+                                    #{as}_scripta.language_code AS language_code,
+                                    #{as}_scripta.alphabeth_code AS alphabeth_code,
+                                    #{as}_scripta.prosomeion_title AS prosomeion_title,
+                                    #{as}_scripta.title AS title,
+                                    #{as}_scripta.ref_title AS ref_title,
+                                    __texted_audios.audio_uid AS audio_uid,
+                                    __texted_audios.audio_url AS audio_url,
+                                    __texted_audios.audio_kind AS audio_kind
+                               FROM scripta AS #{as}_scripta
                                JOIN events
                                  ON memories.id = events.memory_id
                                JOIN memoes AS #{as}_memoes
@@ -239,10 +265,15 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                                JOIN memo_scripta
                                  ON memo_scripta.memo_id = #{as}_memoes.id
                                     #{calendaries_join}
-                              WHERE scripta.id = memo_scripta.scriptum_id
-                                AND scripta.language_code IN ('#{language_codes.join("', '")}')
-                                AND scripta.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')), '[]'::jsonb) AS _scripta"
+                    LEFT OUTER JOIN __texted_audios
+                                 ON __texted_audios.id = #{as}_scripta.id
+                              WHERE #{as}_scripta.id = memo_scripta.scriptum_id
+                                AND #{as}_scripta.language_code IN ('#{language_codes.join("', '")}')
+                                AND #{as}_scripta.alphabeth_code IN ('#{alphabeth_codes.join("', '")}'))
+                             SELECT jsonb_agg(__scripta)
+                               FROM __scripta), '[]'::jsonb) AS _scripta"
 
+      # binding.pry # find_by_slug(@slug.text)
       select(selector).group(:id)
    end
 

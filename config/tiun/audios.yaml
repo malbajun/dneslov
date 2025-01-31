@@ -149,9 +149,9 @@ resources:
        - name: attitude_to
          kind: string
          descriptions: :tiun.resources.audio.post.attitude_to
-       - name: attitudes
-         kind: attitude array
-         descriptions: :tiun.resources.audio.post.attitudes
+       - name: reading
+         kind: string
+         descriptions: :tiun.resources.audio.post.reading
  - name: audio
    path: /api/v0/audios/:uid.json
    methods:
@@ -203,9 +203,9 @@ resources:
        - name: attitude_to
          kind: string
          descriptions: :tiun.resources.audio.put.attitude_to
-       - name: attitudes
-         kind: attitude array
-         descriptions: :tiun.resources.audio.put.attitudes
+       - name: reading
+         kind: string
+         descriptions: :tiun.resources.audio.put.reading
     - name: delete
       version: 0.1
       kind: audio

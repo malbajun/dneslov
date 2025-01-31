@@ -12,9 +12,9 @@ class AudioAttitude < ApplicationRecord
 
       self.audioable_id, self.audioable_type =
          if /(?<name>.*)#(?<event>.*)/ =~ @audioable_name
-            [Event.by_did_and_short_name(event, name).first&.id, "Event"]
+            [Event.by_did_and_uno(event, name).first&.id, "Event"]
          else
-            [Memory.by_short_name(value).first&.id, "Memory"]
+            [Memory.by_uno(value).first&.id, "Memory"]
          end
 
       value

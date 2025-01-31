@@ -46,6 +46,14 @@
          | description  | Гѫдьба а꙯                             |
          | title        | Гѫдьба                               |
          | attitude_to  | Памѧтна 1#Сꙛбытие(0.9,1.0)           |
+      * є письмо сꙛ даными:
+         | id              | 200021                                           |
+         | type            | Troparion                                        |
+         | text            | Тропарь для чтения вслух чтобы наговорить        |
+         | language_code   | ру                                               |
+         | alphabeth_code  | РО                                               |
+         | title           | Тропарь                                          |
+         | description     | Тропарь для / чтения вслух // чтобы наговорити   |
 
    @get @collection
    Пример: Запрос к контроллеру звѫчєј в АПИ при отсутствии звѫчєј
@@ -265,6 +273,7 @@
          | audio_path   | features/fixtures/hey_cartoon.mp3       |
          | title        | Звуче 1                                 |
          | description  | Описание                                |
+         | reading      | Тропарь                                 |
          | language     | ру                                      |
          | alphabeth    | РУ                                      |
          | attitude_to  | Памѧтно(1.1,1.2)                        |
@@ -301,6 +310,7 @@
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054 |
          | type         | Picture                              |
          | meta         | {}                                   |
+         | reading      | Тропарь                              |
          | audio_path   | features/fixtures/ice_rock_drop.mp3  |
       То добѫдꙛ кодъ поврата "422"
       И добѫдꙛ выводъ:
@@ -336,7 +346,7 @@
          url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
          meta: {}
          kind: Picture
-         reading:
+         reading: ''
          attitudes: []
          """
       Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
@@ -353,7 +363,7 @@
          url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
          meta: {}
          kind: Picture
-         reading:
+         reading: ''
          attitudes: []
          """
       Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.json"
@@ -376,7 +386,7 @@
          | audio_path   | features/fixtures/hey_cartoon.mp3       |
          | title        | Гласно 1                                |
          | attitude_to  | Памѧтно(1.1,1.2,1.3,1.4)                |
-         | reading_in   | Текст для чтения вслух чтобы наговорить |
+         | reading      | Текст для чтения вслух чтобы наговорить |
       Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
@@ -413,7 +423,7 @@
          url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
          meta: {}
          kind: Audio
-         reading:
+         reading: ''
          attitudes: []
          """
 
@@ -433,7 +443,7 @@
          url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
          meta: {}
          kind: Audio
-         reading:
+         reading: ''
          attitudes: []
          """
       И звѫчє "Звѫчє" не будє єствовати

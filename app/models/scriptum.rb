@@ -5,7 +5,7 @@ class Scriptum < ActiveRecord::Base
    include WithLocaleNames
 
    has_many :scriptum_scribables, dependent: :delete_all
-   has_many :audios, through: :scriptum_scribables, source: :scribable
+   has_many :audios, through: :scriptum_scribables, source: :scribable, source_type: :Audio
    has_many :memo_scripta, inverse_of: :scriptum, dependent: :destroy
    has_many :memoes, through: :memo_scripta
    has_many :targets, through: :memo_scripta, foreign_key: :memo_id, source: :memo

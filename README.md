@@ -211,6 +211,13 @@ Request for all licit calendaries with ones unlicit, which are specified by slug
 curl -k "https://dneslov.org/api/v1/calendaries.json?c=гпц&page=1&per=10"
 ```
 
+Request to upload an audio is the following:
+```bash
+curl --insecure -X POST -F audio[kind]=Troparion -F audio[title]="Титул аАвдиоааа" -F audio[description]="Описалово аАвдиааа" -F audio[language]=ру -F audio[alphabeth]=РО -F audio[audio]=@4.mp3 -F audio[attitude_to]="дестж(1.1,1.2)" -F audio[reading]="Господним желанием распалився" https://localhost:33333/api/v0/audios/create.json
+```
+
+It will be read as an opus audio.
+
 ## Tasks
 
 ### PDF Generation

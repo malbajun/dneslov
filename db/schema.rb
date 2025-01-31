@@ -16,6 +16,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   enable_extension "plpgsql"
   enable_extension "unaccent"
 
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "scribable_kind", ["source", "target"]
+
   create_table "accounts", force: :cascade do |t|
     t.string "no", null: false
     t.string "type", null: false
@@ -418,9 +422,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   end
 
   create_table "scriptum_scribables", force: :cascade do |t|
-    t.string "scribable_type"
-    t.bigint "scribable_id", comment: "Квѧзка до описуема прѣдмѣта"
-    t.bigint "scriptum_id", comment: "Квѧзка до бука"
+    t.string "scribable_type", null: false
+    t.bigint "scribable_id", null: false, comment: "Квѧзка до описуема прѣдмѣта"
+    t.bigint "scriptum_id", null: false, comment: "Квѧзка до бука"
+    t.enum "kind", null: false, comment: "Взор квѧзке извор або цѣль", enum_type: "scribable_kind"
+    t.index ["kind"], name: "index_scriptum_scribables_on_kind"
     t.index ["scribable_type", "scribable_id"], name: "index_scriptum_scribables_on_scribable"
     t.index ["scriptum_id"], name: "index_scriptum_scribables_on_scriptum_id"
   end

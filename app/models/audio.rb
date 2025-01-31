@@ -9,9 +9,10 @@ class Audio < ApplicationRecord
    process_in_background :audio
    store_in_background :audio
 
-   has_many :scriptum_scribables, as: :scribable, dependent: :delete_all
-   has_many :sources, -> { where.not(type: :Transcript) }, through: :scriptum_scribables, source: :scriptum
-   has_many :transcripts, -> { where(type: :Transcript) }, through: :scriptum_scribables, source: :scriptum, dependent: :delete_all
+   has_many :source_scribables, -> { where(kind: :source) }, class_name: :ScriptumScribable, as: :scribable, dependent: :delete_all
+   has_many :target_scribables, -> { where(kind: :target) }, class_name: :ScriptumScribable, as: :scribable, dependent: :delete_all
+   has_many :sources, through: :source_scribables, source: :scriptum
+   has_many :transcripts, through: :target_scribables, source: :scriptum, dependent: :delete_all
    has_many :attitudes, class_name: :AudioAttitude
    has_many :memories, as: :audioable, through: :attitudes, source: :audioable, source_type: :Memory
    has_many :events, as: :audioable, through: :attitudes, source: :audioable, source_type: :Event
@@ -101,7 +102,7 @@ class Audio < ApplicationRecord
       end
    end
 
-   validates_presence_of :kind, :uid, :audio
+   validates_presence_of :kind, :uid, :audio, :source_scribables
    validates_uniqueness_of :digest, on: :create
    validates_uniqueness_of :uid, :url
    validates :audio, presence: true, on: :create, file_size: { less_than: 16.megabytes }
@@ -137,11 +138,11 @@ class Audio < ApplicationRecord
    end
 
    def reading
-      sources.first&.title
+      sources.present? ? sources.map(&:title).compact.join("#") : nil
    end
 
-   def reading_in= value
-      if reading = Scriptum.where(title: value).where.not(type: "Transcript").first
+   def reading= value
+      if reading = Scriptum.where(title: value).first
          self.sources << reading
       else
          errors.add(:sources, "Unable to find abbreviation as: '#{value}'")
