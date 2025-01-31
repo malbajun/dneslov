@@ -59,4 +59,24 @@ class Reading < ActiveRecord::Base
    accepts_nested_attributes_for :markups, reject_if: :all_blank, allow_destroy: true
 
    validates :markups, associated: true
+
+   def markings_up= value_in
+      value_in.split(%r{/}).each.with_index do |part, index|
+         if markup = markups.by_text(part).first
+            /(?<bg>.*)#{part}(.*)/ =~ markup.text
+
+            markup.begin = bg.size
+            markup.end = bg.size + part.size
+            markup.position = index
+         else
+            if scriptum = Scriptum.where(text: part).first
+               /(?<bg>.*)#{part}(.*)/ =~ scriptum.text
+
+               markups.initilize_by(scriptum_id: scriptum.id, begin: bg.size, end: bg.size + part.size, position: index)
+            else
+               errors.add(:markups, "invalid scriptum part '#{part}'")
+            end
+         end
+      end
+   end
 end

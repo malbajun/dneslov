@@ -62,7 +62,8 @@ gem 'sidekiq', ">= 6.4.0", require: %w(sidekiq sidekiq/web)
 gem 'sidekiq-worker-killer'
 gem 'sidekiq-limit_fetch'
 # opts = local ? { path: ENV["HOME"] + '/git/jsonize' } : { codeberg: 'majioa/jsonize', ref: '59b2b9e' }
-gem 'jsonize', codeberg: 'majioa/jsonize', ref: '59b2b9e'
+# gem 'jsonize', path: ENV["HOME"] + '/git/jsonize'
+gem 'jsonize', codeberg: 'majioa/jsonize', ref: '03f55ab'
 gem 'redisize', '~> 0.2.0', codeberg: 'majioa/redisize', ref: 'f7ebef3'
 #gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
 
@@ -116,7 +117,8 @@ gem 'sprockets-rails'
 
 ## api
 #opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
-gem 'tiun', codeberg: 'znamenica/tiun', ref: 'daa3b5b'
+#gem 'tiun', path: ENV["HOME"] + '/git/tiun'
+gem 'tiun', codeberg: 'znamenica/tiun', ref: 'd140b16'
 
 # sitemap
 gem 'sitemap_generator'
@@ -127,6 +129,10 @@ gem 'carrierwave-base64'
 gem 'carrierwave_backgrounder'
 gem 'file_validators'
 gem 'rmagick'
+
+# audio
+gem 'carrierwave-ffmpeg', codeberg: 'majioa/carrierwave-ffmpeg' #path: "/usr/local/home/majioa/git/carrierwave-ffmpeg"
+gem 'streamio-ffmpeg', codeberg: 'majioa/streamio-ffmpeg' # path: "/usr/local/home/majioa/git/streamio-ffmpeg"
 
 # fix
 gem 'rack', bitbucket: "majioa/rack", ref: "2.2.8"
@@ -170,9 +176,9 @@ group :development, :test do
    gem 'bundler-audit'
    gem 'faraday', '~> 1.0'
    gem 'timecop', '~> 0.9'
-   #gem "rack-test", "~> 2.2.0"
    #opts = local ? { path: ENV["HOME"] + '/git/rack-test' } : { codeberg: 'majioa/rack-test', ref: 'main' }
    gem "rack-test", codeberg: 'majioa/rack-test', ref: 'main'
+   #gem "rack-test", path: ENV["HOME"] + '/git/rack-test'
 end
 
 group :test do

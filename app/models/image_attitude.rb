@@ -12,7 +12,7 @@ class ImageAttitude < ApplicationRecord
 
       self.imageable_id, self.imageable_type =
          if /(?<name>.*)#(?<event>.*)/ =~ @imageable_name
-            [Event.by_did_and_short_name(event, name).first&.id, "Event"]
+            [Event.by_did_and_uno(event, name).first&.id, "Event"]
          else
             [Memory.by_short_name(value).first&.id, "Memory"]
          end
