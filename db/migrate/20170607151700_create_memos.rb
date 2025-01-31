@@ -1,6 +1,6 @@
 class CreateMemos < ActiveRecord::Migration[5.2]
    def change
-      create_table :memos do |t|
+      create_table :memos, id: :serial do |t|
          t.string :happened_at, index: true
          t.string :date, index: true
          t.integer :before

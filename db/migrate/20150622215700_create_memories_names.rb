@@ -1,6 +1,6 @@
 class CreateMemoriesNames < ActiveRecord::Migration[5.2]
    def change
-      create_table :memories_names do |t|
+      create_table :memories_names, id: :serial do |t|
          t.belongs_to :memory, null: false
          t.belongs_to :name, null: false
 

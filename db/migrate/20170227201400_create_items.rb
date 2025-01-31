@@ -1,6 +1,6 @@
 class CreateItems < ActiveRecord::Migration[5.2]
    def change
-      create_table :items do |t|
+      create_table :items, id: :serial do |t|
          t.belongs_to :item_type, null: false
 
          t.timestamps null: false

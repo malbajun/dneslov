@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_31_190037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -64,18 +64,21 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
     t.string "alphabeth_code"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.integer "place_id"
+    t.bigint "place_id"
     t.string "author_name"
     t.string "council"
     t.boolean "licit", default: false
     t.jsonb "meta"
     t.index ["meta"], name: "index_calendaries_on_meta", using: :gin
+    t.index ["place_id"], name: "index_calendaries_on_place_id"
   end
 
   create_table "canto_memories", id: :serial, force: :cascade do |t|
-    t.integer "canto_id", null: false
-    t.integer "memory_id", null: false
+    t.bigint "canto_id", null: false
+    t.bigint "memory_id", null: false
     t.index ["canto_id", "memory_id"], name: "canto_memories_index", unique: true
+    t.index ["canto_id"], name: "index_canto_memories_on_canto_id"
+    t.index ["memory_id"], name: "index_canto_memories_on_memory_id"
   end
 
   create_table "coverings", force: :cascade do |t|
@@ -91,10 +94,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
 
   create_table "descriptions", id: :serial, force: :cascade do |t|
     t.string "language_code", null: false
-    t.integer "describable_id", null: false
+    t.bigint "describable_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.string "describable_type", null: false
+    t.string "describable_type", default: "Memory", null: false
     t.string "alphabeth_code", null: false
     t.string "type"
     t.text "text"
@@ -103,6 +106,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
     t.index ["describable_id", "describable_type", "alphabeth_code", "language_code", "type"], name: "describable_alphabeth_language_type_index", unique: true
     t.index ["describable_id", "describable_type", "alphabeth_code"], name: "describable_id_type_alphabeth_code_index"
     t.index ["describable_id", "describable_type"], name: "index_descriptions_on_describable_id_and_describable_type"
+    t.index ["describable_id"], name: "index_descriptions_on_describable_id"
     t.index ["id", "language_code", "type", "describable_id", "describable_type"], name: "index_on_id_language_code_type_and_describables"
     t.index ["id", "type", "describable_id", "describable_type"], name: "index_on_id_type_and_describables"
     t.index ["language_code", "alphabeth_code", "type", "describable_id", "describable_type"], name: "index_on_language_code_alphabeth_code_type_and_describables"
@@ -113,12 +117,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
 
   create_table "events", id: :serial, force: :cascade do |t|
     t.string "happened_at"
-    t.integer "memory_id", null: false
+    t.bigint "memory_id", null: false
     t.string "kind_code", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.integer "place_id"
-    t.integer "item_id"
+    t.bigint "place_id"
+    t.bigint "item_id"
     t.string "person_name"
     t.integer "type_number"
     t.string "about_string"
@@ -158,15 +162,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   end
 
   create_table "items", id: :serial, force: :cascade do |t|
-    t.integer "item_type_id", null: false
+    t.bigint "item_type_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["item_type_id"], name: "index_items_on_item_type_id"
   end
 
   create_table "links", id: :serial, force: :cascade do |t|
     t.string "url", null: false
     t.string "language_code"
-    t.integer "info_id", null: false
+    t.bigint "info_id", null: false
     t.string "type", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -230,10 +235,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   create_table "memoes", id: :serial, force: :cascade do |t|
     t.string "add_date"
     t.string "year_date"
-    t.integer "calendary_id", null: false
+    t.bigint "calendary_id", null: false
     t.string "bind_kind_code", null: false
     t.integer "bond_to_id"
-    t.integer "event_id", null: false
+    t.bigint "event_id", null: false
     t.index ["add_date"], name: "index_memoes_on_add_date"
     t.index ["bind_kind_code"], name: "index_memoes_on_bind_kind_code"
     t.index ["bond_to_id", "bind_kind_code"], name: "index_memoes_on_bond_to_id_and_bind_kind_code"
@@ -254,7 +259,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
     t.string "council"
     t.integer "base_year"
     t.string "type", default: "Memory", null: false
-    t.string "kind"
+    t.string "kind", comment: "Вид связки: источник (Source) для списков икон, опора (Base) - иконы личностей, подобие (Similar) - для установления подобия иконы иной иконевладелец (Host) - для владельцев предметов"
+    t.index ["base_year"], name: "index_memories_on_base_year"
+    t.index ["council"], name: "index_memories_on_council"
     t.index ["kind"], name: "index_memories_on_kind"
     t.index ["short_name"], name: "index_memories_on_short_name", unique: true
     t.index ["type"], name: "index_memories_on_type"
@@ -263,7 +270,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   create_table "memory_binds", force: :cascade do |t|
     t.bigint "memory_id", comment: "Собственно память"
     t.bigint "bond_to_id", comment: "Память как целевая связка"
-    t.string "kind", comment: "Вид связки: источник (Source) для списков икон, опора (Base) - иконы личностей, подобие (Similar) - для установления подобия"
+    t.string "kind", comment: "Вид связки: источник (Source) для списков икон, опора (Base) - иконы личностей, подобие (Similar) - для установления подобия иконы иной иконевладелец (Host) - для владельцев предметов"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bond_to_id"], name: "index_memory_binds_on_bond_to_id"
@@ -272,8 +279,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   end
 
   create_table "memory_names", id: :serial, force: :cascade do |t|
-    t.integer "memory_id", null: false
-    t.integer "nomen_id", null: false
+    t.bigint "memory_id", null: false
+    t.bigint "nomen_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.integer "mode"
@@ -283,6 +290,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
     t.index ["memory_id", "nomen_id", "state_code"], name: "index_memory_names_on_memory_id_and_nomen_id_and_state_code", unique: true
     t.index ["memory_id"], name: "index_memory_names_on_memory_id"
     t.index ["nomen_id"], name: "index_memory_names_on_nomen_id"
+    t.index ["state_code"], name: "index_memory_names_on_state_code"
   end
 
   create_table "names", id: :serial, force: :cascade do |t|
@@ -308,6 +316,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
     t.string "modifier"
     t.index ["bond_to_id", "bind_kind_name"], name: "index_nomina_on_bond_to_id_and_bind_kind_name"
     t.index ["bond_to_id", "name_id"], name: "index_nomina_on_bond_to_id_and_name_id", unique: true
+    t.index ["bond_to_id"], name: "index_nomina_on_bond_to_id"
     t.index ["modifier"], name: "index_nomina_on_modifier"
     t.index ["name_id"], name: "index_nomina_on_name_id"
     t.index ["root_id"], name: "index_nomina_on_root_id"
@@ -432,8 +441,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   end
 
   create_table "service_scripta", id: :serial, force: :cascade do |t|
-    t.integer "service_id", null: false
-    t.integer "scriptum_id", null: false
+    t.bigint "service_id", null: false
+    t.bigint "scriptum_id", null: false
     t.index ["scriptum_id"], name: "index_service_scripta_on_scriptum_id"
     t.index ["service_id", "scriptum_id"], name: "index_service_scripta_on_service_id_and_scriptum_id", unique: true
     t.index ["service_id"], name: "index_service_scripta_on_service_id"
@@ -442,7 +451,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   create_table "services", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.string "language_code", null: false
-    t.integer "info_id", null: false
+    t.bigint "info_id", null: false
     t.string "type"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -478,7 +487,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_29_180711) do
   create_table "slugs", id: :serial, force: :cascade do |t|
     t.string "text", null: false
     t.string "sluggable_type"
-    t.integer "sluggable_id"
+    t.bigint "sluggable_id"
     t.index ["sluggable_type", "sluggable_id"], name: "index_slugs_on_sluggable_type_and_sluggable_id"
     t.index ["text"], name: "index_slugs_on_text", unique: true
   end

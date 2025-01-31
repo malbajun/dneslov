@@ -1,6 +1,6 @@
 class CreateNames < ActiveRecord::Migration[5.2]
    def change
-      create_table :names do |t|
+      create_table :names, id: :serial do |t|
          t.string :text, null: false
          t.string :type, null: false, default: ''
          t.integer :language_code, null: false
