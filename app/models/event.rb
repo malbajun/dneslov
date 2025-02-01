@@ -517,7 +517,7 @@ class Event < ActiveRecord::Base
               LEFT OUTER JOIN descriptions AS memo_descriptions
                            ON memo_descriptions.describable_id = memoes.id
                           AND memo_descriptions.describable_type = 'Memo'
-                          AND memo_descriptions.type = 'Description'
+                          AND memo_descriptions.type IN ('Description', 'Versus')
                           AND memo_descriptions.language_code IN ('#{language_codes.join("', '")}')
               LEFT OUTER JOIN links AS memo_links
                            ON memo_links.info_id = memoes.id

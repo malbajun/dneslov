@@ -45,6 +45,7 @@ export const scriptumMeta = {
                'Canto': 'Песма',
                'Bible': 'Библия',
                'Scriptum': 'Текст',
+               'Stichus': 'Стих',
             }
 
             return scriptumTable[value.type]
@@ -117,6 +118,7 @@ export const scriptumMeta = {
             'Sedation': 'Степенна',
             'Anatolion': 'Восточна',
             'Resurrexion': 'Воскресна',
+            'Stichus': 'Стих',
             'Ipakoi': 'Ипакой' // на 17-й кафизмѣ
          },
          display_scheme: '12-6-3-3',
@@ -202,7 +204,7 @@ export const scriptumMeta = {
          visible_if: { type: [
             "Irmos", "Troparion", "Stichira", "Kontakion", "Exapostilarion", "SessionalHymn",
             "Kanonion", "Kathismion", "Polileosion", "Apostichus", "CryStichira",
-            "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi"] },
+            "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi", "Stichus"] },
          placeholder: 'Введи написание заголовка',
          display_scheme: '12-6-3-3',
       },

@@ -1,0 +1,2 @@
+class Versus < Description
+end

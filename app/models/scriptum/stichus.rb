@@ -1,0 +1,2 @@
+class Stichus < Scriptum
+end
