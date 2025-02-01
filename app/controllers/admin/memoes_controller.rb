@@ -26,6 +26,7 @@ class Admin::MemoesController < Admin::CommonController
          links_attributes: %i(id url language_code alphabeth_code type _destroy),
          titles_attributes: %i(id text language_code alphabeth_code _destroy),
          notes_attributes: %i(id text language_code alphabeth_code _destroy),
+         versi_attributes: %i(id text language_code alphabeth_code _destroy),
          descriptions_attributes: %i(id text language_code alphabeth_code _destroy))
    end
 end

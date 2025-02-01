@@ -53,6 +53,7 @@ class Memo < ApplicationRecord
    has_many :services, as: :info, inverse_of: :info # TODO додаь задачу превода service_links/ServiceLink во Service
    has_many :titles, -> { title }, as: :describable, dependent: :delete_all
    has_many :notes, as: :describable, dependent: :delete_all, class_name: :Note
+   has_many :versi, as: :describable, dependent: :delete_all, class_name: :Versus
    has_many :calendary_titles, through: :calendary, source: :titles, class_name: :Appellation
 
    delegate :quantity, to: :memory
@@ -581,6 +582,7 @@ class Memo < ApplicationRecord
    accepts_nested_attributes_for :services, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :titles, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
+   accepts_nested_attributes_for :versi, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memo_orders, reject_if: :all_blank, allow_destroy: true
 
    validates_presence_of :calendary, :event

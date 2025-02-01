@@ -18,7 +18,7 @@ module WithDescriptions
             join = "LEFT JOIN descriptions AS #{as}_descriptions
                            ON #{as}_descriptions.describable_id = #{this}.id
                           AND #{as}_descriptions.describable_type = '#{model}'
-                          AND #{as}_descriptions.type IN ('Description', 'Note')"
+                          AND #{as}_descriptions.type IN ('Description', 'Note', 'Versus')"
 
             joins(join).where("#{as}_descriptions.text ~* ?", description)
          end
@@ -68,7 +68,7 @@ module WithDescriptions
                                    #{alph_wheres&.first}
                              WHERE descriptions.describable_id = #{join_name}.id
                                AND descriptions.describable_type = '#{model}'
-                               AND descriptions.type IN ('Description', 'Note')
+                               AND descriptions.type IN ('Description', 'Note', 'Versus')
                                    #{lang_wheres&.last} #{alph_wheres&.last}
                           GROUP BY descriptions.id, language_names.text, alphabeth_names.text)
                             SELECT jsonb_agg(__descriptions)
@@ -97,7 +97,7 @@ module WithDescriptions
             join = "LEFT OUTER JOIN descriptions AS #{this}_descriptions
                                  ON #{this}_descriptions.describable_id = #{this}.id
                                 AND #{this}_descriptions.describable_type = '#{model}'
-                                AND #{this}_descriptions.type IN ('Description', 'Note')
+                                AND #{this}_descriptions.type IN ('Description', 'Note', 'Versus')
                                 #{lang_where} #{alph_where}"
 
 

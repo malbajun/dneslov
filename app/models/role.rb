@@ -66,7 +66,7 @@ class Role < ApplicationRecord
       join = "LEFT OUTER JOIN descriptions AS #{as}_descriptions
                            ON #{as}_descriptions.describable_id = #{as}.id
                           AND #{as}_descriptions.describable_type = '#{model}'
-                          AND #{as}_descriptions.type IN ('Description', 'Note')
+                          AND #{as}_descriptions.type IN ('Description', 'Note', 'Versus')
                           AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')"
 
       joins(join).select(selector.uniq).group('_description', "#{as}.id")

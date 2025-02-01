@@ -215,6 +215,7 @@ export default class Memory extends Component {
       'Bible': 'Зачало',
       'Prolog': 'Пролог',
       'Scriptum': 'Текст',
+      'Stichus': 'Стих',
    }
 
    constructor(props) {
