@@ -429,35 +429,45 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_bond_memories, ->(context) do
-      as = table.table_alias || table.name
+      this = table.table_alias || table.name
       language_codes = [context[:text_languages]].flatten
       alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
 
       selector = self.select_values.dup
-      selector << "#{as}.*" if selector.empty?
+      selector << "#{this}.*" if selector.empty?
       selector << "COALESCE((WITH __bond_memories AS (
-                      SELECT DISTINCT ON (#{as}_memory_binds.id)
-                             #{as}_memory_binds.id AS id,
-                             #{as}_memory_binds.kind AS kind,
-                             #{as}_memory_slugs.text AS slug,
-                             COALESCE(#{as}_bond_memo_titles.text, #{as}_bond_memories.short_name) AS name
-                        FROM memories AS #{as}_bond_memories
-             LEFT OUTER JOIN slugs AS #{as}_memory_slugs
-                          ON 'Memory' = #{as}_memory_slugs.sluggable_type
-                         AND #{as}_bond_memories.id = #{as}_memory_slugs.sluggable_id
-             LEFT OUTER JOIN memory_binds AS #{as}_memory_binds
-                          ON #{as}_bond_memories.id = #{as}_memory_binds.bond_to_id
-             LEFT OUTER JOIN events AS #{as}_events
-                          ON #{as}.id = #{as}_events.memory_id
-             LEFT OUTER JOIN memoes AS #{as}_memoes
-                          ON #{as}_memoes.event_id = #{as}_events.id
-             LEFT OUTER JOIN descriptions AS #{as}_bond_memo_titles
-                          ON #{as}_bond_memo_titles.describable_id = #{as}_memoes.id
-                         AND #{as}_bond_memo_titles.describable_type = 'Memo'
-                         AND #{as}_bond_memo_titles.type = 'Title'
-                         AND #{as}_bond_memo_titles.language_code IN ('#{language_codes.join("', '")}')
-                         AND #{as}_bond_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-                       WHERE #{as}_memory_binds.memory_id = #{as}.id)
+                      SELECT DISTINCT ON (#{this}_memory_binds.id)
+                             #{this}_memory_binds.id AS id,
+                             #{this}_memory_binds.kind AS kind,
+                             #{this}_memory_slugs.text AS slug,
+                             #{this}_order_tweets.text AS order,
+                             #{this}_bond_memo_titles.text AS memo_name,
+                             #{this}_bond_memories.short_name AS name
+                        FROM memories AS #{this}_bond_memories
+             LEFT OUTER JOIN slugs AS #{this}_memory_slugs
+                          ON 'Memory' = #{this}_memory_slugs.sluggable_type
+                         AND #{this}_bond_memories.id = #{this}_memory_slugs.sluggable_id
+             LEFT OUTER JOIN memory_binds AS #{this}_memory_binds
+                          ON #{this}_bond_memories.id = #{this}_memory_binds.bond_to_id
+             LEFT OUTER JOIN events AS #{this}_events
+                          ON #{this}.id = #{this}_events.memory_id
+             LEFT OUTER JOIN memoes AS #{this}_memoes
+                          ON #{this}_memoes.event_id = #{this}_events.id
+             LEFT OUTER JOIN descriptions AS #{this}_bond_memo_titles
+                          ON #{this}_bond_memo_titles.describable_id = #{this}_memoes.id
+                         AND #{this}_bond_memo_titles.describable_type = 'Memo'
+                         AND #{this}_bond_memo_titles.type = 'Title'
+                         AND #{this}_bond_memo_titles.language_code IN ('#{language_codes.join("', '")}')
+                         AND #{this}_bond_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+             LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
+                          ON #{this}_memo_orders.memo_id = #{this}_memoes.id
+             LEFT OUTER JOIN descriptions AS #{this}_order_tweets
+                          ON #{this}_order_tweets.describable_id = #{this}_memo_orders.order_id
+                         AND #{this}_order_tweets.describable_type = 'Memory'
+                         AND #{this}_order_tweets.type = 'Tweet'
+                         AND #{this}_order_tweets.language_code IN ('#{language_codes.join("', '")}')
+                         AND #{this}_order_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                       WHERE #{this}_memory_binds.memory_id = #{this}.id)
                       SELECT jsonb_agg(__bond_memories)
                         FROM __bond_memories), '[]'::jsonb) AS _bond_memories"
 

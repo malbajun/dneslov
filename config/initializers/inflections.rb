@@ -7,7 +7,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
    inflect.plural /(.*o)$/i, '\1es'
    inflect.singular /(.*o)es$/i, '\1'
    inflect.plural /(.*)en$/i, '\1ina'
-   inflect.singular /(.*)inà/i, '\1en'
+   inflect.singular /(.*)ina/i, '\1en'
    inflect.plural /(.*)us$/i, '\1i'
    inflect.singular /(.*)i$/i, '\1us'
 #   inflect.plural /(.*)um$/i, '\1a'

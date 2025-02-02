@@ -338,9 +338,8 @@ export default class Memory extends Component {
                      <div className='col s12'>
                         {this.props.bond_memories.filterMap((bm) =>
                            <Chip
-                              color={this.getSlugColor(bm.kind)}
                               url={getUrlsFrom(this.props.specifiedCalendarySlug, bm.slug)[0]}
-                              text={bm.name} />)}</div></div></div>}
+                              text={[bm.order, bm.memo_name || bm_name]} />)}</div></div></div>}
             {this.state.describedMemoes.isPresent() &&
                <Description
                   describedMemoes={this.state.describedMemoes}
