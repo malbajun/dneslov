@@ -5,7 +5,7 @@ export default class Chip extends Component {
    static defaultProps = {
       className: null,
       url: '',
-      text: '',
+      texts: [],
       data: null,
       color: null,
       action: null,
@@ -62,18 +62,30 @@ export default class Chip extends Component {
       return this.state.action == 'remove' && 'close' || this.state.action
    }
 
-   textRender() {
-      let text
+   renderText(text) {
+      let parts = [], partsIn = []
 
       if (this.props.children) {
-         text = this.props.children
-      } else if (this.props.url) {
-         text = <a href={this.props.url} target='_blank' >{this.props.text}</a>
-      } else {
-         text = <span>{this.props.text}</span>
+         parts = [this.props.children]
       }
 
-      return text
+      if (!text.isBlank()) {
+         if (text.constructor.name == "Array") {
+            partsIn = partsIn.concat(text)
+         } else {
+            partsIn = partsIn.concat([text])
+         }
+
+         parts = parts.concat(partsIn.map((textIn) => {
+            if (this.props.url) {
+               return <a href={this.properUrl()} target='_blank' >{textIn}</a>
+            } else {
+               return <span>{textIn}</span>
+            }
+         }))
+      }
+
+      return parts
    }
 
    hasDefaultText() {
@@ -110,15 +122,7 @@ export default class Chip extends Component {
             ref={e => this.$link = e}
             className={this.className()}
             style={{ backgroundColor: '#' + this.props.color }} >
-            {this.props.children}
-            {this.props.url &&
-               <a
-                  href={this.properUrl()}
-                  target='_blank' >
-                  {this.props.text}</a>}
-            {this.hasDefaultText() &&
-               <span>
-                  {this.props.text}</span>}
+            {this.renderText(this.props.text)}
             {this.state.action &&
                <i
                   className={this.closeClassName()}
