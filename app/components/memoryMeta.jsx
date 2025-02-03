@@ -21,6 +21,9 @@ export const memoryMeta = {
       },
       short_name: {
          title: 'Краткое имя',
+         value: (value) => {
+            return value.short_names && value.short_names[0]?.text
+         },
       },
       order: {
          title: 'Чин',
@@ -72,17 +75,6 @@ export const memoryMeta = {
                   "В имени жетона допустимы только русская кириллица и цифры": /[^ёа-я0-9]/
                }
             }
-         }
-      },
-      short_name: {
-         kind: 'text',
-         display_scheme: '12-3-2-2',
-         title: 'Краткое имя',
-         placeholder: 'Введи краткое имя',
-         validations: {
-            "Краткое имя отсутствует": /^$/,
-            "В кратком имени допустимы только русские кириллические буквы, цифры, дефис, запятая и пробел": /[^А-Яа-яЁё0-9 \,\-]/,
-            "Все слова должны начинаться либо с заглавной буквы, либо с цифры": /(^[^0-9А-ЯЁ]|\s[^0-9А-ЯЁа-яё])/g,
          }
       },
       type: {
@@ -166,6 +158,64 @@ export const memoryMeta = {
          title: 'Значимость',
          placeholder: 'Введи значимость',
          display_scheme: '12-3-1-1',
+      },
+      short_names: {
+         kind: 'collection',
+         title: "Краткое имя",
+         action: "Добавь краткое имя",
+         display_scheme: '12-12-12-12',
+         validations: {
+            "Языки в кратких именах не могут совпадать": matchLanguages,
+            "Азбуки в кратких именах не могут совпадать": matchAlphabeths,
+         },
+         meta: {
+            id: {
+               kind: 'hidden',
+            },
+            text: {
+               kind: 'text',
+               title: 'Краткое имя',
+               placeholder: 'Введи краткое имя',
+               display_scheme: '12-12-6-6',
+               subscribeTo: '@alphabeth_code',
+               validations: {
+                  "Краткое имя отсутствует": matchEmptyObject,
+                  'Краткое имя содержит знаки вне перечня избранной азбуки': matchLetters,
+               }
+            },
+            language_code: {
+               kind: 'dynamic',
+               title: 'Язык',
+               display_scheme: '12-6-3-3',
+               pathname: 'short_subjects',
+               humanized_name: 'language',
+               context_value: { k: "Language" },
+               key_name: 'value',
+               value_name: 'key',
+               placeholder: 'Начни ввод наименования языка...',
+               subscribeTo: '@alphabeth_code',
+               validations: {
+                  'Избранный язык не соотвествует избранной азбуке': matchCodes,
+                  'Язык из списка должен быть выбран': matchEmptyObject,
+               }
+            },
+            alphabeth_code: {
+               kind: 'dynamic',
+               title: 'Азбука',
+               display_scheme: '12-6-3-3',
+               pathname: 'short_subjects',
+               humanized_name: 'alphabeth',
+               context_value: { k: "Alphabeth" },
+               key_name: 'value',
+               value_name: 'key',
+               placeholder: 'Начни ввод наименования азбуки...',
+               subscribeTo: '@language_code',
+               validations: {
+                  'Избранная азбука не соотвествует избранному языку': matchCodes,
+                  'Азбука из списка должна быть выбрана': matchEmptyObject,
+               }
+            },
+         }
       },
       coverings: {
          kind: 'collection',

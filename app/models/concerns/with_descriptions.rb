@@ -24,11 +24,16 @@ module WithDescriptions
          end
 
          scope :with_descriptions, ->(context) do
-            join_name = table.table_alias || table.name
+            this = table.table_alias || table.name
             language_codes = [context[:text_languages]].flatten.compact
             alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+            /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+            as = model.reflections[rela]&.name
+            ast = as.to_s.tableize
+            asm = as.to_s.singularize.camelize
+
             selector = self.select_values.dup
-            selector << "#{join_name}.*" if selector.empty?
+            selector << "#{this}.*" if selector.empty?
 
             if language_codes.any?
                lang_wheres = [
@@ -66,7 +71,7 @@ module WithDescriptions
                                 ON alphabeth_names.describable_id = alphabeths.id
                                AND alphabeth_names.describable_type = 'Subject'
                                    #{alph_wheres&.first}
-                             WHERE descriptions.describable_id = #{join_name}.id
+                             WHERE descriptions.describable_id = #{this}.id
                                AND descriptions.describable_type = '#{model}'
                                AND descriptions.type IN ('Description', 'Note', 'Versus')
                                    #{lang_wheres&.last} #{alph_wheres&.last}

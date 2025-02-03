@@ -191,7 +191,7 @@ class ImageSyncService
    end
 
    def memory_for short_name
-      short_names[short_name] ||= Memory.find_by(short_name: short_name)
+      short_names[short_name] ||= Memory.by_short_name(short_name)
    end
 
    def duped a
@@ -272,7 +272,7 @@ class ImageSyncService
       unassigned = Resource.unassigned.image
       objects =
          unassigned.map do |r|
-            info = Memory.find_by(short_name: r[:props]['short_name'])
+            info = Memory.by_short_name(r[:props]['short_name'])
             error("Invalid short name: #{r[:props]['short_name']}") unless info
 
             target =

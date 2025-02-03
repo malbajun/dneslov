@@ -92,8 +92,10 @@ end
       model = model_of(kind)
       field = base_field(kind).to_s
       relation =
-         if model.reflections[field ].present?
+         if model.reflections[field].present?
             model.includes(field).where(field.pluralize => { text: prop })
+         elsif model.respond_to?("by_#{base_field(kind)}")
+            model_of(kind).send("by_#{base_field(kind)}", prop)
          else
             model_of(kind).where(base_field(kind) => prop)
          end

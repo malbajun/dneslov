@@ -1,6 +1,6 @@
 Допустим(/^есть памятное имя (.*) относящееся к памяти "([^"]*)"$/) do |nametext, short_name|
-   memory = Memory.where( short_name: short_name ).first
-   nomen = Name.where( text: nametext ).first.nomina.first
+   memory = Memory.by_short_name(short_name).first
+   nomen = Name.where(text: nametext).first.nomina.first
    find_or_create MemoryName, nomen: nomen, memory: memory, state_code: :наречёное
 end
 

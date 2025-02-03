@@ -49,7 +49,8 @@ class Scriptum < ActiveRecord::Base
          lang_wheres = [
             "AND #{this}_memo_titles.language_code IN ('#{language_codes.join("', '")}')",
             "AND #{this}_event_titles.language_code IN ('#{language_codes.join("', '")}')",
-            "AND #{this}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')"
+            "AND #{this}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')",
+            "AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}')",
          ]
       end
 
@@ -57,7 +58,8 @@ class Scriptum < ActiveRecord::Base
          alph_wheres = [
             "AND #{this}_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
             "AND #{this}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
-            "AND #{this}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+            "AND #{this}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
          ]
       end
 
@@ -65,7 +67,7 @@ class Scriptum < ActiveRecord::Base
                         WITH __memo_scripta AS (
                       SELECT memo_scripta.id AS id,
                              #{this}_memoes.id AS memo_id,
-                             #{this}_memories.short_name || ' [' ||
+                             #{this}_short_names.text || ' [' ||
                              COALESCE(#{this}_event_titles.text, '') || ' (' ||
                              #{this}_events.happened_at || ')]: ' ||
                              COALESCE(#{this}_memo_titles.text, '') || '[' ||
@@ -101,10 +103,12 @@ class Scriptum < ActiveRecord::Base
                          AND #{this}_calendary_titles.describable_type = 'Calendary'
                          AND #{this}_calendary_titles.type = 'Appellation'
                              #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}
-             LEFT OUTER JOIN memories AS #{this}_memories
-                          ON #{this}_memories.id = #{this}_events.memory_id
+             LEFT OUTER JOIN short_names AS #{this}_short_names
+                          ON #{this}_short_names.memory_id = #{this}_events.memory_id
+                             #{lang_wheres&.[](3)} #{alph_wheres&.[](3)}
+
                        WHERE memo_scripta.scriptum_id = #{this}.id
-                    GROUP BY memo_scripta.id, #{this}_memories.short_name, #{this}_memoes.id, memo_scripta.kind, #{this}_memo_titles.text, #{this}_events.happened_at ,#{this}_event_titles.text, #{this}_calendary_titles.text, #{this}_memoes.year_date)
+                    GROUP BY memo_scripta.id, #{this}_short_names.text, #{this}_memoes.id, memo_scripta.kind, #{this}_memo_titles.text, #{this}_events.happened_at ,#{this}_event_titles.text, #{this}_calendary_titles.text, #{this}_memoes.year_date)
                       SELECT jsonb_agg(__memo_scripta)
                         FROM __memo_scripta), '[]'::jsonb) AS _memo_scripta"
 

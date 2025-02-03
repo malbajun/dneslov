@@ -30,10 +30,10 @@ class EventsController < ApplicationController
                        .with_description(context)
                        .with_icon(context)
                        .select("memories.base_year",
-                               "memories.short_name",
+                               "events_short_names.text",
                                "memories.id AS memory_id")
                        .group("memories.id",
-                              "events_memories.short_name")
+                              "events_short_names.text")
 
       @event ||= @events.by_event_code(params[:event]).first || raise(ActiveRecord::RecordNotFound)
    end

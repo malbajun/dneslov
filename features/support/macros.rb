@@ -94,7 +94,12 @@ module MacrosSupport
                submodel.joins(relation.to_sym).where(relation => { subattr => match_value }).first.id
             else
                subattr = base_field(modelname || base_attr)
-               submodel.where(subattr => match_value).first.id ;end
+               if submodel.respond_to?("by_#{subattr}")
+                  submodel.send("by_#{subattr}", match_value)
+               else
+                  submodel.where(subattr => match_value)
+               end.first.id
+            end
             if model.new.respond_to?("#{attr}_type")
                new_attrs["#{attr}_type"] = modelname.camelize ; end
          else
@@ -126,7 +131,15 @@ module MacrosSupport
       new_attrs = expand_attributes(model, search_attrs)
 
       model_class = model.is_a?(Symbol) && model.to_s.camelize.constantize || model
-      model_class.where(new_attrs).first || create(model, search_attrs, attrs) ;end
+
+      new_attrs.reduce(model_class) do |rela, (attr, value)|
+         if model_class.respond_to?("by_#{attr}")
+            rela.send("by_#{attr}", value)
+         else
+            rela.where(attr => value)
+         end
+      end.first || create(model, search_attrs, attrs)
+   end
 
    def get_type type_name
       types = { 'целый' => :integer, 'строка' => :string, 'текст' => :text }
