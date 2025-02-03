@@ -339,7 +339,7 @@ export default class Memory extends Component {
                         {this.props.bond_memories.filterMap((bm) =>
                            <Chip
                               url={getUrlsFrom(this.props.specifiedCalendarySlug, bm.slug)[0]}
-                              text={[bm.order, bm.memo_name || bm_name]} />)}</div></div></div>}
+                              text={[bm.order, bm.name]} />)}</div></div></div>}
             {this.state.describedMemoes.isPresent() &&
                <Description
                   describedMemoes={this.state.describedMemoes}

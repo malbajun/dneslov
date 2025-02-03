@@ -27,7 +27,7 @@
          | attitude_to  | Памѧтно#Сꙛбытие(1.1,1.2)                      |
       * єствує памѧть сꙛ даными:
          | id           | 101                                  |
-         | short_name   | Памѧтна 1                            |
+         | short_name   | Памѧтна Ѫ                            |
          | title        | Титуло                               |
          | slug         | слуг                                 |
       * є звѫчє сꙛ даными:
@@ -36,8 +36,8 @@
          | meta         | {}                                      |
          | audio_path   | features/fixtures/garage_door_slam.wav  |
          | title        | Гласно 1                                |
-         | attitude_to  | Памѧтна 1(1.0,1.1)                      |
-      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200202" ѫ памѧти "Памѧтна 1"
+         | attitude_to  | Памѧтна Ѫ(1.0,1.1)                      |
+      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200202" ѫ памѧти "Памѧтна Ѫ"
       * є звѫчє сꙛ даными:
          | id           | 200015                               |
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066 |
@@ -45,7 +45,7 @@
          | audio_path   | features/fixtures/hammer_hit.ogg     |
          | description  | Гѫдьба а꙯                             |
          | title        | Гѫдьба                               |
-         | attitude_to  | Памѧтна 1#Сꙛбытие(0.9,1.0)           |
+         | attitude_to  | Памѧтна Ѫ#Сꙛбытие(0.9,1.0)           |
       * є письмо сꙛ даными:
          | id              | 200021                                           |
          | type            | Troparion                                        |

@@ -9,8 +9,9 @@
       create( :memory, short_name: short_name ) ; end ; end
 
 То(/^свойство '(.*)' памяти "([^"]*)" не может быть пустым$/) do |attr, short_name|
-   name = Memory.where( short_name: short_name ).first
-   expect( name ).to validate_presence_of( attr.to_sym ) ; end
+   name = Memory.by_short_name(short_name).first
+   expect( name ).to validate_presence_of(attr.to_sym)
+end
 
 То(/^выборка "([^"]*)" памяти выбирает поля "([^"]*)"$/) do |scope, field|
    record = Memory.last
@@ -18,6 +19,8 @@
    expect( subject ).to match_array( [ record ] ) ; end
 
 То(/^у памяти "([^"]*)" суть действенными многоимущие свойства:$/) do |short_name, table|
-   memory = Memory.where( short_name: short_name ).first
+   memory = Memory.by_short_name(short_name).first
    table.rows.flatten.each do |attr|
-      expect( memory ).to have_many( attr.to_sym ) ; end ; end
+      expect(memory).to have_many(attr.to_sym)
+   end
+end

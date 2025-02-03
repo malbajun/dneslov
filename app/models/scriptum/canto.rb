@@ -12,7 +12,7 @@ class Canto < Scriptum
       if value.kind_of?( Array )
          new_value = value.map do |v|
             if v.kind_of?(String) && v =~ /^\^(.*)/
-               Memory.where(short_name: $1).first
+               Memory.by_short_name($1).first
             else
                v ;end;end
             .compact

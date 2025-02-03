@@ -16,14 +16,14 @@
       * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200201" ѫ памѧти "Памѧтно"
       * єствує памѧть сꙛ даными:
          | id              | 101                                  |
-         | short_name      | Памѧтна 1                            |
+         | short_name      | Памѧтна Ѫ                            |
          | type            | Building                             |
          | title           | Титуло                               |
          | quantity        | ""                                   |
          | base_year       | 1001                                 |
          | slug            | слуг                                 |
          | without_place   | true                                 |
-      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200202" ѫ памѧти "Памѧтна 1"
+      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200202" ѫ памѧти "Памѧтна Ѫ"
 
    @get @collection
    Пример: Запрос к контроллеру памѧтєј в АПИ при отсутствии памѧтєј
@@ -45,7 +45,7 @@
            type: Group
            kind: Kind
          - slug: слуг
-           short_name: Памѧтна 1
+           short_name: Памѧтна Ѫ
            quantity:
            base_year: 1001
            type: Building
@@ -61,7 +61,7 @@
          """
          ---
          - slug: слуг
-           short_name: Памѧтна 1
+           short_name: Памѧтна Ѫ
            quantity:
            base_year: 1001
            type: Building
@@ -77,7 +77,7 @@
          """
          ---
          - slug: слуг
-           short_name: Памѧтна 1
+           short_name: Памѧтна Ѫ
            quantity:
            base_year: 1001
            type: Building
@@ -141,13 +141,13 @@
 
    @get @collection @search
    Пример: Користник искає во спису памѧтєј по памѧтному едозу
-      Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?uno=Памѧтна 1"
+      Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?uno=Памѧтна Ѫ"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          - slug: слуг
-           short_name: Памѧтна 1
+           short_name: Памѧтна Ѫ
            quantity:
            base_year: 1001
            type: Building
@@ -161,7 +161,7 @@
          """
          ---
          - slug: памят1
-           short_name: Памѧтно1
+           short_name: ПамѧтноА
            quantity: "4"
            base_year: 1000
            type: Group
@@ -172,7 +172,7 @@
            description: Описалово
            without_place: true
          - slug: памят2
-           short_name: Памѧтно2
+           short_name: ПамѧтноВ
            base_year: 1000
            type: Identity
            kind: Kind
@@ -182,7 +182,7 @@
            description: Описалово
            without_place: true
          - slug: памят3
-           short_name: Памѧтно3
+           short_name: ПамѧтноГ
            base_year: 1000
            type: Building
            kind: Kind
@@ -204,13 +204,13 @@
            type: Group
            kind: Kind
          - slug: памят1
-           short_name: Памѧтно1
+           short_name: ПамѧтноА
            quantity: '4'
            base_year: 1000
            type: Group
            kind: Kind
          - slug: памят2
-           short_name: Памѧтно2
+           short_name: ПамѧтноВ
            quantity:
            base_year: 1000
            type: Identity
@@ -223,13 +223,13 @@
          """
          ---
          - slug: памят3
-           short_name: Памѧтно3
+           short_name: ПамѧтноГ
            quantity:
            base_year: 1000
            type: Building
            kind: Kind
          - slug: слуг
-           short_name: Памѧтна 1
+           short_name: Памѧтна Ѫ
            quantity:
            base_year: 1001
            type: Building
@@ -269,7 +269,7 @@
    Пример: Користник створяє памѧтѣ
       Если запытаю створенје изнахоѕи памѧти "/api/v0/memories/create.json" сꙛ даными:
          | id           | 103                                  |
-         | short_name   | Памѧтно 3                            |
+         | short_name   | Памѧтно Г                            |
          | title        | Титулецъ 3                           |
          | description  | Описалово 3                          |
          | type         | Building                             |
@@ -282,7 +282,7 @@
          ---
          id: 103
          slug: служ3
-         short_name: Памѧтно 3
+         short_name: Памѧтно Г
          quantity:
          base_year: 1003
          type: Building
@@ -292,11 +292,11 @@
          title: Титулецъ 3
          description: Описалово 3
          """
-      И изнахоѕь памѧти "Памѧтно 3" бѫдє яко:
+      И изнахоѕь памѧти "Памѧтно Г" бѫдє яко:
          """
          ---
          id: 103
-         short_name: Памѧтно 3
+         short_name: Памѧтно Г
          quantity:
          base_year: 1003
          type: Building
@@ -331,9 +331,9 @@
 
    @update @object @error @404
    Пример: Користник поновяє дане памѧти
-      Если запытаю одсланје памѧти в изнаходь "/api/v0/memories/Памѧтна 1.json" сꙛ даными:
+      Если запытаю одсланје памѧти в изнаходь "/api/v0/memories/Памѧтна Ѫ.json" сꙛ даными:
          | id           | 103                                  |
-         | short_name   | Памѧтно 3                            |
+         | short_name   | Памѧтно Г                            |
          | title        | Титулецъ 3                           |
          | description  | Описалово 3                          |
          | type         | Council                              |
@@ -347,7 +347,7 @@
          ---
          id: 101
          slug: служ3
-         short_name: Памѧтно 3
+         short_name: Памѧтно Г
          quantity: "?"
          base_year: 1003
          type: Council
@@ -357,14 +357,14 @@
          title: Титулецъ 3
          description: Описалово 3
          """
-      Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памѧтно 3.json"
+      Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памѧтно Г.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          id: 101
          slug: служ3
-         short_name: Памѧтно 3
+         short_name: Памѧтно Г
          quantity: "?"
          base_year: 1003
          type: Council
@@ -374,7 +374,7 @@
          title: Титулецъ 3
          description: Описалово 3
          """
-      Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памѧтна 1.json"
+      Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памѧтна Ѫ.json"
       То добѫдꙛ кодъ поврата "404"
 
    @get @object

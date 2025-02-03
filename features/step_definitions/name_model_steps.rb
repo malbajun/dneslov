@@ -4,7 +4,7 @@
 end
 
 Допустим(/^имя (.*) относится к памяти "(.*)"$/) do |nametext, short_name|
-   memory = Memory.where(short_name: short_name).first
+   memory = Memory.by_short_name(short_name).first
    name = Name.where(text: nametext).first
    if !memory.names.include? name
       mn = MemoryName.new(nomen: name.nomina.first, state_code: :наречёное)

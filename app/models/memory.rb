@@ -13,10 +13,9 @@ class Memory < ApplicationRecord
    include WithLinks
    include ByToken
 
-   has_default_key :short_name
-
    has_one :slug, as: :sluggable, dependent: :destroy
    has_many :memory_names, dependent: :destroy
+   has_many :short_names, dependent: :destroy
    has_many :nomina, through: :memory_names
    has_many :names, through: :nomina
    has_many :paterics, as: :info, dependent: :destroy, class_name: :PatericLink
@@ -36,11 +35,11 @@ class Memory < ApplicationRecord
    has_many :coverings
    has_many :places, through: :coverings
 
-   default_scope { order( base_year: :asc, short_name: :asc, id: :asc ) }
+   default_scope { order( base_year: :asc, id: :asc ) }
 
    scope :icons, -> { joins( :slugs ).where( slugs: { text: :обр } ) }
 
-   scope :by_short_name, -> name { where( short_name: name ) }
+   scope :by_short_name, -> name { joins(:short_names).where(short_names: { text: name }) }
    scope :by_slug, -> slug do
       this = table.table_alias || table.name
       join = "LEFT OUTER JOIN slugs AS #{this}_slugs
@@ -62,7 +61,8 @@ class Memory < ApplicationRecord
    end
 
    scope :by_token, -> text do
-      left_outer_joins(:names, :descriptions, :notes, :tweets, :slug).where("short_name ~* ?", "\\m#{text}.*").or(
+      left_outer_joins(:short_names, :names, :descriptions, :notes, :tweets, :slug).
+         where("unaccent(short_names.text) ~* ?", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(tweets_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(notes_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
@@ -73,11 +73,13 @@ class Memory < ApplicationRecord
    scope :by_title, -> text do
       this = table.table_alias || table.name
       join = "LEFT OUTER JOIN descriptions AS #{this}_titles
-           ON #{this}.id = #{this}_titles.describable_id
-          AND #{this}_titles.describable_type = 'Memory'"
+                           ON #{this}.id = #{this}_titles.describable_id
+                          AND #{this}_titles.describable_type = 'Memory'
+              LEFT OUTER JOIN short_names AS #{this}_short_names
+                           ON #{this}.id = #{this}_short_names.memory_id"
 
       selector = "unaccent(#{this}_titles.text) ~* unaccent(?)
-             OR #{this}.short_name ~* ?", "\\m#{text}.*", "\\m#{text}.*"
+             OR #{this}_short_names.text ~* ?", "\\m#{text}.*", "\\m#{text}.*"
 
       joins(join).where(selector).distinct
    end
@@ -107,9 +109,65 @@ class Memory < ApplicationRecord
 
    scope :with_value, -> context do
       #TODO add search over names
-      selector = [ 'memories.short_name AS _value' ]
+      selector = [ 'short_names.text AS _value' ]
 
-      select(selector).group('_value').reorder("_value")
+      joins(:short_names).select(selector).group('_value').reorder("_value")
+   end
+
+   scope :with_short_names, -> context do
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
+      this = table.table_alias || table.name
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      ast = as.to_s.tableize
+      asm = as.to_s.singularize.camelize
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND language_names.language_code IN ('#{language_codes.join("', '")}')",
+            "AND #{this}_#{ast}.language_code IN ('#{language_codes.join("', '")}')"
+         ]
+      end
+
+      if alphabeth_codes.any?
+         alph_wheres = [
+            "AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND #{this}_#{ast}.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+         ]
+      end
+
+      selector << "COALESCE((with __short_names AS (
+                      SELECT DISTINCT ON(short_names.id)
+                             short_names.id AS id,
+                             short_names.text AS text,
+                             short_names.language_code AS language_code,
+                             short_names.alphabeth_code AS alphabeth_code,
+                             language_names.text AS language,
+                             alphabeth_names.text AS alphabeth
+                        FROM short_names
+             LEFT OUTER JOIN subjects AS languages
+                          ON languages.key = short_names.language_code
+             LEFT OUTER JOIN descriptions AS language_names
+                          ON language_names.describable_id = languages.id
+                         AND language_names.describable_type = 'Subject'
+                             #{lang_wheres&.first}
+             LEFT OUTER JOIN subjects AS alphabeths
+                          ON alphabeths.key = short_names.alphabeth_code
+             LEFT OUTER JOIN descriptions AS alphabeth_names
+                          ON alphabeth_names.describable_id = alphabeths.id
+                         AND alphabeth_names.describable_type = 'Subject'
+                             #{alph_wheres&.first}
+                       WHERE short_names.memory_id = #{this}.id
+                             #{lang_wheres&.last} #{alph_wheres&.last}
+                    GROUP BY short_names.id, language_names.text, alphabeth_names.text)
+                      SELECT jsonb_agg(__short_names)
+                        FROM __short_names), '[]'::jsonb) AS _short_names"
+
+      select(selector).group(:id)
    end
 
    scope :with_names, -> (context) do
@@ -277,20 +335,26 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       select(selector).group(:id)
    end
 
-   scope :with_memory_binds, -> do
-      as = table.table_alias || table.name
+   scope :with_memory_binds, -> context do
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = context[:codes] || Languageble.alphabeth_list_for(language_codes)
 
       selector = self.select_values.dup
-      selector << "#{as}.*" if selector.empty?
+      selector << "#{this}.*" if selector.empty?
       selector << "COALESCE((WITH __memory_binds AS (
-                       SELECT #{as}_memory_binds.id AS id,
-                              #{as}_memory_binds.bond_to_id AS bond_to_id,
-                              #{as}_memory_binds.kind AS kind,
-                              #{as}_bond_memories.short_name AS bond_to_name
-                         FROM memory_binds AS #{as}_memory_binds
-                         JOIN memories AS #{as}_bond_memories
-                           ON #{as}_bond_memories.id = #{as}_memory_binds.bond_to_id
-                        WHERE #{as}.id = #{as}_memory_binds.memory_id)
+                       SELECT #{this}_memory_binds.id AS id,
+                              #{this}_memory_binds.bond_to_id AS bond_to_id,
+                              #{this}_memory_binds.kind AS kind,
+                              #{this}_bond_short_names.text AS bond_to_name
+                         FROM memory_binds AS #{this}_memory_binds
+                         JOIN memories AS #{this}_bond_memories
+                           ON #{this}_bond_memories.id = #{this}_memory_binds.bond_to_id
+              LEFT OUTER JOIN short_names AS #{this}_bond_short_names
+                           ON #{this}_bond_memories.id = #{this}_bond_short_names.memory_id
+                          AND #{this}_bond_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_bond_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                        WHERE #{this}.id = #{this}_memory_binds.memory_id)
                        SELECT jsonb_agg(__memory_binds)
                          FROM __memory_binds), '[]'::jsonb) AS _memory_binds"
 
@@ -441,24 +505,21 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                              #{this}_memory_binds.kind AS kind,
                              #{this}_memory_slugs.text AS slug,
                              #{this}_order_tweets.text AS order,
-                             #{this}_bond_memo_titles.text AS memo_name,
-                             #{this}_bond_memories.short_name AS name
+                             #{this}_bond_short_names.text AS name
                         FROM memories AS #{this}_bond_memories
              LEFT OUTER JOIN slugs AS #{this}_memory_slugs
                           ON 'Memory' = #{this}_memory_slugs.sluggable_type
                          AND #{this}_bond_memories.id = #{this}_memory_slugs.sluggable_id
              LEFT OUTER JOIN memory_binds AS #{this}_memory_binds
                           ON #{this}_bond_memories.id = #{this}_memory_binds.bond_to_id
+             LEFT OUTER JOIN short_names AS #{this}_bond_short_names
+                          ON #{this}_bond_memories.id = #{this}_bond_short_names.memory_id
+                         AND #{this}_bond_short_names.language_code IN ('#{language_codes.join("', '")}')
+                         AND #{this}_bond_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
              LEFT OUTER JOIN events AS #{this}_events
                           ON #{this}.id = #{this}_events.memory_id
              LEFT OUTER JOIN memoes AS #{this}_memoes
                           ON #{this}_memoes.event_id = #{this}_events.id
-             LEFT OUTER JOIN descriptions AS #{this}_bond_memo_titles
-                          ON #{this}_bond_memo_titles.describable_id = #{this}_memoes.id
-                         AND #{this}_bond_memo_titles.describable_type = 'Memo'
-                         AND #{this}_bond_memo_titles.type = 'Title'
-                         AND #{this}_bond_memo_titles.language_code IN ('#{language_codes.join("', '")}')
-                         AND #{this}_bond_memo_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
              LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
                           ON #{this}_memo_orders.memo_id = #{this}_memoes.id
              LEFT OUTER JOIN descriptions AS #{this}_order_tweets
@@ -709,7 +770,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_memory_names, -> context do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
       language_codes = [context[:text_languages]].flatten.compact
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
@@ -765,6 +825,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    singleton_class.send(:alias_method, :d, :by_date)
    singleton_class.send(:alias_method, :c, :in_calendaries)
 
+   accepts_nested_attributes_for :short_names, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memory_binds, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memory_names, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :paterics, reject_if: :all_blank, allow_destroy: true
@@ -774,7 +835,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank
 
-   validates_presence_of :short_name
+   validates_presence_of :short_names
    validates :base_year, format: { with: /\A-?\d+\z/ }
    validates :quantity, format: { with: /\A[0-9?+]+?\z/ }, allow_blank: true
 
@@ -840,10 +901,37 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    def set_slug
-      self.slug = Slug.new(base: self.short_name) if self.slug.blank?
+      self.slug = Slug.new(base: self.short_names.first.text) if self.slug.blank?
    end
 
    def to_s
       memory_names.join( ' ' )
+   end
+
+   def short_name_for context = {}
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = context[:codes] || Languageble.alphabeth_list_for(language_codes)
+
+      short_name(language_codes, alphabeth_codes)
+   end
+
+   def short_name language_code = nil, alphabeth_code = nil
+      attrs = %w(language_code alphabeth_code).map {|x| [x, eval(x)] }.select {|(_,v)| v }.to_h
+
+      short_names.where(attrs).first&.text
+   end
+
+   def short_name= short_name
+      sn = ShortName.new(text: short_name)
+
+      if sn.valid?
+         if sno = short_names.where(language_code: "ср", alphabeth_code: "СР").first
+            sno.update!(text: short_name)
+         else
+            short_names << sn
+         end
+      else
+         errors.add(:short_names, "Unable to cerate invalid short name: '#{short_name}'")
+      end
    end
 end

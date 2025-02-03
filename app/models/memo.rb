@@ -47,6 +47,7 @@ class Memo < ApplicationRecord
    has_many :memo_orders, dependent: :destroy
    has_many :orders, through: :memo_orders
    has_many :slugs, -> { distinct.reorder('id') }, through: :orders, source: :slug
+   has_many :short_names, through: :memory
    has_many :order_titles, through: :orders, source: :tweets
    has_many :bond_memo_titles, through: :bond_to, source: :titles
    has_many :event_titles, through: :event, source: :titles
@@ -150,11 +151,11 @@ class Memo < ApplicationRecord
    end
 
    scope :by_token, -> text do
-      left_outer_joins(:descriptions, :titles, :memory, :calendary_titles).
+      left_outer_joins(:descriptions, :titles, :short_names, :calendary_titles).
          where( "unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*" ).or(
          where( "unaccent(titles_memoes.text) ~* unaccent(?)", "\\m#{text}.*" ).or(
          where( "unaccent(calendary_titles_memoes.text) ~* unaccent(?)", "\\m#{text}.*" ).or(
-         where( "memories.short_name ~* ?", "\\m#{text}.*" ).or(
+         where( "short_names.text ~* ?", "\\m#{text}.*" ).or(
          where( "memoes.add_date ~* ?", "\\m#{text}.*" ).or(
          where( "memoes.year_date ~* ?", "\\m#{text}.*" ))))))
    end
@@ -206,14 +207,16 @@ class Memo < ApplicationRecord
          lang_wheres =
             ["AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')",
              "AND #{as}_event_titles.language_code IN ('#{language_codes.join("', '")}')",
-             "AND #{as}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')"]
+             "AND #{as}_calendary_titles.language_code IN ('#{language_codes.join("', '")}')",
+             "AND #{as}_short_names.language_code IN ('#{language_codes.join("', '")}')"]
       end
 
       if alphabeth_codes.any?
          alph_wheres =
             ["AND #{as}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
              "AND #{as}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
-             "AND #{as}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+             "AND #{as}_calendary_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+             "AND #{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
       end
 
       joi = "LEFT OUTER JOIN descriptions AS #{as}_titles
@@ -242,17 +245,18 @@ class Memo < ApplicationRecord
                          AND #{as}_calendary_titles.describable_type = 'Calendary'
                          AND #{as}_calendary_titles.type = 'Appellation'
                          #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}
-             LEFT OUTER JOIN memories AS #{as}_memories
-                          ON #{as}_memories.id = #{as}_events.memory_id"
+             LEFT OUTER JOIN short_names AS #{as}_short_names
+                          ON #{as}_short_names.memory_id = #{as}_events.memory_id
+                         #{lang_wheres&.[](3)} #{alph_wheres&.[](3)}"
 
-      selector << "#{as}_memories.short_name || ' [' ||
+      selector << "#{as}_short_names.text || ' [' ||
          COALESCE(#{as}_event_titles.text, '') || ' (' ||
          #{as}_events.happened_at || ')]: ' ||
          COALESCE(#{as}_titles.text, '') || '[' ||
          COALESCE(#{as}_calendary_titles.text, '') || ' (' ||
          memoes.year_date || ')]' AS _value"
 
-      joins(joi).select(selector).group(:id, "#{as}_memories.short_name", "#{as}_events.happened_at", "#{as}_event_titles.text", "#{as}_titles.text", "#{as}_calendary_titles.text", "memoes.year_date")
+      joins(joi).select(selector).group(:id, "#{as}_short_names.text", "#{as}_events.happened_at", "#{as}_event_titles.text", "#{as}_titles.text", "#{as}_calendary_titles.text", "memoes.year_date")
    end
 
    scope :with_event, -> do
@@ -545,37 +549,43 @@ class Memo < ApplicationRecord
 
       [
         "memo_event_memories.id AS _memory_id",
-        "memo_event_memories.short_name AS _memory_name",
-        "event_kind_titles.text || ' (' || memo_events.happened_at || ')' AS _event_short_title"
+        "#{this}_short_names.text AS _memory_name",
+        "event_kind_titles.text || ' (' || #{this}_memo_events.happened_at || ')' AS _event_short_title"
       ].reduce(selector) { |s, v| s << v }
 
       if language_codes.any?
          lang_wheres = [
             "AND event_kind_titles.language_code IN ('#{language_codes.join("', '")}')",
+            "AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}')",
          ]
       end
 
       if alphabeth_codes.any?
          alph_wheres = [
             "AND event_kind_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
          ]
       end
 
-      join = "LEFT OUTER JOIN events AS memo_events
-                           ON memoes.event_id = memo_events.id
+      join = "LEFT OUTER JOIN events AS #{this}_memo_events
+                           ON memoes.event_id = #{this}_memo_events.id
                          JOIN memories AS memo_event_memories
-                           ON memo_events.memory_id = memo_event_memories.id
+                           ON #{this}_memo_events.memory_id = memo_event_memories.id
               LEFT OUTER JOIN subjects AS event_kinds
                            ON event_kinds.kind_code = 'EventKind'
-                          AND event_kinds.key = memo_events.kind_code
+                          AND event_kinds.key = #{this}_memo_events.kind_code
               LEFT OUTER JOIN descriptions AS event_kind_titles
                            ON event_kind_titles.describable_id = event_kinds.id
                           AND event_kind_titles.describable_type = 'Subject'
                           AND event_kind_titles.type = 'Appellation'
-                              #{lang_wheres&.last} #{alph_wheres&.last}"
+                              #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
+              LEFT OUTER JOIN short_names AS #{this}_short_names
+                           ON #{this}_short_names.memory_id = #{this}_memo_events.memory_id
+                              #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}"
 
       joins(join).select(selector).group(:id, 'memo_event_memories.id',
-                                              'memo_events.happened_at',
+                                              "#{this}_memo_events.happened_at",
+                                              "#{this}_short_names.text",
                                               'event_kind_titles.text')
    end
 

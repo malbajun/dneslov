@@ -16,19 +16,19 @@
          | roundel_path       | features/fixtures/400x400-transparent.png  |
       * єствує памѧть сꙛ даными:
          | id                 | 101                                        |
-         | short_name         | Памѧтна 1                                  |
+         | short_name         | Памѧтна Ѫ                                  |
          | title              | Титуло                                     |
          | slug               | слуг                                       |
       * єствує личинка сѫ даными:
          | id                 | 200004                                     |
          | uid                | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f056       |
-         | roundelable_name   | Памѧтна 1                                  |
+         | roundelable_name   | Памѧтна Ѫ                                  |
          | roundel_path       | features/fixtures/401x401-yellow.bmp       |
-      * єствує сꙛбытие "Сꙛбытко" сꙛ озом "200202" ѫ памѧти "Памѧтна 1"
+      * єствує сꙛбытие "Сꙛбытко" сꙛ озом "200202" ѫ памѧти "Памѧтна Ѫ"
       * єствує личинка сѫ даными:
          | id                 | 200003                                     |
          | uid                | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055       |
-         | roundelable_name   | Памѧтна 1#200202                           |
+         | roundelable_name   | Памѧтна Ѫ#200202                           |
          | roundel_path       | features/fixtures/500x500-blue.webp        |
 
    @get @collection
@@ -58,10 +58,10 @@
            roundelable_name: Памѧтно#200201
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f056
            url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f056.webp"
-           roundelable_name: Памѧтна 1
+           roundelable_name: Памѧтна Ѫ
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
            url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f055.webp"
-           roundelable_name: Памѧтна 1#200202
+           roundelable_name: Памѧтна Ѫ#200202
          """
       А добѫдꙛ охватъ "0-9/4"
 
@@ -74,10 +74,10 @@
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f056
            url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f056.webp"
-           roundelable_name: Памѧтна 1
+           roundelable_name: Памѧтна Ѫ
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
            url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f055.webp"
-           roundelable_name: Памѧтна 1#200202
+           roundelable_name: Памѧтна Ѫ#200202
          """
       А добѫдꙛ охватъ "0-9/2"
 
@@ -126,7 +126,7 @@
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
            url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f055.webp"
-           roundelable_name: Памѧтна 1#200202
+           roundelable_name: Памѧтна Ѫ#200202
          """
       А добѫдꙛ охватъ "0-9/1"
 
@@ -152,10 +152,10 @@
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f056
            url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f056.webp"
-           roundelable_name: Памѧтна 1
+           roundelable_name: Памѧтна Ѫ
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f055
            url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f055.webp"
-           roundelable_name: Памѧтна 1#200202
+           roundelable_name: Памѧтна Ѫ#200202
          """
       А добѫдꙛ охватъ "2-3/4"
 
@@ -267,16 +267,16 @@
       Если запытаю одсланје личинке в изнаходь "/api/v1/roundels/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json" сꙛ даными:
          | uid                | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f060 |
          | roundel_path       | features/fixtures/600x600-cyan.png   |
-         | roundelable_name   | Памѧтна 1#200202                     |
+         | roundelable_name   | Памѧтна Ѫ#200202                     |
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f060
          url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f060.webp"
-         roundelable_name: Памѧтна 1#200202
+         roundelable_name: Памѧтна Ѫ#200202
          event_id: 200202
-         memory_short_name: Памѧтна 1
+         memory_short_name: Памѧтна Ѫ
          """
       Если запытаю добыванје из изнахоѕи "/api/v1/roundels/6b9e05cf-aabc-4dc3-97f7-4abd70d6f060.json"
       То добѫдꙛ кодъ поврата "200"
@@ -285,9 +285,9 @@
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f060
          url: "/roundels/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f060.webp"
-         roundelable_name: Памѧтна 1#200202
+         roundelable_name: Памѧтна Ѫ#200202
          event_id: 200202
-         memory_short_name: Памѧтна 1
+         memory_short_name: Памѧтна Ѫ
          """
       Если запытаю добыванје из изнахоѕи "/api/v1/roundels/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
       То добѫдꙛ кодъ поврата "404"

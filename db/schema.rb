@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_31_190037) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_02_144732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -252,7 +252,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_190037) do
   end
 
   create_table "memories", id: :serial, force: :cascade do |t|
-    t.string "short_name"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "quantity"
@@ -263,7 +262,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_190037) do
     t.index ["base_year"], name: "index_memories_on_base_year"
     t.index ["council"], name: "index_memories_on_council"
     t.index ["kind"], name: "index_memories_on_kind"
-    t.index ["short_name"], name: "index_memories_on_short_name", unique: true
     t.index ["type"], name: "index_memories_on_type"
   end
 
@@ -484,6 +482,20 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_190037) do
     t.index ["type"], name: "index_services_on_type"
   end
 
+  create_table "short_names", force: :cascade do |t|
+    t.string "text", null: false
+    t.string "language_code", null: false
+    t.string "alphabeth_code", null: false
+    t.bigint "memory_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["alphabeth_code"], name: "index_short_names_on_alphabeth_code"
+    t.index ["language_code"], name: "index_short_names_on_language_code"
+    t.index ["memory_id"], name: "index_short_names_on_memory_id"
+    t.index ["text", "alphabeth_code"], name: "index_short_names_on_text_alphabeth_code", unique: true
+    t.index ["text"], name: "index_short_names_on_text"
+  end
+
   create_table "slugs", id: :serial, force: :cascade do |t|
     t.string "text", null: false
     t.string "sluggable_type"
@@ -569,6 +581,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_31_190037) do
   add_foreign_key "memory_names", "nomina", on_delete: :cascade
   add_foreign_key "service_scripta", "scripta", on_delete: :cascade
   add_foreign_key "service_scripta", "services", on_delete: :cascade
+  add_foreign_key "short_names", "memories"
   add_foreign_key "user_names", "nomina", on_delete: :cascade
   add_foreign_key "user_names", "users", on_delete: :cascade
 end
