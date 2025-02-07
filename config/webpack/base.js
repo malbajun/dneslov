@@ -4,6 +4,7 @@ const { join, normalize } = require('path')
 const webpack = require('webpack')
 const PROD = global.env === 'production' || global.env === 'staging'
 const DEBUG = !PROD
+const cdn_host = global.env === 'production' ? "https://cdn.dneslov.org/" : "/"
 
 global.rootpath = normalize(join(__dirname, '../../'))
 
@@ -54,6 +55,7 @@ const customConfig = {
                   loader: "sass-loader",
                   options: {
                      implementation: require("sass"),
+                     additionalData: '$cdn_host: "' + cdn_host + '";',
                   },
                },
             ],
