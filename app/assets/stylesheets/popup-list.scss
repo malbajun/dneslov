@@ -1,0 +1,38 @@
+html .col.input-field {
+   .popup-list {
+      display: block;
+      position: absolute;
+      //transition: all .3s;
+      transition-property: opacity, transform;
+      transition-delay: 0.3s;
+      transition-duration: 0.1s;
+      z-index: 1000;
+
+      ul {
+         min-height: 3rem;
+         //max-height: 30rem;
+         max-height: 6rem;
+         overflow: auto;
+
+         li {
+            transition: background-color 0.5s;
+            transition: opacity 0.5s;
+            &:hover {
+               //background-color:
+               opacity: 0.9;
+
+            }
+         }
+      }
+
+      &:has(> ul:empty) {
+         display: none;
+      }
+   }
+
+   input:not(:focus) ~ .popup-list {
+     // opacity: 0;
+      transform: scaleY(0);
+      //pointer-events: none;
+   }
+}

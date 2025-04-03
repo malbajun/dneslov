@@ -1,7 +1,6 @@
 import { Component } from 'react'
 import PropTypes from 'prop-types'
 import { mixin, flow } from 'lodash-decorators'
-import { Autocomplete } from 'materialize-css'
 import axios from 'axios'
 import { merge } from 'merge-anything'
 
@@ -11,6 +10,7 @@ import Validation from 'Validation'
 import Subscribed from 'mixins/Subscribed'
 import ValueToObject from 'mixins/ValueToObject'
 import RepathTo from 'mixins/RepathTo'
+import PopupList from 'PopupList'
 
 @mixin(Subscribed)
 @mixin(Validation)
@@ -18,6 +18,7 @@ import RepathTo from 'mixins/RepathTo'
 @mixin(RepathTo)
 export default class DynamicField extends Component {
    static defaultProps = {
+      id: null,
       pathname: null,
       key_name: null,
       value_name: null,
@@ -53,24 +54,79 @@ export default class DynamicField extends Component {
       validations: PropTypes.object.isRequired,
    }
 
-   data = {list: {}, total: 0}
-   state = {start: this.props.begin, end: this.props.end}
+   // base on data, and value
+   static generatedMatchList(dataIn, valueIn, permutationLimitCount = 5) {
+      console.debug("[generatedMatchList] <<< dataIn:", dataIn, "valueIn:", valueIn, "permutationLimitCount:", permutationLimitCount)
+
+      let value = valueIn || "", rex, re, matchList, m, sz, tx, tokens
+
+      if (permutationLimitCount) {
+         tokens = value.split(/\s+/).compact().slice(0, 5)
+         rex = "(?:" + tokens.permutation().map(tokens => {
+            return "(?:^|\\s)" + tokens.join(".*\\s")
+         }).join("|") + ")"
+         re = new RegExp(rex, "i")
+      } else {
+         re = new RegExp(value.escapeRegExp())
+      }
+
+      matchList = dataIn.list.reduce((a, x) => {
+         if (m = x.value.match(re)) {
+            return a.concat([{text: x.value, match: m, value: x.key}])
+         } else {
+            return a
+         }
+      }, []).sort((a, b) => {
+         sz = a.match.size < b.match.size ? -1 : a.match.size > b.match.size ? 1 : 0
+         tx = a.text.localeCompare(b.text)
+
+         return sz == 0 ? tx : sz
+      })
+
+      console.debug("[generatedMatchList] >>>", matchList)
+      return matchList
+   }
+
+//   data = {list: [{value: this.props.humanized_value, key: this.props.value}], total: 1}
+//   state = {
+//      start: this.props.begin,
+ //     end: this.props.end,
+//      matchList: DynamicField.generatedMatchList(this.data, this.props.humanized_value, false),
+//   }
+
+ 
+   //data = {list: [], total: 0}
+   state = {
+      start: this.props.begin,
+      end: this.props.end,
+      matchList: [],
+      data: {list: [], total: 0}
+   }
 
    // system
    constructor(props) {
       super(props)
       console.debug("[componentDidMount:constructor] <<< ", props.value, props.default)
+      let value, data
 
       if (props.value) {
-         this.data = { list: { [props.humanized_value]: props.value }, total: 1 }
+         value = props.humanized_value
+         data = { list: [{ value: props.humanized_value, key: props.value }], total: 1 }
       } else if (props.default) {
-         this.data = { list: { [props.humanized_default]: props.default }, total: 1 }
+         value = props.humanized_default
+         data = { list: [{ value: props.humanized_default, key: props.default }], total: 1 }
 
-         if (this.props.default) {
-            this.updateTo(this.props.humanized_default, false)
-         }
+         //if (this.props.default) {
+         //   this.updateTo(this.props.humanized_default, false)
+         //}
       }
 
+      if (data) {
+         this.state.data = data
+         this.state.matchList = DynamicField.generatedMatchList(data, value, false)
+      }
+
+      this.onSelectFromList = this.onSelectFromList.bind(this)
       this.onKeyDown = this.onKeyDown.bind(this)
       this.onSelectionChange = this.onSelectionChange.bind(this)
       this.onSelectStart = this.onSelectStart.bind(this)
@@ -80,7 +136,6 @@ export default class DynamicField extends Component {
    componentDidMount() {
       //console.debug("[componentDidMount1]1 ** ", this, this.props, this.data, this.props.value)
       console.debug("[componentDidMount1]1 ** ", this.props.name, this, this.props.value)
-      this.setup()
 
       document.addEventListener('keydown', this.onKeyDown)
       document.addEventListener('selectionchange', this.onSelectionChange, { passive: true })
@@ -101,7 +156,6 @@ export default class DynamicField extends Component {
    @flow('componentWillUnmountBefore')
    componentWillUnmount() {
       console.debug("[componentWillUnmount] <<<")
-      this.destroy()
       this.$span.removeEventListener('selectstart', this.onSelectStart)
       document.removeEventListener('selectionchange', this.onSelectionChange)
       document.removeEventListener('keypress', this.onKeyDown)
@@ -109,14 +163,11 @@ export default class DynamicField extends Component {
 
    componentDidUpdate() {
       console.debug("[componentDidUpdate] <<<")
-      if (this.$input) {
-         this.setup()
-         this.autoUpdate()
-      }
    }
 
    shouldComponentUpdate(nextProps, nextState) {
       return nextState.pendingRange || nextState.selectApplied ||
+             nextState.matchList != this.state.matchList ||
              this.props.value !== nextProps.value ||
              this.props.humanized_value !== nextProps.humanized_value
    }
@@ -129,30 +180,31 @@ export default class DynamicField extends Component {
       this.updateTo(humanized_value, false)
 
       console.debug("[onChange] ** analyzing:", this.triggered,
-         humanized_value, this.data, this.data && this.data.total,
-         this.data && Object.keys(this.data.list).length)
+         humanized_value, this.state.data, this.state.data && this.state.data.total,
+         this.state.data && Object.keys(this.state.data.list).length)
 
       if (!this.triggered || humanized_value &&
           (!humanized_value.includes(this.triggered) &&
            !this.triggered.includes(humanized_value) ||
-           this.data && (this.data.total > Object.keys(this.data.list).length &&
+           this.state.data && (this.state.data.total > Object.keys(this.state.data.list).length &&
             humanized_value.includes(this.triggered) ||
             this.triggered.includes(humanized_value)))) {
          this.getDataFor(humanized_value)
       }
    }
 
-   onSelectFromList(humanized_value, e) {
-      console.log("[onSelectFromList] * fix to:", humanized_value)
+   onSelectFromList(humanized_value, _value) {
+      console.debug("[onSelectFromList] <<<:", humanized_value, _value)
+
       this.updateTo(humanized_value)
    }
 
    onKeyDown(e) {
-      if (e.key === "Enter" && e.target == this.$input) {
-         console.log("[onKeyDown] * fix to", this.$input.value)
+      if (e.key === "Enter" && e.target == this.$dropdown) {
+         console.log("[onKeyDown] * fix to", this.$dropdown.value)
          e.preventDefault()
-         if (this.data.list[this.$input.value]) {
-            this.updateTo(this.$input.value)
+         if (this.state.data.list[this.$dropdown.value]) {
+            this.updateTo(this.$dropdown.value)
          }
       }
    }
@@ -186,50 +238,32 @@ export default class DynamicField extends Component {
    }
 
    //actions
-   setup() {
-      if (this.$input) {
-         this.input = Autocomplete.init(this.$input, {
-            data: {},
-            limit: 20,
-            minLength: 1,
-            onAutocomplete: this.onSelectFromList.bind(this)
-         })
-      }
-   }
-
-   destroy() {
-      if (this.input) {
-         this.input.destroy()
-      }
-
-      this.input = false
-   }
-
-   //actions
-   autoUpdate() {
-      console.log("[autoUpdate] * this.input:", this.input)
-      let list = Object.keys(this.data.list).reduce((h, x) => { h[x] = null; return h }, {})
-
-      console.debug("[autoUpdate] ** list:", list)
-      this.input.updateData(list)
-   }
-
    updateTo(humanizedValue, autofix = true) {
       console.log("[updateTo] <<< humanizedValue:", humanizedValue, "autofix:", autofix)
-      let ce, detail, valueDetail = {}, value
+      let ce, detail, valueDetail = {}, value, data, permutationLimitCount
 
-      if (autofix || this.data.total == 1) {
-         value = this.data.list[humanizedValue]
+      if (autofix || this.state.data.total == 1) {
+         value = this.state.data.list.find((r) => {
+            return humanizedValue == r.value
+         })?.key
       }
 
       if (value) {
          valueDetail = this.valueToObject(this.props.name, value)
+         data = {list: [{value: humanizedValue, key: value}], total: 1}
+         permutationLimitCount = false
+      } else {
+         data = this.state.data
+         permutationLimitCount = 5
+      }
+
+      if (data) {
+         this.setState({matchList: DynamicField.generatedMatchList(data, humanizedValue, permutationLimitCount)})
       }
 
       detail = merge({}, this.valueToObject(this.props.humanized_name, humanizedValue), valueDetail)
 
-      console.debug("[updateTo] ** detail:", detail, "valueDetail:", valueDetail, "huName: ", this.props.humanized_name)
-
+      console.debug("[updateTo] ** value:", value, "detail:", detail, "valueDetail:", valueDetail, "huName: ", this.props.humanized_name)
       ce = new CustomEvent('dneslov-update-path', merge({}, { detail: { value: detail, path: this.props.name }}))
       document.dispatchEvent(ce)
    }
@@ -285,30 +319,28 @@ export default class DynamicField extends Component {
 
       var dynamic_data = response.data
 
-      this.storeDynamicData(dynamic_data)
+      //this.storeDynamicData(dynamic_data)
 
       console.log("[onLoadSuccess] *", dynamic_data, "for: ",  this.triggered, "with response:", response)
 
-      if (this.$input) {
-         console.log("[onLoadSuccess] * update autocomplete for", this.props.humanized_value)
-         this.autoUpdate()
-         this.input.open()
-         this.updateTo(this.props.humanized_value, false)
-      }
+      this.setState({
+         matchList: DynamicField.generatedMatchList(dynamic_data, this.props.humanized_value),
+         data: dynamic_data
+      })
    }
 
-   storeDynamicData(dynamic_data) {
-      console.debug("[storeDynamicData] <<<", dynamic_data)
-      this.data = {
-         total: dynamic_data.total,
-         list: dynamic_data.list.reduce((h, x) => {
-            h[x[this.props.key_name]] = x[this.props.value_name]
-            return h
-         }, {}),
-      }
-      console.log("[storeDynamicData] * after store", this.data)
-   }
-
+//   storeDynamicData(dynamic_data) {
+//      console.debug("[storeDynamicData] <<<", dynamic_data)
+//      this.data = {
+//         total: dynamic_data.total,
+//         list: dynamic_data.list.reduce((h, x) => {
+//            h[x[this.props.key_name]] = x[this.props.value_name]
+//            return h
+//         }, {}),
+//      }
+//      console.log("[storeDynamicData] * after store", this.data)
+//   }
+//
    getElementIndex(el) {
       return Array.prototype.indexOf.call(el.parentNode.children, el)
    }
@@ -411,43 +443,51 @@ export default class DynamicField extends Component {
    // render
    render() {
       console.log("[render] * props:", this.props, "state: ", this.state)
-      console.debug("[componentDidMount1]render ** ", this.getErrorText(this.props.value))
 
       return (
          <div
-            ref={e => this.$span = e}
-            className={this.className()}>
-            {this.props.value &&
-               <div
-                  className="chip">
-                  <span
-                     className={this.spanClassName()}>
-                     {this.spanValue()}</span>
-                  <i
-                     className='material-icons unfix'
-                     onClick={this.onChipAct.bind(this)}>
-                     close</i>
-               {this.isRangeEnabled() && this.state.pendingRange &&
-                  <a
-                     style={this.getApplierPositionCss()}
-                     onClick={() => {this.onApplyRange()}}
-                     className="popup btn-floating btn-small waves-effect waves-light terracota">
-                     <i className="small material-icons">fingerprint</i></a>}
-               </div>}
-            {!this.props.value &&
-               <input
-                  type='text'
-                  className={"dynamic " + (this.getErrorText(this.props.value) && 'invalid')}
-                  ref={e => this.$input = e}
-                  key={'input-' + this.props.name}
-                  id={this.props.name}
-                  name={this.props.name}
-                  placeholder={this.props.placeholder}
-                  value={this.props.humanized_value || ''}
-                  onChange={this.onChange.bind(this)} />}
-            <label
-               className='active'
-               htmlFor={this.props.name}>
-               {this.props.title}
-               <ErrorSpan
-                  error={this.getErrorText(this.props.value)} /></label></div>)}}
+            ref={e => this.$dropspan = e}>
+            <div
+               ref={e => this.$span = e}
+               data-target={'dyna-' + this.props.name}
+               className={this.className() + " dropdown-trigger"}>
+               {this.props.value &&
+                  <div
+                     className="chip">
+                     <span
+                        className={this.spanClassName()}>
+                        {this.spanValue()}</span>
+                     <i
+                        className='material-icons unfix'
+                        onClick={this.onChipAct.bind(this)}>
+                        close</i>
+                  {this.isRangeEnabled() && this.state.pendingRange &&
+                     <a
+                        style={this.getApplierPositionCss()}
+                        onClick={() => {this.onApplyRange()}}
+                        className="popup btn-floating btn-small waves-effect waves-light terracota">
+                        <i className="small material-icons">fingerprint</i></a>}
+                  </div>}
+               {!this.props.value &&
+                  [<input
+                     type='text'
+                     className={"'dynamic " + (this.getErrorText(this.props.value) && 'invalid')}
+                     key={'input-' + PopupList.elementIdFromName(this.props.name)}
+                     id={'input-' + PopupList.elementIdFromName(this.props.name)}
+                     name={this.props.name}
+                     placeholder={this.props.placeholder}
+                     value={this.props.humanized_value || ''}
+                     onChange={this.onChange.bind(this)} />,
+                  <PopupList
+                     name={this.props.name}
+                     list={this.state.matchList}
+                     onSelectItem={this.onSelectFromList} />]
+               }
+               <label
+                  className='active'
+                  htmlFor={this.props.name}>
+                  {this.props.title}
+                  <ErrorSpan
+                     error={this.getErrorText(this.props.value)} /></label></div></div>)
+   }
+}

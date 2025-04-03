@@ -1,0 +1,5 @@
+.dropdown-content {
+   &:empty {
+      display: none;
+   }
+}
