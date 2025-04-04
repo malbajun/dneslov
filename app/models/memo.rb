@@ -20,6 +20,7 @@ class Memo < ApplicationRecord
    include WithTitles
    include WithLinks
    include DistinctBy
+   include ByToken
 
    DAYS = %w(нд пн вт ср чт пт сб)
    DAYSR = DAYS.dup.reverse
@@ -90,46 +91,61 @@ class Memo < ApplicationRecord
    scope :with_value, -> context do
       language_codes = [context[:text_languages]].flatten.compact
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
-      join_name = table.table_alias || table.name
+      this = table.table_alias || table.name
       selector = self.select_values.dup
 
       if language_codes.any?
          lang_wheres =
             ["AND titles.language_code IN ('#{language_codes.join("', '")}')",
-             "AND event_titles.language_code IN ('#{language_codes.join("', '")}')"]
+             "AND event_titles.language_code IN ('#{language_codes.join("', '")}')",
+             "AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}')"]
       end
 
       if alphabeth_codes.any?
          alph_wheres =
             ["AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
-             "AND event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+             "AND event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+             "AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
       end
 
       join = "LEFT OUTER JOIN descriptions AS titles
                            ON titles.id IS NOT NULL
-                          AND titles.describable_id = #{join_name}.id
+                          AND titles.describable_id = #{this}.id
                           AND titles.describable_type = 'Memo'
                           AND titles.type = 'Title'
                           #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
 
-              LEFT OUTER JOIN events AS memo_events
-                           ON memo_events.id = #{join_name}.event_id
+              LEFT OUTER JOIN events AS #{this}_events
+                           ON #{this}_events.id = #{this}.event_id
                          JOIN subjects AS event_kinds
-                           ON event_kinds.key = memo_events.kind_code
+                           ON event_kinds.key = #{this}_events.kind_code
                           AND event_kinds.kind_code = 'EventKind'
                          JOIN descriptions AS event_titles
                            ON event_titles.id IS NOT NULL
-                          AND (event_titles.describable_id = memo_events.id
+                          AND (event_titles.describable_id = #{this}_events.id
                           AND event_titles.describable_type = 'Event'
                           AND event_titles.type = 'Title'
                            OR event_titles.describable_id = event_kinds.id
                           AND event_titles.describable_type = 'Subject'
                           AND event_titles.type = 'Appellation')
-                          #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}"
+                          #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
+             LEFT OUTER JOIN short_names AS #{this}_short_names
+                          ON #{this}_short_names.memory_id = #{this}_events.memory_id
+                         #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}"
 
-      selector << "memoes.year_date || ' [' || memo_events.happened_at || ' - ' || COALESCE(event_titles.text, '') || ' - ' || COALESCE(titles.text, '') || ']' AS _value"
 
-      joins(join).select(selector).group(:id, "titles.text", "memo_events.happened_at", "event_titles.text")
+      selector << "memoes.year_date || ' [' ||
+         #{this}_events.happened_at || ' - ' ||
+         COALESCE(event_titles.text, '') || ' - ' ||
+         COALESCE(titles.text, '') || ' (' ||
+         #{this}_short_names.text || ')]' AS _value"
+
+      joins(join).select(selector).group(
+         "#{this}_short_names.text",
+         :id,
+         "titles.text",
+         "#{this}_events.happened_at",
+         "event_titles.text")
    end
 
    scope :with_slug_text, -> do
@@ -160,23 +176,6 @@ class Memo < ApplicationRecord
          where( "memoes.year_date ~* ?", "\\m#{text}.*" ))))))
    end
 
-   scope :by_tokens, -> string_in do
-      return self if string_in.blank?
-      # TODO fix the correctness of the query
-      klass = self.model_name.name.constantize
-      or_rel_tokens = string_in.split(/\//).map do |or_token|
-         # OR operation
-         or_token.strip.split(/\s+/).reduce(nil) do |rel, and_token|
-            # AND operation
-            and_rel = klass.by_token(and_token)
-            rel && rel.merge(and_rel) || and_rel
-         end
-      end
-
-      or_rel = or_rel_tokens.reduce { |sum_rel, rel| sum_rel.or(rel) }
-      self.merge(or_rel).distinct
-   end
-
    scope :by_event_id, -> (event_id) do
       where(event_id: event_id)
    end
@@ -185,16 +184,11 @@ class Memo < ApplicationRecord
       where(calendary_id: calendary_id)
    end
 
-   scope :by_memory_id, -> (memory_id) do
-      joins(:event).merge(Event.by_memory_id(memory_id))
-   end
-
    scope :notice, -> { joins(:event).merge(Event.notice) }
 
    singleton_class.send(:alias_method, :t, :by_token)
    singleton_class.send(:alias_method, :q, :by_tokens)
    singleton_class.send(:alias_method, :d, :by_date)
-   singleton_class.send(:alias_method, :mid, :by_memory_id)
    singleton_class.send(:alias_method, :c, :in_calendaries)
 
    scope :with_value_memoried, -> context do 
@@ -596,14 +590,14 @@ class Memo < ApplicationRecord
    accepts_nested_attributes_for :memo_orders, reject_if: :all_blank, allow_destroy: true
 
    validates_presence_of :calendary, :event
-   validates_presence_of :year_date, unless: :is_counsil
    validates :year_date, format: { with: /\A((0[1-9]|[1-2][0-9]|3[0-1])\.(0[1-9]|1[0-2])([%<>~][0-6])?|[+-]\d{1,3})\z/ }, if: :year_date
    validate :bind_kind_code_present, :same_calendaries, :same_memories, if: :bond_to_id
 
    before_validation :fix_year_date
+   before_validation :fix_add_date
    before_create -> { self.bind_kind_code ||= 'несвязаный' }
 
-   def is_counsil
+   def is_counsil?
       bind_kind_code == 'соборный'
    end
 
@@ -658,8 +652,10 @@ class Memo < ApplicationRecord
    end
 
    def same_memories
-      if bond_to.memory.id != memory.id
-         errors.add(:bond_to_id, "'s memory must be the same as self memory")
+      if is_counsil? && bond_to.memory.id == memory.id
+         errors.add(:bond_to_id, "'s memory must not be the same as self memory for the counsil bind type")
+      elsif !is_counsil? && bond_to.memory.id != memory.id
+         errors.add(:bond_to_id, "'s memory must be the same as self memory for non counsil bind type")
       end
    end
 
@@ -667,6 +663,10 @@ class Memo < ApplicationRecord
       if bind_kind_code.blank?
          errors.add(:bind_kind_code, 'must be present when memo is bond to')
       end
+   end
+
+   def fix_add_date
+      self.add_date ||= Time.zone.now.strftime('%d.%m.%Y %H:%M:%S')
    end
 
    def fix_year_date

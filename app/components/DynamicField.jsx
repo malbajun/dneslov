@@ -30,6 +30,7 @@ export default class DynamicField extends Component {
       humanized_default: undefined, // default value name
       begin: null,
       end: null,
+      queryKey: 't',
       selectable: false,
       wrapperClassName: null,
       title: null,
@@ -288,7 +289,7 @@ export default class DynamicField extends Component {
 
    getDataFor(text) {
       console.debug("[getDataFor] <<<")
-      let data = merge(this.getContext(), { t: text })
+      let data = merge(this.getContext(), { [this.props.queryKey]: text })
 
       if (this.props.value_context) {
          Object.entries(this.getContext(this.props.value_context)).forEach(([key, value]) => {

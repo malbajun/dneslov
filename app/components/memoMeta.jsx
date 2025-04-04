@@ -49,6 +49,9 @@ export const memoMeta = {
       }
    },
    form: {
+      id: {
+         kind: 'hidden',
+      },
       calendary_id: {
          kind: 'dynamic',
          title: 'Календарь',
@@ -94,9 +97,6 @@ export const memoMeta = {
          title: 'Пора добавления',
          placeholder: 'Введи пору',
          display_scheme: '12-6-3-3',
-         validations: {
-            "Пора отсутствует":matchEmptyObject,
-         }
       },
       year_date: {
          kind: 'text',
@@ -108,7 +108,7 @@ export const memoMeta = {
          validations: {
             "Слишком длинное значение даты в году": /^.{8,}$/,
             "Годовая дата отсутствует": (value, context) => {
-               return !value && context.bind_kind_code != "соборный"
+               return false // !value && context.bind_kind_code != "соборный"
             },
             "В значении даты допустимы только цифры, точка, знаки отношения (%,>,<,~) или знаки + и -": /[^0-9+\.\-%<>~]/,
             "Знак отношения должен следовать за годичной датой": /^([0-9]+\.?|)[%<>~]/,
@@ -132,11 +132,11 @@ export const memoMeta = {
          subscribeTo: ['@bond_to_id', '@year_date'],
          validations: {
             'Пункт из списка должен быть выбран': matchEmptyObject,
-            'Вид привязки не должен иметь значения "Не привязаный" либо "Соборный" в случае, если привязка задана': (value, context) => {
-               return context.bond_to_id && value && value.match(/несвязаный|соборный/)
+            'Вид привязки не должен иметь значения "Не привязаный" в случае, если привязка задана': (value, context) => {
+               return context.bond_to_id && value && value.match(/несвязаный/)
             },
-            'Вид привязки должен иметь значения "Не привязаный" либо "Соборный" в случае, если привязка отсутствует': (value, context) => {
-               return !context.bond_to_id && value && !value.match(/несвязаный|соборный/)
+            'Вид привязки должен иметь значения "Не привязаный" в случае, если привязка отсутствует': (value, context) => {
+               return !context.bond_to_id && value && !value.match(/несвязаный/)
             },
          }
       },
@@ -150,10 +150,10 @@ export const memoMeta = {
          key_name: 'value',
          value_name: 'key',
          subscribeTo: '@bind_kind_code',
-         visible_if: { bind_kind_code: ["навечерие", "предпразднество", "попразднество"] },
+         queryKey: 'q',
+         visible_if: { bind_kind_code: ["навечерие", "предпразднество", "попразднество", "соборный"] },
          context_names: {
            'calendary_id': true,
-           'memory_id': true,
          },
          validations: {
             'Привязаная дата не должна соответствовать текущей дате': (value, context) => {
@@ -161,6 +161,9 @@ export const memoMeta = {
                    match = yearDateIn.match(/^[0-9\.]+/),
                    yearDate = match && match[0]
                return value && yearDate == context.year_date && context.bind_kind_code != 'соборный'
+            },
+            'Привязаный помин не должен соответствовать текущему помину для соборного типа': (value, context) => {
+               return value && id && value == id && context.bind_kind_code == 'соборный'
             }
          },
       },
@@ -204,7 +207,10 @@ export const memoMeta = {
          validations: {
             "Языки в заголовках не могут совпадать": matchLanguages,
             "Азбуки в заголовках не могут совпадать": matchAlphabeths,
-            'Минимум один заголовок должен быть задан':  matchEmptyObject
+            'Минимум один заголовок должен быть задан для несоборного помина': (value, context) => {
+               return value.isBlank() && context.bind_kind_code != 'соборный'
+            }
+
          },
          meta: {
             id: {
