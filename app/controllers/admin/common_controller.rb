@@ -1,5 +1,4 @@
 class Admin::CommonController < ApplicationController
-   include ::Pundit::Authorization
    include Tiun::Base
 
    before_action :set_query, only: %i(index)

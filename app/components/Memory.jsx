@@ -3,6 +3,7 @@ import { mixin } from 'lodash-decorators'
 import PropTypes from 'prop-types'
 
 import Carousel from 'Carousel'
+import MemorySpans from 'MemorySpans'
 import EventSpans from 'EventSpans'
 import Chip from 'Chip'
 import Name from 'Name'
@@ -10,7 +11,7 @@ import Description from 'Description'
 import GetSlugColor from 'mixins/GetSlugColor'
 import Markdown from 'Markdown'
 import MetaTags from 'react-meta-tags'
-import { getUrlsFrom } from 'support'
+import { getUrlsFrom, parseCalendariesString } from 'support'
 
 @mixin(GetSlugColor)
 export default class Memory extends Component {
@@ -62,7 +63,9 @@ export default class Memory extends Component {
             links: Memory.getLinks(props),
             iconLinks: Memory.getIconLinks(props),
             scripta: Memory.selectScripta(props),
-            happenedAt: Memory.getHappenedAt(props)
+            happenedAt: Memory.getHappenedAt(props),
+            childrenMemoes: Memory.collectedChildren(props),
+            childrenTotal: props.children_total
          }
       }
 
@@ -183,6 +186,23 @@ export default class Memory extends Component {
       }, null)
    }
 
+   static collectedChildren(props) {
+      let hash = props.memoes.reduce((res, memo) => {
+         return memo.children.reduce((res, child) => {
+            if (res[child.slug]) {
+               res[child.slug] = [res[child.slug]].flat()
+               res[child.slug] << child
+            } else {
+               res[child.slug] = child
+            }
+
+            return res
+         }, res)
+      }, {})
+
+      return Object.values(hash)
+   }
+
    // system
    state = {}
 
@@ -222,6 +242,23 @@ export default class Memory extends Component {
       super(props)
 
       this.onImageClick = this.onImageClick.bind(this)
+      this.onFetchNext = this.onFetchNext.bind(this)
+      this.onMemoryLoadRequest = this.onMemoryLoadRequest.bind(this)
+   }
+
+   onFetchNext() {
+      if (! this.isNextRequesting) {
+         console.log("[onFetchNext] * getting...")
+         this.isNextRequesting = true
+         this.submit(merge(this.state.query, {p: this.state.query.p + 1}))
+      }
+   }
+
+   onMemoryLoadRequest(slug) {
+      let url = '/' + slug + '.json',
+          data = { c: this.state.query.c, d: this.state.query.d }
+
+      this.pushSubmit(data, url)
    }
 
    getScriptumTitle(scriptum) {
@@ -254,6 +291,7 @@ export default class Memory extends Component {
       return this.props.image_url ? " x10 l9 m8 s7" : " s12"
    }
 
+   // event
    onImageClick(e) {
       let url = "/" + this.props.slug + "/gallery"
 
@@ -329,6 +367,14 @@ export default class Memory extends Component {
                      <img
                         src={this.props.image_url}
                         onClick={this.onImageClick} /></a></div>}</div>,
+         <MemorySpans
+            memories={this.state.childrenMemoes}
+            totalMemories={this.state.childrenTotal}
+            calendariesCloud={[this.props.specifiedCalendarySlug]}
+            defaultCalendarySlug={this.state.defaultCalendarySlug}
+            hideIfBlank={true}
+            onLoadRequest={this.onMemoryLoadRequest}
+            onFetchNext={this.onFetchNext} />,
          <div className='row'>
             {this.props.bond_memories.length > 0 &&
                <div className='col s12'>

@@ -9,6 +9,7 @@ export default class MemorySpans extends Component {
       totalMemories: 0,
       calendariesCloud: null,
       defaultCalendarySlug: null,
+      hideIfBlank: null,
       onFetchNext: null,
       onLoadRequest: null,
    }
@@ -90,10 +91,11 @@ export default class MemorySpans extends Component {
                         roundelUrl={memory.roundel_url}
                         happenedAt={memory.happened_at}
                         orders={memory.orders}
-                        description={memory.description}
+                        orderTweet={memory.order_tweet}
+                        orderShortName={memory.order_short_name}
+                        description={memory.description || memory.note}
                         addDate={memory.add_date}
                         yearDate={memory.year_date}
-                        happenedAt={memory.happened_at}
                         bindKindCode={memory.bind_kind_code}
                         calendarySlug={memory.calendary_slug}
                         eventTitle={memory.event_title}
@@ -103,6 +105,6 @@ export default class MemorySpans extends Component {
                      total={this.props.totalMemories}
                      loadedTotal={this.props.memories.length}
                      fetchFunc={this.fetchNext.bind(this)} /></ul>}
-            {!this.isPresent() &&
+            {!this.isPresent() && !this.props.hideIfBlank &&
                <div className='card-panel'>
                   <p className='flow-text'>Ничегошеньки не нашлось</p></div>}</div>)}}

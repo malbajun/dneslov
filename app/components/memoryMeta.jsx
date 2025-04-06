@@ -354,27 +354,31 @@ export const memoryMeta = {
             },
          }
       },
-      descriptions: {
+      notes: {
          kind: 'collection',
-         title: 'Описания',
-         action: 'Добавь описание',
-         single: 'Описание',
-         placeholder: 'Введи описание',
-         filter: { type: "Description" },
          display_scheme: '12-12-12-12',
+         title: 'Заметки',
+         action: 'Добавь заметку',
+         textField: true,
+         source: "descriptions",
+         filter: { type: "Note" },
+         validations: {
+            "Языки в заметках не могут совпадать": matchLanguages,
+            "Азбуки в заметках не могут совпадать": matchAlphabeths,
+         },
          meta: {
             id: {
                kind: 'hidden',
             },
             text: {
                kind: 'tale',
-               title: 'Описание',
-               placeholder: 'Введи описание',
+               title: 'Заметка',
+               placeholder: 'Введи заметку',
                display_scheme: '12-12-12-12',
                subscribeTo: '@alphabeth_code',
                validations: {
-                  'Текст описания отсутствует': matchEmptyObject,
-                  'Описание содержит знаки вне перечня избранной азбуки': matchLetters,
+                  "Заметка отсутствует": matchEmptyObject,
+                  'Заметка содержит знаки вне перечня избранной азбуки': matchLetters,
                }
             },
             language_code: {
@@ -411,31 +415,27 @@ export const memoryMeta = {
             },
          }
       },
-      notes: {
+      descriptions: {
          kind: 'collection',
+         title: 'Описания',
+         action: 'Добавь описание',
+         single: 'Описание',
+         placeholder: 'Введи описание',
+         filter: { type: "Description" },
          display_scheme: '12-12-12-12',
-         title: 'Заметки',
-         action: 'Добавь заметку',
-         textField: true,
-         source: "descriptions",
-         filter: { type: "Note" },
-         validations: {
-            "Языки в заметках не могут совпадать": matchLanguages,
-            "Азбуки в заметках не могут совпадать": matchAlphabeths,
-         },
          meta: {
             id: {
                kind: 'hidden',
             },
             text: {
                kind: 'tale',
-               title: 'Заметка',
-               placeholder: 'Введи заметку',
+               title: 'Описание',
+               placeholder: 'Введи описание',
                display_scheme: '12-12-12-12',
                subscribeTo: '@alphabeth_code',
                validations: {
-                  "Заметка отсутствует": matchEmptyObject,
-                  'Заметка содержит знаки вне перечня избранной азбуки': matchLetters,
+                  'Текст описания отсутствует': matchEmptyObject,
+                  'Описание содержит знаки вне перечня избранной азбуки': matchLetters,
                }
             },
             language_code: {

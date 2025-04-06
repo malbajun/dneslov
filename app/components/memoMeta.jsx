@@ -163,7 +163,7 @@ export const memoMeta = {
                return value && yearDate == context.year_date && context.bind_kind_code != 'соборный'
             },
             'Привязаный помин не должен соответствовать текущему помину для соборного типа': (value, context) => {
-               return value && id && value == id && context.bind_kind_code == 'соборный'
+               return value && context.id && value == context.id && context.bind_kind_code == 'соборный'
             }
          },
       },

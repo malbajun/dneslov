@@ -25,6 +25,10 @@ class MemoriesController < ApplicationController
       end
    end
 
+   def action_name
+      @slug&.sluggable_type == "Calendary" ? "index" : super
+   end
+
    protected
 
    def show_memory
@@ -57,6 +61,10 @@ class MemoriesController < ApplicationController
             }.to_json(context)
          end
       end
+   end
+
+   def object
+      @memory
    end
 
    def is_html?

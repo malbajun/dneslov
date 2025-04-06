@@ -4,7 +4,7 @@ class Admin::MemoesController < Admin::CommonController
    has_scope :by_memory_id, only: %i(index all)
    has_scope :by_calendary_id, only: %i(index all)
    has_scope :t, only: %i(memoried)
-   has_scope :q, only: %i(all)
+   has_scope :q, only: %i(index all)
 
    def memoried
       all

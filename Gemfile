@@ -86,9 +86,6 @@ gem 'kaminari', '>= 1.1.1'
 ## authentication
 gem 'jwt'
 
-## authorization
-gem 'pundit'
-
 ## logging
 # gem 'rdoba', path: '/usr/local/home/majioa/git/rdoba'
 gem 'rdoba', '~> 0.9.4' # gem 'rdoba', codeberg: 'majioa/rdoba'
@@ -118,7 +115,7 @@ gem 'sprockets-rails'
 ## api
 #opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
 #gem 'tiun', path: ENV["HOME"] + '/git/tiun'
-gem 'tiun', codeberg: 'znamenica/tiun', ref: 'd140b16'
+gem 'tiun', codeberg: 'znamenica/tiun', ref: '5486099'
 
 # sitemap
 gem 'sitemap_generator'
