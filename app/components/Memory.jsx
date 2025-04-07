@@ -65,7 +65,7 @@ export default class Memory extends Component {
             scripta: Memory.selectScripta(props),
             happenedAt: Memory.getHappenedAt(props),
             childrenMemoes: Memory.collectedChildren(props),
-            childrenTotal: props.children_total
+            childrenTotal: Memory.collectedChildrenTotals(props) //props.children_total
          }
       }
 
@@ -203,6 +203,12 @@ export default class Memory extends Component {
       return Object.values(hash)
    }
 
+   static collectedChildrenTotals(props) {
+      return props.memoes.reduce((res, memo) => {
+         return res >= memo.children_total ? res : memo.children_total
+      }, 0)
+   }
+
    // system
    state = {}
 
@@ -242,23 +248,6 @@ export default class Memory extends Component {
       super(props)
 
       this.onImageClick = this.onImageClick.bind(this)
-      this.onFetchNext = this.onFetchNext.bind(this)
-      this.onMemoryLoadRequest = this.onMemoryLoadRequest.bind(this)
-   }
-
-   onFetchNext() {
-      if (! this.isNextRequesting) {
-         console.log("[onFetchNext] * getting...")
-         this.isNextRequesting = true
-         this.submit(merge(this.state.query, {p: this.state.query.p + 1}))
-      }
-   }
-
-   onMemoryLoadRequest(slug) {
-      let url = '/' + slug + '.json',
-          data = { c: this.state.query.c, d: this.state.query.d }
-
-      this.pushSubmit(data, url)
    }
 
    getScriptumTitle(scriptum) {
@@ -291,7 +280,6 @@ export default class Memory extends Component {
       return this.props.image_url ? " x10 l9 m8 s7" : " s12"
    }
 
-   // event
    onImageClick(e) {
       let url = "/" + this.props.slug + "/gallery"
 
@@ -370,11 +358,12 @@ export default class Memory extends Component {
          <MemorySpans
             memories={this.state.childrenMemoes}
             totalMemories={this.state.childrenTotal}
-            calendariesCloud={[this.props.specifiedCalendarySlug]}
+            calendariesCloud={this.props.selectedCalendaries}
             defaultCalendarySlug={this.state.defaultCalendarySlug}
+            bondMemoryId={this.props.id}
+            url={'/api/v0/memories/'+ this.props.id +'/content.json'}
             hideIfBlank={true}
-            onLoadRequest={this.onMemoryLoadRequest}
-            onFetchNext={this.onFetchNext} />,
+            manualFetch={true} />,
          <div className='row'>
             {this.props.bond_memories.length > 0 &&
                <div className='col s12'>

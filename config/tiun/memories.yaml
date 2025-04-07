@@ -1,5 +1,41 @@
 ---
 types:
+ - name: memory_span
+   model: Memory
+   version: 0.1
+   with:
+    - memoed
+   fields:
+    - name: id
+      kind: number
+      descriptions: :tiun.types.memory.id
+    - name: slug
+      kind: string
+      descriptions: :tiun.types.memory.slug
+    - name: order_short_name
+      kind: string
+      descriptions: :tiun.types.memory.order_short_name
+    - name: order_tweet
+      kind: string
+      descriptions: :tiun.types.memory.order_tweet
+    - name: roundel_url
+      kind: url
+      descriptions: :tiun.types.memory.roundel_url
+    - name: title
+      kind: string
+      descriptions: :tiun.types.memory.title
+    - name: note
+      kind: string
+      descriptions: :tiun.types.memory.note
+    - name: happened_at
+      kind: string
+      descriptions: :tiun.types.memory.happened_at
+    - name: base_year
+      kind: number
+      descriptions: :tiun.types.memory.base_year
+    - name: calendary_slugs
+      kind: string array
+      descriptions: :tiun.types.memory.calendary_slugs
  - name: short_memory
    model: Memory
    version: 0.1
@@ -156,7 +192,7 @@ resources:
       args:
        - name: uno
          kind: string
-         descriptions: :tiun.resources.memory.get.args.uid
+         descriptions: :tiun.resources.memory.get.args.uno
        - name: l
          kind: string
          alias: language
@@ -212,3 +248,31 @@ resources:
        - name: uno
          kind: string
          descriptions: :tiun.resources.memory.delete.uno
+ - name: memory.content
+   path: /api/v0/memories/:uno/content.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: memory_span page
+      descriptions: :tiun.resources.memory.index
+      auth: no
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.memory.index.args.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.memory.index.args.page
+       - name: uno
+         kind: string
+         skip: scope
+         descriptions: :tiun.resources.memory.index.args.uno
+       - name: calendary_slugs
+         kind: string
+         alias: c
+         descriptions: :tiun.resources.memory.index.args.calendary_slugs

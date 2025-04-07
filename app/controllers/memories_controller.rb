@@ -6,7 +6,6 @@ class MemoriesController < ApplicationController
    include CoreFeatures
 
    has_scope :q, only: %i(index show)
-   has_scope :q, only: %i(index show)
 
    # GET /memories,/,/index
    # GET /memories.js,/index.js

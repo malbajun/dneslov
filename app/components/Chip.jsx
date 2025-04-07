@@ -72,7 +72,7 @@ export default class Chip extends Component {
          parts = [this.props.children]
       }
 
-      if (!text.isBlank()) {
+      if (text && !text.isBlank()) {
          if (text.constructor.name == "Array") {
             partsIn = partsIn.concat(text)
          } else {
