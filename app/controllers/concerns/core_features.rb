@@ -143,6 +143,10 @@ module CoreFeatures
          end || raise if objects
    end
 
+   def model_name
+      "Memory"
+   end
+
    def set_memory
       @memorys ||= Memory.with_scripta(context)
                          .with_memoes(context)

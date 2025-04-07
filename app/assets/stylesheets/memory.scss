@@ -19,4 +19,35 @@ html {
         background-color: aliceblue;
       }
    }
+
+   .row .paginator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .loader {
+         width: 40px;
+         aspect-ratio: 1;
+         border-radius: 50%;
+         border: 8px solid #0000;
+         border-right-color: #dd3e4397;
+         position: relative;
+         animation: l24 1s infinite linear;
+      }
+      .loader:before, .loader:after {
+         content: "";
+         position: absolute;
+         inset: -8px;
+         border-radius: 50%;
+         border: inherit;
+         animation: inherit;
+         animation-duration: 2s;
+      }
+      .loader:after {
+         animation-duration: 4s;
+      }
+      @keyframes l24 {
+         100% {transform: rotate(1turn)}
+      }
+   }
 }

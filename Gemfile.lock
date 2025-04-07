@@ -74,8 +74,8 @@ GIT
 
 GIT
   remote: https://codeberg.org/znamenica/tiun.git
-  revision: d140b167e3b42f4b93d08f874fa499654f6c0888
-  ref: d140b16
+  revision: e634786c40a1b5ee9767dedb72d304023f4b3134
+  ref: e634786
   specs:
     tiun (0.0.2.1)
       activesupport (>= 4.1.0)
@@ -471,8 +471,6 @@ GEM
     public_suffix (5.0.3)
     puma (5.6.8)
       nio4r (~> 2.0)
-    pundit (2.3.1)
-      activesupport (>= 3.0.0)
     racc (1.7.3)
     rack-cache (1.14.0)
       rack (>= 0.4)
@@ -728,7 +726,6 @@ DEPENDENCIES
   pry-remote
   pry-stack_explorer (>= 0.6.1)
   puma (~> 5.6)
-  pundit
   rack!
   rack-cors
   rack-test!

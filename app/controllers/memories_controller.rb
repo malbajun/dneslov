@@ -6,7 +6,6 @@ class MemoriesController < ApplicationController
    include CoreFeatures
 
    has_scope :q, only: %i(index show)
-   has_scope :q, only: %i(index show)
 
    # GET /memories,/,/index
    # GET /memories.js,/index.js
@@ -23,6 +22,10 @@ class MemoriesController < ApplicationController
       when "Calendary"
          index_memories
       end
+   end
+
+   def action_name
+      @slug&.sluggable_type == "Calendary" ? "index" : super
    end
 
    protected
@@ -57,6 +60,10 @@ class MemoriesController < ApplicationController
             }.to_json(context)
          end
       end
+   end
+
+   def object
+      @memory
    end
 
    def is_html?

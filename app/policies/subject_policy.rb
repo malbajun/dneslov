@@ -1,1 +1,0 @@
-class SubjectPolicy < CommonPolicy ;end

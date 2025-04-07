@@ -3,11 +3,11 @@ Text.prototype.getElementIndex = function() {
 }
 
 Number.prototype.populateDownTo = function(number) {
-   let count = number - self,
+   let count = number - this,
        array = new Array()
 
    if (count < 0) {
-      for (let i = self; i >= number; i--) {
+      for (let i = this; i >= number; i--) {
          array.push(step)
       }
    }
@@ -16,16 +16,20 @@ Number.prototype.populateDownTo = function(number) {
 }
 
 Number.prototype.populateTo = function(number) {
-   let count = number - self,
+   let count = number - this,
        array = new Array()
 
    if (count > 0) {
-      for (let i = self; i <= number; i++) {
+      for (let i = this; i <= number; i++) {
          array.push(step)
       }
    }
 
    return array
+}
+
+String.prototype.escapeRegExp = function() {
+   return this.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
 }
 
 Date.at = function(milliseconds) {
@@ -80,8 +84,31 @@ Array.prototype.filterMap = function(func) {
    }, [[], 0])[0]
 }
 
+Array.prototype.permutation = function(numIn) {
+   let num = numIn,
+       base,
+       valueSet,
+       permutted = this.map((x, index) => {
+      num = num ? num - 1 : num
+
+      return [x, this.slice(0, index).concat(this.slice(index + 1, this.length)).permutation(num)]
+   }).reduce((res, value) => {
+      base = value.first()
+
+      if (value.last().isPresent()) {
+         valueSet = value.last().map((x) => [base].concat(x))
+      } else {
+         valueSet = [[base]]
+      }
+
+      return res.concat(valueSet)
+   }, [])
+
+   return permutted
+}
+
 Array.prototype.compact = function() {
-   return this.filter(r => r)
+   return this.filter(r => r ? r.isPresent() : null)
 }
 
 Array.prototype.intersectTo = function(array) {
@@ -123,6 +150,16 @@ String.prototype.populateTo = function(string) {
    }
 
    return res
+}
+
+String.prototype.isBlank = function(string) {
+   return !this.isPresent()
+}
+
+String.prototype.isPresent = function(string) {
+   const re = /^\s*$/
+
+   return !this.match(re)
 }
 
 Array.prototype.all = function (func) {

@@ -11,6 +11,8 @@ export default class MemorySpan extends Component {
       roundelUrl: null,
       happenedAt: null,
       orders: {},
+      orderTweet: null,
+      orderShortName: null,
       description: null,
       title: null,
       addDate: null,
@@ -79,6 +81,16 @@ export default class MemorySpan extends Component {
       return "/" + this.props.slug
    }
 
+   orders() {
+      if (this.props.orderTweet) {
+         return [[this.props.orderTweet, this.props.orderShortName]]
+      } else {
+         return Object.keys(this.props.orders).reduce((res, key) => {
+            return res.concat([[this.props.orders[key], key]])
+         }, [])
+      }
+   }
+
    render() {
       console.log("[render] > props:", this.props, "state:", this.state)
 
@@ -100,10 +112,10 @@ export default class MemorySpan extends Component {
                         src={this.state.roundelUrl} />}
                   {this.hasNoImage() &&
                      <i className='material-icons circle terracota z-depth-1'>perm_identity</i>}</a>
-               {Object.values(this.props.orders).isPresent() &&
-                  <Chip
+               {this.orders().map((order) => <Chip
                      color={'gray'}
-                     text={Object.values(this.props.orders)[0]} />}
+                     tooltip={order.last()}
+                     text={order.first()} />)}
                <span
                   className='name short'>
                   {this.props.title}</span>

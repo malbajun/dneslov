@@ -3,6 +3,7 @@ import { mixin } from 'lodash-decorators'
 import PropTypes from 'prop-types'
 
 import Carousel from 'Carousel'
+import MemorySpans from 'MemorySpans'
 import EventSpans from 'EventSpans'
 import Chip from 'Chip'
 import Name from 'Name'
@@ -10,7 +11,7 @@ import Description from 'Description'
 import GetSlugColor from 'mixins/GetSlugColor'
 import Markdown from 'Markdown'
 import MetaTags from 'react-meta-tags'
-import { getUrlsFrom } from 'support'
+import { getUrlsFrom, parseCalendariesString } from 'support'
 
 @mixin(GetSlugColor)
 export default class Memory extends Component {
@@ -62,7 +63,9 @@ export default class Memory extends Component {
             links: Memory.getLinks(props),
             iconLinks: Memory.getIconLinks(props),
             scripta: Memory.selectScripta(props),
-            happenedAt: Memory.getHappenedAt(props)
+            happenedAt: Memory.getHappenedAt(props),
+            childrenMemoes: Memory.collectedChildren(props),
+            childrenTotal: Memory.collectedChildrenTotals(props) //props.children_total
          }
       }
 
@@ -181,6 +184,29 @@ export default class Memory extends Component {
       }).sortByArray(this.happenedAtKindCodes, "kind_code").flat().reduce((happenedAt, e) => {
          return happenedAt || e.happened_at
       }, null)
+   }
+
+   static collectedChildren(props) {
+      let hash = props.memoes.reduce((res, memo) => {
+         return memo.children.reduce((res, child) => {
+            if (res[child.slug]) {
+               res[child.slug] = [res[child.slug]].flat()
+               res[child.slug] << child
+            } else {
+               res[child.slug] = child
+            }
+
+            return res
+         }, res)
+      }, {})
+
+      return Object.values(hash)
+   }
+
+   static collectedChildrenTotals(props) {
+      return props.memoes.reduce((res, memo) => {
+         return res >= memo.children_total ? res : memo.children_total
+      }, 0)
    }
 
    // system
@@ -329,6 +355,15 @@ export default class Memory extends Component {
                      <img
                         src={this.props.image_url}
                         onClick={this.onImageClick} /></a></div>}</div>,
+         <MemorySpans
+            memories={this.state.childrenMemoes}
+            totalMemories={this.state.childrenTotal}
+            calendariesCloud={this.props.selectedCalendaries}
+            defaultCalendarySlug={this.state.defaultCalendarySlug}
+            bondMemoryId={this.props.id}
+            url={'/api/v0/memories/'+ this.props.id +'/content.json'}
+            hideIfBlank={true}
+            manualFetch={true} />,
          <div className='row'>
             {this.props.bond_memories.length > 0 &&
                <div className='col s12'>

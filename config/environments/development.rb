@@ -74,7 +74,7 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  config.web_console.whitelisted_ips = '192.168.123.128/24'
+  config.web_console.allowed_ips = '192.168.123.128/24'
 
   config.middleware.use Rack::RubyProf, path: './tmp/profile' if defined?(Rack::RubyProf)
 

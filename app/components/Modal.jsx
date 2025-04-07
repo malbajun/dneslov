@@ -48,9 +48,13 @@ export default class Modal extends Component {
    // custom
    componentDidRender() {
       if (this.state.data) {
-         this.modal = M.Modal.init(this.$modal, {
+         let elems = this.$modal.parentElement.querySelectorAll('.modal'),
+             modals = M.Modal.init(elems, {
             onCloseEnd: this.onModalClosed.bind(this)
          })
+
+         console.debug("[componentDidRender] **", elems, modals)
+         this.modal = modals[0]
          this.modal.open()
       }
    }
@@ -76,10 +80,10 @@ export default class Modal extends Component {
       return (
          <div className='enrighten'>
             <div
-               key='calendary-form-modal'
+               key={this.props.remoteName + '-form-modal'}
                className='form-modal modal modal-fixed-footer z-depth-2'
                ref={e => this.$modal = e}
-               id='calendary-form-modal'>
+               id={this.props.remoteName + '-form-modal'}>
                <div className='modal-content'>
                   <Form
                      remoteName={this.props.meta.remoteName}

@@ -43,6 +43,9 @@ export default class Chip extends Component {
    }
 
    componentDidMount() {
+      var elems = document.querySelectorAll('.tooltipped');
+      var _instances = M.Tooltip.init(elems, {});
+
       this.$link.addEventListener('click', this.onLinkClick)
    }
 
@@ -51,7 +54,7 @@ export default class Chip extends Component {
    }
 
    className() {
-      return 'chip ' + (this.props.className || '')
+      return 'chip ' + (this.props.className || '') + (this.props.tooltip ? ' tooltipped' : "")
    }
 
    closeClassName() {
@@ -69,7 +72,7 @@ export default class Chip extends Component {
          parts = [this.props.children]
       }
 
-      if (!text.isBlank()) {
+      if (text && !text.isBlank()) {
          if (text.constructor.name == "Array") {
             partsIn = partsIn.concat(text)
          } else {
@@ -121,6 +124,8 @@ export default class Chip extends Component {
             key={this.props.text + ' link'}
             ref={e => this.$link = e}
             className={this.className()}
+            data-position="top"
+            data-tooltip={this.props.tooltip || null}
             style={{ backgroundColor: '#' + this.props.color }} >
             {this.renderText(this.props.text)}
             {this.state.action &&

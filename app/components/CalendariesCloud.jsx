@@ -36,7 +36,7 @@ export default class CalendariesCloud extends Component {
                   data={{slug: calendary.slug}}
                   className='calendary'
                   text={calendary.title}
-                  alt={calendary.description}
+                  tooltip={calendary.description}
                   color={calendary.color}
                   url={calendary.url}
                   action={this.actionFor(calendary)}
