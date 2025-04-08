@@ -337,16 +337,7 @@ export default class Memory extends Component {
                                  <Chip
                                     key={'covering-' + c.id}
                                     color={Memory.getColorForLink(c.name)}
-                                    text={c.name} />)}</div></div></div></div>}
-               {this.state.scripta.isPresent() &&
-                  <div className='row'>
-                     <div className='col s12'>
-                        {this.sortedScripta().map((scriptum) =>
-                           <div className='row'>
-                              <div className='col s12 title'>
-                                 {this.getScriptumTitle(scriptum)}</div>
-                              <div className='col s12 scriptum'>
-                                 <Markdown source={scriptum.text} /></div></div>)}</div></div>}</div>
+                                    text={c.name} />)}</div></div></div></div>}</div>
             {this.props.image_url &&
                <div className='col x2 l3 m4 s5 image'>
                   <a
@@ -355,6 +346,15 @@ export default class Memory extends Component {
                      <img
                         src={this.props.image_url}
                         onClick={this.onImageClick} /></a></div>}</div>,
+         <div className='row'>
+            {this.state.scripta.isPresent() &&
+                <div className='col s12'>
+                   {this.sortedScripta().map((scriptum) =>
+                      <div className='row'>
+                         <div className='col s12 title'>
+                            {this.getScriptumTitle(scriptum)}</div>
+                         <div className='col s12 scriptum'>
+                            <Markdown source={scriptum.text} /></div></div>)}</div>}</div>,
          <MemorySpans
             memories={this.state.childrenMemoes}
             totalMemories={this.state.childrenTotal}
