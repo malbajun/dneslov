@@ -19,6 +19,10 @@ class EventsController < ApplicationController
 
    protected
 
+   def object
+      @event
+   end
+
    def set_event
       @events = @memory.events
                        .memoed_for(@calendary_slugs)

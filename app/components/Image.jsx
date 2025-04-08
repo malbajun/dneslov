@@ -1,6 +1,7 @@
 import { Component } from 'react'
 
 import PureImage from 'PureImage'
+import MetaTags from 'react-meta-tags'
 
 export default class Image extends Component {
    static defaultProps = {
@@ -17,6 +18,63 @@ export default class Image extends Component {
       i18n: {
          description: "Описание:",
       }
+   }
+
+   static getDerivedStateFromProps(props, state) {
+      if (props !== state.prevProps) {
+         let titles = Image.collectTitles(props),
+             descriptions = Image.collectDescriptions(props)
+
+         return {
+            prevProps: props,
+            imageUrl: props.picture.image,
+            tagKeywords: Image.getKeywords(props.attitude_to, titles),
+            tagTitle: Image.getTitle(props.attitude_to, titles),
+            tagDescription: Image.getDescription(props.attitude_to, descriptions),
+         }
+      }
+
+      return null
+   }
+
+   static getKeywords(shortName, titles) {
+      let re = RegExp("[\\s,]+", "i"),
+          array = [
+         shortName,
+         titles.map((x) => x.split(re))
+      ].flat().compact().uniq()
+
+      return array.join(", ").slice(0, 255)
+   }
+
+   static getTitle(shortName, titles) {
+      let array = [
+         shortName,
+         titles
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
+   }
+
+   static getDescription(shortName, descriptions) {
+      let array = [
+         shortName,
+         descriptions
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
+   }
+
+   static collectTitles(props) {
+      return props.picture.titles.reduce((res, x) => {
+         return res.concat(x.text)
+      }, [])
+   }
+
+   static collectDescriptions(props) {
+      return props.picture.descriptions.reduce((res, x) => {
+         return res.concat(x.text)
+      }, [])
    }
 
    state = {
@@ -97,22 +155,35 @@ export default class Image extends Component {
    render() {
       console.debug("[render] **", { 'this.props': this.props, 'this.state': this.state })
 
-      return (
-         !this.state.errored && <div
+      return [
+         <MetaTags>
+            <meta
+               id="meta-title"
+               name="title"
+               content={this.state.tagTitle} />
+            <meta
+               id="meta-keywords"
+               name="keywords"
+               content={this.state.tagKeywords} />
+            <meta
+               id="meta-description"
+               name="description"
+               content={this.state.tagDescription} /></MetaTags>,
+         <div
             className="card hoverable">
             <h5><div className="center">{this.title()}</div></h5>
             <div
                className="card-image">
-               <img
+               {!this.state.errored && <img
                   alt={this.title()}
                   src={this.props.picture.url}
                   className={this.props.wrapperClassName}
                   onLoad={this.onImageCompleted.bind(this)}
-                  onError={this.onImageCompleted.bind(this)} /></div>
+                  onError={this.onImageCompleted.bind(this)} />}</div>
             {this.props.picture.descriptions.isPresent() &&
                <div
-                     className="card-content">
-                     <p><b>{this.props.i18n.description}</b></p>
-                     <p>{this.description()}</p></div>}</div>)
+                  className="card-content">
+                  <p><b>{this.props.i18n.description}</b></p>
+                  <p>{this.description()}</p></div>}</div>]
    }
 }
