@@ -36,6 +36,7 @@ module CoreFeatures
          text_languages: @text_languages,
          service_languages: @service_languages,
          language: @language,
+         alphabeth: @alphabeth,
       }
    end
 
@@ -79,6 +80,7 @@ module CoreFeatures
       @text_languages ||= %w(ру)
       @service_languages ||= %w(цс)
       @language ||= "ру"
+      @alphabeth ||= "РО"
    end
 
    def set_date
@@ -148,7 +150,9 @@ module CoreFeatures
    end
 
    def set_memory
-      @memorys ||= Memory.with_scripta(context)
+      @memorys ||= Memory.unscoped
+                         .with_short_name(context)
+                         .with_scripta(context)
                          .with_memoes(context)
                          .with_names(context)
                          .with_coverings(context)

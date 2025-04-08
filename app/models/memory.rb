@@ -115,14 +115,36 @@ class Memory < ApplicationRecord
       joins(:short_names).select(selector).group('_value').reorder("_value")
    end
 
-   scope :with_short_names, -> context do
-      language_codes = [context[:text_languages]].flatten.compact
-      alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
-      this = table.table_alias || table.name
+   scope :with_short_name, -> context do
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
-      as = model.reflections[rela]&.name
+      as = context[:as] || model.reflections[rela]&.name || rela
       ast = as.to_s.tableize
       asm = as.to_s.singularize.camelize
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{this}_#{ast}.text AS _#{ast.singularize}"
+
+      join = "          JOIN #{ast} AS #{this}_#{ast}
+                          ON #{this}_#{ast}.memory_id = #{this}.id
+                         AND #{this}_#{ast}.language_code IN ('#{language_codes.join("', '")}')
+                         AND #{this}_#{ast}.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+      group = [:id, "#{this}_#{ast}.text"]
+
+      joins(join).select(selector).group(*group)
+   end
+
+   scope :with_short_names, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      ast = as.to_s.tableize
+      asm = as.to_s.singularize.camelize
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten.compact
+      alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
 
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
@@ -141,32 +163,32 @@ class Memory < ApplicationRecord
          ]
       end
 
-      selector << "COALESCE((with __short_names AS (
-                      SELECT DISTINCT ON(short_names.id)
-                             short_names.id AS id,
-                             short_names.text AS text,
-                             short_names.language_code AS language_code,
-                             short_names.alphabeth_code AS alphabeth_code,
+      selector << "COALESCE((with __#{ast} AS (
+                      SELECT DISTINCT ON(#{this}_#{ast}.id)
+                             #{this}_#{ast}.id AS id,
+                             #{this}_#{ast}.text AS text,
+                             #{this}_#{ast}.language_code AS language_code,
+                             #{this}_#{ast}.alphabeth_code AS alphabeth_code,
                              language_names.text AS language,
                              alphabeth_names.text AS alphabeth
-                        FROM short_names
+                        FROM #{ast} AS #{this}_#{ast}
              LEFT OUTER JOIN subjects AS languages
-                          ON languages.key = short_names.language_code
+                          ON languages.key = #{this}_#{ast}.language_code
              LEFT OUTER JOIN descriptions AS language_names
                           ON language_names.describable_id = languages.id
                          AND language_names.describable_type = 'Subject'
                              #{lang_wheres&.first}
              LEFT OUTER JOIN subjects AS alphabeths
-                          ON alphabeths.key = short_names.alphabeth_code
+                          ON alphabeths.key = #{this}_#{ast}.alphabeth_code
              LEFT OUTER JOIN descriptions AS alphabeth_names
                           ON alphabeth_names.describable_id = alphabeths.id
                          AND alphabeth_names.describable_type = 'Subject'
                              #{alph_wheres&.first}
-                       WHERE short_names.memory_id = #{this}.id
+                       WHERE #{this}_#{ast}.memory_id = #{this}.id
                              #{lang_wheres&.last} #{alph_wheres&.last}
-                    GROUP BY short_names.id, language_names.text, alphabeth_names.text)
-                      SELECT jsonb_agg(__short_names)
-                        FROM __short_names), '[]'::jsonb) AS _short_names"
+                    GROUP BY #{this}_#{ast}.id, language_names.text, alphabeth_names.text)
+                      SELECT jsonb_agg(__#{ast})
+                        FROM __#{ast}), '[]'::jsonb) AS _#{ast}"
 
       select(selector).group(:id)
    end

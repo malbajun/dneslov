@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
       @text_languages ||= %i(ру)
       @service_languages ||= %i(цс)
       @language ||= "ру"
+      @alphabeth ||= "РО"
    end
 
    def context
@@ -23,6 +24,7 @@ class ApplicationController < ActionController::Base
          locales: I18n.available_locales,
          locale: I18n.locale,
          language: @language,
+         alphabeth: @alphabeth,
       }
    end
 
@@ -34,6 +36,7 @@ class ApplicationController < ActionController::Base
          text_languages: @text_languages,
          service_languages: @service_languages,
          language: @language,
+         alphabeth: @alphabeth,
       }
    end
 
