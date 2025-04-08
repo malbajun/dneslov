@@ -2,6 +2,7 @@ import { Component } from 'react'
 import { mixin } from 'lodash-decorators'
 import PropTypes from 'prop-types'
 
+import Memory from 'Memory'
 import Carousel from 'Carousel'
 import Chip from 'Chip'
 import Name from 'Name'
@@ -68,19 +69,27 @@ export default class Eventee extends Component {
 
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
-         let cal = Eventee.calculateDefaultCalendarySlug(props)
+         let cal = Eventee.calculateDefaultCalendarySlug(props),
+             order = Eventee.getOrder(props),
+             describedMemoes = Eventee.getDescribedMemoes(props),
+             selectedScripta = Eventee.selectScripta(props),
+             sortedScripta = Eventee.sortedScripta(selectedScripta)
          //let memo = Eventee.getMemo(props)
 
          return {
             prevProps: props,
             defaultCalendarySlug: cal,
+            order: order,
             title: Eventee.getTitle(props),
-            describedMemoes: Eventee.getDescribedMemoes(props),
-            order: Eventee.getOrder(props),
+            describedMemoes: describedMemoes,
             klugs: Eventee.collectKlugs(props),
             links: Eventee.getLinks(props),
             iconLinks: Eventee.getIconLinks(props),
-            scripta: Eventee.selectScripta(props),
+            scripta: selectedScripta,
+            sortedScripta: sortedScripta,
+            tagKeywords: Eventee.getKeywords(props.short_name, order, props.names, describedMemoes),
+            tagTitle: Eventee.getTagTitle(props.short_name, order, describedMemoes),
+            tagDescription: Eventee.getDescription(props.short_name, order, describedMemoes, sortedScripta),
          }
       }
 
@@ -118,6 +127,23 @@ export default class Eventee extends Component {
       return dMs
    }
 
+//   static getDescribedMemoes(props) {
+//      let describedMemoes = props.memoes.filter((m) => {
+//         return Memory.descriptionKindCodes.indexOf(m.kind_code) >= 0
+//      }).sortByArray(Memory.descriptionKindCodes, "kind_code").map((m) => {
+//         return m
+//      }).flat().compact().reduce((res, memo) => {
+//      console.log("[render] ******", memo)
+//         if (memo.description) {
+//            res[memo.calendary_slug] ||= memo
+//         }
+//         return res
+//      }, {})
+//      console.log("[render] ******", props.memoes, describedMemoes)
+//
+//      return Object.values(describedMemoes).compact()
+//   }
+//
    static getLinks(props) {
       let links = [ "WikiLink", "BeingLink", "PatericLink" ].map((type) => {
          return props.links.selectByKey("type", type)
@@ -140,6 +166,14 @@ export default class Eventee extends Component {
 
    static selectScripta(props) {
       return props.scripta.filter(c => { return c.text })
+   }
+
+   static sortedScripta(selectedScripta) {
+      let keys = Object.keys(Memory.ScriptumTable)
+
+      return selectedScripta.sort((a, b) => {
+         return keys.indexOf(a.type) - keys.indexOf(b.type)
+      })
    }
 
    static getTitle(props) {
@@ -215,18 +249,42 @@ export default class Eventee extends Component {
       window.open(url, "_self")
    }
 
-   sortedScripta() {
-      let keys = Object.keys(this.ScriptumTable)
+//   getDescription() {
+//      return this.props.short_name + " " +
+//             this.props.names.reduce((res, x) => { return res + " " + x.name_text }, "") +
+//             this.props.titles.reduce((res, x) => { return res + " " + x.text }, "")
+//   }
+//
+   static getKeywords(shortName, order, names, describedMemoes) {
+      let array = [
+         order,
+         shortName,
+         names.map(x => x.name_text),
+         describedMemoes.map(x => x.title)
+      ].flat().uniq()
 
-      return this.state.scripta.sort((a, b) => {
-         return keys.indexOf(a.type) - keys.indexOf(b.type)
-      })
+      return array.join(", ").slice(0, 255)
    }
 
-   getDescription() {
-      return this.props.short_name + " " +
-             this.props.names.reduce((res, x) => { return res + " " + x.name_text }, "") +
-             this.props.titles.reduce((res, x) => { return res + " " + x.text }, "")
+   static getTagTitle(shortName, order, describedMemoes) {
+      let array = [
+         order,
+         shortName,
+         describedMemoes.map(x => x.title)
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
+   }
+
+   static getDescription(shortName, order, describedMemoes, sortedScripta) {
+      let array = [
+         order,
+         shortName,
+         describedMemoes.map(x => x.description),
+         sortedScripta.map(x => x.text)
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
    }
 
    getInfoClass() {
@@ -237,9 +295,19 @@ export default class Eventee extends Component {
       console.log("[render] *", { 'this.props': this.props, 'this.state': this.state })
 
       return [
-            <MetaTags>
-               <meta id="meta-description" name="description" content={this.getDescription()} />
-            </MetaTags>,
+         <MetaTags>
+            <meta
+               id="meta-title"
+               name="title"
+               content={this.state.tagTitle} />
+            <meta
+               id="meta-keywords"
+               name="keywords"
+               content={this.state.tagKeywords} />
+            <meta
+               id="meta-description"
+               name="description"
+               content={this.state.tagDescription} /></MetaTags>,
          <div className='row event'>
             <div className={'col' + this.getInfoClass()}>
                <div className='row'>

@@ -39,11 +39,17 @@ export default class Gallery extends Component {
 
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
+         let titles = Gallery.collectTitles(props),
+             descriptions = Gallery.collectDescriptions(props)
+
          return {
             prevProps: props,
             images: props.images,
             attitudeTo: props.attitude_to,
             query: props.query,
+            tagKeywords: Gallery.getKeywords(props.attitude_to, titles),
+            tagTitle: Gallery.getTitle(props.attitude_to, titles),
+            tagDescription: Gallery.getDescription(props.attitude_to, descriptions),
          }
       }
 
@@ -52,11 +58,51 @@ export default class Gallery extends Component {
 
    state = {}
 
-   getDescription() {
-      let array = (this.props.images[0]?.titles || []).concat(this.props.images[0]?.descriptions || []),
-          desc = array.reduce((res, x) => { return res + " " + x.text }, "")
+//   getDescription() {
+//      let array = (this.props.images[0]?.titles || []).concat(this.props.images[0]?.descriptions || []),
+//          desc = array.reduce((res, x) => { return res + " " + x.text }, "")
+//
+//      return (this.state.attitudeTo + ": " + desc).slice(0, 255)
+//   }
+//
+   static getKeywords(shortName, titles) {
+      let re = RegExp("[\\s,]+", "i"),
+          array = [
+         shortName,
+         titles.map((x) => x.split(re))
+      ].flat().compact().uniq()
 
-      return (this.state.attitudeTo + ": " + desc).slice(0, 255)
+      return array.join(", ").slice(0, 255)
+   }
+
+   static getTitle(shortName, titles) {
+      let array = [
+         shortName,
+         titles
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
+   }
+
+   static getDescription(shortName, descriptions) {
+      let array = [
+         shortName,
+         descriptions
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
+   }
+
+   static collectTitles(props) {
+      return props.images.reduce((res, x) => {
+         return res.concat(x.titles.map(y => y.text))
+      }, [])
+   }
+
+   static collectDescriptions(props) {
+      return props.images.reduce((res, x) => {
+         return res.concat(x.descriptions.map(y => y.text))
+      }, [])
    }
 
    render() {
@@ -65,9 +111,17 @@ export default class Gallery extends Component {
       return [
          <MetaTags>
             <meta
+               id="meta-title"
+               name="title"
+               content={this.state.tagTitle} />
+            <meta
+               id="meta-keywords"
+               name="keywords"
+               content={this.state.tagKeywords} />
+            <meta
                id="meta-description"
-               name="descriptioan"
-               content={this.getDescription()} /></MetaTags>,
+               name="description"
+               content={this.state.tagDescription} /></MetaTags>,
          <h4>
             <span>{this.props.i18n.title} "</span>
             <a href={"/" + this.props.slug}>{this.state.attitudeTo}</a>"</h4>,

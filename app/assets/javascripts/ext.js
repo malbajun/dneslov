@@ -28,6 +28,10 @@ Number.prototype.populateTo = function(number) {
    return array
 }
 
+Number.prototype.isPresent = function() {
+   return true
+}
+
 String.prototype.escapeRegExp = function() {
    return this.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
 }
@@ -119,7 +123,7 @@ Array.prototype.intersectTo = function(array) {
 
 Array.prototype.uniq = function() {
    return this.reduce((res, value) => {
-      return res.includes(value) && res || res.concat([value])
+      return res.includes(value) ? res : res.concat([value])
    }, [])
 }
 

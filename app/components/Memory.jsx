@@ -48,7 +48,9 @@ export default class Memory extends Component {
       if (props !== state.prevProps) {
          let cal = Memory.calculateDefaultCalendarySlug(props),
              order = Memory.getOrder(props),
-             describedMemoes = Memory.getDescribedMemoes(props)
+             describedMemoes = Memory.getDescribedMemoes(props),
+             selectedScripta = Memory.selectScripta(props),
+             sortedScripta = Memory.sortedScripta(selectedScripta)
 
          return {
             prevProps: props,
@@ -62,10 +64,14 @@ export default class Memory extends Component {
             describedMemoIds: Memory.getDescribedMemoIds(describedMemoes),
             links: Memory.getLinks(props),
             iconLinks: Memory.getIconLinks(props),
-            scripta: Memory.selectScripta(props),
+            scripta: selectedScripta,
+            sortedScripta: sortedScripta,
             happenedAt: Memory.getHappenedAt(props),
             childrenMemoes: Memory.collectedChildren(props),
-            childrenTotal: Memory.collectedChildrenTotals(props) //props.children_total
+            childrenTotal: Memory.collectedChildrenTotals(props), //props.children_total
+            tagKeywords: Memory.getKeywords(props.short_name, order, props.names, describedMemoes),
+            tagTitle: Memory.getTitle(props.short_name, order, describedMemoes),
+            tagDescription: Memory.getDescription(props.short_name, order, describedMemoes, sortedScripta),
          }
       }
 
@@ -123,11 +129,13 @@ export default class Memory extends Component {
       }).sortByArray(this.descriptionKindCodes, "kind_code").map((m) => {
          return m
       }).flat().compact().reduce((res, memo) => {
+      console.log("[render] ******", memo)
          if (memo.description) {
             res[memo.calendary_slug] ||= memo
          }
          return res
       }, {})
+      console.log("[render] ******", props.memoes, describedMemoes)
 
       return Object.values(describedMemoes).compact()
    }
@@ -213,7 +221,7 @@ export default class Memory extends Component {
    state = {}
 
    // custom
-   ScriptumTable = {
+   static ScriptumTable = {
       'Irmos': 'Ирмос',
       'Ikos': 'Икос',
       'Troparion': 'Тропарь',
@@ -253,7 +261,7 @@ export default class Memory extends Component {
    getScriptumTitle(scriptum) {
       return [
          [
-            this.ScriptumTable[scriptum.type],
+            Memory.ScriptumTable[scriptum.type],
             scriptum.title && "«" + scriptum.title + "»",
          ].compact().join(" "),
          scriptum.prosomeion_title && (this.props.i18n.prosomeion + " «" + scriptum.prosomeion_title + "»"),
@@ -261,19 +269,44 @@ export default class Memory extends Component {
       ].compact().join(", ")
    }
 
-   sortedScripta() {
-      let keys = Object.keys(this.ScriptumTable)
+   static sortedScripta(selectedScripta) {
+      let keys = Object.keys(Memory.ScriptumTable)
 
-      return this.state.scripta.sort((a, b) => {
+      return selectedScripta.sort((a, b) => {
          return keys.indexOf(a.type) - keys.indexOf(b.type)
       })
    }
 
-   getDescription() {
-      let array = [this.state.order].concat(this.props.names || []).concat(this.state.describedMemoes || []),
-          desc = array.reduce((res, x) => { return res + " " + x?.text }, "")
+   static getKeywords(shortName, order, names, describedMemoes) {
+      let array = [
+         order,
+         shortName,
+         names.map(x => x.name_text),
+         describedMemoes.map(x => x.title)
+      ].flat().uniq()
 
-      return (this.props.short_name + ": " + desc).slice(0, 255)
+      return array.join(", ").slice(0, 255)
+   }
+
+   static getTitle(shortName, order, describedMemoes) {
+      let array = [
+         order,
+         shortName,
+         describedMemoes.map(x => x.title)
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
+   }
+
+   static getDescription(shortName, order, describedMemoes, sortedScripta) {
+      let array = [
+         order,
+         shortName,
+         describedMemoes.map(x => x.description),
+         sortedScripta.map(x => x.text)
+      ].flat().uniq()
+
+      return array.join(" ").slice(0, 255)
    }
 
    getInfoClass() {
@@ -295,9 +328,17 @@ export default class Memory extends Component {
       return [
          <MetaTags>
             <meta
+               id="meta-title"
+               name="title"
+               content={this.state.tagTitle} />
+            <meta
+               id="meta-keywords"
+               name="keywords"
+               content={this.state.tagKeywords} />
+            <meta
                id="meta-description"
                name="description"
-               content={this.getDescription()} /></MetaTags>,
+               content={this.state.tagDescription} /></MetaTags>,
          <div className='row memory'>
             <div className={'col' + this.getInfoClass()}>
                <div className='row'>
@@ -349,7 +390,7 @@ export default class Memory extends Component {
          <div className='row'>
             {this.state.scripta.isPresent() &&
                 <div className='col s12'>
-                   {this.sortedScripta().map((scriptum) =>
+                   {this.state.sortedScripta.map((scriptum) =>
                       <div className='row'>
                          <div className='col s12 title'>
                             {this.getScriptumTitle(scriptum)}</div>

@@ -66,6 +66,10 @@ class GalleryController < ApplicationController
 
    protected
 
+   def object
+      attituded
+   end
+
    def memory
       @event&.memory || @memory
    end
