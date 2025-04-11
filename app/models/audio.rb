@@ -5,9 +5,9 @@ class Audio < ApplicationRecord
    include WithTitles
    include WithDescriptions
 
-   mount_base64_uploader :audio, AudioUploader
-   process_in_background :audio
-   store_in_background :audio
+   mount_uploader :audio, AudioUploader
+   #process_in_background :audio
+   #store_in_background :audio
 
    has_many :source_scribables, -> { where(kind: :source) }, class_name: :ScriptumScribable, as: :scribable, dependent: :delete_all
    has_many :target_scribables, -> { where(kind: :target) }, class_name: :ScriptumScribable, as: :scribable, dependent: :delete_all
@@ -117,11 +117,15 @@ class Audio < ApplicationRecord
    end
 
    def fill_in_uid
-      self.uid ||= SecureRandom.uuid
+      self.uid ||= SecureRandom.uuid.gsub("-", "")
    end
 
    def fill_in_url
       self.url = File.join *["", audio.store_dir, audio.filename]
+   end
+
+   def uid
+      super&.gsub("-", "")
    end
 
    def attitude_to= value

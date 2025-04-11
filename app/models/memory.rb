@@ -43,13 +43,13 @@ class Memory < ApplicationRecord
    scope :by_short_name, -> name { joins(:short_names).where(short_names: { text: name }) }
    scope :by_slug, -> slug do
       this = table.table_alias || table.name
-      join = "LEFT OUTER JOIN slugs AS #{this}_slugs
+      join = "JOIN slugs AS #{this}_slugs
            ON #{this}.id = #{this}_slugs.sluggable_id
           AND #{this}_slugs.sluggable_type = 'Memory'"
 
       selector = "#{this}_slugs.text = ?", slug
 
-      joins(join).where(selector).distinct
+      joins(join).where(selector).order(:id).distinct
    end
 
    scope :in_calendaries, -> calendaries_in do

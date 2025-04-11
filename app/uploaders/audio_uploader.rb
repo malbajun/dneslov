@@ -1,9 +1,9 @@
 class AudioUploader < CarrierWave::Uploader::Base
-   #include ::CarrierWave::Backgrounder::Delay
-   include CarrierWave::FFmpeg
+   include ::CarrierWave::Backgrounder::Delay
+   include ::CarrierWave::FFmpeg
 
-   cache_storage CarrierWave::Storage::File
-   storage :file
+   #cache_storage CarrierWave::Storage::File
+   #storage :file
 
    process :digest
    process convert: "opus"
@@ -17,9 +17,9 @@ class AudioUploader < CarrierWave::Uploader::Base
       "audios/#{model.uid[0]}/#{model.uid[0..1]}"
    end
 
-   def cache_dir
-      "cache/carrierwave"
-   end
+   #def cache_dir
+   #   "cache/carrierwave"
+   #end
 
    # If you upload 'file.jpg', you'll get 'image.webp' because of convert
    def filename

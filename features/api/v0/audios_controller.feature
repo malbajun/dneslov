@@ -75,31 +75,31 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f053
            language: ср
            alphabeth: СР
            title: Звѫчє
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f053.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f063
            language: ру
            alphabeth: РУ
            title: Гласно
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f063.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f064
            language: ср
            alphabeth: СР
            title: Звѫкъ
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f064.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f065
            language: ру
            alphabeth: РУ
            title: Гласно 1
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f065.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f066
            language: ср
            alphabeth: СР
            title: Гѫдьба
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.opus"
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f066.opus"
          """
       А добѫдꙛ охватъ "0-9/5"
 
@@ -110,16 +110,16 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f065
            language: ру
            alphabeth: РУ
            title: Гласно 1
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f065.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f066
            language: ср
            alphabeth: СР
            title: Гѫдьба
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.opus"
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f066.opus"
          """
       А добѫдꙛ охватъ "0-9/2"
 
@@ -130,16 +130,16 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f063
            language: ру
            alphabeth: РУ
            title: Гласно
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f063.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f064
            language: ср
            alphabeth: СР
            title: Звѫкъ
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.opus"
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f064.opus"
          """
       А добѫдꙛ охватъ "0-9/2"
 
@@ -150,11 +150,11 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f064
            language: ср
            alphabeth: СР
            title: Звѫкъ
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.opus"
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f064.opus"
          """
       А добѫдꙛ охватъ "0-9/1"
 
@@ -172,11 +172,11 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f066
            language: ср
            alphabeth: СР
            title: Гѫдьба
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.opus"
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f066.opus"
          """
       А добѫдꙛ охватъ "0-9/1"
 
@@ -186,7 +186,7 @@
          """
          ---
          - id: 200004
-           uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f057
+           uid: 6b9e05cfaabc4dc397f74abd70d6f057
            audio_path: features/fixtures/hey_cartoon.mp3
            meta: {}
            title: Aperçu 4
@@ -196,21 +196,21 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f053
            language: ср
            alphabeth: СР
            title: Звѫчє
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f053.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f063
            language: ру
            alphabeth: РУ
            title: Гласно
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f063.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f064
            language: ср
            alphabeth: СР
            title: Звѫкъ
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.opus"
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f064.opus"
          """
       А добѫдꙛ охватъ "0-2/6"
       Если сдѣлаю "GET" запытъ до адреса "/api/v0/audios.json" сꙛ доводом "per=3&p=2"
@@ -218,21 +218,21 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f065
            language: ру
            alphabeth: РУ
            title: Гласно 1
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f065.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f066
            language: ср
            alphabeth: СР
            title: Гѫдьба
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.opus"
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f057
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f066.opus"
+         - uid: 6b9e05cfaabc4dc397f74abd70d6f057
            language: фр
            alphabeth: ФР
            title: Aperçu 4
-           url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f057.opus"
+           url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f057.opus"
          """
       А добѫдꙛ охватъ "3-5/6"
       Если сдѣлаю "GET" запытъ до адреса "/api/v0/audios.json" сꙛ доводом "per=3&p=3"
@@ -260,14 +260,13 @@
       И добѫдꙛ приблизнъ изводъ:
          """
          ---
-         args: {}
          """
 
 
    @create @object
    Пример: Користник створяє звѫкё
       Если запытаю створенје изнахоѕи звѫкѣ "/api/v0/audios/create.json" сꙛ даными:
-         | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054    |
+         | uid          | 6b9e05cfaabc4dc397f74abd70d6f054        |
          | kind         | Picture                                 |
          | meta         | {}                                      |
          | audio_path   | features/fixtures/hey_cartoon.mp3       |
@@ -281,23 +280,23 @@
       И добѫдꙛ выводъ:
          """
          ---
-         uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
+         uid: 6b9e05cfaabc4dc397f74abd70d6f054
          language: ру
          alphabeth: РУ
          title: Звуче 1
-         url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.opus"
+         url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f054.opus"
          """
       И изнахоѕь звѫкѣ "Звуче 1" бѫдє яко:
          """
          ---
-         uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
+         uid: 6b9e05cfaabc4dc397f74abd70d6f054
          kind: Picture
          meta: {}
          language: ру
          alphabeth: РУ
          title: Звуче 1
          description: Описание
-         url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.opus"
+         url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f054.opus"
          attitudes:
          - attitude_to: Памѧтно
            poses: "[(1.1,1.2)]"
@@ -307,7 +306,7 @@
    @create @object @error @422
    Пример: Користник кушає створити подвојну звѫкё, и не можє
       Если запытаю створенје изнахоѕи звѫкѣ "/api/v0/audios/create.json" сꙛ даными:
-         | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054 |
+         | uid          | 6b9e05cfaabc4dc397f74abd70d6f054     |
          | type         | Picture                              |
          | meta         | {}                                   |
          | reading      | Тропарь                              |
@@ -316,15 +315,14 @@
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Digest has already been taken
          """
       А изнахоѕи звѫкѣ "Звѫчє 1" не бѫдє
 
    @update @object @error @404
    Пример: Користник поновяє данє звѫкё
-      Если запытаю одсланје звѫкё в изнаходь "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json" сꙛ даными:
+      Если запытаю одсланје звѫкё в изнаходь "/api/v0/audios/6b9e05cfaabc4dc397f74abd70d6f053.json" сꙛ даными:
          | uid          | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054 |
          | kind         | Picture                              |
          | meta         | {}                                   |
@@ -337,36 +335,36 @@
       И добѫдꙛ выводъ:
          """
          ---
-         uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+         uid: 6b9e05cfaabc4dc397f74abd70d6f053
          digest: f50d68b2dcd74a2c38ce097e53ec72260b823cf72a2c867dd03a84b8cd10d167
          language: сс
          alphabeth: СС
          title: Звѫчѥ
          description: Описание
-         url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
+         url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f053.opus"
          meta: {}
          kind: Picture
          reading: ''
          attitudes: []
          """
-      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
+      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cfaabc4dc397f74abd70d6f053.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+         uid: 6b9e05cfaabc4dc397f74abd70d6f053
          digest: f50d68b2dcd74a2c38ce097e53ec72260b823cf72a2c867dd03a84b8cd10d167
          language: сс
          alphabeth: СС
          title: Звѫчѥ
          description: Описание
-         url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
+         url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f053.opus"
          meta: {}
          kind: Picture
          reading: ''
          attitudes: []
          """
-      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.json"
+      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cfaabc4dc397f74abd70d6f054.json"
       То добѫдꙛ кодъ поврата "404"
 
    @get @object
@@ -387,18 +385,18 @@
          | title        | Гласно 1                                |
          | attitude_to  | Памѧтно(1.1,1.2,1.3,1.4)                |
          | reading      | Текст для чтения вслух чтобы наговорить |
-      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.json"
+      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cfaabc4dc397f74abd70d6f054.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
+         uid: 6b9e05cfaabc4dc397f74abd70d6f054
          digest: 511d4de1578acb6f29aae78b0aa6aeaad012f2da2e8819a878f341e5b07e3395
          language: ру
          alphabeth: РУ
          title: Гласно 1
          description:
-         url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.opus"
+         url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f054.opus"
          meta: {}
          kind: Audio
          reading: Текст для чтения вслух чтобы наговорить
@@ -410,17 +408,17 @@
 
    @get @object
    Пример: Користник добыває данє звѫцё
-      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
+      Если запытаю добыванје из изнахоѕи "/api/v0/audios/6b9e05cfaabc4dc397f74abd70d6f053.json"
       То добѫдꙛ выводъ:
          """
          ---
-         uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+         uid: 6b9e05cfaabc4dc397f74abd70d6f053
          digest: f50d68b2dcd74a2c38ce097e53ec72260b823cf72a2c867dd03a84b8cd10d167
          language: ср
          alphabeth: СР
          title: Звѫчє
          description:
-         url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
+         url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f053.opus"
          meta: {}
          kind: Audio
          reading: ''
@@ -429,18 +427,18 @@
 
    @delete @object
    Пример: Користник изтьрає иззначенє звѫкё
-      Если запытаю изтрѣнје изнахоѕи "/api/v0/audios/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.json"
+      Если запытаю изтрѣнје изнахоѕи "/api/v0/audios/6b9e05cfaabc4dc397f74abd70d6f053.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+         uid: 6b9e05cfaabc4dc397f74abd70d6f053
          digest: f50d68b2dcd74a2c38ce097e53ec72260b823cf72a2c867dd03a84b8cd10d167
          language: ср
          alphabeth: СР
          title: Звѫчє
          description:
-         url: "/audios/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.opus"
+         url: "/audios/6/6b/6b9e05cfaabc4dc397f74abd70d6f053.opus"
          meta: {}
          kind: Audio
          reading: ''

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_02_02_144732) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_09_213400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -43,7 +43,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_02_144732) do
 
   create_table "audios", force: :cascade do |t|
     t.uuid "uid", null: false, comment: "Заєдньн опознач"
-    t.binary "digest", null: false, comment: "Броєсть єднотна"
+    t.binary "digest", comment: "Броєсть єднотна"
     t.string "url", null: false, comment: "Квѧзка єднотна"
     t.string "kind", comment: "Род записа"
     t.string "audio", null: false, comment: "Звѫчєва внутреня дана"
