@@ -156,7 +156,7 @@ class Event < ActiveRecord::Base
          where(id: did)
       else
          by_default_or_specific_title(did)
-      end.joins(:memory).merge(Memory.by_uno(uno))
+      end.joins(:memory).merge(Memory.by_uno(uno)).reorder(:id)
    end
 
    # search by event title common via subject or event-specific
@@ -570,21 +570,67 @@ class Event < ActiveRecord::Base
       select(selector).group(:id)
    end
 
-   scope :with_scripta, -> context do
-      language_codes = [ context[:service_languages] ].flatten
+   scope :with_scripta, -> (context) do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      ast = as.to_s.tableize
+      asm = as.to_s.singularize.camelize
+      this = table.table_alias || table.name
+      language_codes = [context[:service_language] || context[:service_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:service_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      calendaries_join =
+         if context[:calendary_slugs]
+             "JOIN calendaries AS #{this}_calendaries
+                ON #{this}_calendaries.id = #{this}_memoes.calendary_id
+              JOIN slugs AS #{this}_calendary_slugs
+                ON #{this}_calendary_slugs.id = #{this}_calendaries.id
+               AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
+               AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')"
+         end
+
       selector = self.select_values.dup
-      if selector.empty?
-         selector << 'events.*'
-      end
-      selector << "COALESCE((SELECT jsonb_agg(scripta)
-                               FROM scripta
-                    LEFT OUTER JOIN services
-                                 ON services.info_id = events.id
-                                AND services.info_type = 'Event'
-                    LEFT OUTER JOIN service_scripta
-                                 ON service_scripta.service_id = services.id
-                              WHERE scripta.id = service_scripta.scriptum_id
-                                AND scripta.language_code IN ('#{language_codes.join("', '")}')), '[]'::jsonb) AS _scripta"
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE((WITH
+                                    __texted_audios AS (
+                             SELECT #{this}_#{ast}.id AS id,
+                                    #{this}_audios.uid AS audio_uid,
+                                    #{this}_audios.url AS audio_url,
+                                    #{this}_audios.kind AS audio_kind
+                               FROM #{ast} AS #{this}_#{ast}
+                    LEFT OUTER JOIN scriptum_scribables AS #{this}_scriptum_scribables
+                                 ON #{this}_#{ast}.id = #{this}_scriptum_scribables.scriptum_id
+                                AND 'source' = #{this}_scriptum_scribables.kind
+                    LEFT OUTER JOIN audios AS #{this}_audios
+                                 ON #{this}_audios.id = #{this}_scriptum_scribables.scribable_id
+                                AND 'Audio' = #{this}_scriptum_scribables.scribable_type),
+                                    __#{ast} AS (
+                             SELECT DISTINCT ON (#{this}_#{ast}.id)
+                                    #{this}_#{ast}.id AS id,
+                                    #{this}_#{ast}.text AS text,
+                                    #{this}_#{ast}.tone AS tone,
+                                    #{this}_#{ast}.type AS type,
+                                    #{this}_#{ast}.language_code AS language_code,
+                                    #{this}_#{ast}.alphabeth_code AS alphabeth_code,
+                                    #{this}_#{ast}.prosomeion_title AS prosomeion_title,
+                                    #{this}_#{ast}.title AS title,
+                                    #{this}_#{ast}.ref_title AS ref_title,
+                                    __texted_audios.audio_uid AS audio_uid,
+                                    __texted_audios.audio_url AS audio_url,
+                                    __texted_audios.audio_kind AS audio_kind
+                               FROM #{ast} AS #{this}_#{ast}
+                               JOIN memoes AS #{this}_memoes
+                                 ON #{this}.id = #{this}_memoes.event_id
+                               JOIN memo_#{ast}
+                                 ON memo_#{ast}.memo_id = #{this}_memoes.id
+                                    #{calendaries_join}
+                    LEFT OUTER JOIN __texted_audios
+                                 ON __texted_audios.id = #{this}_#{ast}.id
+                              WHERE #{this}_#{ast}.id = memo_#{ast}.scriptum_id
+                                AND #{this}_#{ast}.language_code IN ('#{language_codes.join("', '")}')
+                                AND #{this}_#{ast}.alphabeth_code IN ('#{alphabeth_codes.join("', '")}'))
+                             SELECT jsonb_agg(__#{ast})
+                               FROM __#{ast}), '[]'::jsonb) AS _#{ast}"
 
       select(selector).group(:id)
    end

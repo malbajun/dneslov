@@ -287,6 +287,17 @@ export default class Eventee extends Component {
       return array.join(" ").slice(0, 255)
    }
 
+   getScriptumTitle(scriptum) {
+      return [
+         [
+            Memory.ScriptumTable[scriptum.type],
+            scriptum.title && "«" + scriptum.title + "»",
+         ].compact().join(" "),
+         scriptum.prosomeion_title && (this.props.i18n.prosomeion + " «" + scriptum.prosomeion_title + "»"),
+         scriptum.tone && (this.props.i18n.tone + " " + scriptum.tone + this.props.i18n.suffix),
+      ].compact().join(", ")
+   }
+
    getInfoClass() {
       return this.props.image_url ? " x10 l9 m8 s7" : " s12"
    }
@@ -341,7 +352,7 @@ export default class Eventee extends Component {
                {this.state.scripta.isPresent() &&
                   <div className='row'>
                      <div className='col s12'>
-                        {this.sortedScripta().map((scriptum) =>
+                        {this.state.sortedScripta.map((scriptum) =>
                            <div className='row'>
                               <div className='col s12 title'>
                                  {this.getScriptumTitle(scriptum)}</div>
