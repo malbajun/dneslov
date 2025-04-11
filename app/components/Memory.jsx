@@ -9,6 +9,7 @@ import Chip from 'Chip'
 import Name from 'Name'
 import Description from 'Description'
 import GetSlugColor from 'mixins/GetSlugColor'
+import Player from 'Player'
 import Markdown from 'Markdown'
 import MetaTags from 'react-meta-tags'
 import { getUrlsFrom, parseCalendariesString } from 'support'
@@ -54,6 +55,7 @@ export default class Memory extends Component {
 
          return {
             prevProps: props,
+            playingAudioUrl: null,
             defaultCalendarySlug: cal,
             order: order,
             title: Memory.getCalendaryTitle(props, cal),
@@ -252,23 +254,6 @@ export default class Memory extends Component {
       'Stichus': 'Стих',
    }
 
-   constructor(props) {
-      super(props)
-
-      this.onImageClick = this.onImageClick.bind(this)
-   }
-
-   getScriptumTitle(scriptum) {
-      return [
-         [
-            Memory.ScriptumTable[scriptum.type],
-            scriptum.title && "«" + scriptum.title + "»",
-         ].compact().join(" "),
-         scriptum.prosomeion_title && (this.props.i18n.prosomeion + " «" + scriptum.prosomeion_title + "»"),
-         scriptum.tone && (this.props.i18n.tone + " " + scriptum.tone + this.props.i18n.suffix),
-      ].compact().join(", ")
-   }
-
    static sortedScripta(selectedScripta) {
       let keys = Object.keys(Memory.ScriptumTable)
 
@@ -309,6 +294,24 @@ export default class Memory extends Component {
       return array.join(" ").slice(0, 255)
    }
 
+   constructor(props) {
+      super(props)
+
+      this.onImageClick = this.onImageClick.bind(this)
+      this.onActivePlay = this.onActivePlay.bind(this)
+   }
+
+   getScriptumTitle(scriptum) {
+      return [
+         [
+            Memory.ScriptumTable[scriptum.type],
+            scriptum.title && "«" + scriptum.title + "»",
+         ].compact().join(" "),
+         scriptum.prosomeion_title && (this.props.i18n.prosomeion + " «" + scriptum.prosomeion_title + "»"),
+         scriptum.tone && (this.props.i18n.tone + " " + scriptum.tone + this.props.i18n.suffix),
+      ].compact().join(", ")
+   }
+
    getInfoClass() {
       return this.props.image_url ? " x10 l9 m8 s7" : " s12"
    }
@@ -320,6 +323,10 @@ export default class Memory extends Component {
       e.stopPropagation()
 
       window.open(url, "_self")
+   }
+
+   onActivePlay(url) {
+      this.setState({playingAudioUrl: url})
    }
 
    render() {
@@ -393,7 +400,14 @@ export default class Memory extends Component {
                    {this.state.sortedScripta.map((scriptum) =>
                       <div className='row'>
                          <div className='col s12 title'>
-                            {this.getScriptumTitle(scriptum)}</div>
+                            <span>
+                               {this.getScriptumTitle(scriptum)}</span>
+                            {scriptum.audio_url && <Player
+                               url={scriptum.audio_url}
+                               onActivePlay={this.onActivePlay}
+                               playing={scriptum.audio_url == this.state.playingAudioUrl}
+                            />}
+                         </div>
                          <div className='col s12 scriptum'>
                             <Markdown source={scriptum.text} /></div></div>)}</div>}</div>,
          <MemorySpans

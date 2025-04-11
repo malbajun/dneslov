@@ -1,0 +1,11 @@
+html {
+   .player {
+      .play, .stop {
+         vertical-align: middle;
+         margin-left: 1rem;
+         border-radius: 1rem;
+         border: 1px groove black;
+         cursor: pointer;
+      }
+   }
+}

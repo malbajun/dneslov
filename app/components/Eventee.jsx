@@ -8,6 +8,7 @@ import Chip from 'Chip'
 import Name from 'Name'
 import Description from 'Description'
 import GetSlugColor from 'mixins/GetSlugColor'
+import Player from 'Player'
 import Markdown from 'Markdown'
 import MetaTags from 'react-meta-tags'
 import { getUrlsFrom } from 'support'
@@ -78,6 +79,7 @@ export default class Eventee extends Component {
 
          return {
             prevProps: props,
+            playingAudioUrl: null,
             defaultCalendarySlug: cal,
             order: order,
             title: Eventee.getTitle(props),
@@ -203,6 +205,7 @@ export default class Eventee extends Component {
       super(props)
 
       this.onSpanHeaderClick = this.onSpanHeaderClick.bind(this)
+      this.onActivePlay = this.onActivePlay.bind(this)
       this.onImageClick = this.onImageClick.bind(this)
    }
 
@@ -231,6 +234,10 @@ export default class Eventee extends Component {
       let memo = this.state.describedMemoes[0]
 
       return memo && memo.description
+   }
+
+   onActivePlay(url) {
+      this.setState({playingAudioUrl: url})
    }
 
    onSpanHeaderClick(e) {
@@ -355,7 +362,13 @@ export default class Eventee extends Component {
                         {this.state.sortedScripta.map((scriptum) =>
                            <div className='row'>
                               <div className='col s12 title'>
-                                 {this.getScriptumTitle(scriptum)}</div>
+                                 <span>
+                                    {this.getScriptumTitle(scriptum)}</span>a
+                                 {scriptum.audio_url && <Player
+                                     url={scriptum.audio_url}
+                                     onActivePlay={this.onActivePlay}
+                                     playing={scriptum.audio_url == this.state.playingAudioUrl}
+                                  />}</div>
                               <div className='col s12 scriptum'>
                                  <Markdown source={scriptum.text} /></div></div>)}</div></div>}</div>
             {this.props.image_url &&
