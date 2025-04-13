@@ -172,7 +172,8 @@ class Admin::CommonController < ApplicationController
 
       @objects =
          if query.respond_to?(:distinct_by)
-            query.distinct_by("#{table_name}.#{model.primary_key}")
+            q = query.distinct_by("#{table_name}.#{model.primary_key}")
+            q.reorder("#{table_name}.#{model.primary_key}", q.order_values)
          else
             query
          end

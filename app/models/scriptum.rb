@@ -1,5 +1,6 @@
 class Scriptum < ActiveRecord::Base
    extend TotalSize
+   include DistinctBy
    include Languageble
    include Tokens
    include WithLocaleNames
