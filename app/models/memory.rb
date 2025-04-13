@@ -774,7 +774,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       joins(join).select(selector).group(:id, "#{this}_roundels.url")
    end
 
-   scope :with_slug_text, -> do
+   scope :with_slug_text, -> _context do
       selector = self.select_values.dup
       if selector.empty?
          selector << 'memories.*'
@@ -799,7 +799,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       joins(join).select(selector).group(:id, "#{asr}_#{this}_slugs.id", "#{asr}_#{this}_slugs.text")
    end
 
-   scope :with_slug, -> do
+   scope :with_slug, -> _context do
       as = table.table_alias || table.name
       selector = self.select_values.dup
       selector << "#{as}.*" if selector.empty?
@@ -844,6 +844,82 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       select(selector).group(:id)
    end
 
+   scope :with_attitude_to, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      this = table.table_alias || table.name
+      language_codes = [context[:text_language] || context[:text_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{this}_#{as}_short_names.text AS _#{as}"
+
+      join = "JOIN short_names AS #{this}_#{as}_short_names
+                ON #{this}.id = #{this}_#{as}_short_names.memory_id
+               AND #{this}_#{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+               AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{this}_#{as}_short_names.text")
+   end
+
+   scope :with_gallery_title, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      this = table.table_alias || table.name
+      language_codes = [context[:text_language] || context[:text_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE(#{as}_short_names.text, '') AS _gallery_title"
+
+      join = "JOIN short_names AS #{as}_short_names
+                ON #{this}.id = #{as}_short_names.memory_id
+               AND #{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+               AND #{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{as}_short_names.text")
+   end
+
+   scope :with_orders, -> context do
+      language_codes = [ context[:text_languages] ].flatten
+      cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
+      this = table.table_alias || table.name
+
+      selector = "COALESCE((WITH __orders AS (
+                       SELECT DISTINCT ON(memo_slugs.text)
+                              COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
+                              order_titles_memoes.text AS name
+                         FROM memories AS orders
+              LEFT OUTER JOIN memoes
+                           ON #{this}.id = memoes.event_id
+              LEFT OUTER JOIN calendaries
+                           ON calendaries.id = memoes.calendary_id
+              LEFT OUTER JOIN slugs AS calendary_slugs
+                           ON calendary_slugs.sluggable_id = calendaries.id
+                          AND calendary_slugs.sluggable_type = 'Calendary'
+                              #{cslugs_rule}
+              LEFT OUTER JOIN memo_orders
+                           ON memo_orders.memo_id = memoes.id
+              LEFT OUTER JOIN slugs AS memo_slugs
+                           ON memo_slugs.sluggable_id = orders.id
+                          AND memo_slugs.sluggable_type = 'Memory'
+              LEFT OUTER JOIN descriptions AS order_titles_memoes
+                           ON order_titles_memoes.describable_id = orders.id
+                          AND order_titles_memoes.describable_type = 'Memory'
+                          AND order_titles_memoes.type IN ('Tweet')
+                          AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
+                        WHERE orders.id = memo_orders.order_id
+                          AND orders.type = 'Order'
+                          AND calendaries.licit = 't'
+                     GROUP BY order_titles_memoes.text, memo_slugs.text)
+                       SELECT jsonb_agg(__orders)
+                         FROM __orders), '[]'::jsonb) AS _orders"
+
+      #binding.pry
+      select(selector).group(:id)
+   end
    scope :with_events, -> context do
       this = table.table_alias || table.name
       language_codes = [context[:text_languages]].flatten.compact

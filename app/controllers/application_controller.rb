@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
       @_context ||= {
          locales: I18n.available_locales,
          locale: I18n.locale,
+         calendary_slugs: @calendary_slugs,
          language: @language,
          alphabeth: @alphabeth,
       }

@@ -2,6 +2,7 @@
 require 'securerandom'
 
 class Picture < ApplicationRecord
+   extend TotalSize
    include WithTitles
    include WithDescriptions
 
@@ -13,7 +14,9 @@ class Picture < ApplicationRecord
    has_many :memories, as: :imageable, through: :attitudes, source: :imageable, source_type: :Memory
    has_many :events, as: :imageable, through: :attitudes, source: :imageable, source_type: :Event
 
-   default_scope { order(created_at: :asc) }
+   default_scope { order(updated_at: :desc) }
+
+   scope :all_pictures, ->() { reorder(updated_at: :desc) }
 
    scope :by_language, ->(l) do
       joins(:titles, :descriptions).where(titles: { language_code: l}).and(where(descriptions: { language_code: l}))
@@ -96,6 +99,60 @@ class Picture < ApplicationRecord
       else
          by_default_or_specific_title(uno)
       end
+   end
+
+   scope :with_attitudes_to, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      this = table.table_alias || table.name
+      language_codes = [context[:text_language] || context[:text_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE((WITH __#{as} AS (
+                       SELECT DISTINCT ON(slug, event_id) 
+                              #{this}_#{as}_slugs.text AS slug,
+                              #{this}_#{as}_short_names.text AS memory_title,
+                              COALESCE(#{this}_#{as}_event_titles.text, #{as}_#{this}_default_titles.text, '') AS event_title,
+                              #{this}_#{as}_events.id AS event_id
+                         FROM image_attitudes
+              LEFT OUTER JOIN events AS #{this}_#{as}_events
+                           ON image_attitudes.imageable_id = #{this}_#{as}_events.id
+                          AND image_attitudes.imageable_type = 'Event'
+                         JOIN slugs AS #{this}_#{as}_slugs
+                           ON (#{this}_#{as}_slugs.sluggable_id = image_attitudes.imageable_id
+                          AND 'Memory' = image_attitudes.imageable_type
+                           OR #{this}_#{as}_slugs.sluggable_id = #{this}_#{as}_events.memory_id)
+                          AND #{this}_#{as}_slugs.sluggable_type = 'Memory'
+
+                         JOIN short_names AS #{this}_#{as}_short_names
+                           ON image_attitudes.imageable_id = #{this}_#{as}_short_names.memory_id
+                          AND image_attitudes.imageable_type = 'Memory'
+                          AND #{this}_#{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+
+              LEFT OUTER JOIN descriptions AS #{this}_#{as}_event_titles
+                           ON #{this}_#{as}_event_titles.describable_id = #{this}_#{as}_events.id
+                          AND #{this}_#{as}_event_titles.describable_type = 'Event'
+                          AND #{this}_#{as}_event_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                          AND #{this}_#{as}_event_titles.type = 'Title'
+
+              LEFT OUTER JOIN subjects AS #{this}_#{as}_kinds
+                           ON #{this}_#{as}_events.kind_code = #{this}_#{as}_kinds.key
+              LEFT OUTER JOIN descriptions AS #{as}_#{this}_default_titles
+                           ON #{this}_#{as}_kinds.id = #{as}_#{this}_default_titles.describable_id
+                          AND #{as}_#{this}_default_titles.describable_type = 'Subject'
+                          AND #{as}_#{this}_default_titles.type = 'Appellation'
+                          AND #{as}_#{this}_default_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_#{this}_default_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                          WHERE #{this}.id = image_attitudes.picture_id)
+
+                       SELECT jsonb_agg(__#{as})
+                         FROM __#{as}), '[]'::jsonb) AS _#{as}"
+
+      select(selector).group(:id)
    end
 
    validates_presence_of :type, :uid, :image

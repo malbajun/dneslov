@@ -80,7 +80,7 @@ class MemoriesController < ApplicationController
 
    def fetch_events
       @events = @memory.events
-                       .memoed_for(@calendary_slugs)
+                       .memoed_for(context)
                        .with_orders(context)
                        .with_scripta(context)
                        .with_short_memoes(context)

@@ -25,7 +25,7 @@ class EventsController < ApplicationController
 
    def set_event
       @events = @memory.events
-                       .memoed_for(@calendary_slugs)
+                       .memoed_for(context)
                        .with_memory(context)
                        .with_scripta(context)
                        .with_memoes(context)

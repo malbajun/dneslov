@@ -91,7 +91,11 @@ class Event < ActiveRecord::Base
    scope :usual, -> { where(kind_code: USUAL) }
    scope :calendaried, ->(calendary_slugs) { self.joins(:memos).where(memoes: { calendary_id: Calendary.by_slugs(calendary_slugs).unscope(:select).select(:id) }) }
    scope :memoed, -> { joins(:memos).merge(Memo.licit).distinct }
-   scope :memoed_for, ->(calendary_slugs) { joins(:memos).calendaried(calendary_slugs).merge(Memo.licit).distinct }
+   scope :memoed_for, ->(context) do
+      calendary_slugs = context[:calendary_slugs]
+
+      joins(:memos).calendaried(calendary_slugs).merge(Memo.licit).distinct
+   end
    scope :by_token, -> text do
       left_outer_joins( :kind, :titles ).
          merge(Subject.by_token(text)).
@@ -454,6 +458,101 @@ class Event < ActiveRecord::Base
 
       #binding.pry
       select(selector).group(:id)
+   end
+
+   scope :with_attitude_to, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      this = table.table_alias || table.name
+      language_codes = [context[:text_language] || context[:text_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE(#{this}_#{as}_short_names.text || '#' || #{this}.id, '') AS _#{as}"
+
+      join = "JOIN short_names AS #{this}_#{as}_short_names
+                ON #{this}.memory_id = #{this}_#{as}_short_names.memory_id
+               AND #{this}_#{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+               AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{this}_#{as}_short_names.text")
+   end
+
+   scope :with_slug_text, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || "slug"
+      ast = as.to_s.tableize
+      this = table.table_alias || table.name
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE(#{this}_#{ast}.text, '') AS _#{as}"
+
+      join = "JOIN #{ast} AS #{this}_#{ast}
+                ON #{this}.memory_id = #{this}_#{ast}.sluggable_id
+               AND 'Memory' = #{this}_#{ast}.sluggable_type"
+
+      joins(join).select(selector).group(:id, "#{this}_#{ast}.text")
+   end
+
+   scope :with_event_id, -> _context do
+      this = table.table_alias || table.name
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{this}.id AS _event_id"
+
+      select(selector).group(:id, "#{this}.id")
+   end
+
+   scope :with_gallery_event, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      this = table.table_alias || table.name
+      language_codes = [context[:text_language] || context[:text_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE(#{as}_titles.text, #{as}_#{this}_default_titles.text, '') AS _gallery_event"
+
+      join = "LEFT OUTER JOIN subjects AS #{this}_kinds
+                           ON #{this}.kind_code = #{this}_kinds.key
+              LEFT OUTER JOIN descriptions AS #{as}_#{this}_default_titles
+                           ON #{this}_kinds.id = #{as}_#{this}_default_titles.describable_id
+                          AND #{as}_#{this}_default_titles.describable_type = 'Subject'
+                          AND #{as}_#{this}_default_titles.type = 'Appellation'
+                          AND #{as}_#{this}_default_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_#{this}_default_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+
+              LEFT OUTER JOIN descriptions AS #{as}_titles
+                           ON #{as}_titles.describable_id = #{this}.id
+                          AND #{as}_titles.describable_type = 'Event'
+                          AND #{as}_titles.type = 'Title'
+                          AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{as}_titles.text", "#{as}_#{this}_default_titles.text")
+   end
+
+   scope :with_gallery_title, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      this = table.table_alias || table.name
+      language_codes = [context[:text_language] || context[:text_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE(#{as}_short_names.text, '') AS _gallery_title"
+
+      join = "JOIN short_names AS #{as}_short_names
+                ON #{this}.memory_id = #{as}_short_names.memory_id
+               AND #{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+               AND #{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{as}_short_names.text")
    end
 
    scope :with_orders, -> context do

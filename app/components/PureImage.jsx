@@ -3,11 +3,13 @@ import { Component } from 'react'
 export default class Image extends Component {
    static defaultProps = {
       src: null,
+      uid: null,
       alt: null,
       index: null,
       wrapperClassName: "",
       onLoad: null,
-      onError: null
+      onError: null,
+      onClick: null,
    }
 
    state = {
@@ -15,11 +17,18 @@ export default class Image extends Component {
       errored: false,
    }
 
+   constructor(props) {
+      super(props)
+
+      this.onImageClick = this.onImageClick.bind(this)
+      this.onImageCompleted = this.onImageCompleted.bind(this)
+   }
+
    stateChanged() {
-      if (this.state.errored) {
-         this.props.onError && this.props.onError(this.props.index)
-      } else if (this.state.loaded) {
-         this.props.onLoad && this.props.onLoad(this.props.index)
+      if (this.state.errored && this.props.onError) {
+         this.props.onError(this.props.index, this.props.uid, this.props.src)
+      } else if (this.state.loaded && this.props.onLoad) {
+         this.props.onLoad(this.props.index, this.props.uid, this.props.src)
       }
    }
 
@@ -34,6 +43,15 @@ export default class Image extends Component {
       this.setState((prevState) => { return { loaded: !errored, errored: errored }}, this.stateChanged.bind(this))
    }
 
+   onImageClick(e) {
+      if (this.props.onClick) {
+         this.props.onClick(this.props.uid, this.props.src)
+      }
+
+      e.preventDefault()
+      e.stopPropagation()
+   }
+
    render() {
       console.debug("[render] **", { 'this.props': this.props, 'this.state': this.state })
 
@@ -43,5 +61,8 @@ export default class Image extends Component {
             src={this.props.src}
             className={this.props.wrapperClassName}
             data-index={this.props.index}
-            onLoad={this.onImageCompleted.bind(this)}
-            onError={this.onImageCompleted.bind(this)} />)}}
+            onClick={this.onImageClick}
+            onLoad={this.onImageCompleted}
+            onError={this.onImageCompleted} />)
+   }
+}

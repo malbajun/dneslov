@@ -2,17 +2,27 @@ import { Component } from 'react'
 import { mixin } from 'lodash-decorators'
 import PropTypes from 'prop-types'
 
+import StackGrid from "react-stack-grid"
+import PureImage from 'PureImage'
 import ImageCard from 'ImageCard'
 import Markdown from 'Markdown'
 import MetaTags from 'react-meta-tags'
+import ReactScrollPagination from '@majioa/react-scroll-pagination'
+import axios from 'axios'
 import { getUrlsFrom } from 'support'
 
 export default class Gallery extends Component {
    static defaultProps = {
       images: [],
-      attitude_to: null,
+      total: null,
       slug: null,
+      gallery_title: null,
+      gallery_event: null,
+      attitude_to: null,
 
+      grid: true,
+      url: null,
+      nextLoadStep: 25,
       active: null,
       defaultCalendarySlug: null,
       specifiedCalendarySlug: null,
@@ -20,16 +30,17 @@ export default class Gallery extends Component {
       selectedCalendaries: [],
       calendarStyle: 'julian',
       i18n: {
-         title: "Выставка"
+         title: "Выставка",
+         on_topic: " на тему "
       },
    }
 
    static propTypes = {
+      images: PropTypes.array.isRequired,
+      total: PropTypes.number.isRequired,
+      gallery_title: PropTypes.string.isRequired,
       defaultCalendarySlug: PropTypes.string,
       specifiedCalendarySlug: PropTypes.string,
-      images: PropTypes.array.isRequired,
-      attitude_to: PropTypes.string.isRequired,
-      slug: PropTypes.string.isRequired,
 
       active: PropTypes.string,
       wrapperYearDateClass: PropTypes.string,
@@ -39,32 +50,33 @@ export default class Gallery extends Component {
 
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
-         let titles = Gallery.collectTitles(props),
-             descriptions = Gallery.collectDescriptions(props)
+         let titles = Gallery.collectTitles(props)
 
          return {
             prevProps: props,
-            images: props.images,
-            attitudeTo: props.attitude_to,
+            images: [],
+            galleryTitle: props.gallery_title,
             query: props.query,
-            tagKeywords: Gallery.getKeywords(props.attitude_to, titles),
-            tagTitle: Gallery.getTitle(props.attitude_to, titles),
-            tagDescription: Gallery.getDescription(props.attitude_to, descriptions),
+            nonLoadedImages: props.images,
+            totalImages: props.total,
+            fetchedImages: props.images.length,
+            images: [],
+            isNextRequesting: false,
+            url: props.url || Gallery.generateUrl(props),
+            tagKeywords: Gallery.getKeywords(props.gallery_title, titles),
+            tagTitle: Gallery.getTitle(props.gallery_title, titles),
          }
       }
 
       return null
    }
 
-   state = {}
+   state = { nonLoadedImages: [] }
 
-//   getDescription() {
-//      let array = (this.props.images[0]?.titles || []).concat(this.props.images[0]?.descriptions || []),
-//          desc = array.reduce((res, x) => { return res + " " + x.text }, "")
-//
-//      return (this.state.attitudeTo + ": " + desc).slice(0, 255)
-//   }
-//
+   static generateUrl(props) {
+      return '/' + [props.slug, props.event_id, 'gallery.json'].compact().join('/')
+   }
+
    static getKeywords(shortName, titles) {
       let re = RegExp("[\\s,]+", "i"),
           array = [
@@ -84,25 +96,118 @@ export default class Gallery extends Component {
       return array.join(" ").slice(0, 255)
    }
 
-   static getDescription(shortName, descriptions) {
-      let array = [
-         shortName,
-         descriptions
-      ].flat().uniq()
-
-      return array.join(" ").slice(0, 255)
-   }
-
    static collectTitles(props) {
       return props.images.reduce((res, x) => {
          return res.concat(x.titles.map(y => y.text))
       }, [])
    }
 
-   static collectDescriptions(props) {
-      return props.images.reduce((res, x) => {
-         return res.concat(x.descriptions.map(y => y.text))
-      }, [])
+   constructor(props) {
+      super(props)
+
+      this.onImageClick = this.onImageClick.bind(this)
+      this.onImageLoaded = this.onImageLoaded.bind(this)
+      this.onImageErrored = this.onImageErrored.bind(this)
+      this.onLoadSuccess = this.onLoadSuccess.bind(this)
+      this.onLoadFailure = this.onLoadFailure.bind(this)
+      this.fetchNext = this.fetchNext.bind(this)
+   }
+
+   componentDidUpdate() {
+      if (this.state.isNextRequesting) {
+         this.submit()
+      }
+   }
+
+   // props
+   fetchNext() {
+      if (this.state.totalImages > this.state.fetchedImages && !this.state.isNextRequesting) {
+         console.log("[fetchNext] * getting...")
+
+         if (this.state.url) {
+            this.setState({isNextRequesting: true})
+         }
+
+         //if (this.props.onFetchNext) {
+         //   this.props.onFetchNext()
+         //}
+      }
+   }
+
+   submit() {
+      let query = {}, headers = {
+             'Content-Type': 'application/json',
+             'Range': 'records=' + this.state.fetchedImages + '-' + (this.state.fetchedImages + this.props.nextLoadStep)
+          }
+
+      if (this.props.calendariesCloud) {
+         query["c"] = this.props.calendariesCloud
+      }
+
+      console.debug("[submit] **", this.state.url, { params: query, headers: headers })
+      axios.get(this.state.url, { params: query, headers: headers })
+         .then(this.onLoadSuccess.bind(this))
+         .catch(this.onLoadFailure.bind(this))
+   }
+
+   getClassName() {
+      return this.state.isNextRequesting ? 'in-progress' : ''
+   }
+
+   // event
+   onLoadSuccess(response) {
+      console.debug("[onLoadSuccess] <<< response", response)
+      console.debug("[onLoadSuccess] <<< response", response.data, response.data.total)
+
+      let list = this.state.nonLoadedImages.concat(response.data.images || [])
+      this.setState({
+         isNextRequesting: false,
+         fetchedImages: this.state.fetchedImages + response.data.images.length,
+         nonLoadedImages: list
+      })
+   }
+
+   onLoadFailure(err) {
+      console.debug("[onLoadFailure] <<< response", err.response)
+      console.debug("[onLoadFailure] <<< response", err.config)
+
+      let data = err.response?.data || {}
+
+      this.setState({
+         isNextRequesting: false,
+         fetchedImages: this.state.fetchedImages + this.props.nextLoadStep,
+         trace: data.trace,
+         errors: data.errors
+      })
+   }
+
+   onImageClick(uid, imageUrl) {
+      console.log("[onImageClick] * getting...", uid, imageUrl)
+      let url = "/gallery/" + uid
+      console.log("[onImageClick] * getting...", url)
+
+      window.open(url, "_self")
+   }
+
+   onImageErrored(_i, uid) {
+      let index = this.state.nonLoadedImages.findIndex((i) => i.uid == uid),
+          _items = this.state.nonLoadedImages.splice(index, 1)
+
+      console.debug("[onImageErrored] **", uid)
+      this.setState({
+         nonLoadedImages: this.state.nonLoadedImages
+      })
+   }
+
+   onImageLoaded(_i, uid) {
+      let index = this.state.nonLoadedImages.findIndex((i) => i.uid == uid),
+          items = this.state.nonLoadedImages.splice(index, 1)
+
+      console.debug("[onImageLoaded] **", uid)
+      this.setState({
+         images: this.state.images.concat(items),
+         nonLoadedImages: this.state.nonLoadedImages
+      })
    }
 
    render() {
@@ -121,12 +226,39 @@ export default class Gallery extends Component {
             <meta
                id="meta-description"
                name="description"
-               content={this.state.tagDescription} /></MetaTags>,
+               content={this.state.tagTitle} /></MetaTags>,
          <h4>
-            <span>{this.props.i18n.title} "</span>
-            <a href={"/" + this.props.slug}>{this.state.attitudeTo}</a>"</h4>,
+            <span>{this.props.i18n.title}</span>
+            {this.state.galleryTitle &&
+               <span>&nbsp;
+                  <a href={"/" + this.props.slug}>{this.state.galleryTitle}</a></span>}</h4>,
+         <h5>{this.props.gallery_event && <span>{this.props.i18n.on_topic}<a href={"/" + this.props.slug + '/' + this.props.event_id}>{this.props.gallery_event}</a></span>}</h5>,
          <div className='row gallery'>
-            {this.state.images.isPresent() && this.state.images.map((picture, index) =>
+            <div
+               className="container">
+               {this.state.nonLoadedImages.map((picture, index) =>
+                  <div
+                     className="hidden">
+                     <PureImage
+                        key={"hidden-pure-image-" + picture.uid}
+                        uid={picture.uid}
+                        src={picture.thumb_url}
+                        onError={this.onImageErrored}
+                        onLoad={this.onImageLoaded} /></div>)}
+               <StackGrid
+                  columnWidth={150}>
+                  {this.state.images.map((picture, index) =>
+                     <div key={"div-image-" + picture.uid}>
+                     <PureImage
+                        key={"pure-image-" + picture.uid}
+                        uid={picture.uid}
+                        wrapperClassName='icon'
+                        src={picture.thumb_url}
+                        alt={picture.titles[0]?.text}
+                        onClick={this.onImageClick}/></div>)}
+               </StackGrid>
+                  </div>
+            {!this.props.grid && this.state.images.isPresent() && this.state.images.map((picture, index) =>
                <div className='col s4 image'>
                   <ImageCard
                      key={picture.uid}
@@ -136,7 +268,14 @@ export default class Gallery extends Component {
                      event_id={this.props.event_id}
                      thumb={picture.thumb_url}
                      title={picture.titles[0]?.text}
-                     index={index}
-                     description={picture.descriptions[0]?.text} /></div>)}</div>]
+                     index={index} /></div>)}
+               <div
+                  className={"loader" + this.getClassName()}>
+               <ReactScrollPagination
+                  excludeElement='header'
+                  total={this.state.totalImages}
+                  loadedTotal={this.state.fetchedImages}
+                  fetchFunc={this.fetchNext} /></div>
+ </div>]
    }
 }

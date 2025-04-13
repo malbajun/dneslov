@@ -56,15 +56,15 @@ export function parseDateString(string) {
 
 export function getPathsFromState(state) {
    console.debug("[getPathsFromState] <<<", state)
-   console.debug("[getPathsFromState] **", state.calendarySlug, state.memory?.slug, state.eventee, state.gallery, state.image)
+   console.debug("[getPathsFromState] **", state.calendarySlug, state.memory?.slug, state.eventee, state.attituded, state.image)
    let calendarySlug = state.query.c?.split(",").length == 1 && state.query.c ||
        state.query.c?.split(",")?.length == 0 && state.calendarySlug || null,
        path = "/" + [
           calendarySlug,
-          (state.memory?.slug || state.eventee?.memory?.slug || state.gallery?.slug || state.image?.slug),
-          state.eventee?.id || state.gallery?.event_id || (state.gallery || state.image) && "gallery",
-          state.gallery?.event_id && (state.gallery || state.image) && "gallery",
-          state.image?.picture?.uid
+          (state.memory?.slug || state.eventee?.memory?.slug || state.attituded?.slug || state.image?.slug),
+          state.eventee?.id || state.attituded?.event_id || (state.attituded || state.image) && "gallery",
+          state.attituded?.event_id && (state.attituded || state.image) && "gallery",
+          state.image?.uid
        ].compact().join("/"),
        jsonPath = (path === '/' && 'index' || path) + '.json',
        args = "",

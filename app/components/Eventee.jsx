@@ -363,7 +363,7 @@ export default class Eventee extends Component {
                            <div className='row'>
                               <div className='col s12 title'>
                                  <span>
-                                    {this.getScriptumTitle(scriptum)}</span>a
+                                    {this.getScriptumTitle(scriptum)}</span>
                                  {scriptum.audio_url && <Player
                                      url={scriptum.audio_url}
                                      onActivePlay={this.onActivePlay}
