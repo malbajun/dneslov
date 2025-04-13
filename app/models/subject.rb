@@ -1,5 +1,6 @@
 class Subject < ActiveRecord::Base
    extend TotalSize
+   include DistinctBy
    include WithDescriptions
    include WithLinks
 

@@ -1,5 +1,6 @@
 class Name < ActiveRecord::Base
    extend TotalSize
+   include DistinctBy
    include Languageble
    include WithDescriptions
    include WithLinks

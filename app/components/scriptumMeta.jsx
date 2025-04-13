@@ -87,6 +87,9 @@ export const scriptumMeta = {
       },
    },
    form: {
+      id: {
+         kind: 'hidden',
+      },
       type: {
          kind: 'select',
          title: 'Вид текста',

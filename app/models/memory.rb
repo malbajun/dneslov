@@ -6,13 +6,13 @@ class Memory < ApplicationRecord
    extend TotalSize
    extend DefaultKey
    extend Informatible
+   include DistinctBy
    include WithTitles
    include WithDescriptions
    include WithTweets
    include WithNotes
    include WithLinks
    include ByToken
-   include DistinctBy
 
    has_one :slug, as: :sluggable, dependent: :destroy
    has_many :memory_names, dependent: :destroy

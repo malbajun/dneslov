@@ -1,5 +1,6 @@
 class Role < ApplicationRecord
    extend TotalSize
+   include DistinctBy
    include WithTweets
    include WithTitles
    include WithDescriptions

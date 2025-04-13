@@ -286,7 +286,7 @@ export default class Records extends Component {
                   {this.state.records.map((record) =>
                      <Row
                         key={this.props.meta.remoteName + "-" + record.id}
-                        className={this.props.meta.remoteName + "-" + record.id}
+                        uid={this.props.meta.remoteName + "-" + record.id}
                         value={record}
                         meta={this.props.meta.row}
                         default={this.props.meta.default}
