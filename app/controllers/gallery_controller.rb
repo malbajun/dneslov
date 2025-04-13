@@ -1,65 +1,51 @@
 class GalleryController < ApplicationController
-   before_action :set_memory, only: %i(show index)
    before_action :set_event, only: %i(index), if: -> { params[:event].present? }
    before_action :set_images, only: %i(index)
    before_action :set_image, only: %i(show)
 
    include CoreFeatures
 
+   # GET /gallery.json
+   # GET /gallery
    # GET /:slug/gallery.json
    # GET /:slug/gallery
+   # GET /:slug/:event_id/gallery.json
+   # GET /:slug/:event_id/gallery
    def index
       respond_to do |format|
          format.html do
             render :index,
                locals: {
-                  gallery: {
-                     images: @images.jsonize,
-                     attitude_to: attitude_to,
-                     slug: memory.slug.text,
-                     event_id: @event&.id
-                  },
+                  attituded: attituded_json,
+                  images: @images.ranged_with(@range).jsonize(context),
+                  total: @images.total_size,
+                  range: @range,
                   cloud: @calendary_cloud.jsonize
                }
          end
          format.json do
-            render json: {
-               images: @images.jsonize,
-               attitude_to: attitude_to,
-               slug: memory.slug.text,
-               event_id: @event&.id
-            }
+            render plain: attituded_json.merge({
+               images: @images.ranged_with(@range).jsonize(context),
+               total: @images.total_size,
+               range: @range,
+            }).to_json(context)
          end
       end
    end
 
-   # GET /:slug/gallery/:uid.json
-   # GET /:slug/gallery/:uid
-   # GET /:slug/:event_id/gallery/:uid.json
-   # GET /:slug/:event_id/gallery/:uid
+   # GET /gallery/:uid.json
+   # GET /gallery/:uid
    def show
       respond_to do |format|
          format.html do
             render :show,
                locals: {
-                  image: {
-                     picture: @image.jsonize,
-                     context: context,
-                     attitude_to: attitude_to,
-                     slug: memory.slug.text,
-                     event_id: @event&.id
-                  },
+                  image: image_json,
                   cloud: @calendary_cloud.jsonize
                }
          end
          format.json do
-            render json: {
-               picture: @image.jsonize,
-               context: context,
-               attitude_to: attitude_to,
-               slug: memory.slug.text,
-               event_id: @event&.id
-            }
+            render json: image_json
          end
       end
    end
@@ -75,37 +61,52 @@ class GalleryController < ApplicationController
    end
 
    def attituded
-      @event || @memory
+      @event || @memory || Picture
    end
 
-   def attitude_to
-      if @event
-         "#{@event.memory.short_name}##{@event.id}"
-      elsif @memory
-         @memory.short_name
+   def image_json
+      @image.jsonize(only: %w(uid title description attitudes_to url type width height))
+   end
+
+   def attituded_json
+      if attituded.is_a?(Class)
+         {}
+      else
+         attituded.jsonize(only: %w(id gallery_title gallery_event attitude_to slug event_id))
       end
    end
 
    def set_images
-      @images = attituded.all_pictures
-                         .with_titles(context)
-                         .with_descriptions(context)
+      objects
+   end
+
+   def objects
+      @images ||= attituded.all_pictures.with_titles(context)
    end
 
    def set_image
       @image =
-         attituded.all_pictures
-         .with_titles(context)
-         .with_descriptions(context)
-         .by_uid(params[:uid])
-         .first || raise(::ActiveRecord::RecordNotFound.new(params[:uid]))
+         %w(with_attitudes_to with_title with_description).reduce(attituded.all_pictures) do |q, method|
+            q.respond_to?(method) ? q.send(method, context) : q
+         end.by_uid(params[:uid]).first || raise(::ActiveRecord::RecordNotFound.new(params[:uid]))
    end
 
    def set_event
-      @events = @memory.events
-                       .memoed_for(@calendary_slugs)
+      @events =
+         %w(with_attitude_to with_slug_text with_event_id with_gallery_title with_gallery_event memoed_for).reduce(@memory.events) do |q, method|
+            q.respond_to?(method) ? q.send(method, context) : q
+         end
 
       @event ||= @events.by_event_code(params[:event]).first || raise(ActiveRecord::RecordNotFound)
+   end
+
+   def set_memory
+      @memorys ||=
+         %w(with_attitude_to with_slug_text with_gallery_title with_short_name).reduce(Memory.unscoped) do |q, method|
+            q.respond_to?(method) ? q.send(method, context) : q
+         end
+
+      @memory ||= @memorys.find_by_slug(@slug.text) || raise( ActiveRecord::RecordNotFound )
    end
 
    def set_picture

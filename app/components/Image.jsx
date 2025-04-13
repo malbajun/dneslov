@@ -6,7 +6,6 @@ import MetaTags from 'react-meta-tags'
 export default class Image extends Component {
    static defaultProps = {
       url: null,
-      thumb: null,
       title: null,
       description: null,
       index: null,
@@ -22,59 +21,27 @@ export default class Image extends Component {
 
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
-         let titles = Image.collectTitles(props),
-             descriptions = Image.collectDescriptions(props)
+         console.log("[render] *", { 'props': props, 'state': state })
 
          return {
             prevProps: props,
-            imageUrl: props.picture.image,
-            tagKeywords: Image.getKeywords(props.attitude_to, titles),
-            tagTitle: Image.getTitle(props.attitude_to, titles),
-            tagDescription: Image.getDescription(props.attitude_to, descriptions),
+            imageUrl: props.url,
+            tagKeywords: Image.getTag(props.attitude_to, props.title),
+            tagTitle: Image.getTag(props.attitude_to, props.title),
+            tagDescription: Image.getTag(props.attitude_to, props.description),
          }
       }
 
       return null
    }
 
-   static getKeywords(shortName, titles) {
-      let re = RegExp("[\\s,]+", "i"),
-          array = [
-         shortName,
-         titles.map((x) => x.split(re))
-      ].flat().compact().uniq()
-
-      return array.join(", ").slice(0, 255)
-   }
-
-   static getTitle(shortName, titles) {
+   static getTag(first, second) {
       let array = [
-         shortName,
-         titles
-      ].flat().uniq()
+         first,
+         second
+      ].uniq()
 
-      return array.join(" ").slice(0, 255)
-   }
-
-   static getDescription(shortName, descriptions) {
-      let array = [
-         shortName,
-         descriptions
-      ].flat().uniq()
-
-      return array.join(" ").slice(0, 255)
-   }
-
-   static collectTitles(props) {
-      return props.picture.titles.reduce((res, x) => {
-         return res.concat(x.text)
-      }, [])
-   }
-
-   static collectDescriptions(props) {
-      return props.picture.descriptions.reduce((res, x) => {
-         return res.concat(x.text)
-      }, [])
+      return array.join(":").slice(0, 255)
    }
 
    state = {
@@ -131,25 +98,11 @@ export default class Image extends Component {
          errored = true
       }
 
-      this.setState((prevState) => { return { loaded: !errored, errored: errored }}, this.stateChanged.bind(this))
-   }
-
-   title() {
-      let languages = this.props.context.text_languages
-
-      return this.props.picture.titles.find((x) => languages.includes(x.language_code))?.text
-   }
-
-   description() {
-      if (this.descriptionText) {
-         return this.descriptionText
-      }
-
-      let languages = this.props.context.text_languages
-
-      this.descriptionText = this.props.picture.descriptions.find((x) => languages.includes(x.language_code))?.text
-
-      return this.descriptionText
+      this.setState((prevState) => {
+         return {
+            loaded: !errored, errored: errored
+         }
+      }, this.stateChanged.bind(this))
    }
 
    render() {
@@ -169,21 +122,21 @@ export default class Image extends Component {
                id="meta-description"
                name="description"
                content={this.state.tagDescription} /></MetaTags>,
+         <h5><div className="center">{this.props.title}</div></h5>,
          <div
             className="card hoverable">
-            <h5><div className="center">{this.title()}</div></h5>
             <div
                className="card-image">
                {!this.state.errored && <img
-                  alt={this.title()}
-                  src={this.props.picture.url}
+                  alt={this.props.title}
+                  src={this.props.url}
                   className={this.props.wrapperClassName}
                   onLoad={this.onImageCompleted.bind(this)}
                   onError={this.onImageCompleted.bind(this)} />}</div>
-            {this.props.picture.descriptions.isPresent() &&
+            {this.props.description &&
                <div
                   className="card-content">
                   <p><b>{this.props.i18n.description}</b></p>
-                  <p>{this.description()}</p></div>}</div>]
+                  <p>{this.props.description}</p></div>}</div>]
    }
 }

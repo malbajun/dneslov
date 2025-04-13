@@ -5,7 +5,7 @@ module CoreFeatures
    def self.included k
       k.class_eval do
          prepend_before_action :set_memory, only: %i(index show), if: ->(x) { @slug&.sluggable_type == "Memory" }
-         prepend_before_action :set_slug, only: %i(index show)
+         prepend_before_action :set_slug, only: %i(index show), if: -> { params[:slug].present? }
          prepend_before_action :set_calendary_slugs, only: %i(index show)
          prepend_before_action :set_date, :set_calendary_cloud, :set_julian, :set_languages
          prepend_before_action :default, only: %i(index show)
@@ -32,7 +32,7 @@ module CoreFeatures
       @_context ||= {
          locales: @locales,
          locale: @locale,
-         calendary_slugs: @calendary_slugs,
+         calendary_slugs: calendary_slugs,
          text_languages: @text_languages,
          service_languages: @service_languages,
          language: @language,
@@ -61,6 +61,15 @@ module CoreFeatures
       13.days
    end
 
+   def calendary_slugs
+      @calendary_slugs ||=
+         if params[:c].present?
+            Slug.for_calendary.where(text: params[:c].split(",") ).pluck(:text)
+         else
+            default_calendary_slugs
+         end
+   end
+
    def default_calendary_slugs
       #TODO make automatic detection of calendary depended on the IP and country of request
       ['днес','рпц']
@@ -71,6 +80,8 @@ module CoreFeatures
          params[ :d ] ||= "#{is_julian_calendar? && 'ю' || "н"}#{_date.strftime("%d-%m-%Y")}"
          params[ :c ] ||= default_calendary_slugs.join(",")
       end
+
+      @range = (0..24)
    end
 
    def set_languages
@@ -91,10 +102,7 @@ module CoreFeatures
    end
 
    def set_calendary_slugs
-      @calendary_slugs =
-         if params[:c].present?
-            Slug.for_calendary.where(text: params[:c].split(",") ).pluck(:text)
-         end
+      calendary_slugs
    end
 
    def set_calendary_cloud
@@ -150,18 +158,11 @@ module CoreFeatures
    end
 
    def set_memory
-      @memorys ||= Memory.unscoped
-                         .with_short_name(context)
-                         .with_scripta(context)
-                         .with_memoes(context)
-                         .with_names(context)
-                         .with_coverings(context)
-                         .with_bond_memories(context)
-                         .with_icon(context)
-                         .with_title(context)
-                         .with_description(context)
-                         .with_pure_links
-                         .with_slug_text
+      @memorys ||=
+         %w(with_short_name with_scripta with_memoes with_names with_coverings
+            with_bond_memories with_icon with_title with_description with_slug_text).reduce(Memory.unscoped) do |q, method|
+            q.respond_to?(method) ? q.send(method, context) : q
+         end.with_pure_links
 
       @memory ||= @memorys.find_by_slug(@slug.text) || raise( ActiveRecord::RecordNotFound )
    end

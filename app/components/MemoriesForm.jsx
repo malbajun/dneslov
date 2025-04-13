@@ -30,7 +30,7 @@ export default class MemoriesForm extends Component {
          total: 0,
       },
       memory: null,
-      gallery: null,
+      images: null,
       image: null,
       error: null
    }
@@ -48,9 +48,10 @@ export default class MemoriesForm extends Component {
                memoriesTotal: props.memories.total,
                memory: props.memory,
                eventee: props.eventee,
-               gallery: props.gallery,
+               images: props.images,
                image: props.image,
                user: props.user,
+               attituded: props.attituded,
                error: props.error,
                calendarySlug: props.calendaries_used?.length == 1 ? props.calendaries_used[0] : null,
                calendariesCloud: props.calendaries_cloud || [],
@@ -245,7 +246,7 @@ export default class MemoriesForm extends Component {
             memories: [],
             memory: null,
             eventee: null,
-            gallery: null,
+            images: null,
             image: null,
             error: {
                message: err.response.data.message,
@@ -269,7 +270,7 @@ export default class MemoriesForm extends Component {
             memoriesTotal: memories.total,
             memory: null,
             eventee: null,
-            gallery: null,
+            images: null,
             image: null,
             error: null})
       } else {
@@ -278,7 +279,7 @@ export default class MemoriesForm extends Component {
             memoriesTotal: memories.total,
             memory: null,
             eventee: null,
-            gallery: null,
+            images: null,
             image: null,
             error: null})
       }
@@ -294,7 +295,7 @@ export default class MemoriesForm extends Component {
                           memories: [],
                           query: config.params,
                           eventee: null,
-                          gallery: null,
+                          images: null,
                           image: null,
                           error: null})
 
@@ -308,7 +309,7 @@ export default class MemoriesForm extends Component {
                           memories: [],
                           query: config.params,
                           eventee: eventee,
-                          gallery: null,
+                          images: null,
                           image: null,
                           error: null})
 
@@ -316,13 +317,13 @@ export default class MemoriesForm extends Component {
       this.updateState(state)
    }
 
-   galleryParse(gallery, config) {
+   galleryParse(images, config) {
       let state = merge(this.state,
                         { memory: null,
                           memories: [],
                           query: config.params,
                           eventee: null,
-                          gallery: gallery,
+                          images: images,
                           error: null})
 
       document.body.classList.remove('in-progress')
@@ -335,7 +336,7 @@ export default class MemoriesForm extends Component {
                           memories: [],
                           query: config.params,
                           eventee: null,
-                          gallery: null,
+                          iamges: null,
                           image: image,
                           error: null})
 
@@ -430,7 +431,7 @@ export default class MemoriesForm extends Component {
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
                               {...this.state.eventee} />}
-                        {this.state.gallery &&
+                        {this.state.images &&
                            <Gallery
                               key='gallery'
                               date={parseDateString(this.state.query.d).pop()}
@@ -439,7 +440,9 @@ export default class MemoriesForm extends Component {
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
                               event_id={this.props.eventee?.id}
-                              {...this.state.gallery} />}
+                              total={this.props.total}
+                              images={this.state.images}
+                              {...this.props.attituded} />}
                         {this.state.image &&
                            <Image
                               key='image'
@@ -449,7 +452,7 @@ export default class MemoriesForm extends Component {
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
                               {...this.state.image} />}
-                        {this.props.memories.list && !this.state.error && !this.state.eventee && !this.state.gallery && !this.state.image && !this.state.memory &&
+                        {this.props.memories.list && !this.state.error && !this.state.eventee && !this.state.images && !this.state.image && !this.state.memory &&
                            <div>
                               <div className='row'>
                                  <SearchField
