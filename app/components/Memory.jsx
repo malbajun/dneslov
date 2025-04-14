@@ -406,8 +406,7 @@ export default class Memory extends Component {
                                url={scriptum.audio_url}
                                onActivePlay={this.onActivePlay}
                                playing={scriptum.audio_url == this.state.playingAudioUrl}
-                            />}
-                         </div>
+                            />}</div>
                          <div className='col s12 scriptum'>
                             <Markdown source={scriptum.text} /></div></div>)}</div>}</div>,
          <MemorySpans
