@@ -20,6 +20,8 @@ export default class MemorySpan extends Component {
       bindKindCode: null,
       calendarySlug: null,
       eventTitle: null,
+      usualEventCode: null,
+
       onLoadRequest: null,
    }
 
@@ -33,6 +35,7 @@ export default class MemorySpan extends Component {
 
       this.onAvatarClick = this.onAvatarClick.bind(this)
       this.onSpanHeaderClick = this.onSpanHeaderClick.bind(this)
+      this.onLoadImageError = this.onLoadImageError.bind(this)
    }
 
    componentDidMount() {
@@ -47,13 +50,12 @@ export default class MemorySpan extends Component {
 
    // events
    onAvatarClick(e) {
+      let eventId = this.props.usualEventCode ? this.props.eventId : null
+
+      this.props.onLoadRequest(this.props.slug, eventId)
+
       e.stopPropagation()
       e.preventDefault()
-      this.props.onLoadRequest(this.props.slug)
-   }
-
-   onSpanBodyClick(e) {
-      this.props.onLoadRequest(this.props.slug)
    }
 
    onSpanHeaderClick(e) {
@@ -78,7 +80,9 @@ export default class MemorySpan extends Component {
    }
 
    linkToMemory() {
-      return "/" + this.props.slug
+      let eventId = this.props.usualEventCode ? this.props.eventId : null
+
+      return "/" + [this.props.slug, eventId].compact().join("/")
    }
 
    orders() {
@@ -108,7 +112,7 @@ export default class MemorySpan extends Component {
                   {this.hasImage() &&
                      <img
                         className='circle z-depth-1'
-                        onError={this.onLoadImageError.bind(this)}
+                        onError={this.onLoadImageError}
                         src={this.state.roundelUrl} />}
                   {this.hasNoImage() &&
                      <i className='material-icons circle terracota z-depth-1'>perm_identity</i>}</a>
@@ -125,7 +129,7 @@ export default class MemorySpan extends Component {
             {this.props.description &&
                <div
                   className='collapsible-body description'
-                  onClick={this.onSpanBodyClick.bind(this)} >
+                  onClick={this.onAvatarClick} >
                   <Markdown source={this.props.description} /></div>}</li>)
    }
 }

@@ -96,7 +96,7 @@ class MemoriesController < ApplicationController
    end
 
    def order
-      ['_base_year', '_slug', Arel.sql("position(calendary_slugs_memoes.text::text in '#{cslugs.join(',')}')"), '_event_code']
+      ['_base_year', '_slug', Arel.sql("position(calendary_slugs_memoes.text::text in '#{cslugs.join(',')}')"), '_sort_event_code']
    end
 
    def fetch_memoes
@@ -110,7 +110,8 @@ class MemoriesController < ApplicationController
                                   .with_bond_to_title(context)
                                   .with_event_title(context)
                                   .with_orders(context)
-                                  .with_event
+                                  .with_sort_event_code(context)
+                                  .with_usual_event_code(context)
                                   .distinct_by('_base_year', '_slug')
                                   .group(:id)
                                   .reorder(*order)
