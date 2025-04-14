@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 
 import Memory from 'Memory'
 import Carousel from 'Carousel'
+import MemorySpans from 'MemorySpans'
 import Chip from 'Chip'
 import Name from 'Name'
 import Description from 'Description'
@@ -89,6 +90,8 @@ export default class Eventee extends Component {
             iconLinks: Eventee.getIconLinks(props),
             scripta: selectedScripta,
             sortedScripta: sortedScripta,
+            childrenMemoes: Memory.collectedChildren(props),
+            childrenTotal: Memory.collectedChildrenTotals(props), //props.children_total
             tagKeywords: Eventee.getKeywords(props.short_name, order, props.names, describedMemoes),
             tagTitle: Eventee.getTagTitle(props.short_name, order, describedMemoes),
             tagDescription: Eventee.getDescription(props.short_name, order, describedMemoes, sortedScripta),
@@ -356,21 +359,6 @@ export default class Eventee extends Component {
             {this.props.date && false && <Chip
                cclassName={this.classNameForYearDate()}
                text={this.props.date} />}
-               {this.state.scripta.isPresent() &&
-                  <div className='row'>
-                     <div className='col s12'>
-                        {this.state.sortedScripta.map((scriptum) =>
-                           <div className='row'>
-                              <div className='col s12 title'>
-                                 <span>
-                                    {this.getScriptumTitle(scriptum)}</span>
-                                 {scriptum.audio_url && <Player
-                                     url={scriptum.audio_url}
-                                     onActivePlay={this.onActivePlay}
-                                     playing={scriptum.audio_url == this.state.playingAudioUrl}
-                                  />}</div>
-                              <div className='col s12 scriptum'>
-                                 <Markdown source={scriptum.text} /></div></div>)}</div></div>}</div>
             {this.props.image_url &&
                <div className='col x2 l3 m4 s5 image'>
                   <a
@@ -378,8 +366,31 @@ export default class Eventee extends Component {
                      onClick={this.onImageClick}>
                      <img
                         src={this.props.image_url}
-                        onClick={this.onImageClick} /></a></div>}</div>,
+                        onClick={this.onImageClick} /></a></div>}</div>
          <div className='row'>
+            {this.state.scripta.isPresent() &&
+                <div className='col s12'>
+                   {this.state.sortedScripta.map((scriptum) =>
+                      <div className='row'>
+                         <div className='col s12 title'>
+                            <span>
+                               {this.getScriptumTitle(scriptum)}</span>
+                            {scriptum.audio_url && <Player
+                               url={scriptum.audio_url}
+                               onActivePlay={this.onActivePlay}
+                               playing={scriptum.audio_url == this.state.playingAudioUrl}
+                            />}</div>
+                         <div className='col s12 scriptum'>
+                            <Markdown source={scriptum.text} /></div></div>)}</div>}</div>
+         <MemorySpans
+            memories={this.state.childrenMemoes}
+            totalMemories={this.state.childrenTotal}
+            calendariesCloud={this.props.selectedCalendaries}
+            defaultCalendarySlug={this.state.defaultCalendarySlug}
+            bondMemoryId={this.props.memory_id}
+            url={'/api/v0/memories/'+ this.props.memory_id +'/content.json'}
+            hideIfBlank={true}
+            manualFetch={true} />
             {this.state.describedMemoes.isPresent() &&
                <Description
                   describedMemoes={this.state.describedMemoes}

@@ -602,8 +602,11 @@ class Event < ActiveRecord::Base
       select(selector).group(:id)
    end
 
+   # with memoes and children via memoes
    scope :with_memoes, -> context do
-      language_codes = [ context[:text_languages] ].flatten
+      this = table.table_alias || table.name
+      language_codes = [context[:text_languages]].flatten
+      alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __memoes AS (
@@ -612,6 +615,95 @@ class Event < ActiveRecord::Base
                               memoes.year_date AS year_date,
                               jsonb_object_agg(DISTINCT COALESCE(memo_slugs.text, 'Null'),
                                                         order_titles_memoes.text) AS orders,
+               COALESCE((WITH ___children AS (
+                       SELECT DISTINCT ON(children_slugs.text)
+                              children_slugs.text AS slug
+                         FROM slugs AS children_slugs
+                         JOIN events AS #{this}_children_events
+                           ON children_slugs.sluggable_id = #{this}_children_events.memory_id
+                          AND children_slugs.sluggable_type = 'Memory'
+                         JOIN memoes AS children
+                           ON children.event_id = #{this}_children_events.id
+                         JOIN memoes AS hosts
+                           ON children.bond_to_id = hosts.id
+                          AND children.bind_kind_code = 'соборный'
+                         JOIN events AS #{this}_host_events
+                           ON #{this}.id = #{this}_host_events.id)
+                       SELECT COUNT(___children.slug)
+                         FROM ___children), 0) AS children_total,
+               COALESCE((WITH __children AS (
+                       SELECT DISTINCT ON(#{this}_children_slugs.text)
+                              children.id AS id,
+                              #{this}_children_slugs.text AS slug,
+                              #{this}_child_roundels.url AS roundel_url,
+                              children_order_tweets.text AS order_tweet,
+                              #{this}_children_short_names.text AS order_short_name,
+                              #{this}_children_titles.text AS title,
+                              #{this}_children_memories.base_year AS base_year,
+                              #{this}_children_events.happened_at AS happened_at,
+                              #{this}_children_notes.text AS note,
+                              json_agg(distinct #{this}_calendary_slugs.text) AS calendary_slugs
+                         FROM memoes AS children
+                         JOIN events AS #{this}_children_events
+                           ON children.event_id = #{this}_children_events.id
+                         JOIN memories AS #{this}_children_memories
+                           ON #{this}_children_memories.id = #{this}_children_events.memory_id
+                         JOIN slugs AS #{this}_children_slugs
+                           ON #{this}_children_slugs.sluggable_id = #{this}_children_events.memory_id
+                          AND #{this}_children_slugs.sluggable_type = 'Memory'
+                         JOIN calendaries AS #{this}_calendaries
+                           ON #{this}_calendaries.id = memoes.calendary_id
+                         JOIN slugs AS #{this}_calendary_slugs
+                           ON #{this}_calendary_slugs.sluggable_id = #{this}_calendaries.id
+                          AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
+                              #{cslugs_rule}
+              LEFT OUTER JOIN descriptions AS #{this}_children_titles
+                           ON #{this}_children_titles.describable_id = children.id
+                          AND #{this}_children_titles.describable_type = 'Memo'
+                          AND #{this}_children_titles.type = 'Title'
+                          AND #{this}_children_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_children_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN memo_orders AS #{this}_children_memo_orders
+                           ON #{this}_children_memo_orders.memo_id = children.id
+              LEFT OUTER JOIN memories AS #{this}_children_orders
+                           ON #{this}_children_orders.id = #{this}_children_memo_orders.order_id
+                          AND #{this}_children_orders.type = 'Order'
+              LEFT OUTER JOIN short_names AS #{this}_children_short_names
+                           ON #{this}_children_orders.id = #{this}_children_short_names.memory_id
+                          AND #{this}_children_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_children_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN descriptions AS children_order_tweets
+                           ON children_order_tweets.describable_id = #{this}_children_orders.id
+                          AND children_order_tweets.describable_type = 'Memory'
+                          AND children_order_tweets.type = 'Tweet'
+                          AND children_order_tweets.language_code IN ('#{language_codes.join("', '")}')
+                          AND children_order_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN LATERAL (
+                       SELECT #{this}_child_roundels.url AS url,
+                              #{this}_child_roundels.roundelable_id AS id,
+                              #{this}_child_roundels.roundelable_type AS type
+                         FROM roundels AS #{this}_child_roundels
+                        WHERE #{this}_child_roundels.url IS NOT NULL
+                          AND (#{this}_children_events.memory_id = #{this}_child_roundels.roundelable_id
+                          AND 'Memory' = #{this}_child_roundels.roundelable_type
+                           OR #{this}_children_events.id = #{this}_child_roundels.roundelable_id
+                          AND 'Event' = #{this}_child_roundels.roundelable_type)
+                     ORDER BY random()
+                        LIMIT 1) AS #{this}_child_roundels
+                           ON #{this}_child_roundels.type IN ('Memory', 'Event')
+              LEFT OUTER JOIN descriptions AS #{this}_children_notes
+                           ON #{this}_children_notes.describable_id = children.id
+                          AND #{this}_children_notes.describable_type = 'Memo'
+                          AND #{this}_children_notes.type = 'Note'
+                          AND #{this}_children_notes.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_children_notes.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                        WHERE children.bond_to_id = memoes.id
+                          AND children.bind_kind_code = 'соборный'
+                     GROUP BY #{this}_children_slugs.text, #{this}_children_memories.base_year, happened_at, children.id, roundel_url, order_tweet, order_short_name, title, note
+                     ORDER BY #{this}_children_slugs.text, base_year
+                        LIMIT 25)
+                       SELECT jsonb_agg(__children)
+                         FROM __children), '[]'::jsonb) AS children,
                               memo_titles.text AS title,
                               memo_descriptions.text AS description,
                               memo_links.url AS url,
