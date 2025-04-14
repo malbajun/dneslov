@@ -175,8 +175,8 @@ export default class MemoriesForm extends Component {
       }
    }
 
-   onMemoryLoadRequest(slug) {
-      let url = '/' + slug + '.json',
+   onMemoryLoadRequest(slug, eventId) {
+      let url = '/' + [slug, eventId].compact().join("/") + '.json',
           data = { c: this.state.query.c, d: this.state.query.d }
 
       this.pushSubmit(data, url)
@@ -231,9 +231,9 @@ export default class MemoriesForm extends Component {
       } else if (response.data.events) {
          this.memoryParse(response.data, response.config)
       } else if (response.data.event) {
-         this.eventParse(response.data, response.config)
+         this.eventParse(response.data.event, response.config)
       } else if (response.data.image) {
-         this.imageParse(response.data, response.config)
+         this.imageParse(response.data.image, response.config)
       }
    }
 

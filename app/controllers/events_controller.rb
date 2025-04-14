@@ -13,7 +13,7 @@ class EventsController < ApplicationController
                locals: { event: @event.jsonize,
                          cloud: @calendary_cloud.jsonize }
          end
-         format.json { render json: @event.jsonize }
+         format.json { render json: { event: @event.jsonize }}
       end
    end
 

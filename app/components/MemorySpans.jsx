@@ -180,7 +180,9 @@ export default class MemorySpans extends Component {
                         yearDate={memory.year_date}
                         bindKindCode={memory.bind_kind_code}
                         calendarySlug={memory.calendary_slug}
+                        eventId={memory.event_id}
                         eventTitle={memory.event_title}
+                        usualEventCode={memory.usual_event_code}
                         onLoadRequest={this.props.onLoadRequest} />)}</ul>}
             {this.props.manualFetch && this.state.totalMemories > this.state.memories.length &&
                <div className="paginator">

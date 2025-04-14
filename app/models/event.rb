@@ -58,6 +58,14 @@ class Event < ActiveRecord::Base
       'Assurance',
       'Miracle',
       'Appearance',
+      'Curse',
+      'Preach',
+      'Betraial',
+      'Rest',
+      'Learning',
+      'Genum',
+      'Prophecy',
+      'Baptism',
    ]
 
    SORT = [

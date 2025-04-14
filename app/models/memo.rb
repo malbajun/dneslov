@@ -253,14 +253,24 @@ class Memo < ApplicationRecord
       joins(joi).select(selector).group(:id, "#{as}_short_names.text", "#{as}_events.happened_at", "#{as}_event_titles.text", "#{as}_titles.text", "#{as}_calendary_titles.text", "memoes.year_date")
    end
 
-   scope :with_event, -> do
-      selector = 'order_table.order_no AS _event_code'
+   scope :with_usual_event_code, -> _context do
+      selector = 'usual_order_table.order_no AS _usual_event_code'
+      list = Event::USUAL.map.with_index {|x, i| "('#{x}', #{i})" }
+      join = "LEFT OUTER JOIN (VALUES #{list.join(", ")})
+              AS usual_order_table (event_kind_code, order_no)
+              ON usual_order_table.event_kind_code = events.kind_code"
+
+      joins(:event, join).select(selector).group('_usual_event_code').order('_usual_event_code')
+   end
+
+   scope :with_sort_event_code, -> _context do
+      selector = 'sort_order_table.order_no AS _sort_event_code'
       list = Event::SORT.map.with_index {|x, i| "('#{x}', #{i})" }
       join = "LEFT OUTER JOIN (VALUES #{list.join(", ")})
-              AS order_table (event_kind_code, order_no)
-              ON order_table.event_kind_code = events.kind_code"
+              AS sort_order_table (event_kind_code, order_no)
+              ON sort_order_table.event_kind_code = events.kind_code"
 
-      joins(:event, join).select(selector).group('_event_code').order('_event_code')
+      joins(:event, join).select(selector).group('_sort_event_code').order('_sort_event_code')
    end
 
    scope :with_base_year, -> do
