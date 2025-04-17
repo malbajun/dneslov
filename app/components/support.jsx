@@ -56,15 +56,15 @@ export function parseDateString(string) {
 
 export function getPathsFromState(state) {
    console.debug("[getPathsFromState] <<<", state)
-   console.debug("[getPathsFromState] **", state.calendarySlug, state.memory?.slug, state.eventee, state.attituded, state.image)
+   console.debug("[getPathsFromState] **", state.calendarySlug, state.memory?.slug, state.eventee, state.attituded, state.image, state.rites, state.rite)
    let calendarySlug = state.query.c?.split(",").length == 1 && state.query.c ||
        state.query.c?.split(",")?.length == 0 && state.calendarySlug || null,
        path = "/" + [
           calendarySlug,
           (state.memory?.slug || state.eventee?.memory?.slug || state.attituded?.slug || state.image?.slug),
-          state.eventee?.id || state.attituded?.event_id || (state.attituded || state.image) && "gallery",
+          state.eventee?.id || state.attituded?.event_id || (state.attituded || state.image) && "gallery" || (state.rites || state.rite) && 'rites',
           state.attituded?.event_id && (state.attituded || state.image) && "gallery",
-          state.image?.uid
+          state.image?.uid || state.rite?.id
        ].compact().join("/"),
        jsonPath = (path === '/' && 'index' || path) + '.json',
        args = "",

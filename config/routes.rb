@@ -30,8 +30,8 @@ Rails.application.routes.draw do
       resources :orders, param: :id, except: :edit
       resources :subjects, param: :id, except: :edit
       resources :scripta, param: :id, except: :edit
-      resources :readings, param: :id, except: :edit
       resources :roles, param: :id, except: :edit
+
 
       get '/short_subjects' => 'subjects#all'
       get '/short_orders' => 'orders#all'
@@ -45,16 +45,22 @@ Rails.application.routes.draw do
       get '/short_places' => 'places#all'
       get '/short_items' => 'items#all'
       get '/short_scripta' => 'scripta#all'
-      get '/short_readings' => 'readings#all'
+      get '/short_rites' => 'rites#all'
       get '/short_roles' => 'roles#all'
       get '/icons' => 'memories#icons'
+   end
+
+   namespace :admin do
+      resources :rites, param: :id, except: :edit
    end
 
    get '/index' => 'memories#index'
    get '/token/:type/:token' => 'sessions#update'
    get '/signout' => 'sessions#destroy'
-   get '/gallery' => 'gallery#index', as: :gallery#, constraints: { slug: /[ёа-я0-9]{1,6}/ }
-   get '/gallery/:uid' => 'gallery#show', as: :picture#, constraints: { slug: /[ёа-я0-9]{1,6}/ }
+   get '/gallery' => 'gallery#index', as: :gallery
+   get '/gallery/:uid' => 'gallery#show', as: :picture
+   get '/rites' => 'rites#index', as: :rites
+   get '/rites/:uno' => 'rites#show', as: :rite
    get '/:lat' => 'errors#show', constraints: { lat: /[a-z]+/ }
 
    get '/:slug' => 'memories#show', as: :slug#, constraints: { slug: /[ёа-я0-9]{1,6}/ }

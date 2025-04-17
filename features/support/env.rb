@@ -65,12 +65,18 @@ Around do |_scenario, block|
    DatabaseCleaner.cleaning( &block )
 end
 
+Before('@xform') do
+   header 'Accept', 'application/x-www-form-urlencoded'
+   header 'Content-Type', 'application/x-www-form-urlencoded'
+end
+
 Before('@json') do
    header 'Accept', 'application/json'
    header 'Content-Type', 'application/json'
 end
 
 Before do
+   ActiveRecord::Migration.maintain_test_schema!
    Rails.cache.clear
    DatabaseCleaner.start
    @owd = Dir.pwd

@@ -590,15 +590,6 @@ module Languageble
       end
    end
 
-
-   def language_for locales
-      language&.names&.for(locales)
-   end
-
-   def alphabeth_for locales
-      alphabeth&.names&.for(locales)
-   end
-
    class << self
       def included base
          base.extend(ClassMethods)
@@ -610,7 +601,7 @@ module Languageble
       end
 
       # detect language/alphabeth pair for the string
-      def la_for_string string
+      def la_for_string string, preferred_language = nil, preferred_alphabeth = nil
          scores =
             MATCH_TABLE.map do |(alphabeth, restr)|
                #binding.pry
@@ -622,10 +613,16 @@ module Languageble
             end
 
          alphabeths = scores.last.last.transpose.last
-         language = alphabeths.map {|a| ALPHABETH_TREE[a] }.flatten.compact.sort_by {|l| LANGUAGE_TREE.keys.index(l) }.first
-         # binding.pry
+         language =
+            alphabeths.map {|a| ALPHABETH_TREE[a] }.flatten.compact.sort do |x, y|
+               x == preferred_language.to_s.to_sym ? -1 : LANGUAGE_TREE.keys.index(x) <=> LANGUAGE_TREE.keys.index(y)
+            end.first
+         alphabeth =
+            (alphabeths & [LANGUAGE_TREE[language]].flatten).sort do |x, y|
+               x == preferred_alphabeth.to_s.to_sym ? -1 : 1
+            end.first
 
-         [language, (alphabeths & [LANGUAGE_TREE[language]].flatten).first ]
+         [language, alphabeth]
       end
    end
 end

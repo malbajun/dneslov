@@ -8,7 +8,7 @@ import { memoMeta } from 'memoMeta'
 import { orderMeta } from 'orderMeta'
 import { subjectMeta } from 'subjectMeta'
 import { scriptumMeta } from 'scriptumMeta'
-import { readingMeta } from 'readingMeta'
+import { riteMeta } from 'riteMeta'
 import { roleMeta } from 'roleMeta'
 import { userMeta } from 'userMeta'
 import { homeMeta } from 'homeMeta'
@@ -23,7 +23,7 @@ const Metas = {
    'names': nameMeta,
    'memoes': memoMeta,
    'scripta': scriptumMeta,
-   'readings': readingMeta,
+   'rites': riteMeta,
    'subjects': subjectMeta,
    'roles': roleMeta,
    'user': [userMeta, User],

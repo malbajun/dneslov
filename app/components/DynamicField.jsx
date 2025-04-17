@@ -72,7 +72,7 @@ export default class DynamicField extends Component {
       }
 
       matchList = dataIn.list.reduce((a, x) => {
-         if (m = x.value.match(re)) {
+         if (x.value && (m = x.value.match(re))) {
             return a.concat([{text: x.value, match: m, value: x.key}])
          } else {
             return a

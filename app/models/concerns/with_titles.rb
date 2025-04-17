@@ -3,7 +3,7 @@ module WithTitles
 
    def self.included base
       base.class_eval do
-         attr_writer :title, :language, :alphabeth
+         attr_writer :title, :title_language, :title_alphabeth, :title_language_code, :title_alphabeth_code
 
          has_many :titles, -> { title }, as: :describable, class_name: :Title, dependent: :delete_all
          has_many :default_titles, -> { distinct }, through: :kind, source: :names, class_name: :Appellation
@@ -97,20 +97,22 @@ module WithTitles
          end
 
          scope :with_title, -> context do
-            as = table.table_alias || table.name
-            language_codes = [context[:text_languages]].flatten
+            this = table.table_alias || table.name
+            language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+            alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
 
             selector = self.select_values.dup
-            selector << "#{as}.*" if selector.empty?
-            selector << "#{as}_titles.text AS _title"
+            selector << "#{this}.*" if selector.empty?
+            selector << "#{this}_titles.text AS _title"
 
-            join = "LEFT OUTER JOIN descriptions AS #{as}_titles
-                                 ON #{as}_titles.describable_id = #{as}.id
-                                AND #{as}_titles.describable_type = '#{model}'
-                                AND #{as}_titles.type IN ('Title', 'Appellation')
-                                AND #{as}_titles.language_code IN ('#{language_codes.join("', '")}')"
+            join = "LEFT OUTER JOIN descriptions AS #{this}_titles
+                                 ON #{this}_titles.describable_id = #{this}.id
+                                AND #{this}_titles.describable_type = '#{model}'
+                                AND #{this}_titles.type IN ('Title', 'Appellation')
+                                AND #{this}_titles.language_code IN ('#{language_codes.join("', '")}')
+                                AND #{this}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
 
-            joins(join).select(selector.uniq).group('_title', "#{as}.id")
+            joins(join).select(selector.uniq).group('_title', "#{this}.id")
          end
 
          accepts_nested_attributes_for :titles, reject_if: :all_blank, allow_destroy: true
@@ -119,34 +121,32 @@ module WithTitles
 
          before_validation :fill_in_title
 
-         def title
-            @title ||= titles.where(language_code: language, alphabeth_code: alphabeth).last&.text
+         def title_language
+           @title_language ||= titles.last&.language.name
          end
 
-         if self.instance_methods.include?(:language)
-            alias_method :tit_language, :language
-            alias_method :tit_alphabeth, :alphabeth
-         else
-            define_method :tit_language do
-            end
-            define_method :tit_alphabeth do
-            end
+         def title_alphabeth
+            @title_alphabeth ||= titles.last&.alphabeth.name
          end
 
-         def language
-           @language ||= tit_language || titles.last&.language_code
+         def title_language_code
+           @title_language ||= titles.last&.language_code
          end
 
-         def alphabeth
-            @alphabeth ||= tit_alphabeth || titles.last&.alphabeth_code
+         def title_alphabeth_code
+            @title_alphabeth_code ||= titles.last&.alphabeth_code
          end
 
          def fill_in_title
             if @title
-               if title = titles.where(language_code: language, alphabeth_code: alphabeth).first
+               lc_pre = title_language_code || respond_to?(:language_code) && language_code || nil
+               ac_pre = title_alphabeth_code || respond_to?(:alphabeth_code) && alphabeth_code || nil
+               lc, ac = Languageble.la_for_string(@title, lc_pre, ac_pre)
+
+               if title = titles.where(language_code: title_language_code || lc, alphabeth_code: title_alphabeth_code || ac).first
                   title.update_attribute(:text, @title)
                else
-                  titles << Title.new(text: @title, language_code: language, alphabeth_code: alphabeth)
+                  titles << Title.new(text: @title, language_code: title_language_code || lc, alphabeth_code: title_alphabeth_code || ac)
                end
             end
          end

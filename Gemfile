@@ -62,7 +62,7 @@ gem 'sidekiq', ">= 6.4.0", require: %w(sidekiq sidekiq/web)
 gem 'sidekiq-worker-killer'
 gem 'sidekiq-limit_fetch'
 # opts = local ? { path: ENV["HOME"] + '/git/jsonize' } : { codeberg: 'majioa/jsonize', ref: '59b2b9e' }
-# gem 'jsonize', path: ENV["HOME"] + '/git/jsonize'
+#gem 'jsonize', path: ENV["HOME"] + '/git/jsonize'
 gem 'jsonize', codeberg: 'majioa/jsonize', ref: '03f55ab'
 gem 'redisize', '~> 0.2.0', codeberg: 'majioa/redisize', ref: 'f7ebef3'
 #gem 'redisize', path: '/usr/local/home/majioa/git/redisize'
@@ -115,7 +115,7 @@ gem 'sprockets-rails'
 ## api
 #opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
 #gem 'tiun', path: ENV["HOME"] + '/git/tiun'
-gem 'tiun', codeberg: 'znamenica/tiun', ref: 'ed127c1'
+gem 'tiun', codeberg: 'znamenica/tiun', ref: '5c8730e'
 
 # sitemap
 gem 'sitemap_generator'

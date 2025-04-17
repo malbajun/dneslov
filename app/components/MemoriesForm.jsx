@@ -12,6 +12,8 @@ import Memory from 'Memory'
 import Eventee from 'Eventee'
 import Gallery from 'Gallery'
 import Image from 'Image'
+import Rites from 'Rites'
+import Rite from 'Rite'
 import Login from 'Login'
 import Intro from 'Intro'
 import Error from 'Error'
@@ -30,6 +32,8 @@ export default class MemoriesForm extends Component {
          total: 0,
       },
       memory: null,
+      rites: null,
+      rite: null,
       images: null,
       image: null,
       error: null
@@ -50,6 +54,8 @@ export default class MemoriesForm extends Component {
                eventee: props.eventee,
                images: props.images,
                image: props.image,
+               rites: props.rites,
+               rite: props.rite,
                user: props.user,
                attituded: props.attituded,
                error: props.error,
@@ -77,6 +83,13 @@ export default class MemoriesForm extends Component {
       return null
    }
 
+   // system
+   constructor() {
+      super()
+
+      this.onUrlLoadRequest = this.onUrlLoadRequest.bind(this)
+   }
+
    updateState(state) {
       console.debug("[updateState] <<<", { state: state })
       let [ path, json_path ] = getPathsFromState(state)
@@ -95,10 +108,14 @@ export default class MemoriesForm extends Component {
 
    componentDidMount() {
       window.onpopstate = this.onPopState.bind(this)
+
+      document.addEventListener('dneslov-url-load-request', this.onUrlLoadRequest, { passive: true })
    }
 
    componentWillUnmount() {
       window.onpopstate = null
+
+      document.removeEventListener('dneslov-url-load-request', this.onUrlLoadRequest)
    }
 
    // props
@@ -182,6 +199,13 @@ export default class MemoriesForm extends Component {
       this.pushSubmit(data, url)
    }
 
+   onUrlLoadRequest(e) {
+      console.debug("[onUrlLoadRequest] **", { url: e.detail.url })
+      let data = { c: this.state.query.c, d: this.state.query.d }, url = e.detail.url
+
+      this.pushSubmit(data, url)
+   }
+
    onPopState(e) {
       console.debug("[onPopState] **", { e: e.state })
 
@@ -234,6 +258,8 @@ export default class MemoriesForm extends Component {
          this.eventParse(response.data.event, response.config)
       } else if (response.data.image) {
          this.imageParse(response.data.image, response.config)
+      } else {
+         this.parse(response.data, response.config)
       }
    }
 
@@ -270,6 +296,8 @@ export default class MemoriesForm extends Component {
             memoriesTotal: memories.total,
             memory: null,
             eventee: null,
+            rites: null,
+            rite: null,
             images: null,
             image: null,
             error: null})
@@ -279,6 +307,8 @@ export default class MemoriesForm extends Component {
             memoriesTotal: memories.total,
             memory: null,
             eventee: null,
+            rites: null,
+            rite: null,
             images: null,
             image: null,
             error: null})
@@ -295,6 +325,8 @@ export default class MemoriesForm extends Component {
                           memories: [],
                           query: config.params,
                           eventee: null,
+                          rites: null,
+                          rite: null,
                           images: null,
                           image: null,
                           error: null})
@@ -309,6 +341,8 @@ export default class MemoriesForm extends Component {
                           memories: [],
                           query: config.params,
                           eventee: eventee,
+                          rites: null,
+                          rite: null,
                           images: null,
                           image: null,
                           error: null})
@@ -323,6 +357,8 @@ export default class MemoriesForm extends Component {
                           memories: [],
                           query: config.params,
                           eventee: null,
+                          rites: null,
+                          rite: null,
                           images: images,
                           error: null})
 
@@ -336,12 +372,36 @@ export default class MemoriesForm extends Component {
                           memories: [],
                           query: config.params,
                           eventee: null,
-                          iamges: null,
+                          rites: null,
+                          rite: null,
+                          images: null,
                           image: image,
                           error: null})
 
       document.body.classList.remove('in-progress')
       this.updateState(state)
+   }
+
+   parse(data, config) {
+      let state = merge(this.state,
+                        { memory: null,
+                          memories: [],
+                          query: config.params,
+                          eventee: null,
+                          rites: null,
+                          rite: null,
+                          images: null,
+                          image: null,
+                          error: null}),
+          parts = config.url.split("/"),
+          objectsPart = parts[1] == 'api' ? parts[3] : parts[1],
+          objects =  objectsPart.replace(/\.json.*/g, ''),
+          uno = parts[1] == 'api' ? parts[4] : parts[2],
+          subject = uno ? objects.singularize() : objects
+
+      console.log("[parse] **", subject)
+      document.body.classList.remove('in-progress')
+      this.updateState(state.merge({[subject]: data}))
    }
 
    dateFromQuery() {
@@ -452,7 +512,16 @@ export default class MemoriesForm extends Component {
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
                               {...this.state.image} />}
-                        {this.props.memories.list && !this.state.error && !this.state.eventee && !this.state.images && !this.state.image && !this.state.memory &&
+                        {this.state.rites &&
+                           <Rites
+                              key='rites'
+                              total={this.props.total}
+                              list={this.state.rites} />}
+                        {this.state.rite &&
+                           <Rite
+                              key='rite'
+                              {...this.state.rite} />}
+                        {this.props.memories.list && !this.state.error && !this.state.eventee && !this.state.images && !this.state.image  && !this.state.rites && !this.state.rite && !this.state.memory &&
                            <div>
                               <div className='row'>
                                  <SearchField
