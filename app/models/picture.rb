@@ -92,7 +92,7 @@ class Picture < ApplicationRecord
          none
       when /^\d+$/
          by_memory_id(uno)
-      when /^.+-.+-.+-.+-.+$/
+      when /^.+-.+-.+-.+-.+|[a-f0-9]{32}$/
          by_uid(uno)
       when /(.+)#(.+)/
          by_roundelable_name(uno)

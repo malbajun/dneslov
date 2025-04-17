@@ -1,0 +1,231 @@
+---
+types:
+ - name: rite
+   version: 0.1
+   with:
+    - locale_names
+    - title
+    - description
+    - bond_to_uno
+    - root_uno
+   fields:
+    - name: id
+      kind: integer key
+      descriptions: :tiun.types.rite.id
+    - name: language
+      kind: string
+      descriptions: :tiun.types.rite.language
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.rite.language_code
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.rite.alphabeth
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.rite.alphabeth_code
+    - name: title
+      kind: string
+      descriptions: :tiun.types.rite.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.rite.description
+    - name: abbreviation
+      kind: string primary
+      descriptions: :tiun.types.rite.abbreviation
+    - name: text
+      kind: string
+      descriptions: :tiun.types.rite.text
+    - name: bind_kind_rite
+      kind: string
+      descriptions: :tiun.types.rite.bind_kind_rite
+    - name: bond_to_uno
+      kind: string
+      descriptions: :tiun.types.rite.bond_to_uno
+    - name: root_uno
+      kind: string
+      descriptions: :tiun.types.rite.root_uno
+ - name: rite_span
+   model: Rite
+   version: 0.1
+   with: 
+    - locale_names
+    - title
+   fields:
+    - name: id
+      kind: integer key
+      descriptions: :tiun.types.rite.id
+    - name: language
+      kind: string
+      descriptions: :tiun.types.rite.language
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.rite.language_code
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.rite.alphabeth
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.rite.alphabeth_code
+    - name: title
+      kind: string
+      descriptions: :tiun.types.rite.title
+    - name: abbreviation
+      kind: string key
+      descriptions: :tiun.types.rite.abbreviation
+resources:
+ - name: rite.index
+   path: /api/v0/rites.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: rite_span page
+      descriptions: :tiun.resources.rite.index
+      auth: rite_read
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.rite.index.args.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.rite.index.args.page
+       - name: l
+         kind: string
+         alias: language
+         descriptions: :tiun.resources.rite.index.args.language
+       - name: a
+         kind: string
+         alias: alphabeth
+         descriptions: :tiun.resources.rite.index.args.alphabeth
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.rite.index.args.uno
+       - name: root_uno
+         kind: string
+         alias: r
+         descriptions: :tiun.resources.rite.index.root_uno
+ - name: rite.create
+   path: /api/v0/rites/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: rite
+      descriptions: :tiun.resources.rite.create
+      auth: rite_write
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: number
+         descriptions: :tiun.resources.rite.post.id
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.rite.post.language
+       - name: language_code
+         kind: string
+         descriptions: :tiun.resources.rite.post.language_code
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.rite.post.alphabeth
+       - name: alphabeth_code
+         kind: string
+         descriptions: :tiun.resources.rite.post.alphabeth_code
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.rite.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.rite.post.description
+       - name: abbreviation
+         kind: string
+         descriptions: :tiun.resources.rite.post.abbreviation
+       - name: text
+         kind: string
+         descriptions: :tiun.resources.rite.post.text
+       - name: bind_kind_rite
+         kind: string
+         descriptions: :tiun.resources.rite.post.bind_kind_rite
+       - name: bond_to_uno
+         kind: string
+         descriptions: :tiun.resources.rite.post.bond_to_uno
+       - name: root_uno
+         kind: string
+         descriptions: :tiun.resources.rite.post.root_uno
+ - name: rite
+   path: /api/v0/rites/:uno.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: rite
+      descriptions: :tiun.resources.rite.get
+      auth: rite_read
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.rite.get.args.uno
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.rite.get.args.id
+       - name: l
+         kind: string
+         alias: language
+         descriptions: :tiun.resources.rite.get.args.language
+       - name: a
+         kind: string
+         alias: alphabeth
+         descriptions: :tiun.resources.rite.get.args.alphabeth
+    - name: put
+      version: 0.1
+      kind: rite
+      descriptions: :tiun.resources.rite.put
+      auth: rite_write
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.rite.put.id
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.rite.put.uno
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.rite.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.rite.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.rite.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.rite.put.description
+       - name: abbreviation
+         kind: string
+         descriptions: :tiun.resources.rite.post.abbreviation
+       - name: text
+         kind: string
+         descriptions: :tiun.resources.rite.post.text
+       - name: bind_kind_rite
+         kind: string
+         descriptions: :tiun.resources.rite.post.bind_kind_rite
+       - name: bond_to_uno
+         kind: string
+         descriptions: :tiun.resources.rite.post.bond_to_uno
+       - name: root_uno
+         kind: string
+         descriptions: :tiun.resources.rite.post.root_uno
+    - name: delete
+      version: 0.1
+      kind: rite
+      descriptions: :tiun.resources.rite.delete
+      auth: rite_remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.rite.delete.args.uno

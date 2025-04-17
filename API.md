@@ -52,3 +52,28 @@ curl --insecure -X GET https://dneslov.org/api/v0/audios.json
 ```
 curl --insecure -X DELETE https://dneslov.org/api/v0/audios/833675050afe4ad2a96e355f05f91268.json
 ```
+
+
+### rites
+
+#### create an rite resource
+```
+curl --insecure -X POST -F rite[bind_kind_rite]=несвязан -F rite[abbreviation]="аббрв" -F rite[text]="текст" -F rite[language_code]=ру -F rite[alphabeth_code]=РО -F rite[title]="Титуло" -F rite[description]="Дане" https://dneslov.org/api/v0/rites/create.json -v
+```
+
+### show to get the rite resource
+```
+curl --insecure -X GET https://dneslov.org/api/v0/rites/1.json
+```
+
+#### index rite resources
+```
+curl --insecure -X GET https://dneslov.org/api/v0/rites.json
+```
+
+#### delete the rite resource
+```
+curl --insecure -X DELETE https://dneslov.org/api/v0/rites/1.json
+```
+
+

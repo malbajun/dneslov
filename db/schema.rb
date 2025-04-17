@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_09_213400) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_14_095721) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -379,6 +379,25 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_09_213400) do
     t.index ["path"], name: "index_resources_on_path"
   end
 
+  create_table "rites", force: :cascade do |t|
+    t.string "abbreviation"
+    t.text "text"
+    t.string "language_code"
+    t.string "alphabeth_code"
+    t.string "bind_kind_rite", null: false
+    t.string "bind_kind_path"
+    t.bigint "bond_to_id"
+    t.bigint "root_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["abbreviation"], name: "index_rites_on_abbreviation", unique: true
+    t.index ["alphabeth_code"], name: "index_rites_on_alphabeth_code"
+    t.index ["bond_to_id"], name: "index_rites_on_bond_to_id"
+    t.index ["language_code"], name: "index_rites_on_language_code"
+    t.index ["root_id"], name: "index_rites_on_root_id"
+    t.index ["text"], name: "index_rites_on_text"
+  end
+
   create_table "roles", force: :cascade do |t|
     t.string "permissions", default: [], array: true
     t.boolean "default"
@@ -492,7 +511,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_09_213400) do
     t.index ["alphabeth_code"], name: "index_short_names_on_alphabeth_code"
     t.index ["language_code"], name: "index_short_names_on_language_code"
     t.index ["memory_id"], name: "index_short_names_on_memory_id"
-    t.index ["text", "alphabeth_code"], name: "index_short_names_on_text_alphabeth_code", unique: true
+    t.index ["text", "language_code", "alphabeth_code", "memory_id"], name: "index_short_names_on_text_language_code_alphabeth_code_memory", unique: true
     t.index ["text"], name: "index_short_names_on_text"
   end
 
@@ -579,6 +598,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_09_213400) do
   add_foreign_key "memory_binds", "memories", column: "bond_to_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade
+  add_foreign_key "rites", "rites", column: "bond_to_id", on_delete: :restrict
+  add_foreign_key "rites", "rites", column: "root_id", on_delete: :restrict
   add_foreign_key "service_scripta", "scripta", on_delete: :cascade
   add_foreign_key "service_scripta", "services", on_delete: :cascade
   add_foreign_key "short_names", "memories"

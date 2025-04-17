@@ -32,6 +32,10 @@ Number.prototype.isPresent = function() {
    return true
 }
 
+String.prototype.singularize = function() {
+   return this.replace(/s$/g, '')
+}
+
 String.prototype.escapeRegExp = function() {
    return this.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
 }

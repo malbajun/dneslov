@@ -2,7 +2,7 @@ module WithDescriptions
    extend ActiveSupport::Concern
 
    def self.included base
-      attr_writer :language, :alphabeth, :description
+      attr_writer :description, :description_language, :description_alphabeth, :description_language_code, :description_alphabeth_code
 
       base.class_eval do
          has_many :descriptions, -> { where(type: :Description) }, as: :describable, dependent: :delete_all do
@@ -83,9 +83,9 @@ module WithDescriptions
          end
 
          scope :with_description, -> context do
-            language_codes = [context[:text_languages]].flatten.compact
-            alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
             this = table.table_alias || table.name
+            language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+            alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
 
             selector = self.select_values.dup
             selector << "#{this}.*" if selector.empty?
@@ -115,35 +115,32 @@ module WithDescriptions
 
          before_validation :fill_in_description
 
-         # serialized
-         def description
-            @description ||= descriptions.where(language_code: language, alphabeth_code: alphabeth).last&.text
+         def description_language
+           @description_language ||= descriptions.last&.language.name
          end
 
-         if self.instance_methods.include?(:language)
-            alias_method :desc_language, :language
-            alias_method :desc_alphabeth, :alphabeth
-         else
-            define_method :desc_language do
-            end
-            define_method :desc_alphabeth do
-            end
+         def description_alphabeth
+            @description_alphabeth ||= descriptions.last&.alphabeth.name
          end
 
-         def language
-            @language ||= desc_language || descriptions.last&.language_code
+         def description_language_code
+           @description_language ||= descriptions.last&.language_code
          end
 
-         def alphabeth
-            @alphabeth ||= desc_alphabeth || descriptions.last&.language_code
+         def description_alphabeth_code
+            @description_alphabeth_code ||= descriptions.last&.alphabeth_code
          end
 
          def fill_in_description
             if @description
-               if desc = descriptions.where(language_code: language, alphabeth_code: alphabeth).first
-                  desc.update_attribute(:text, @description)
+               lc_pre = description_language_code || respond_to?(:language_code) && language_code || nil
+               ac_pre = description_alphabeth_code || respond_to?(:alphabeth_code) && alphabeth_code || nil
+               lc, ac = Languageble.la_for_string(@description, lc_pre, ac_pre)
+
+               if description = descriptions.where(language_code: description_language_code || lc, alphabeth_code: description_alphabeth_code || ac).first
+                  description.update_attribute(:text, @description)
                else
-                  descriptions << Description.new(text: @description, language_code: language, alphabeth_code: alphabeth)
+                  descriptions << Description.new(text: @description, language_code: description_language_code || lc, alphabeth_code: description_alphabeth_code || ac)
                end
             end
          end
