@@ -624,11 +624,10 @@ class Event < ActiveRecord::Base
                           AND children_slugs.sluggable_type = 'Memory'
                          JOIN memoes AS children
                            ON children.event_id = #{this}_children_events.id
+                          AND children.bind_kind_code = 'соборный'
                          JOIN memoes AS hosts
                            ON children.bond_to_id = hosts.id
-                          AND children.bind_kind_code = 'соборный'
-                         JOIN events AS #{this}_host_events
-                           ON #{this}.id = #{this}_host_events.id)
+                          AND hosts.event_id = #{this}.id)
                        SELECT COUNT(___children.slug)
                          FROM ___children), 0) AS children_total,
                COALESCE((WITH __children AS (

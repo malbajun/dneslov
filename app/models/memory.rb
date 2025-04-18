@@ -557,14 +557,12 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND children_slugs.sluggable_type = 'Memory'
                          JOIN memoes AS children
                            ON children.event_id = #{this}_children_events.id
+                          AND children.bind_kind_code = 'соборный'
                          JOIN memoes AS hosts
                            ON children.bond_to_id = hosts.id
-                          AND children.bind_kind_code = 'соборный'
                          JOIN events AS #{this}_host_events
                            ON hosts.event_id = #{this}_host_events.id
-                         JOIN slugs AS host_slugs
-                           ON host_slugs.sluggable_id = #{this}.id
-                          AND host_slugs.sluggable_type = 'Memory')
+                          AND #{this}_host_events.memory_id = #{this}.id)
                        SELECT COUNT(___children.slug)
                          FROM ___children), 0) AS children_total,
                COALESCE((WITH __children AS (
