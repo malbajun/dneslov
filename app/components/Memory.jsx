@@ -313,7 +313,7 @@ export default class Memory extends Component {
    }
 
    getInfoClass() {
-      return this.props.image_url ? " x10 l9 m8 s7" : " s12"
+      return this.props.image_url ? " x10 l9 m6 s12" : " s12"
    }
 
    onImageClick(e) {
@@ -387,14 +387,14 @@ export default class Memory extends Component {
                                     color={Memory.getColorForLink(c.name)}
                                     text={c.name} />)}</div></div></div></div>}</div>
             {this.props.image_url &&
-               <div className='col x2 l3 m4 s5 image'>
+               <div className='col x2 l3 m6 s12 image'>
                   <a
                      className={"btn btn-image"}
                      onClick={this.onImageClick}>
                      <img
                         src={this.props.image_url}
                         onClick={this.onImageClick} /></a></div>}</div>,
-         <div className='row'>
+         <div className='row scripta'>
             {this.state.scripta.isPresent() &&
                 <div className='col s12'>
                    {this.state.sortedScripta.map((scriptum) =>
@@ -418,7 +418,7 @@ export default class Memory extends Component {
             url={'/api/v0/memories/'+ this.props.id +'/content.json'}
             hideIfBlank={true}
             manualFetch={true} />,
-         <div className='row'>
+         <div className='row memoes'>
             {this.props.bond_memories.length > 0 &&
                <div className='col s12'>
                   <div className='row'>
