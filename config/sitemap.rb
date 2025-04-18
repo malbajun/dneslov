@@ -36,23 +36,19 @@ SitemapGenerator::Sitemap.create do
    add('/', priority: 1, changefreq: 'daily')
    add('/about', priority: 1, changefreq: 'monthly')
 
+   Picture.find_each do |picture|
+      add(picture_path(picture), lastmod: memory.updated_at, changefreq: 'annual')
+   end
+
    Memory.find_each do |memory|
       next unless memory.slug
 
       add(slug_path(memory.slug.text), lastmod: memory.updated_at, changefreq: 'monthly')
-      add(gallery_path(memory.slug.text), lastmod: memory.updated_at, changefreq: 'monthly')
-
-      memory.pictures.each do |picture|
-         add(picture_path(memory.slug.text, picture), lastmod: memory.updated_at, changefreq: 'annual')
-      end
+      add(slugged_gallery_path(memory.slug.text), lastmod: memory.updated_at, changefreq: 'monthly')
 
       memory.events.each do |event|
          add(slug_event_path(memory.slug.text, event), lastmod: memory.updated_at, changefreq: 'monthly')
          add(event_gallery_path(memory.slug.text, event), lastmod: memory.updated_at, changefreq: 'monthly')
-
-         event.pictures.each do |picture|
-            add(event_picture_path(memory.slug.text, event, picture), lastmod: memory.updated_at, changefreq: 'annual')
-         end
 
          event.calendaries.each do |calendary|
             add(cslug_event_path(calendary.slug.text, memory.slug.text, event), lastmod: memory.updated_at, changefreq: 'monthly')
