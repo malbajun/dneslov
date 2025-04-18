@@ -341,6 +341,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                                FROM scripta AS #{as}_scripta
                                JOIN events
                                  ON memories.id = events.memory_id
+                                AND events.kind_code IN ('#{Event::NOTICE.join("','")}')
                                JOIN memoes AS #{as}_memoes
                                  ON events.id = #{as}_memoes.event_id
                                JOIN memo_scripta
