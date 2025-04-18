@@ -19,6 +19,7 @@ class Memo < ApplicationRecord
    include WithDescriptions
    include WithTitles
    include WithLinks
+   include WithNotes
    include DistinctBy
    include ByToken
 

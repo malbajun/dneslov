@@ -17,7 +17,7 @@ class Admin::MemoesController < Admin::CommonController
    end
 
    def index_with_list
-      %w(with_descriptions with_titles with_links with_memory_event
+      %w(with_descriptions with_notes with_titles with_links with_memory_event
          with_memo_orders with_bond_to_year_date with_calendary_title)
    end
 
