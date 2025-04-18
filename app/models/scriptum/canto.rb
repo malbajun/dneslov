@@ -6,7 +6,7 @@ class Canto < Scriptum
    has_many :service_scripta, inverse_of: :scriptum, foreign_key: :scriptum_id
    has_many :services, through: :service_scripta
 
-   has_alphabeth on: %i(prosomeion_title)
+   has_alphabeth on: %i(prosomeion_title), novalidate: true
 
    def targets= value
       if value.kind_of?( Array )
