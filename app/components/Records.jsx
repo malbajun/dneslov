@@ -114,8 +114,9 @@ export default class Records extends Component {
    }
 
    onRecordEdit(id) {
-      console.log("[onRecordEdit] <<< ")
+      console.debug("[onRecordEdit] <<< ")
       let record = this.state.records.find((r) => { return r.id == id })
+      console.log("[onRecordEdit] **", id, record)
       this.setState({current: record})
    }
 
@@ -125,19 +126,21 @@ export default class Records extends Component {
          method: 'delete'
       }
 
+      console.debug("[onRecordRemove] ** ", request)
       axios(request).then(this.onSuccessRemove.bind(this))
    }
 
    onModalClose(e) {
-      console.log("[onModalClose] <<< ", e)
+      console.debug("[onModalClose] <<< ", e)
       this.setState(merge({ current: null }, e.detail || {}))
    }
 
    onSuccessRemove(response) {
+      console.debug("[onSuccessRemove] <<< ", response)
       let record = response.data, records = this.state.records.slice()
 
       this.setState({
-         records: records.filter((r) => { return r.id == record.id }),
+         records: records.filter((r) => { return r.id != record.id }),
          total: this.state.total - 1
       })
    }
@@ -299,4 +302,6 @@ export default class Records extends Component {
                excludeElement='header'
                loadedTotal={this.props.records.list.length}
                total={this.state.total}
-               fetchFunc={this.fetchNext.bind(this)} /></div>]}}
+               fetchFunc={this.fetchNext.bind(this)} /></div>]
+   }
+}
