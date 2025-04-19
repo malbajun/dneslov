@@ -46,6 +46,17 @@ class Calendary < ActiveRecord::Base
        .reorder("slugs.text")
    end
 
+   scope :by_uno, ->(uno) do
+      case uno.to_s
+      when /^\s*$/
+         none
+      when /^\d+$/
+         by_id(uno)
+      else
+         by_slug(uno)
+      end
+   end
+
    scope :by_licit, ->(licit) { where(licit: licit) }
    scope :by_token, -> text do
       left_outer_joins( :slug, :descriptions, :titles ).

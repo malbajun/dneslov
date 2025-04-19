@@ -115,7 +115,7 @@ gem 'sprockets-rails'
 ## api
 #opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
 #gem 'tiun', path: ENV["HOME"] + '/git/tiun'
-gem 'tiun', codeberg: 'znamenica/tiun', ref: '5c8730e'
+gem 'tiun', codeberg: 'znamenica/tiun', ref: 'ea90142'
 
 # sitemap
 gem 'sitemap_generator'

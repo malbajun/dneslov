@@ -2,6 +2,8 @@
 require 'securerandom'
 
 class Audio < ApplicationRecord
+   extend TotalSize
+   include DistinctBy
    include WithTitles
    include WithDescriptions
 
@@ -151,5 +153,15 @@ class Audio < ApplicationRecord
       else
          errors.add(:sources, "Unable to find abbreviation as: '#{value}'")
       end
+   end
+
+   def language= value
+      self.title_language = value
+      self.description_language = value
+   end
+
+   def alphabeth= value
+      self.title_alphabeth = value
+      self.description_alphabeth = value
    end
 end

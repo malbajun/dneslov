@@ -1,11 +1,20 @@
 # language: ru
-@api @memory @controller @json
+@api @memory @controller
 Свойство: Правач памѧтєј
    Предыстория:
+      * єствує слава сꙛ даными:
+         | id              | 10000                                |
+         | short_name      | Славник                              |
+         | title           | Славник Титул                        |
+         | description     | Описаловое                           |
+         | base_year       | 1                                    |
+         | slug            | слав                                 |
+         | without_place   | true                                 |
+      * єствує калѧдарь "Калѧдарь" сꙛ слугом "календ" и озом "200204"
       * єствує памѧть сꙛ даными:
-         | id              | 100                                  |
-         | short_name      | Памѧтно                              |
-         | title           | Титулецъ                             |
+         | id              | 200100                               |
+         | short_name      | Памятно                              |
+         | title           | Титулец                              |
          | description     | Описалово                            |
          | type            | Group                                |
          | kind            | Kind                                 |
@@ -13,9 +22,10 @@
          | base_year       | 1000                                 |
          | slug            | служ                                 |
          | without_place   | true                                 |
-      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200201" ѫ памѧти "Памѧтно"
+      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200201" ѫ памѧти "Памятно", коє сѧ случи во "1001"
+      * єствує помин "Помин Б" сꙛ славој "слав" во калѧдарю "календ" для сꙛбытја "Сꙛбытие"
       * єствує памѧть сꙛ даными:
-         | id              | 101                                  |
+         | id              | 200101                               |
          | short_name      | Памѧтна Ѫ                            |
          | type            | Building                             |
          | title           | Титуло                               |
@@ -23,97 +33,146 @@
          | base_year       | 1001                                 |
          | slug            | слуг                                 |
          | without_place   | true                                 |
-      * єствує сꙛбытие "Сꙛбытие" сꙛ озом "200202" ѫ памѧти "Памѧтна Ѫ"
+      * єствує сꙛбытие "Сꙛбытие А" сꙛ озом "200202" ѫ памѧти "Памѧтна Ѫ", коє сѧ случи во "1002"
+      * єствує помин "Помин А" сꙛ славој "слав" и замѣткој "Заметка" во калѧдарю "календ" для сꙛбытја "Сꙛбытие А"
 
-   @get @collection
+   @get @collection @json
    Пример: Запрос к контроллеру памѧтєј в АПИ при отсутствии памѧтєј
       Пусть не єствує ни єдне памѧти
       Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json"
       То добѫдꙛ кодъ поврата "204"
 
-   @get @collection
+   @get @collection @json
    Пример: Користник добыває списъ памѧтєј
       Если запытаю добыванје из изнахоѕи "/api/v0/memories.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: служ
-           short_name: Памѧтно
-           quantity: '4'
-           base_year: 1000
-           type: Group
-           kind: Kind
-         - slug: слуг
-           short_name: Памѧтна Ѫ
-           quantity:
+         - id: 200101
+           slug: слуг
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин А
+           note: Заметка
+           happened_at: '1002'
            base_year: 1001
+           short_name: Памѧтна Ѫ
            type: Building
            kind:
+           calendary_slugs:
+           - календ
+         - id: 200100
+           slug: служ
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин Б
+           note:
+           happened_at: '1001'
+           base_year: 1000
+           short_name: Памятно
+           type: Group
+           kind: Kind
+           calendary_slugs:
+           - календ
          """
       А добѫдꙛ охватъ "0-9/2"
 
-   @get @collection @search
+   @get @collection @search @json
    Пример: Користник искає во спису памѧтєј по памѧтному опозонавателю
-      Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?uno=101"
+      Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?uno=200101"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: слуг
-           short_name: Памѧтна Ѫ
-           quantity:
+         - id: 200101
+           slug: слуг
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин А
+           note: Заметка
+           happened_at: '1002'
            base_year: 1001
+           short_name: Памѧтна Ѫ
            type: Building
            kind:
+           calendary_slugs:
+           - календ
          """
       А добѫдꙛ охватъ "0-9/1"
 
-   @get @collection @search
+   @get @collection @search @json
    Пример: Користник искає во спису памѧтєј по типу
       Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?t=Building"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: слуг
-           short_name: Памѧтна Ѫ
-           quantity:
+         - id: 200101
+           slug: слуг
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин А
+           note: Заметка
+           happened_at: '1002'
            base_year: 1001
+           short_name: Памѧтна Ѫ
            type: Building
            kind:
+           calendary_slugs:
+           - календ
          """
       А добѫдꙛ охватъ "0-9/1"
 
-   @get @collection @search
+   @get @collection @search @json
    Пример: Користник искає во спису памѧтєј по заглавку
-      Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?tt=Памѧтно"
+      Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?tt=Памятно"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: служ
-           short_name: Памѧтно
-           quantity: '4'
+         - id: 200100
+           slug: служ
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин Б
+           note:
+           happened_at: '1001'
            base_year: 1000
+           short_name: Памятно
            type: Group
            kind: Kind
+           calendary_slugs:
+           - календ
          """
       А добѫдꙛ охватъ "0-9/1"
 
-   @get @collection @search
+   @get @collection @search @json
    Пример: Користник искає во спису памѧтєј по взору памѧти
       Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?k=Kind"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: служ
-           short_name: Памѧтно
-           quantity: '4'
+         - id: 200100
+           slug: служ
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин Б
+           note:
+           happened_at: '1001'
            base_year: 1000
+           short_name: Памятно
            type: Group
            kind: Kind
+           calendary_slugs:
+           - календ
          """
       А добѫдꙛ охватъ "0-9/1"
 
@@ -123,123 +182,102 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: служ
-           short_name: Памѧтно
-           quantity: '4'
+         - id: 200100
+           slug: служ
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин Б
+           note:
+           happened_at: '1001'
            base_year: 1000
+           short_name: Памятно
            type: Group
            kind: Kind
+           calendary_slugs:
+           - календ
          """
       А добѫдꙛ охватъ "0-9/1"
 
-   @get @collection @search
+   @get @collection @search @json
    Пример: Користник искає во спису памѧтєј по типу и взору памѧти
       Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?t=Building&k=Kind"
       То добѫдꙛ кодъ поврата "204"
       И добѫдꙛ пустъ выводъ
       А добѫдꙛ охватъ "0-9/0"
 
-   @get @collection @search
+   @get @collection @search @json
    Пример: Користник искає во спису памѧтєј по памѧтному едозу
       Если запытаю добыванје из изнахоѕи "/api/v0/memories.json?uno=Памѧтна Ѫ"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: слуг
-           short_name: Памѧтна Ѫ
-           quantity:
+         - id: 200101
+           slug: слуг
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин А
+           note: Заметка
+           happened_at: '1002'
            base_year: 1001
+           short_name: Памѧтна Ѫ
            type: Building
            kind:
+           calendary_slugs:
+           - календ
          """
       А добѫдꙛ охватъ "0-9/1"
 
-   @get @collection
+   @get @collection @json
    Пример: Запрос постраничный к контроллеру памѧтєј в АПИ
-      И сѫ памѧти:
-         """
-         ---
-         - slug: памят1
-           short_name: ПамѧтноА
-           quantity: "4"
-           base_year: 1000
-           type: Group
-           kind: Kind
-           language: ру
-           alphabeth: РУ
-           title: Титулецъ
-           description: Описалово
-           without_place: true
-         - slug: памят2
-           short_name: ПамѧтноВ
-           base_year: 1000
-           type: Identity
-           kind: Kind
-           language: ру
-           alphabeth: РУ
-           title: Титулецъ
-           description: Описалово
-           without_place: true
-         - slug: памят3
-           short_name: ПамѧтноГ
-           base_year: 1000
-           type: Building
-           kind: Kind
-           language: ру
-           alphabeth: РУ
-           title: Титулецъ3
-           description: Описалово3
-           without_place: true
-        """
-      Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ доводом "per=3"
+      Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ доводом "per=1"
       То добѫдꙛ кодъ поврата "206"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: служ
-           short_name: Памѧтно
-           quantity: '4'
-           base_year: 1000
-           type: Group
-           kind: Kind
-         - slug: памят1
-           short_name: ПамѧтноА
-           quantity: '4'
-           base_year: 1000
-           type: Group
-           kind: Kind
-         - slug: памят2
-           short_name: ПамѧтноВ
-           quantity:
-           base_year: 1000
-           type: Identity
-           kind: Kind
+         - id: 200101
+           slug: слуг
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин А
+           note: Заметка
+           happened_at: '1002'
+           base_year: 1001
+           short_name: Памѧтна Ѫ
+           type: Building
+           kind:
+           calendary_slugs:
+           - календ
          """
-      А добѫдꙛ охватъ "0-2/5"
-      Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ доводом "per=3&p=2"
+      А добѫдꙛ охватъ "0-0/2"
+      Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ доводом "per=1&p=2"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         - slug: памят3
-           short_name: ПамѧтноГ
-           quantity:
+         - id: 200100
+           slug: служ
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин Б
+           note:
+           happened_at: '1001'
            base_year: 1000
-           type: Building
+           short_name: Памятно
+           type: Group
            kind: Kind
-         - slug: слуг
-           short_name: Памѧтна Ѫ
-           quantity:
-           base_year: 1001
-           type: Building
-           kind:
+           calendary_slugs:
+           - календ
          """
-      А добѫдꙛ охватъ "3-5/5"
-      Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ доводом "per=3&p=3"
+      А добѫдꙛ охватъ "1-1/2"
+      Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ доводом "per=1&p=3"
       То добѫдꙛ кодъ поврата "416"
 
-   @get @collection @error @416
+   @get @collection @json @error @416
    Пример: Запрос к контроллеру памѧтєј в АПИ
       Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ доводом "page=111111"
       То добѫдꙛ кодъ поврата "416"
@@ -250,7 +288,7 @@
            page: '111111'
          """
 
-   @get @collection @error @416
+   @get @collection @json @error @416
    Пример: Запрос к контроллеру памѧтєј в АПИ
       Если сдѣлаю "GET" запытъ до адреса "/api/v0/memories.json" сꙛ заглавјем:
          """
@@ -261,37 +299,19 @@
       И добѫдꙛ приблизнъ изводъ:
          """
          ---
-         args: {}
          """
 
 
-   @create @object
+   @create @object @json
    Пример: Користник створяє памѧтѣ
       Если запытаю створенје изнахоѕи памѧти "/api/v0/memories/create.json" сꙛ даными:
          | id           | 103                                  |
          | short_name   | Памѧтно Г                            |
-         | title        | Титулецъ 3                           |
-         | description  | Описалово 3                          |
          | type         | Building                             |
          | kind         | Kind3                                |
          | base_year    | 1003                                 |
          | slug         | служ3                                |
       То добѫдꙛ кодъ поврата "200"
-      И добѫдꙛ выводъ:
-         """
-         ---
-         id: 103
-         slug: служ3
-         short_name: Памѧтно Г
-         quantity:
-         base_year: 1003
-         type: Building
-         kind: Kind3
-         language: ру
-         alphabeth: РУ
-         title: Титулецъ 3
-         description: Описалово 3
-         """
       И изнахоѕь памѧти "Памѧтно Г" бѫдє яко:
          """
          ---
@@ -301,13 +321,9 @@
          base_year: 1003
          type: Building
          kind: Kind3
-         language: ру
-         alphabeth: РУ
-         title: Титулецъ 3
-         description: Описалово 3
          """
 
-   @create @object @error @422
+   @create @object @json @error @422
    Пример: Користник кушає створити погрѣшну памѧтѣ, и не можє
       Если запытаю створенје изнахоѕи памѧти "/api/v0/memories/create.json" сꙛ даными:
          | id           | 103                                  |
@@ -322,20 +338,17 @@
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Quantity is invalid
          - Events can't be blank
          """
       А изнахоѕи памѧти "103" не бѫдє
 
-   @update @object @error @404
+   @update @object @json @error @404
    Пример: Користник поновяє дане памѧти
       Если запытаю одсланје памѧти в изнаходь "/api/v0/memories/Памѧтна Ѫ.json" сꙛ даными:
-         | id           | 103                                  |
+         | id           | 200103                               |
          | short_name   | Памѧтно Г                            |
-         | title        | Титулецъ 3                           |
-         | description  | Описалово 3                          |
          | type         | Council                              |
          | kind         | Kind3                                |
          | quantity     | "?"                                  |
@@ -345,81 +358,111 @@
       И добѫдꙛ выводъ:
          """
          ---
-         id: 101
+         id: 200101
          slug: служ3
          short_name: Памѧтно Г
          quantity: "?"
          base_year: 1003
          type: Council
          kind: Kind3
-         language: ру
-         alphabeth: РУ
-         title: Титулецъ 3
-         description: Описалово 3
+         title: Помин А
+         description:
+         order_short_name: Славник
+         order_tweet: слав
+         roundel_url:
          """
       Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памѧтно Г.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         id: 101
+         id: 200101
          slug: служ3
          short_name: Памѧтно Г
          quantity: "?"
          base_year: 1003
          type: Council
          kind: Kind3
-         language: ру
-         alphabeth: РУ
-         title: Титулецъ 3
-         description: Описалово 3
+         title: Помин А
+         description:
+         order_short_name: Славник
+         order_tweet: слав
+         roundel_url:
          """
       Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памѧтна Ѫ.json"
       То добѫдꙛ кодъ поврата "404"
 
-   @get @object
+   @get @object @json
    Пример: Користник добыває дане памѧти· иззначену краткꙛ именем
-      Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памѧтно.json"
+      Если запытаю добыванје из изнахоѕи "/api/v0/memories/Памятно.json"
       То добѫдꙛ выводъ:
          """
          ---
-         id: 100
+         id: 200100
          slug: служ
-         short_name: Памѧтно
+         short_name: Памятно
          quantity: '4'
          base_year: 1000
          type: Group
          kind: Kind
-         language: ру
-         alphabeth: РУ
-         title: Титулецъ
-         description: Описалово
+         title: Помин Б
+         description:
+         order_short_name: Славник
+         order_tweet: слав
+         roundel_url:
          """
 
-   @delete @object
+   @delete @object @json
    Пример: Користник изтьрає иззначену плашкој памѧтѣ 
       Если запытаю изтрѣнје изнахоѕи "/api/v0/memories/служ.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
-         id: 100
+         id: 200100
          slug: служ
-         short_name: Памѧтно
+         short_name: Памятно
          quantity: '4'
          base_year: 1000
          type: Group
          kind: Kind
-         language: ру
-         alphabeth: РУ
-         title: Титулецъ
-         description: Описалово
+         title: Помин Б
+         description:
+         order_short_name: Славник
+         order_tweet: слав
+         roundel_url:
          """
       И памѧть "Картинка" не будє єствовати
 
-   @get @collection @error
+   @get @collection @json @error
    Пример: Запрос к контроллеру памѧтєј в АПИ при отсутствии памѧтєј
       Пусть не єствує ни єдне памѧти
       Если покушаю створити "GET" запытъ до адреса "/api/v0/memories.jsonp"
       То не добѫдꙛ кодъ поврата
       А вывода не бѫдє
+
+   @get @collection @json
+   Пример: Користник добыває списъ памѧтєј для соборна помина, кој оны включає
+      Пусть єствує помин "Помин В" сꙛ славој "слав" во калѧдарю "календ" для сꙛбытја "Сꙛбытие" и є включенѫ во собор "Помин А"
+
+      Если запытаю добыванје из изнахоѕи "/api/v0/memories/200101/content.json"
+      То добѫдꙛ кодъ поврата "200"
+      И добѫдꙛ выводъ:
+         """
+         ---
+         - id: 200100
+           slug: служ
+           order_short_name: Славник
+           order_tweet: слав
+           roundel_url:
+           title: Помин В
+           note:
+           happened_at: '1001'
+           base_year: 1000
+           short_name: Памятно
+           type: Group
+           kind: Kind
+           calendary_slugs:
+           - календ
+         """
+      А добѫдꙛ охватъ "0-9/1"

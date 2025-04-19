@@ -10,6 +10,7 @@ FactoryBot.define do
          slug { attributes_for(:slug)[:text] }
          descriptions { true }
          titles { true }
+         title { false }
       end
 
       after(:build) do |calendary, e|
@@ -23,6 +24,16 @@ FactoryBot.define do
 
          if e.titles.present?
             calendary.titles = build_list(:appellation, 1, describable: calendary)
+         end
+
+         if e.title.present?
+            calendary.titles << build(:appellation, describable: calendary, text: e.title)
+         end
+      end
+
+      trait(:without_titles) do
+         transient do
+            titles { nil }
          end
       end
 

@@ -3,16 +3,12 @@ types:
  - name: audiee
    model: Audio
    version: 0.1
+   with:
+    - title
    fields:
     - name: uid
       kind: uuid
       descriptions: :tiun.types.audio.uid
-    - name: language
-      kind: string
-      descriptions: :tiun.types.audio.language
-    - name: alphabeth
-      kind: string
-      descriptions: :tiun.types.audio.alphabeth
     - name: title
       kind: string
       descriptions: :tiun.types.audio.title
@@ -21,6 +17,9 @@ types:
       descriptions: :tiun.types.audio.uri
  - name: audio
    version: 0.1
+   with:
+    - title
+    - description
    fields:
     - name: uid
       kind: uuid
@@ -30,12 +29,6 @@ types:
       kind: digest
       readonly: true
       descriptions: :tiun.types.audio.digest
-    - name: language
-      kind: string
-      descriptions: :tiun.types.audio.language
-    - name: alphabeth
-      kind: string
-      descriptions: :tiun.types.audio.alphabeth
     - name: title
       kind: string
       descriptions: :tiun.types.audio.title
@@ -83,35 +76,35 @@ resources:
          kind: natural
          default: 10
          maximum: 50
-         descriptions: :tiun.resources.audio.index.args.per_page
+         descriptions: :tiun.resources.audio.index.per_page
        - name: page
          kind: natural
          alias: p
          default: 1
-         descriptions: :tiun.resources.audio.index.args.page
+         descriptions: :tiun.resources.audio.index.page
        - name: language
          kind: string
          alias: l
-         descriptions: :tiun.resources.audio.index.args.language
+         descriptions: :tiun.resources.audio.index.language
        - name: alphabeth
          kind: string
          alias: a
-         descriptions: :tiun.resources.audio.index.args.alphabeth
+         descriptions: :tiun.resources.audio.index.alphabeth
        - name: event
          kind: string
          alias: e
-         descriptions: :tiun.resources.audio.index.args.event
+         descriptions: :tiun.resources.audio.index.event
        - name: memory
          kind: string
          alias: m
-         descriptions: :tiun.resources.audio.index.args.memory
+         descriptions: :tiun.resources.audio.index.memory
        - name: uno
          kind: string
-         descriptions: :tiun.resources.audio.index.args.uno
+         descriptions: :tiun.resources.audio.index.uno
        - name: kind
          kind: string
          alias: k
-         descriptions: :tiun.resources.audio.index.args.kind
+         descriptions: :tiun.resources.audio.index.kind
  - name: audio.create
    path: /api/v0/audios/create.json
    methods:
@@ -163,15 +156,15 @@ resources:
       args:
        - name: uid
          kind: uuid
-         descriptions: :tiun.resources.audio.get.args.uid
+         descriptions: :tiun.resources.audio.get.uid
        - name: language
          kind: string
          alias: l
-         descriptions: :tiun.resources.audio.get.args.language
+         descriptions: :tiun.resources.audio.get.language
        - name: alphabeth
          kind: string
          alias: a
-         descriptions: :tiun.resources.audio.get.args.alphabeth
+         descriptions: :tiun.resources.audio.get.alphabeth
     - name: put
       version: 0.1
       kind: audio
@@ -179,6 +172,9 @@ resources:
       policy: audio.update
       allowed_errors: [200, 404, 422.3, 500]
       args:
+       - name: uid
+         kind: uuid
+         descriptions: :tiun.resources.audio.get.uid
        - name: language
          kind: string
          descriptions: :tiun.resources.audio.put.language
@@ -193,6 +189,7 @@ resources:
          descriptions: :tiun.resources.audio.put.description
        - name: audio
          kind: file
+         skip: args
          descriptions: :tiun.resources.audio.put.audio
        - name: meta
          kind: json
@@ -215,4 +212,4 @@ resources:
       args:
        - name: uid
          kind: uuid
-         descriptions: :tiun.resources.audio.delete.args.uid
+         descriptions: :tiun.resources.audio.delete.uid

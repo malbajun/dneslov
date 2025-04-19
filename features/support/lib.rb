@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 module Spec
+   def context
+      @_context ||= {
+         locales: I18n.available_locales,
+         locale: I18n.locale,
+         calendary_slugs: ['днес'],
+         language: 'ру',
+         alphabeth: 'РО',
+      }
+   end
+
    def described_class
       kls = yield if block_given?
       @described_class = kls || @described_class
@@ -73,7 +83,8 @@ module Spec
       error(to_hash, hash, path, exception: exception) if [hash, to_hash].any? {|x| !(x.class.ancestors & [Hash, ActiveRecord::Base]).any? }
 
       to_hash.map do |(to_key, to_val)|
-         value = hash.respond_to?(to_key) ? hash.send(to_key) : hash[to_key]
+         value = hash.respond_to?(to_key) ? hash.send(to_key) :
+                 hash.respond_to?("_#{to_key}") ? hash.send("_#{to_key}") : hash[to_key]
 
          deep_match(value, to_val, path | [to_key], exception: exception)
       end.any?
