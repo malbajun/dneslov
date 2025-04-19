@@ -118,7 +118,7 @@ class Scriptum < ActiveRecord::Base
 
    accepts_nested_attributes_for :memo_scripta, reject_if: :all_blank, allow_destroy: true
 
-   has_alphabeth on: %i(text title)
+   has_alphabeth on: %i(text title), novalidate: true
 
    validates :type, :memo_scripta, presence: true
 end

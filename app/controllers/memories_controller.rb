@@ -103,7 +103,7 @@ class MemoriesController < ApplicationController
       @memoes = apply_scopes(Memo).with_base_year
                                   .with_slug_text
                                   .with_calendary_slug_text(context)
-                                  .with_description(context)
+                                  .with_note(context)
                                   .with_title(context)
                                   .with_date
                                   .with_roundel_url

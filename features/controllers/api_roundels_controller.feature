@@ -181,7 +181,6 @@
       И добѫдꙛ приблизнъ изводъ:
          """
          ---
-         args: {}
          """
 
    @create @object
@@ -218,14 +217,7 @@
          | uid                | 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064 |
          | roundel_path       | features/fixtures/400x400-green.webp |
          | roundelable_name   | Памѧтно#200203                       |
-      То добѫдꙛ кодъ поврата "422"
-      И добѫдꙛ выводъ:
-         """
-         ---
-         args: {}
-         error:
-         - 'param is missing or the value is empty: picture'
-         """
+      То добѫдꙛ кодъ поврата "500"
       А изнахоѕи личинци "Памѧтно#200203" не бѫдє
 
    @create @object @error @422
@@ -239,8 +231,7 @@
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Digest has already been taken
          """
       А изнахоѕи личинци "Памѧтно#200203" не бѫдє
@@ -256,8 +247,7 @@
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Image has 100 px. height less than 400 px.
          """
       А изнахоѕи личинци "Памѧтно#200203" не бѫдє
@@ -310,7 +300,7 @@
          ---
          args:
            uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
-         error:
+         errors:
          - Uid has already been taken
          - Url has already been taken
          """

@@ -2,17 +2,14 @@
 types:
  - name: image
    model: Picture
-   version: 1.0
+   version: 0.1
+   with:
+    - title
+    - description
    fields:
     - name: uid
       kind: uuid
       descriptions: :tiun.types.image.uid
-    - name: language
-      kind: string
-      descriptions: :tiun.types.image.language
-    - name: alphabeth
-      kind: string
-      descriptions: :tiun.types.image.alphabeth
     - name: title
       kind: string
       descriptions: :tiun.types.image.title
@@ -30,17 +27,14 @@ types:
       descriptions: :tiun.types.image.type
  - name: full_image
    model: Picture
-   version: 1.0
+   version: 0.1
+   with:
+    - title
+    - description
    fields:
     - name: uid
       kind: uuid
       descriptions: :tiun.types.image.uid
-    - name: language
-      kind: string
-      descriptions: :tiun.types.image.language
-    - name: alphabeth
-      kind: string
-      descriptions: :tiun.types.image.alphabeth
     - name: title
       kind: string
       descriptions: :tiun.types.image.title
@@ -70,7 +64,7 @@ types:
       descriptions: :tiun.types.image.attitudes
  - name: attitude
    model: ImageAttitude
-   version: 1.0
+   version: 0.1
    fields:
     - name: attitude_to
       kind: string
@@ -86,7 +80,7 @@ resources:
    path: /api/v1/images.json
    methods:
     - name: get
-      version: 1.0
+      version: 0.1
       kind: image page
       descriptions: :tiun.resources.image.index
       auth: no
@@ -96,40 +90,40 @@ resources:
          kind: natural
          default: 10
          maximum: 50
-         descriptions: :tiun.resources.image.index.args.per_page
+         descriptions: :tiun.resources.image.index.per_page
        - name: page
          kind: natural
          alias: p
          default: 1
-         descriptions: :tiun.resources.image.index.args.page
+         descriptions: :tiun.resources.image.index.page
        - name: l
          kind: string
          alias: language
-         descriptions: :tiun.resources.image.index.args.language
+         descriptions: :tiun.resources.image.index.language
        - name: a
          kind: string
          alias: alphabeth
-         descriptions: :tiun.resources.image.index.args.alphabeth
+         descriptions: :tiun.resources.image.index.alphabeth
        - name: event
          kind: string
          alias: e
-         descriptions: :tiun.resources.image.index.args.event
+         descriptions: :tiun.resources.image.index.event
        - name: memory
          kind: string
          alias: m
-         descriptions: :tiun.resources.image.index.args.memory
+         descriptions: :tiun.resources.image.index.memory
        - name: uno
          kind: string
-         descriptions: :tiun.resources.image.index.args.uno
+         descriptions: :tiun.resources.image.index.uno
        - name: type
          kind: string
          alias: t
-         descriptions: :tiun.resources.image.index.args.type
+         descriptions: :tiun.resources.image.index.type
  - name: image.create
    path: /api/v1/images/create.json
    methods:
     - name: post
-      version: 1.0
+      version: 0.1
       kind: full_image
       descriptions: :tiun.resources.image.create
       auth: no
@@ -138,12 +132,6 @@ resources:
        - name: uid
          kind: uuid
          descriptions: :tiun.resources.image.post.uid
-       - name: language
-         kind: string
-         descriptions: :tiun.resources.image.post.language
-       - name: alphabeth
-         kind: string
-         descriptions: :tiun.resources.image.post.alphabeth
        - name: title
          kind: string
          descriptions: :tiun.resources.image.post.title
@@ -169,7 +157,7 @@ resources:
    path: /api/v1/images/:uid.json
    methods:
     - name: get
-      version: 1.0
+      version: 0.1
       kind: full_image
       descriptions: :tiun.resources.image.get
       auth: no
@@ -177,17 +165,17 @@ resources:
       args:
        - name: uid
          kind: uuid
-         descriptions: :tiun.resources.image.get.args.uid
+         descriptions: :tiun.resources.image.get.uid
        - name: l
          kind: string
          alias: language
-         descriptions: :tiun.resources.image.get.args.language
+         descriptions: :tiun.resources.image.get.language
        - name: a
          kind: string
          alias: alphabeth
-         descriptions: :tiun.resources.image.get.args.alphabeth
+         descriptions: :tiun.resources.image.get.alphabeth
     - name: put
-      version: 1.0
+      version: 0.1
       kind: full_image
       descriptions: :tiun.resources.image.put
       auth: no
@@ -196,12 +184,6 @@ resources:
        - name: uid
          kind: uuid
          descriptions: :tiun.resources.image.put.uid
-       - name: language
-         kind: string
-         descriptions: :tiun.resources.image.put.language
-       - name: alphabeth
-         kind: string
-         descriptions: :tiun.resources.image.put.alphabeth
        - name: title
          kind: string
          descriptions: :tiun.resources.image.put.title
@@ -224,7 +206,7 @@ resources:
          kind: attitude array
          descriptions: :tiun.resources.image.put.attitudes
     - name: delete
-      version: 1.0
+      version: 0.1
       kind: full_image
       descriptions: :tiun.resources.image.delete
       auth: no
@@ -232,4 +214,4 @@ resources:
       args:
        - name: uid
          kind: uuid
-         descriptions: :tiun.resources.image.delete.args.uid
+         descriptions: :tiun.resources.image.delete.uid

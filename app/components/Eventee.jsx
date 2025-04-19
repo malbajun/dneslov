@@ -309,7 +309,7 @@ export default class Eventee extends Component {
    }
 
    getInfoClass() {
-      return this.props.image_url ? " x10 l9 m8 s7" : " s12"
+      return this.props.image_url ? " x10 l9 m6 s12" : " s12"
    }
 
    render() {
@@ -355,19 +355,16 @@ export default class Eventee extends Component {
                         text={this.props.place.name} />}
                   {this.props.happened_at && <Chip
                      className='happened-at'
-                     text={this.props.happened_at} />}</div>
-            {this.props.date && false && <Chip
-               cclassName={this.classNameForYearDate()}
-               text={this.props.date} />}
+                     text={this.props.happened_at} />}</div></div>
             {this.props.image_url &&
-               <div className='col x2 l3 m4 s5 image'>
+               <div className='col x2 l3 m6 s12 image'>
                   <a
                      className={"btn btn-image"}
                      onClick={this.onImageClick}>
                      <img
                         src={this.props.image_url}
-                        onClick={this.onImageClick} /></a></div>}</div>
-         <div className='row'>
+                        onClick={this.onImageClick} /></a></div>}</div>,
+         <div className='row scripta'>
             {this.state.scripta.isPresent() &&
                 <div className='col s12'>
                    {this.state.sortedScripta.map((scriptum) =>
@@ -381,7 +378,7 @@ export default class Eventee extends Component {
                                playing={scriptum.audio_url == this.state.playingAudioUrl}
                             />}</div>
                          <div className='col s12 scriptum'>
-                            <Markdown source={scriptum.text} /></div></div>)}</div>}</div>
+                            <Markdown source={scriptum.text} /></div></div>)}</div>}</div>,
          <MemorySpans
             memories={this.state.childrenMemoes}
             totalMemories={this.state.childrenTotal}
@@ -390,7 +387,8 @@ export default class Eventee extends Component {
             bondMemoryId={this.props.memory_id}
             url={'/api/v0/memories/'+ this.props.memory_id +'/content.json'}
             hideIfBlank={true}
-            manualFetch={true} />
+            manualFetch={true} />,
+         <div className='row memoes'>
             {this.state.describedMemoes.isPresent() &&
                <Description
                   describedMemoes={this.state.describedMemoes}

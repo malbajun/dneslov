@@ -28,7 +28,7 @@ end
 end
 
 Если('изнахоѕь картинци {string} бѫдє яко:') do |title, doc_string|
-   picture = Picture.by_title(title).first
+   picture = Picture.by_title(title).with_title(context).with_description(context).first
    expect(picture).to match_record_yaml(doc_string)
 end
 

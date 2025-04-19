@@ -3,7 +3,7 @@ class ShortName < ApplicationRecord
 
    belongs_to :memory
 
-   has_alphabeth on: :text
+   has_alphabeth on: :text, novalidate: true
 
    validates :text, :language_code, :alphabeth_code, presence: true
 

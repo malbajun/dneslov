@@ -1,6 +1,6 @@
 Допустим('єствує памѧть сꙛ даными:') do |table|
    attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
-   FactoryBot.create(:memory, attrs)
+   FactoryBot.create(:memory, **attrs)
 end
 
 Допустим('єствує памѧть {string}') do |name|
@@ -9,14 +9,6 @@ end
 
 Допустим('єствує памѧть {string} сꙛ озом {string}') do |name, number|
    FactoryBot.create(:memory, short_name: name, id: number)
-end
-
-Допустим('єствує сꙛбытие {string} ѫ памѧти {string}') do |event_name, short_name|
-   FactoryBot.create(:event, title: event_name, memory_title: short_name, place: nil)
-end
-
-Допустим('єствує сꙛбытие {string} сꙛ озом {string} ѫ памѧти {string}') do |event_name, id, short_name|
-   FactoryBot.create(:event, id: id, title: event_name, memory_title: short_name, place: nil)
 end
 
 Пусть('сѫ памѧти:') do |doc_string|
@@ -51,4 +43,9 @@ end
 То('изнахоѕи памѧти {string} не бѫдє') do |name|
    memories = Memory.by_uno(name)
    expect(memories).to be_blank
+end
+
+Допустим('єствує слава сꙛ даными:') do |table|
+   attrs = table.rows_hash.transform_values { |value| YAML.load(value) }
+   FactoryBot.create(:order, attrs)
 end

@@ -3,14 +3,13 @@ FactoryBot.define do
       type { 'Order' }
 
       transient do
-         order { 'Чин' }
+         order { 'ЧинЧин' }
       end
 
-      after(:build) do |o, ev|
-         o.slug = build(:slug, sluggable: o)
-         o.descriptions << build(:description)
-         o.notes << build(:note, text: ev.order)
-         o.tweets << build(:tweet)
+      after(:build) do |o, e|
+         #o.descriptions << build(:description) if o.descriptions.blank?
+         o.notes << build(:note, text: e.order) if e.order
+         o.tweets << build(:tweet, text: e.slug) if e.slug
       end
    end
 end

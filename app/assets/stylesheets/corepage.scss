@@ -1,0 +1,25 @@
+html {
+   .memory, .event {
+      .image {
+          text-align: center;
+         .btn-image {
+            display: inline-block;
+            line-height: 0rem;
+            border-radius: 50%;
+            text-align: center;
+            background-color: aliceblue;
+            position: relative;
+            font-size: 0.8rem;
+            padding: 1.6rem;
+            height: auto;
+            width: min-content;
+            outline: none !important;
+
+            &:hover {
+              opacity: 0.8;
+              background-color: aliceblue;
+            }
+         }
+      }
+   }
+}

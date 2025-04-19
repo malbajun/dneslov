@@ -101,7 +101,6 @@
       И добѫдꙛ приблизнъ изводъ:
          """
          ---
-         args: {}
          """
 
 
@@ -159,8 +158,7 @@
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Accounts no has already been taken
          """
       А изнахоѕи ужила "Ужил 1" не бѫдє
@@ -177,8 +175,7 @@
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Encrypted password can't be blank
          """
       А изнахоѕи ужила "Ужил 1" не бѫдє
@@ -214,7 +211,7 @@
            type: Account::Uid
            validated: false
          """
-      Если запытаю добыванје из изнахоѕи "/api/v1/users/uzsilo.json"
+      Если запытаю добыванје из изнахоѕи "/api/v1/users/uzsilo2.json"
       То добѫдꙛ кодъ поврата "404"
 
    @get @object

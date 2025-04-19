@@ -158,6 +158,9 @@ resources:
        - name: "no"
          kind: string
          descriptions: :tiun.resources.user.get.args.no
+       - name: "uno"
+         kind: string
+         descriptions: :tiun.resources.user.get.args.no
        - name: type
          kind: enum <Account::Uid, Account::Email>
          descriptions: :tiun.resources.user.get.args.type
@@ -176,6 +179,9 @@ resources:
        - name: "no"
          kind: string
          descriptions: :tiun.resources.user.put.args.no
+       - name: "uno"
+         kind: string
+         descriptions: :tiun.resources.user.get.args.no
        - name: type
          kind: enum <Account::Uid, Account::Email>
          descriptions: :tiun.resources.user.put.args.type
@@ -210,6 +216,9 @@ resources:
          kind: string
          descriptions: :tiun.resources.session.put.header.session_token
       args:
+       - name: "uno"
+         kind: string
+         descriptions: :tiun.resources.user.get.args.no
        - name: "no"
          kind: string
          descriptions: :tiun.resources.user.delete.args.no

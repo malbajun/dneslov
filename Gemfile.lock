@@ -74,8 +74,8 @@ GIT
 
 GIT
   remote: https://codeberg.org/znamenica/tiun.git
-  revision: 5c8730e4f56b47a8d9a3fa9fbab22f9f85263d38
-  ref: 5c8730e
+  revision: ea90142c66b55850b6c7d69a2326156ddb4bf4f3
+  ref: ea90142
   specs:
     tiun (0.0.2.1)
       activesupport (>= 4.1.0)

@@ -71,46 +71,36 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
-           language: ру
-           alphabeth: РУ
-           title: Картинка
-           description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-           type: Picture
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
-           language: ру
-           alphabeth: РУ
-           title: Фотка
-           description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
-           type: Photo
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
-           language: ру
-           alphabeth: РУ
-           title: Картина
-           description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
-           type: Painting
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
-           language: ру
-           alphabeth: РУ
-           title: Фотка 1
-           description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
-           type: Photo
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
-           language: ру
-           alphabeth: РУ
            title: Иконка
            description: Иконка 1
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
            url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
            type: Icon
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+           title: Фотка 1
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           title: Картина
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           type: Painting
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
+           title: Фотка
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+           title: Картинка
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
+           type: Picture
          """
       А добѫдꙛ охватъ "0-9/5"
 
@@ -121,22 +111,18 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
-           language: ру
-           alphabeth: РУ
-           title: Фотка 1
-           description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
-           type: Photo
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
-           language: ру
-           alphabeth: РУ
            title: Иконка
            description: Иконка 1
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
            url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
            type: Icon
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+           title: Фотка 1
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           type: Photo
          """
       А добѫдꙛ охватъ "0-9/2"
 
@@ -148,16 +134,12 @@
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
-           language: ру
-           alphabeth: РУ
            title: Фотка
            description:
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
            url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
            type: Photo
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
-           language: ру
-           alphabeth: РУ
            title: Картина
            description:
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
@@ -174,8 +156,6 @@
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
-           language: ру
-           alphabeth: РУ
            title: Картина
            description:
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
@@ -199,8 +179,6 @@
          """
          ---
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
-           language: ру
-           alphabeth: РУ
            title: Иконка
            description: Иконка 1
            thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
@@ -226,30 +204,24 @@
       И добѫдꙛ приблизнъ изводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
-           language: ру
-           alphabeth: РУ
-           title: Картинка
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f057
+           title:
            description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
-           type: Picture
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
-           language: ру
-           alphabeth: РУ
-           title: Фотка
-           description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f057.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f057.webp"
            type: Photo
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
-           language: ру
-           alphabeth: РУ
-           title: Картина
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
+           title: Иконка
+           description: Иконка 1
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
+           type: Icon
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
+           title: Фотка 1
            description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
-           type: Painting
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
+           type: Photo
          """
       А добѫдꙛ охватъ "0-2/6"
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3&p=2"
@@ -257,30 +229,24 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f065
-           language: ру
-           alphabeth: РУ
-           title: Фотка 1
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
+           title: Картина
            description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f065.webp"
-           type: Photo
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f066
-           language: ру
-           alphabeth: РУ
-           title: Иконка
-           description: Иконка 1
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f066.webp"
-           type: Icon
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f057
-           language: фр
-           alphabeth: ФР
-           title: Aperçu 4
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
+           type: Painting
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
+           title: Фотка
            description:
-           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f057.webp"
-           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f057.webp"
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
            type: Photo
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
+           title: Картинка
+           description:
+           thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
+           url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
+           type: Picture
          """
       А добѫдꙛ охватъ "3-5/6"
       Если сдѣлаю "GET" запытъ до адреса "/api/v1/images.json" сꙛ доводом "per=3&p=3"
@@ -308,7 +274,6 @@
       И добѫдꙛ приблизнъ изводъ:
          """
          ---
-         args: {}
          """
 
 
@@ -321,16 +286,12 @@
          | image_path   | features/fixtures/100x600-yellow.tiff   |
          | title        | Картинка 1                              |
          | description  | Описание                                |
-         | language     | ру                                      |
-         | alphabeth    | РУ                                      |
          | attitude_to  | Памѧтно(100,10)                         |
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
-         language: ру
-         alphabeth: РУ
          title: Картинка 1
          description: Описание
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
@@ -352,8 +313,6 @@
          meta: {}
          width: 250
          height: 1500
-         language: ру
-         alphabeth: РУ
          title: Картинка 1
          description: Описание
          url: "/images/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
@@ -372,14 +331,11 @@
          | image_path   | features/fixtures/y2000-green.webp   |
          | title        | Картинка 1                           |
          | description  | Описание                             |
-         | language     | ру                                   |
-         | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "422"
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Digest has already been taken
          """
       А изнахоѕи картинци "Картинка 1" не бѫдє
@@ -393,14 +349,11 @@
          | image_path   | features/fixtures/canvas.jpg         |
          | title        | Картинка 1                           |
          | description  | Описание                             |
-         | language     | ру                                   |
-         | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "422"
       И добѫдꙛ выводъ:
          """
          ---
-         args: {}
-         error:
+         errors:
          - Image has 100 px. height less than 1500 px.
          - Image has 100 px. width less than 150 px.
          """
@@ -415,15 +368,11 @@
          | image_path   | features/fixtures/y2000-green.webp   |
          | title        | Картинка 1                           |
          | description  | Описание 1                           |
-         | language     | ру                                   |
-         | alphabeth    | РУ                                   |
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
-         language: ру
-         alphabeth: РУ
          title: Картинка 1
          description: Описание 1
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
@@ -440,8 +389,6 @@
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f054
-         language: ру
-         alphabeth: РУ
          title: Картинка 1
          description: Описание 1
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f054.webp"
@@ -462,8 +409,6 @@
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
-         language: ру
-         alphabeth: РУ
          title: Картинка
          description:
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"
@@ -483,8 +428,6 @@
          """
          ---
          uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f053
-         language: ру
-         alphabeth: РУ
          title: Картинка
          description:
          thumb_url: "/images/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f053.webp"

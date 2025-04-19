@@ -19,7 +19,7 @@ FactoryBot.define do
          o.titles << build(:title, text: e.title)
          o.memory =
             if e.memory_title
-               Memory.by_short_name(e.memory_title).first || build(:memory, without_events: true, short_name: e.memory_title)
+               Memory.by_short_name(e.memory_title).first
             else
                build(:memory, without_events: true)
             end

@@ -73,14 +73,17 @@ class Memory < ApplicationRecord
    # by title with short_name
    scope :by_title, -> text do
       this = table.table_alias || table.name
-      join = "LEFT OUTER JOIN descriptions AS #{this}_titles
-                           ON #{this}.id = #{this}_titles.describable_id
-                          AND #{this}_titles.describable_type = 'Memory'
-              LEFT OUTER JOIN short_names AS #{this}_short_names
-                           ON #{this}.id = #{this}_short_names.memory_id"
+      /`(?<method>(?:by_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name || rela
 
-      selector = "unaccent(#{this}_titles.text) ~* unaccent(?)
-             OR #{this}_short_names.text ~* ?", "\\m#{text}.*", "\\m#{text}.*"
+      join = "LEFT OUTER JOIN descriptions AS #{as}_#{this}_titles
+                           ON #{this}.id = #{as}_#{this}_titles.describable_id
+                          AND #{as}_#{this}_titles.describable_type = 'Memory'
+              LEFT OUTER JOIN short_names AS #{as}_#{this}_short_names
+                           ON #{this}.id = #{as}_#{this}_short_names.memory_id"
+
+      selector = "unaccent(#{as}_#{this}_titles.text) ~* unaccent(?)
+             OR #{as}_#{this}_short_names.text ~* ?", "\\m#{text}.*", "\\m#{text}.*"
 
       joins(join).where(selector).distinct
    end
@@ -341,6 +344,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                                FROM scripta AS #{as}_scripta
                                JOIN events
                                  ON memories.id = events.memory_id
+                                AND events.kind_code IN ('#{Event::NOTICE.join("','")}')
                                JOIN memoes AS #{as}_memoes
                                  ON events.id = #{as}_memoes.event_id
                                JOIN memo_scripta
@@ -439,28 +443,37 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    # with memoes and children via memoes
    scope :with_memoed, -> context do
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
-      as = context[:as] || rela
+      as = context[:as] || model.reflections[rela]&.name || rela
       this = table.table_alias || table.name
       language_codes = [context[:text_languages] || context[:language]].flatten
       alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
       cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
-      selector = "#{this}.id,
-                  #{this}_slugs.text AS _slug,
-                  #{this}.base_year,
+      selector = "#{this}.*,
+                  #{this}_#{as}_slugs.text AS _slug,
                   #{this}_roundels.url AS _roundel_url,
                   #{this}_order_tweets.text AS _order_tweet,
                   #{this}_order_short_names.text AS _order_short_name,
-                  #{this}_titles.text AS _title,
+                  #{this}_#{as}_titles.text AS _title,
                   #{this}_events.happened_at AS _happened_at,
                   #{this}_notes.text AS _note,
                   json_agg(distinct #{this}_calendary_slugs.text) AS _calendary_slugs"
 
+      if context[:id]
+          id = ActiveRecord::Base.sanitize_sql_array(["?", context[:id]])
+          idsel = "LEFT OUTER JOIN memoes AS #{this}_memo_hosts
+                           ON #{this}_memoes.bond_to_id = #{this}_memo_hosts.id
+                          AND #{this}_memoes.bind_kind_code = 'соборный'
+                         JOIN events AS #{this}_host_events
+                           ON #{this}_memo_hosts.event_id = #{this}_host_events.id
+                          AND #{this}_host_events.memory_id = #{id}"
+      end
+
       join =            "JOIN events AS #{this}_events
                            ON #{this}.id = #{this}_events.memory_id
-                         JOIN slugs AS #{this}_slugs
-                           ON #{this}_slugs.sluggable_id = #{this}.id
-                          AND #{this}_slugs.sluggable_type = 'Memory'
+                         JOIN slugs AS #{this}_#{as}_slugs
+                           ON #{this}_#{as}_slugs.sluggable_id = #{this}.id
+                          AND #{this}_#{as}_slugs.sluggable_type = 'Memory'
                          JOIN memoes AS #{this}_memoes
                            ON #{this}_memoes.event_id = #{this}_events.id
                          JOIN calendaries AS #{this}_calendaries
@@ -468,19 +481,13 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                          JOIN slugs AS #{this}_calendary_slugs
                            ON #{this}_calendary_slugs.sluggable_id = #{this}_calendaries.id
                           AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
-                              #{cslugs_rule}
-                         JOIN memoes AS #{this}_memo_hosts
-                           ON #{this}_memoes.bond_to_id = #{this}_memo_hosts.id
-                          AND #{this}_memoes.bind_kind_code = 'соборный'
-                         JOIN events AS #{this}_host_events
-                           ON #{this}_memo_hosts.event_id = #{this}_host_events.id
-                          AND #{this}_host_events.memory_id = #{context[:uno]}
-              LEFT OUTER JOIN descriptions AS #{this}_titles
-                           ON #{this}_titles.describable_id = #{this}_memoes.id
-                          AND #{this}_titles.describable_type = 'Memo'
-                          AND #{this}_titles.type = 'Title'
-                          AND #{this}_titles.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                              #{cslugs_rule} #{idsel}
+              LEFT OUTER JOIN descriptions AS #{this}_#{as}_titles
+                           ON #{this}_#{as}_titles.describable_id = #{this}_memoes.id
+                          AND #{this}_#{as}_titles.describable_type = 'Memo'
+                          AND #{this}_#{as}_titles.type = 'Title'
+                          AND #{this}_#{as}_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
               LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
                            ON #{this}_memo_orders.memo_id = #{this}_memoes.id
               LEFT OUTER JOIN memories AS #{this}_orders
@@ -519,17 +526,17 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       group_by = [
          :id,
          :base_year,
-         "#{this}_slugs.text",
+         "#{this}_#{as}_slugs.text",
          "#{this}_roundels.url",
          "#{this}_order_tweets.text",
          "#{this}_order_short_names.text",
-         "#{this}_titles.text",
+         "#{this}_#{as}_titles.text",
          "#{this}_events.happened_at",
          "#{this}_notes.text",
          "#{this}_calendary_slugs.text"
       ]
 
-      joins(join).select(selector).reorder("#{this}_slugs.text").group(*group_by).distinct_by("#{this}_slugs.text")
+      joins(join).select(selector).reorder("#{this}_#{as}_slugs.text").group(*group_by).distinct_by("#{this}_#{as}_slugs.text")
    end
 
    # with memoes and children via memoes
@@ -556,14 +563,12 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND children_slugs.sluggable_type = 'Memory'
                          JOIN memoes AS children
                            ON children.event_id = #{this}_children_events.id
+                          AND children.bind_kind_code = 'соборный'
                          JOIN memoes AS hosts
                            ON children.bond_to_id = hosts.id
-                          AND children.bind_kind_code = 'соборный'
                          JOIN events AS #{this}_host_events
                            ON hosts.event_id = #{this}_host_events.id
-                         JOIN slugs AS host_slugs
-                           ON host_slugs.sluggable_id = #{this}.id
-                          AND host_slugs.sluggable_type = 'Memory')
+                          AND #{this}_host_events.memory_id = #{this}.id)
                        SELECT COUNT(___children.slug)
                          FROM ___children), 0) AS children_total,
                COALESCE((WITH __children AS (

@@ -10,7 +10,7 @@ class Service < ActiveRecord::Base
    has_many :orisons, through: :service_scripta, source: :scriptum
    has_many :canticles, through: :service_scripta, source: :scriptum
 
-   has_alphabeth on: :name
+   has_alphabeth on: :name, novalidate: true
 
    accepts_nested_attributes_for :chants, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :orisons, reject_if: :all_blank, allow_destroy: true

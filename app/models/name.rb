@@ -13,7 +13,7 @@ class Name < ActiveRecord::Base
    has_many :memory_names, through: :nomina
    has_many :memories, through: :memory_names
 
-   has_alphabeth on: { text: [ :nosyntax, allow: " ‑" ] }
+   has_alphabeth on: { text: [ :nosyntax, allow: " ‑" ] }, novalidate: true
 
    scope :by_token, -> text do
       join_name = table.table_alias || table.name

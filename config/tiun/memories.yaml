@@ -33,36 +33,25 @@ types:
     - name: base_year
       kind: number
       descriptions: :tiun.types.memory.base_year
-    - name: calendary_slugs
-      kind: string array
-      descriptions: :tiun.types.memory.calendary_slugs
- - name: short_memory
-   model: Memory
-   version: 0.1
-   with: pure_slug
-   fields:
-    - name: slug
-      kind: string
-      descriptions: :tiun.types.memory.slug
     - name: short_name
       kind: string
       descriptions: :tiun.types.memory.short_name
-    - name: quantity
-      kind: string
-      descriptions: :tiun.types.memory.quantity
-    - name: base_year
-      kind: integer
-      descriptions: :tiun.types.memory.base_year
     - name: type
       kind: enum <Building, Concept, Council, Group, Identity, Order, Place, Subsisten, Thing>
       descriptions: :tiun.types.memory.type
     - name: kind
       kind: enum <Chains, Icon, Belt, Shroud, Wilderness, Village, Settlement, Town, City, Monastery, World, Church, Cathedral, Chapel, Soul, Society, Worldie, Navia, Appear>
       descriptions: :tiun.types.memory.kind
+
+    - name: calendary_slugs
+      kind: string array
+      descriptions: :tiun.types.memory.calendary_slugs
  - name: memory
    model: Memory
    version: 0.1
-   with: pure_slug
+   with:
+    - pure_slug
+    - memoed
    fields:
     - name: id
       kind: integer
@@ -85,25 +74,28 @@ types:
     - name: kind
       kind: enum <Chains, Icon, Belt, Shroud, Wilderness, Village, Settlement, Town, City, Monastery, World, Church, Cathedral, Chapel, Soul, Society, Worldie, Navia, Appear>
       descriptions: :tiun.types.memory.kind
-    - name: language
-      kind: string
-      descriptions: :tiun.types.memory.language
-    - name: alphabeth
-      kind: string
-      descriptions: :tiun.types.memory.alphabeth
     - name: title
       kind: string
       descriptions: :tiun.types.memory.title
     - name: description
       kind: string
       descriptions: :tiun.types.memory.description
+    - name: order_short_name
+      kind: string
+      descriptions: :tiun.types.memory.order_short_name
+    - name: order_tweet
+      kind: string
+      descriptions: :tiun.types.memory.order_tweet
+    - name: roundel_url
+      kind: url
+      descriptions: :tiun.types.memory.roundel_url
 resources:
  - name: memory.index
    path: /api/v0/memories.json
    methods:
     - name: get
       version: 0.1
-      kind: short_memory page
+      kind: memory_span page
       descriptions: :tiun.resources.memory.index
       auth: no
       allowed_errors: [200, 204, 206, 416, 422.3, 500]
@@ -112,31 +104,31 @@ resources:
          kind: natural
          default: 10
          maximum: 50
-         descriptions: :tiun.resources.memory.index.args.per_page
+         descriptions: :tiun.resources.memory.index.per_page
        - name: page
          kind: natural
          alias: p
          default: 1
-         descriptions: :tiun.resources.memory.index.args.page
+         descriptions: :tiun.resources.memory.index.page
        - name: uno
          kind: string
-         descriptions: :tiun.resources.memory.index.args.uno
+         descriptions: :tiun.resources.memory.index.uno
        - name: title
          kind: string
          alias: tt
-         descriptions: :tiun.resources.memory.index.args.title
+         descriptions: :tiun.resources.memory.index.title
        - name: description
          kind: string
          alias: d
-         descriptions: :tiun.resources.memory.index.args.description
+         descriptions: :tiun.resources.memory.index.description
        - name: type
          kind: string
          alias: t
-         descriptions: :tiun.resources.memory.index.args.type
+         descriptions: :tiun.resources.memory.index.type
        - name: kind
          kind: string
          alias: k
-         descriptions: :tiun.resources.memory.index.args.kind
+         descriptions: :tiun.resources.memory.index.kind
  - name: memory.create
    path: /api/v0/memories/create.json
    methods:
@@ -168,18 +160,6 @@ resources:
        - name: kind
          kind: enum <>
          descriptions: :tiun.resources.memory.create.kind
-       - name: language
-         kind: string
-         descriptions: :tiun.resources.memory.create.language
-       - name: alphabeth
-         kind: string
-         descriptions: :tiun.resources.memory.create.alphabeth
-       - name: title
-         kind: string
-         descriptions: :tiun.resources.memory.create.title
-       - name: description
-         kind: string
-         descriptions: :tiun.resources.memory.create.description
  - name: memory
    path: /api/v0/memories/:uno.json
    methods:
@@ -192,15 +172,15 @@ resources:
       args:
        - name: uno
          kind: string
-         descriptions: :tiun.resources.memory.get.args.uno
+         descriptions: :tiun.resources.memory.get.uno
        - name: l
          kind: string
          alias: language
-         descriptions: :tiun.resources.memory.get.args.language
+         descriptions: :tiun.resources.memory.get.language
        - name: a
          kind: string
          alias: alphabeth
-         descriptions: :tiun.resources.memory.get.args.alphabeth
+         descriptions: :tiun.resources.memory.get.alphabeth
     - name: put
       version: 0.1
       kind: memory
@@ -226,18 +206,6 @@ resources:
        - name: kind
          kind: enum <>
          descriptions: :tiun.resources.memory.put.kind
-       - name: language
-         kind: string
-         descriptions: :tiun.resources.memory.put.language
-       - name: alphabeth
-         kind: string
-         descriptions: :tiun.resources.memory.put.alphabeth
-       - name: title
-         kind: string
-         descriptions: :tiun.resources.memory.put.title
-       - name: description
-         kind: string
-         descriptions: :tiun.resources.memory.put.description
     - name: delete
       version: 0.1
       kind: memory
@@ -249,12 +217,12 @@ resources:
          kind: string
          descriptions: :tiun.resources.memory.delete.uno
  - name: memory.content
-   path: /api/v0/memories/:uno/content.json
+   path: /api/v0/memories/:id/content.json
    methods:
     - name: get
       version: 0.1
       kind: memory_span page
-      descriptions: :tiun.resources.memory.index
+      descriptions: :tiun.resources.memory.content
       auth: no
       allowed_errors: [200, 204, 206, 416, 422.3, 500]
       args:
@@ -262,17 +230,17 @@ resources:
          kind: natural
          default: 10
          maximum: 50
-         descriptions: :tiun.resources.memory.index.args.per_page
+         descriptions: :tiun.resources.memory.content.per_page
        - name: page
          kind: natural
          alias: p
          default: 1
-         descriptions: :tiun.resources.memory.index.args.page
-       - name: uno
-         kind: string
-         skip: scope
-         descriptions: :tiun.resources.memory.index.args.uno
+         descriptions: :tiun.resources.memory.content.page
+       - name: id
+         kind: integer
+         skip: args
+         descriptions: :tiun.resources.memory.content.uno
        - name: calendary_slugs
          kind: string
          alias: c
-         descriptions: :tiun.resources.memory.index.args.calendary_slugs
+         descriptions: :tiun.resources.memory.content.calendary_slugs
