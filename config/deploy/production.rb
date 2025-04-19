@@ -100,10 +100,10 @@ namespace :redis do
    end
 end
 
-before 'bundler:install', 'systemd:sidekiq:stop'
-before 'bundler:install', 'systemd:core:stop'
+after 'deploy', 'systemd:sidekiq:restart'
+after 'deploy', 'systemd:core:restart'
 # before 'bundler:install', 'redis:stop'
-before 'bundler:install', 'nginx:stop'
+after 'deploy', 'nginx:restart'
 # after 'deploy:assets:precompile', 'redis:start'
 after 'deploy', 'deploy:restart'
 after 'deploy', 'sitemap:refresh'

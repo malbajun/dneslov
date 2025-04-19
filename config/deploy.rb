@@ -24,7 +24,6 @@ set :repo_url, "git@codeberg.org:znamenica/dneslov.git"
 # Default value for :linked_files is []
 ink = ENV["INDEXNOW_KEY"]
 append :linked_files, "config/database.yml", ".env", "config/sidekiq.yml", "public/yandex_79c40e554d5c0cdf.html", "public/#{ink}.txt"
-binding.pry
 # Default value for linked_dirs is []
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "node_modules", "public/images", "public/audios", "public/roundels", "public/cache/carrierwave"
 
