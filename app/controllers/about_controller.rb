@@ -1,4 +1,4 @@
-class AboutController < ApplicationController
+class AboutController < ActionController::Base
    layout 'about'
 
    def index

@@ -37,7 +37,7 @@ SitemapGenerator::Sitemap.create do
    add('/about', priority: 1, changefreq: 'monthly')
 
    Picture.find_each do |picture|
-      add(picture_path(picture), lastmod: memory.updated_at, changefreq: 'annual')
+      add(picture_path(picture.uid), lastmod: picture.updated_at, changefreq: 'annual')
    end
 
    Memory.find_each do |memory|

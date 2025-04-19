@@ -74,8 +74,8 @@ GIT
 
 GIT
   remote: https://codeberg.org/znamenica/tiun.git
-  revision: ea90142c66b55850b6c7d69a2326156ddb4bf4f3
-  ref: ea90142
+  revision: 6d8bcd6e3e7c4c81544a6e5498ee056c12005c14
+  ref: 6d8bcd6
   specs:
     tiun (0.0.2.1)
       activesupport (>= 4.1.0)
@@ -214,6 +214,8 @@ GEM
       rake (>= 10.0.0)
       sshkit (>= 1.9.0)
     capistrano-bundler (2.1.0)
+      capistrano (~> 3.1)
+    capistrano-nvm (0.0.7)
       capistrano (~> 3.1)
     capistrano-rails (1.6.3)
       capistrano (~> 3.1)
@@ -683,6 +685,7 @@ DEPENDENCIES
   capistrano (~> 3.17)
   capistrano-bundler
   capistrano-db-tasks!
+  capistrano-nvm
   capistrano-rails (~> 1.6)
   capistrano-rake
   capistrano-rvm
