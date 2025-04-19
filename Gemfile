@@ -115,7 +115,7 @@ gem 'sprockets-rails'
 ## api
 #opts = local ? { path: ENV["HOME"] + '/git/tiun' } : { codeberg: 'znamenica/tiun', ref: 'daa3b5b' }
 #gem 'tiun', path: ENV["HOME"] + '/git/tiun'
-gem 'tiun', codeberg: 'znamenica/tiun', ref: 'ea90142'
+gem 'tiun', codeberg: 'znamenica/tiun', ref: '2c3ff7d'
 
 # sitemap
 gem 'sitemap_generator'
@@ -141,6 +141,7 @@ group :development do
    gem 'capistrano-bundler'
    gem "capistrano-rails", "~> 1.6", require: false
    gem 'capistrano-rvm'
+   gem 'capistrano-nvm', require: false
    gem 'capistrano-rake'
    gem "capistrano-systemd-multiservice", require: false, git: "https://github.com/majioa/capistrano-systemd-multiservice.git"
    gem "capistrano-db-tasks", require: false, github: "majioa/capistrano-db-tasks", ref: "devel"
