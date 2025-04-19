@@ -1,6 +1,6 @@
 {
   "name": "dneslov",
-  "version": "0.0.1",
+  "version": "1.7",
   "description": "Dneslov frontend",
   "main": "./lib/index.js",
   "files": [
