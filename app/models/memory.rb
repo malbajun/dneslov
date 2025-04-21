@@ -28,7 +28,6 @@ class Memory < ApplicationRecord
    has_many :roundels, -> { where(roundels: { roundelable_type: "Memory" }) }, foreign_key: :roundelable_id, dependent: :destroy
    has_many :attitudes, as: :imageable, class_name: :ImageAttitude
    has_many :pictures, through: :attitudes
-   has_many :notes, as: :describable, dependent: :destroy, class_name: :Note
    has_many :orders, -> { distinct.reorder('id') }, through: :memos, source: :orders
    has_many :slugs, -> { distinct.reorder('id') }, through: :orders, source: :slug
    has_many :memory_binds
@@ -1130,7 +1129,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    accepts_nested_attributes_for :events, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memos, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :coverings, reject_if: :all_blank, allow_destroy: true
-   accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank
 
    validates_presence_of :short_names
