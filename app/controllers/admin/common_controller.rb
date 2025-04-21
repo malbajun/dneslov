@@ -51,7 +51,7 @@ class Admin::CommonController < ApplicationController
       @object.save!
 
       #TODO: render json: @object.jsonize(context)
-      render json: prepare_object(@object.reload).jsonize(context)
+      render json: prepare_object(reload(@object)).jsonize(context)
    end
 
    # PUT /<objects>/1
@@ -59,7 +59,7 @@ class Admin::CommonController < ApplicationController
       @object.update!(permitted_params)
 
       #TODO: render json: @object.jsonize(context)
-      render json: prepare_object(@object.reload).jsonize(context)
+      render json: prepare_object(reload(@object)).jsonize(context)
    end
 
    # GET /<objects>/1
@@ -82,6 +82,12 @@ class Admin::CommonController < ApplicationController
    end
 
    protected
+
+   def reload object
+      model = object.class.table_name.singularize.camelize.constantize
+
+      model.where("#{model.primary_key}" => object.send(model.primary_key)).first
+   end
 
    def short_with_list
       %w(with_key with_value)

@@ -23,7 +23,7 @@ class Admin::MemoriesController < Admin::CommonController
 
    def permitted_params
       params.require(:memory).permit(
-         :id, :council, :quantity, :base_year,
+         :id, :council, :quantity, :base_year, :type, :kind,
          slug_attributes: %i(id text),
          short_names_attributes: %i(id text language_code alphabeth_code _destroy),
          coverings_attributes: %i(id add_date place_id _destroy),
