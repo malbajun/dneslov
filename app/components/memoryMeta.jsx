@@ -360,7 +360,6 @@ export const memoryMeta = {
          title: 'Заметки',
          action: 'Добавь заметку',
          textField: true,
-         source: "descriptions",
          filter: { type: "Note" },
          validations: {
             "Языки в заметках не могут совпадать": matchLanguages,
