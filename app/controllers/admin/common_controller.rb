@@ -117,7 +117,7 @@ class Admin::CommonController < ApplicationController
    end
 
    def table_name
-      model.to_s.tableize
+      model.table_name
    end
 
    def unprocessable_entity e
@@ -171,7 +171,7 @@ class Admin::CommonController < ApplicationController
       query = prepare_objects.page(params[:p])
 
       @objects =
-         if query.respond_to?(:distinct_by)
+         if query.respond_to?(:distinct_by) && !query.default_scopes?
             q = query.distinct_by("#{table_name}.#{model.primary_key}")
             q.reorder("#{table_name}.#{model.primary_key}", q.order_values)
          else
