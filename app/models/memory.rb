@@ -50,9 +50,9 @@ class Memory < ApplicationRecord
            ON #{this}.id = #{this}_slugs.sluggable_id
           AND #{this}_slugs.sluggable_type = 'Memory'"
 
-      selector = "#{this}_slugs.text = ?", slug
+      selector = "#{this}_slugs.text IN (?)", [slug].flatten
 
-      joins(join).where(selector).order(:id).distinct
+      joins(join).where(selector).order(:id)
    end
 
    scope :in_calendaries, -> calendaries_in do
