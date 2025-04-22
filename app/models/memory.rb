@@ -38,7 +38,7 @@ class Memory < ApplicationRecord
    default_scope do
       order( base_year: :asc, id: :asc ).
          select("#{table.table_alias || table.name}.*").
-         distinct_by(:base_year, :id)
+         distinct_by(:base_year, "#{table.table_alias || table_name}.#{model.primary_key}")
    end
 
    scope :icons, -> { joins( :slugs ).where( slugs: { text: :обр } ) }
@@ -100,7 +100,7 @@ class Memory < ApplicationRecord
          none
       when /^\s*\d+\s*$/
          by_id(uno)
-      when /^[а-яё0-9]+$/
+      when Slug::RE
          by_slug(uno)
       else
          by_short_name(uno)
