@@ -9,8 +9,18 @@ module DistinctBy
             if _selector.empty?
               _selector << "ON (#{args.join(', ')}) #{this}.*"
             else
-               selector = _selector.uniq
-               selector.unshift( "ON (#{args.join(', ')}) " + selector.shift )
+               selector =
+                  if index = _selector.find_index {|x| x =~ /^ON/ }
+                     /ON \((?<fields>[^)]+)\)(?<rest>.*)/ =~ _selector[index]
+                     new_distinct = "ON (#{(fields.split(/,\s*/) | [args.join(', ')]).join(", ")}) #{rest}"
+
+                     _selector.map.with_index {|x, i| i == index ? new_distinct : x }
+                  else
+                     sel = _selector.uniq
+                     sel.unshift("ON (#{args.join(', ')}) " + sel.shift)
+
+                     sel
+                  end
             end
 
             rela = self.distinct
