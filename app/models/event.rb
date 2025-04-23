@@ -15,12 +15,33 @@ class Event < ActiveRecord::Base
    include WithTitles
    include WithDescriptions
 
+   CORE = [
+      'Repose',
+      'Veneration',
+      'Passion',
+      'Monasticry',
+      'Marriage',
+      'Family',
+      'Preach',
+      'Meeting',
+      'Assurance',
+      'Prophecy',
+      'Baptism',
+      'Restoration',
+      'Conception',
+      'Conceiving',
+      'Canonization',
+      'Glorification',
+      'Uncovering',
+      'Revival',
+      'Translation',
+   ]
+
    NOTICE = [
       'Repose',
       'Veneration',
       'Writing',
       'Appearance',
-      'Council',
       'Miracle',
       'Resurrection',
       'Monasticry',

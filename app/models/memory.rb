@@ -38,7 +38,7 @@ class Memory < ApplicationRecord
    default_scope do
       order( base_year: :asc, id: :asc ).
          select("#{table.table_alias || table.name}.*").
-         distinct_by(:base_year, :id)
+         distinct_by(:base_year, "#{table.table_alias || table_name}.#{model.primary_key}")
    end
 
    scope :icons, -> { joins( :slugs ).where( slugs: { text: :обр } ) }
@@ -50,9 +50,9 @@ class Memory < ApplicationRecord
            ON #{this}.id = #{this}_slugs.sluggable_id
           AND #{this}_slugs.sluggable_type = 'Memory'"
 
-      selector = "#{this}_slugs.text = ?", slug
+      selector = "#{this}_slugs.text IN (?)", [slug].flatten
 
-      joins(join).where(selector).order(:id).distinct
+      joins(join).where(selector).order(:id)
    end
 
    scope :in_calendaries, -> calendaries_in do
@@ -100,7 +100,7 @@ class Memory < ApplicationRecord
          none
       when /^\s*\d+\s*$/
          by_id(uno)
-      when /^[а-яё0-9]+$/
+      when Slug::RE
          by_slug(uno)
       else
          by_short_name(uno)

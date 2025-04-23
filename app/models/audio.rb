@@ -56,7 +56,7 @@ class Audio < ApplicationRecord
       this = table.table_alias || table.name
       sub_m =
          case title
-         when /^[а-яё0-9]+$/
+         when Slug::RE
             Memory.by_slug(title)
          else
             Memory.by_title(title)
