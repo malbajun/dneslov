@@ -33,10 +33,10 @@ export const memoMeta = {
       bond_to: {
          title: 'Связка с...',
          value: (value) => {
-            if (value.bond_to_year_date && value.bond_to_year_date.length > 40) {
-               return value.bond_to_year_date.slice(0, 40) + '...'
+            if (value.bond_to_title && value.bond_to_title.length > 40) {
+               return value.bond_to_title.slice(0, 40) + '...'
             } else {
-               return value.bond_to_year_date
+               return value.bond_to_title
             }
          },
       },
@@ -143,7 +143,7 @@ export const memoMeta = {
       bond_to_id: {
          kind: 'dynamic',
          title: 'Привязаный помин',
-         humanized_name: 'bond_to_year_date',
+         humanized_name: 'bond_to_title',
          display_scheme: '12-6-4-4',
          placeholder: 'Начни ввод даты привязаного помина...',
          pathname: 'short_memoes',

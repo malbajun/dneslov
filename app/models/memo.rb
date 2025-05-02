@@ -101,56 +101,51 @@ class Memo < ApplicationRecord
 
       if language_codes.any?
          lang_wheres =
-            ["AND titles.language_code IN ('#{language_codes.join("', '")}')",
-             "AND event_titles.language_code IN ('#{language_codes.join("', '")}')",
-             "AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}')"]
+            ["AND #{this}_titles.language_code IN ('#{language_codes.join("', '")}')",
+             "AND #{this}_event_titles.language_code IN ('#{language_codes.join("', '")}')"]
       end
 
       if alphabeth_codes.any?
          alph_wheres =
-            ["AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
-             "AND event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
-             "AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+            ["AND #{this}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+             "AND #{this}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
       end
 
-      join = "LEFT OUTER JOIN descriptions AS titles
-                           ON titles.id IS NOT NULL
-                          AND titles.describable_id = #{this}.id
-                          AND titles.describable_type = 'Memo'
-                          AND titles.type = 'Title'
+      join = "LEFT OUTER JOIN descriptions AS #{this}_titles
+                           ON #{this}_titles.describable_id = #{this}.id
+                          AND #{this}_titles.describable_type = 'Memo'
+                          AND #{this}_titles.type = 'Title'
                           #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
 
               LEFT OUTER JOIN events AS #{this}_events
                            ON #{this}_events.id = #{this}.event_id
-                         JOIN subjects AS event_kinds
-                           ON event_kinds.key = #{this}_events.kind_code
-                          AND event_kinds.kind_code = 'EventKind'
-                         JOIN descriptions AS event_titles
-                           ON event_titles.id IS NOT NULL
-                          AND (event_titles.describable_id = #{this}_events.id
-                          AND event_titles.describable_type = 'Event'
-                          AND event_titles.type = 'Title'
-                           OR event_titles.describable_id = event_kinds.id
-                          AND event_titles.describable_type = 'Subject'
-                          AND event_titles.type = 'Appellation')
+                         JOIN subjects AS #{this}_event_kinds
+                           ON #{this}_event_kinds.key = #{this}_events.kind_code
+                          AND #{this}_event_kinds.kind_code = 'EventKind'
+                         JOIN descriptions AS #{this}_event_titles
+                           ON #{this}_event_titles.id IS NOT NULL
+                          AND (#{this}_event_titles.describable_id = #{this}_events.id
+                          AND #{this}_event_titles.describable_type = 'Event'
+                          AND #{this}_event_titles.type = 'Title'
+                           OR #{this}_event_titles.describable_id = #{this}_event_kinds.id
+                          AND #{this}_event_titles.describable_type = 'Subject'
+                          AND #{this}_event_titles.type = 'Appellation')
                           #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
-             LEFT OUTER JOIN short_names AS #{this}_short_names
-                          ON #{this}_short_names.memory_id = #{this}_events.memory_id
-                         #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}"
+                         JOIN memories AS #{this}_memories
+                           ON #{this}_memories.id = #{this}_events.memory_id
+                          AND #{this}_memories.type = 'Council'"
 
-
-      selector << "memoes.year_date || ' [' ||
-         #{this}_events.happened_at || ' - ' ||
-         COALESCE(event_titles.text, '') || ' - ' ||
-         COALESCE(titles.text, '') || ' (' ||
-         #{this}_short_names.text || ')]' AS _value"
+      selector << "COALESCE(#{this}.year_date, '') || ' [' ||
+         COALESCE(#{this}_titles.text, '') || '(' ||
+         COALESCE(#{this}_event_titles.text, '') || ':' ||
+         #{this}_events.happened_at ||')]' AS _value"
 
       joins(join).select(selector).group(
-         "#{this}_short_names.text",
          :id,
-         "titles.text",
+         "#{this}_titles.text",
          "#{this}_events.happened_at",
-         "event_titles.text")
+         "#{this}_event_titles.text",
+         "#{this}_memories.type")
    end
 
    scope :with_slug_text, -> do
@@ -332,6 +327,59 @@ class Memo < ApplicationRecord
                       AND descriptions_#{scope_name}.language_code IN ('#{language_codes.join("', '")}')"
 
       joins(join).select(selector).group('_bond_to_title')
+   end
+
+   scope :with_bond_to_detailed, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      ast = as.to_s.tableize
+      asm = as.to_s.singularize.camelize
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "CASE WHEN #{this}_#{ast}_memories.type = 'Council' THEN
+         COALESCE(#{this}_#{ast}.year_date, '') || ' [' ||
+         COALESCE(#{this}_#{ast}_titles.text, '') || '(' ||
+         COALESCE(#{this}_#{ast}_event_titles.text, '') || ':' ||
+         #{this}_#{ast}_events.happened_at ||')]' ELSE NULL END AS _#{ast.singularize}"
+
+      join =
+         "LEFT OUTER JOIN #{this} AS #{this}_#{ast}
+                       ON #{this}_#{ast}.id = #{this}.bond_to_id
+          LEFT OUTER JOIN descriptions AS #{this}_#{ast}_titles
+                       ON #{this}_#{ast}_titles.describable_type = '#{model}'
+                      AND #{this}_#{ast}_titles.describable_id = #{this}_#{ast}.id
+                      AND #{this}_#{ast}_titles.type = 'Title'
+                      AND #{this}_#{ast}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                      AND #{this}_#{ast}_titles.language_code IN ('#{language_codes.join("', '")}')
+          LEFT OUTER JOIN events AS #{this}_#{ast}_events
+                       ON #{this}_#{ast}_events.id = #{this}_#{ast}.event_id
+          LEFT OUTER JOIN subjects AS #{this}_#{ast}_event_kinds
+                       ON #{this}_#{ast}_event_kinds.key = #{this}_#{ast}_events.kind_code
+                      AND #{this}_#{ast}_event_kinds.kind_code = 'EventKind'
+          LEFT OUTER JOIN descriptions AS #{this}_#{ast}_event_titles
+                       ON #{this}_#{ast}_event_titles.id IS NOT NULL
+                      AND (#{this}_#{ast}_event_titles.describable_id = #{this}_#{ast}_events.id
+                      AND #{this}_#{ast}_event_titles.describable_type = 'Event'
+                      AND #{this}_#{ast}_event_titles.type = 'Title'
+                       OR #{this}_#{ast}_event_titles.describable_id = #{this}_#{ast}_event_kinds.id
+                      AND #{this}_#{ast}_event_titles.describable_type = 'Subject'
+                      AND #{this}_#{ast}_event_titles.type = 'Appellation')
+                      AND #{this}_#{ast}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                      AND #{this}_#{ast}_titles.language_code IN ('#{language_codes.join("', '")}')
+                     JOIN memories AS #{this}_#{ast}_memories
+                       ON #{this}_#{ast}_memories.id = #{this}_#{ast}_events.memory_id"
+
+      joins(join).select(selector).group(
+         "#{this}_#{ast}.year_date",
+         "#{this}_#{ast}_titles.text",
+         "#{this}_#{ast}_events.happened_at",
+         "#{this}_#{ast}_event_titles.text",
+         "#{this}_#{ast}_memories.type")
    end
 
    scope :with_event_title, -> context do
