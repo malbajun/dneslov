@@ -2,14 +2,13 @@
 # related_to[belongs_to]      - отношение к предмету
 #
 class Slug < ActiveRecord::Base
-   ReText = '[а-яѐ-џѡѣѥѧѩѫѭѯѱѳѵѷѹѻѽѿҁꙁꙃꙅꙇꙉꙋꙍꙏꙑꙓꙕꙗꙙꙛꙝ0-9\-]+'
-   RE = /^#{ReText}$/
+   RE = /^#{::Slugee::Re}$/
 
    belongs_to :sluggable, polymorphic: true
 
    has_many :memories, primary_key: :text, foreign_key: :order
 
-   validates :text, format: { with: /\A#{ReText}\z/ }
+   validates :text, format: { with: /\A#{::Slugee::Re}\z/ }
 
    scope :for_calendary, -> { where( sluggable_type: 'Calendary' ) }
 

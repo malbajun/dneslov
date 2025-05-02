@@ -77,7 +77,7 @@ server {
       return          404;
    }
 
-   location ~ ^/(?!<%= Slug::ReText %>|dashboard|gallery|rite|api|auth|about|index|icons|memories|calendaries|memoes|names|orders|subjects|scripta|readings|roles|token|signout|short_\w+) {
+   location ~ ^/(?!<%= ::Slugee::Re %>|dashboard|gallery|rite|api|auth|about|index|icons|memories|calendaries|memoes|names|orders|subjects|scripta|readings|roles|token|signout|short_\w+) {
       return          404;
    }
 

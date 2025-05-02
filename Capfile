@@ -1,3 +1,5 @@
+$:.unshift File.join(Dir.pwd, 'lib')
+
 require 'pry'
 require "dotenv/load"
 # Load DSL and set up stages
@@ -15,6 +17,7 @@ require 'capistrano/rvm'
 require 'capistrano/sitemap_generator'
 # require 'capistrano/sidekiq'
 require "capistrano/systemd/multiservice"
+require "slugee"
 install_plugin Capistrano::Systemd::MultiService.new_service("sidekiq")
 install_plugin Capistrano::Systemd::MultiService.new_service("core")
 # install_plugin Capistrano::Sidekiq  # Default sidekiq tasks
