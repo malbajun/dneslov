@@ -5,7 +5,7 @@
       calendaries_cloud: (binding.local_variable_get(:cloud) rescue nil),
       calendaries_used: @calendary_slugs,
       user: session["user"],
-      images: binding.local_variable_get(:images),
+      images: (binding.local_variable_get(:images) rescue nil),
       total: binding.local_variable_get(:total),
       range: binding.local_variable_get(:range),
       attituded: (binding.local_variable_get(:attituded) rescue nil))
