@@ -167,8 +167,12 @@ class Admin::CommonController < ApplicationController
       pre = include_list.reduce( apply_scopes( model )) { |q, i| q.includes( i ) }
    end
 
+   def base_scope
+      action_name == 'all' ? model.unscoped : model.all
+   end
+
    def prepare_objects
-      pre = include_list.reduce( apply_scopes( model )) { |q, i| q.includes( i ) }
+      pre = include_list.reduce(apply_scopes(base_scope)) { |q, i| q.includes( i ) }
 
       with_list.reduce(pre) { |q, with_method| issue_with(q, with_method) }
    end

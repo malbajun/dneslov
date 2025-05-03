@@ -45,6 +45,7 @@ class Event < ActiveRecord::Base
       'Miracle',
       'Resurrection',
       'Monasticry',
+      'Passion',
       'Council',
       'Marriage',
       'Family'
@@ -629,6 +630,7 @@ class Event < ActiveRecord::Base
       language_codes = [context[:text_languages]].flatten
       alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
+      ch_cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __memoes AS (
                        SELECT DISTINCT ON(memoes.id)
@@ -648,7 +650,13 @@ class Event < ActiveRecord::Base
                           AND children.bind_kind_code = 'соборный'
                          JOIN memoes AS hosts
                            ON children.bond_to_id = hosts.id
-                          AND hosts.event_id = #{this}.id)
+                          AND hosts.event_id = #{this}.id
+                          AND hosts.calendary_id = children.calendary_id
+                          AND memoes.calendary_id = children.calendary_id
+                         JOIN slugs AS #{this}_calendary_slugs
+                           ON #{this}_calendary_slugs.sluggable_id = memoes.calendary_id
+                          AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
+                              #{ch_cslugs_rule})
                        SELECT COUNT(___children.slug)
                          FROM ___children), 0) AS children_total,
                COALESCE((WITH __children AS (
@@ -656,8 +664,10 @@ class Event < ActiveRecord::Base
                               children.id AS id,
                               #{this}_children_slugs.text AS slug,
                               #{this}_child_roundels.url AS roundel_url,
+                              #{this}_children_short_names.text AS short_name,
                               children_order_tweets.text AS order_tweet,
-                              #{this}_children_short_names.text AS order_short_name,
+                              #{this}_children_order_short_names.text AS order_short_name,
+                              #{this}_children_order_titles.text AS order_title,
                               #{this}_children_titles.text AS title,
                               #{this}_children_memories.base_year AS base_year,
                               #{this}_children_events.happened_at AS happened_at,
@@ -676,7 +686,11 @@ class Event < ActiveRecord::Base
                          JOIN slugs AS #{this}_calendary_slugs
                            ON #{this}_calendary_slugs.sluggable_id = #{this}_calendaries.id
                           AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
-                              #{cslugs_rule}
+                              #{ch_cslugs_rule}
+                         JOIN short_names AS #{this}_children_short_names
+                           ON #{this}_children_memories.id = #{this}_children_short_names.memory_id
+                          AND #{this}_children_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_children_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
               LEFT OUTER JOIN descriptions AS #{this}_children_titles
                            ON #{this}_children_titles.describable_id = children.id
                           AND #{this}_children_titles.describable_type = 'Memo'
@@ -688,16 +702,22 @@ class Event < ActiveRecord::Base
               LEFT OUTER JOIN memories AS #{this}_children_orders
                            ON #{this}_children_orders.id = #{this}_children_memo_orders.order_id
                           AND #{this}_children_orders.type = 'Order'
-              LEFT OUTER JOIN short_names AS #{this}_children_short_names
-                           ON #{this}_children_orders.id = #{this}_children_short_names.memory_id
-                          AND #{this}_children_short_names.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_children_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN short_names AS #{this}_children_order_short_names
+                           ON #{this}_children_orders.id = #{this}_children_order_short_names.memory_id
+                          AND #{this}_children_order_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_children_order_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
               LEFT OUTER JOIN descriptions AS children_order_tweets
                            ON children_order_tweets.describable_id = #{this}_children_orders.id
                           AND children_order_tweets.describable_type = 'Memory'
                           AND children_order_tweets.type = 'Tweet'
                           AND children_order_tweets.language_code IN ('#{language_codes.join("', '")}')
                           AND children_order_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN descriptions AS #{this}_children_order_titles
+                           ON #{this}_children_order_titles.describable_id = #{this}_children_orders.id
+                          AND #{this}_children_order_titles.describable_type = 'Memory'
+                          AND #{this}_children_order_titles.type = 'Note'
+                          AND #{this}_children_order_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_children_order_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
               LEFT OUTER JOIN LATERAL (
                        SELECT #{this}_child_roundels.url AS url,
                               #{this}_child_roundels.roundelable_id AS id,
@@ -719,7 +739,18 @@ class Event < ActiveRecord::Base
                           AND #{this}_children_notes.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                         WHERE children.bond_to_id = memoes.id
                           AND children.bind_kind_code = 'соборный'
-                     GROUP BY #{this}_children_slugs.text, #{this}_children_memories.base_year, happened_at, children.id, roundel_url, order_tweet, order_short_name, title, note
+                          AND children.calendary_id = memoes.calendary_id
+                     GROUP BY #{this}_children_slugs.text,
+                              #{this}_children_memories.base_year,
+                              happened_at,
+                              children.id,
+                              roundel_url,
+                              short_name,
+                              order_tweet,
+                              order_title,
+                              order_short_name,
+                              title,
+                              note
                      ORDER BY #{this}_children_slugs.text, base_year
                         LIMIT 25)
                        SELECT jsonb_agg(__children)
@@ -785,7 +816,6 @@ class Event < ActiveRecord::Base
                        SELECT jsonb_agg(__memoes)
                          FROM __memoes), '[]'::jsonb) AS _memoes"
 
-      #binding.pry
       select(selector).group(:id)
    end
 

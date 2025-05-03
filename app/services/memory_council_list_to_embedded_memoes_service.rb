@@ -16,7 +16,6 @@ class MemoryCouncilListToEmbeddedMemoesService
       'прмчрр' => 'прмчр',
       'прмцц' => 'прмц',
       'прмцрр' => 'прмцр',
-      'прпжж' => 'прпж',
       'апп' => 'ап',
       'рапп' => 'рап',
       'блжж' => 'блж',
@@ -30,14 +29,16 @@ class MemoryCouncilListToEmbeddedMemoesService
    def initialize calendaries: [], fake: false
       @calendaries = calendaries # list calendaries to convert
       @fake = fake
+      @newd = 0
+      @founded = 0
    end
 
    def counciled_ids
-      @counciled_ids ||= Memory.unscoped.where.not(council: nil).select(:id).pluck(:id)
+      @counciled_ids ||= Memory.unscoped.where.not(type: "Council").where.not(council: nil).select(:id).pluck(:id)
    end
 
    def slugs
-      @slugs ||= Slug.where(sluggable_type: "Memory", sluggable_id: Memory.unscoped.where(type: "Council").select(:id)).select(:text).pluck(:text)
+      @slugs ||= Slug.where(sluggable_type: "Memory", sluggable_id: Council.unscoped.select(:id)).select(:text).pluck(:text)
    end
 
    def council_slugses
@@ -61,7 +62,11 @@ class MemoryCouncilListToEmbeddedMemoesService
    end
 
    def aliases
-      @aliases ||= council_slugses.reduce({}) do |als, (slug, councils)|
+      @aliases ||= Council.all.reduce({}) do |als, c|
+         slug = c.slug.text
+         councils = c.council&.split(/,\s*/) || []
+         next als if councils.blank?
+
          aliases = councils.map {|x| /(.*)=$/ =~ x ? $1.gsub("?", "") : nil }.compact
 
          aliases.reduce(als) do |alss, alias_slug|
@@ -97,7 +102,7 @@ class MemoryCouncilListToEmbeddedMemoesService
    end
 
    def host_n_event_type_for host_slug
-      memoes = Memo.in_calendaries(calendaries).by_slug([host_slug, aliases[host_slug]].compact)
+      memoes = Memo.by_slug([host_slug, aliases[host_slug]].compact).in_calendaries(calendaries)
 
       case memoes.size
       when 1
@@ -151,13 +156,25 @@ class MemoryCouncilListToEmbeddedMemoesService
 
       tweet = (texts.map { |t| OrderTable[t] }.compact.first || 'св')
 
-      Order.joins(:tweets).where(tweets: {text: "св"}).first
+      Order.joins(:tweets).where(tweets: {text: tweet}).first
    end
 
-   def title_for event_id
+   def memo_titles memo, event_id
+      titles_for(event_id).reduce([]) do |tt, x|
+         title = Title.where(describable_id: memo.id,
+                             describable_type: "Memo",
+                             language_code: x.language_code,
+                             alphabeth_code: x.alphabeth_code).first
+         title_new = title || memo.titles.new(text: x.text, language_code: x.language_code, alphabeth_code: x.alphabeth_code)
+
+         tt.any? {|x| x.id && x.id == title_new.id } ? tt : tt | [title_new]
+      end
+   end
+
+   def titles_for event_id
       event = Event.find(event_id)
 
-      (event.memory.memos.map {|m| m.titles {|t| t.text }} | event.memory.short_names.map {|x| x.text }).compact.first
+      event.memory.short_names.map {|x| x }.compact.flatten
    end
 
    def children_memoes
@@ -166,17 +183,28 @@ class MemoryCouncilListToEmbeddedMemoesService
          calendary = Calendary.by_slug(c).first
 
          children.reduce(memoes) do |memoeses, (event_id, host_memo_id)|
+            host_memo = Memo.find(host_memo_id)
+
             attrs = {
-               calendary_id: calendary.id,
+               calendary_id: host_memo.calendary_id,
                bind_kind_code: "соборный",
                bond_to_id: host_memo_id,
                event_id: event_id
             }
 
-            memo = Memo.where(attrs).new(attrs)
-            memo.orders << order_for(host_memo_id)
-            memo.titles.new(text: title_for(event_id))
-            memo.valid?
+            memos = Memo.where(attrs)
+
+            if memo = memos.first
+               @founded = @founded + 1
+
+               memo_titles(memo, event_id)
+            else
+               @newd = @newd + 1
+               memo = memos.new(attrs)
+               memo.orders << order_for(host_memo_id)
+               memo_titles(memo, event_id)
+               memo.valid?
+            end
 
             memoeses | [memo]
          end
@@ -186,11 +214,12 @@ class MemoryCouncilListToEmbeddedMemoesService
    def convert
       Memo.transaction do
          saveds = children_memoes.map do |child|
-            child.save!(validate: false); child
+            child.save!(validate: false)
+
+            child
          end
 
-         binding.pry
-         puts "All is saved... exiting with exception? #{@fake}"
+         Kernel.puts "All #{@newd} memoes are saved, found #{@founded} ones so... exiting with exception? #{@fake}"
          exit if @fake
       end
    ensure

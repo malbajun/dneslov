@@ -1,8 +1,8 @@
 namespace :dneslov do
    namespace :memory do
       desc "Converts memory council list to council memoes for specific calendary"
-      task :council_proceed, [:c, :f] => :environment do |t, args|
-         MemoryCouncilListToEmbeddedMemoesService.new(calendaries: args[:c].split(":"), fake: !(args[:f] == "false")).convert
+      task :council_proceed, [:c, :a] => :environment do |t, args|
+         MemoryCouncilListToEmbeddedMemoesService.new(calendaries: args[:c].split(":"), fake: ((args[:a] || "false") == "false")).convert
       end
    end
 

@@ -76,7 +76,7 @@ class Memo < ApplicationRecord
    end
 
    scope :by_slug, ->(slugs) do
-      Memo.joins(:memory).merge(Memory.unscoped.by_slug(slugs)).reorder(:id)
+      joins(:memory).merge(Memory.unscoped.by_slug(slugs)).reorder(:id)
    end
 
    scope :first_in_calendary, -> do

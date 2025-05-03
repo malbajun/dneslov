@@ -15,6 +15,9 @@ types:
     - name: order_short_name
       kind: string
       descriptions: :tiun.types.memory.order_short_name
+    - name: order_title
+      kind: string
+      descriptions: :tiun.types.memory.order_title
     - name: order_tweet
       kind: string
       descriptions: :tiun.types.memory.order_tweet
