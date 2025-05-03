@@ -192,8 +192,8 @@ class Memo < ApplicationRecord
    singleton_class.send(:alias_method, :c, :in_calendaries)
 
    scope :with_value_memoried, -> context do 
-      language_codes = [context[:text_languages]].flatten.compact
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       as = table.table_alias || table.name
       selector = self.select_values.dup
 
@@ -309,8 +309,8 @@ class Memo < ApplicationRecord
 
    scope :with_bond_to_title, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
       selector = "descriptions_#{scope_name}.text AS _bond_to_title"
@@ -371,7 +371,7 @@ class Memo < ApplicationRecord
                       AND #{this}_#{ast}_event_titles.type = 'Appellation')
                       AND #{this}_#{ast}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                       AND #{this}_#{ast}_titles.language_code IN ('#{language_codes.join("', '")}')
-                     JOIN memories AS #{this}_#{ast}_memories
+          LEFT OUTER JOIN memories AS #{this}_#{ast}_memories
                        ON #{this}_#{ast}_memories.id = #{this}_#{ast}_events.memory_id"
 
       joins(join).select(selector).group(
@@ -384,8 +384,8 @@ class Memo < ApplicationRecord
 
    scope :with_event_title, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
       selector = "event_titles_#{scope_name}.text AS _event_title"
@@ -417,8 +417,8 @@ class Memo < ApplicationRecord
 
    scope :with_orders, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
       selector =
@@ -458,8 +458,8 @@ class Memo < ApplicationRecord
 
    scope :with_title, -> context do
       join_name = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
 
       selector = self.select_values.dup | ["#{join_name}.*", "descriptions_#{scope_name}.text AS _title"]
@@ -476,8 +476,8 @@ class Memo < ApplicationRecord
 
    scope :with_bond_to_year_date, -> context do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten.compact
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
 
@@ -526,8 +526,8 @@ class Memo < ApplicationRecord
 
    scope :with_memo_orders, -> context do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten.compact
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = model.reflections[rela]&.name
       selector = self.select_values.dup
@@ -570,8 +570,8 @@ class Memo < ApplicationRecord
 
    scope :with_calendary_title, -> context do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten.compact
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       _as = model.reflections[rela]&.name
       selector = self.select_values.dup
@@ -599,8 +599,8 @@ class Memo < ApplicationRecord
 
    scope :with_memory_event, -> context do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten.compact
-      alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
 
