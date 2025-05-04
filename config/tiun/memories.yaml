@@ -12,6 +12,12 @@ types:
     - name: slug
       kind: string
       descriptions: :tiun.types.memory.slug
+    - name: event_id
+      kind: integer
+      descriptions: :tiun.types.memory.event_id
+    - name: usual_event_code
+      kind: string
+      descriptions: :tiun.types.memory.usual_event_code
     - name: order_short_name
       kind: string
       descriptions: :tiun.types.memory.order_short_name

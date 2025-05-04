@@ -481,6 +481,7 @@ export default class MemoriesForm extends Component {
                               defaultCalendarySlug={this.defaultCalendarySlug()}
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
+                              onLoadRequest={this.onMemoryLoadRequest.bind(this)}
                               {...this.state.memory} />}
                         {this.state.eventee &&
                            <Eventee
@@ -490,6 +491,7 @@ export default class MemoriesForm extends Component {
                               defaultCalendarySlug={this.defaultCalendarySlug()}
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
+                              onLoadRequest={this.onMemoryLoadRequest.bind(this)}
                               {...this.state.eventee} />}
                         {this.state.images &&
                            <Gallery

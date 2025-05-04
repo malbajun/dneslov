@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { mixin } from 'lodash-decorators'
+import { merge } from 'merge-anything'
 import PropTypes from 'prop-types'
 
 import Carousel from 'Carousel'
@@ -30,6 +31,8 @@ export default class Memory extends Component {
       defaultCalendarySlug: null,
       specifiedCalendarySlug: null,
       calendarStyle: 'julian',
+      onLoadRequest: null,
+
       i18n: {
          gallery: "Выставка",
          base: "Опорная память",
@@ -200,8 +203,7 @@ export default class Memory extends Component {
       let hash = props.memoes.reduce((res, memo) => {
          return memo.children.reduce((res, child) => {
             if (res[child.slug]) {
-               res[child.slug] = [res[child.slug]].flat()
-               res[child.slug] << child
+               res[child.slug] = merge({}, res[child.slug], child)
             } else {
                res[child.slug] = child
             }
@@ -415,6 +417,7 @@ export default class Memory extends Component {
             calendariesCloud={this.props.selectedCalendaries}
             defaultCalendarySlug={this.state.defaultCalendarySlug}
             bondMemoryId={this.props.id}
+            onLoadRequest={this.props.onLoadRequest}
             url={'/api/v0/memories/'+ this.props.id +'/content.json'}
             hideIfBlank={true}
             manualFetch={true} />,

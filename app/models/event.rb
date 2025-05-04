@@ -46,6 +46,7 @@ class Event < ActiveRecord::Base
       'Resurrection',
       'Monasticry',
       'Passion',
+      'Preach',
       'Council',
       'Marriage',
       'Family'
@@ -631,6 +632,7 @@ class Event < ActiveRecord::Base
       alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       ch_cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
+      list = Event::USUAL.map.with_index {|x, i| "('#{x}', #{i})" }
 
       selector = "COALESCE((WITH __memoes AS (
                        SELECT DISTINCT ON(memoes.id)
@@ -660,9 +662,11 @@ class Event < ActiveRecord::Base
                        SELECT COUNT(___children.slug)
                          FROM ___children), 0) AS children_total,
                COALESCE((WITH __children AS (
-                       SELECT DISTINCT ON(#{this}_children_slugs.text)
+                       SELECT DISTINCT ON(#{this}_usual_order_table.order_no, base_year, #{this}_children_slugs.text)
                               children.id AS id,
                               #{this}_children_slugs.text AS slug,
+                              #{this}_children_events.id AS event_id,
+                              #{this}_usual_order_table.order_no AS usual_event_code,
                               #{this}_child_roundels.url AS roundel_url,
                               #{this}_children_short_names.text AS short_name,
                               children_order_tweets.text AS order_tweet,
@@ -691,6 +695,8 @@ class Event < ActiveRecord::Base
                            ON #{this}_children_memories.id = #{this}_children_short_names.memory_id
                           AND #{this}_children_short_names.language_code IN ('#{language_codes.join("', '")}')
                           AND #{this}_children_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN (VALUES #{list.join(", ")}) AS #{this}_usual_order_table (event_kind_code, order_no)
+                           ON #{this}_usual_order_table.event_kind_code = #{this}_children_events.kind_code
               LEFT OUTER JOIN descriptions AS #{this}_children_titles
                            ON #{this}_children_titles.describable_id = children.id
                           AND #{this}_children_titles.describable_type = 'Memo'
@@ -741,6 +747,8 @@ class Event < ActiveRecord::Base
                           AND children.bind_kind_code = 'соборный'
                           AND children.calendary_id = memoes.calendary_id
                      GROUP BY #{this}_children_slugs.text,
+                              #{this}_children_events.id,
+                              #{this}_usual_order_table.order_no,
                               #{this}_children_memories.base_year,
                               happened_at,
                               children.id,
@@ -751,7 +759,7 @@ class Event < ActiveRecord::Base
                               order_short_name,
                               title,
                               note
-                     ORDER BY #{this}_children_slugs.text, base_year
+                     ORDER BY #{this}_usual_order_table.order_no, base_year, #{this}_children_slugs.text
                         LIMIT 25)
                        SELECT jsonb_agg(__children)
                          FROM __children), '[]'::jsonb) AS children,
@@ -808,8 +816,6 @@ class Event < ActiveRecord::Base
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE memoes.event_id = events.id
-                          AND memoes.bond_to_id IS NULL
-                          AND memoes.id IS NOT NULL
                           AND calendaries.licit = 't'
                      GROUP BY memoes.id, year_date, title, description, calendary_slug,
                               calendary_title, calendary_url, memo_links.url)

@@ -33,6 +33,7 @@ export default class Eventee extends Component {
       wrapperYearDateClass: "",
       selectedCalendaries: [],
       calendarStyle: 'julian',
+      onLoadRequest: null,
 
       i18n: {
          gallery: "Выставка",
@@ -212,14 +213,6 @@ export default class Eventee extends Component {
       this.onImageClick = this.onImageClick.bind(this)
    }
 
-   componentDidMount() {
-      //this.$header.addEventListener('click', this.onSpanHeaderClick)
-   }
-
-   componentWillUnmount() {
-      //this.$header.removeEventListener('click', this.onSpanHeaderClick)
-   }
-
    // custom
    hasData() {
       return this.props.scripta.length > 0 || this.hasDescription()
@@ -385,6 +378,7 @@ export default class Eventee extends Component {
             calendariesCloud={this.props.selectedCalendaries}
             defaultCalendarySlug={this.state.defaultCalendarySlug}
             bondMemoryId={this.props.memory_id}
+            onLoadRequest={this.props.onLoadRequest}
             url={'/api/v0/memories/'+ this.props.memory_id +'/content.json'}
             hideIfBlank={true}
             manualFetch={true} />,

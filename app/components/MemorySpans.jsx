@@ -163,8 +163,7 @@ export default class MemorySpans extends Component {
                   ref={e => this.$collapsible = e}
                   className={'collapsible collection ' + this.getClassName()}
                   data-collapsible='expandable' >
-                  {this.state.memories.map((memory) =>
-                     <MemorySpan
+                  {this.state.memories.map((memory) => <MemorySpan
                         key={memory.slug}
                         slug={memory.slug}
                         title={memory.title}

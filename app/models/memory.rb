@@ -451,9 +451,12 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       language_codes = [context[:text_languages] || context[:language]].flatten
       alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
       cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
+      list = Event::USUAL.map.with_index {|x, i| "('#{x}', #{i})" }
 
       selector = "#{this}.*,
                   #{this}_#{as}_slugs.text AS _slug,
+                  #{this}_events.id AS event_id,
+                  #{this}_usual_order_table.order_no AS usual_event_code,
                   #{this}_roundels.url AS _roundel_url,
                   #{this}_order_tweets.text AS _order_tweet,
                   #{this}_short_names.text AS _short_name,
@@ -492,6 +495,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                            ON #{this}.id = #{this}_short_names.memory_id
                           AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}')
                           AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN (VALUES #{list.join(", ")}) AS #{this}_usual_order_table (event_kind_code, order_no)
+                           ON #{this}_usual_order_table.event_kind_code = #{this}_events.kind_code
               LEFT OUTER JOIN descriptions AS #{this}_#{as}_titles
                            ON #{this}_#{as}_titles.describable_id = #{this}_memoes.id
                           AND #{this}_#{as}_titles.describable_type = 'Memo'
@@ -543,6 +548,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
          :id,
          :base_year,
          "#{this}_#{as}_slugs.text",
+         "#{this}_events.id",
+         "#{this}_usual_order_table.order_no",
          "#{this}_roundels.url",
          "#{this}_order_tweets.text",
          "#{this}_order_short_names.text",
@@ -554,7 +561,11 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
          "#{this}_calendary_slugs.text"
       ]
 
-      joins(join).select(selector).reorder("#{this}_#{as}_slugs.text").group(*group_by).distinct_by("#{this}_#{as}_slugs.text")
+      joins(join).
+         select(selector).
+         reorder("#{this}_usual_order_table.order_no", :base_year, "#{this}_#{as}_slugs.text").
+         group(*group_by).
+         distinct_by("#{this}_usual_order_table.order_no", :base_year, "#{this}_#{as}_slugs.text")
    end
 
    # with memoes and children via memoes
@@ -746,7 +757,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
                         WHERE events.memory_id = #{this}.id
-                          AND memoes.bond_to_id IS NULL
                           AND calendaries.licit = 't'
                      GROUP BY memoes.id, year_date, title, description, calendary_slug,
                               calendary_title, calendary_url, memo_links.url, events.kind_code)
