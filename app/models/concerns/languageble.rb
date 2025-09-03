@@ -168,7 +168,7 @@ module Languageble
    ARAMAIC_STROKE = 'א-תשׁ-זּטּ-לּמּנּסּףּפּצּ-ﭏ'
    ARAMAIC_ACCENT = '׳״ׇ֑\-ׇ'
    ARABIC_STROKE = 'ء-𞹾'
-   PERSIAN_STROKE = 'ﺍبپﺕﺙﺝچﺡﺥﺩﺫﺭﺯژﺱﺵﺹ	ﺽﻁﻅﻉﻍﻑﻕکگﻝﻡﻥهـﻭﻯ'
+   PERSIAN_STROKE = '؀-ۿݐ-ݿࡰ-ﭐ-ﻼﺍبپﺕﺙﺝچﺡﺥﺩﺫﺭﺯژﺱﺵﺹﺽﻁﻅﻉﻍﻑﻕکگﻝﻡﻥهـﻭﻯ'
    PERSIAN_ACCENT = ''
    OLD_PERSIAN_STROKE = 'a-pr-zāēōūīš'
    OLD_PERSIAN_ACCENT = '̄̅'
