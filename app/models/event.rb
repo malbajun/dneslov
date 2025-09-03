@@ -191,7 +191,7 @@ class Event < ActiveRecord::Base
          where(id: did)
       else
          by_default_or_specific_title(did)
-      end.joins(:memory).merge(Memory.by_uno(uno)).reorder(:id)
+      end.joins(:memory).merge(Memory.by_uno(uno)).reorder(:base_year, "memories.id", :id)
    end
 
    # search by event title common via subject or event-specific
