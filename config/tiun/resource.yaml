@@ -1,0 +1,211 @@
+---
+types:
+ - name: resourcee
+   model: Resource
+   version: 0.1
+   with:
+    - title
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.resource.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.resource.title
+    - name: thumb_url
+      kind: uri
+      descriptions: :tiun.types.resource.thumb_uri
+    - name: type
+      kind: enum <Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen>
+      descriptions: :tiun.types.resource.type
+ - name: resource
+   version: 0.1
+   with:
+    - title
+    - description
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.resource.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.resource.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.resource.description
+    - name: uri
+      kind: uri
+      descriptions: :tiun.types.resource.uri
+    - name: props
+      kind: json
+      descriptions: :tiun.types.resource.props
+    - name: path
+      kind: string
+      descriptions: :tiun.types.resource.path
+    - name: type
+      kind: enum <Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen>
+      descriptions: :tiun.types.resource.type
+    - name: digest
+      kind: string
+      descriptions: :tiun.types.resource.digest
+    - name: data
+      kind: string
+      descriptions: :tiun.types.resource.data
+    - name: thumb_url
+      kind: uri
+      descriptions: :tiun.types.resource.thumb_uri
+resources:
+ - name: resource.index
+   path: /api/v0/resources.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: resourcee page
+      descriptions: :tiun.resources.resource.index
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.resource.index.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.resource.index.page
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.resource.index.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.resource.index.alphabeth
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.resource.index.uno
+       - name: kind
+         kind: string
+         alias: k
+         descriptions: :tiun.resources.resource.index.kind
+       - name: type
+         kind: enum <Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen>
+         alias: t
+         descriptions: :tiun.resources.resource.index.type
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.resources.resource.index.query
+       - name: description
+         kind: string
+         alias: d
+         descriptions: :tiun.resources.resource.index.description
+ - name: resource.create
+   path: /api/v0/resources/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: resourcee
+      descriptions: :tiun.resources.resource.create
+      policy: resource.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.resource.post.id
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.resource.post.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.resource.post.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.resource.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.resource.post.description
+       - name: props
+         kind: json
+         descriptions: :tiun.resources.resource.post.props
+       - name: path
+         kind: string
+         descriptions: :tiun.resources.resource.post.path
+       - name: type
+         kind: enum <Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen>
+         descriptions: :tiun.resources.resource.post.type
+       - name: resource
+         kind: file
+         skip: args
+         descriptions: :tiun.resources.resource.post.resource
+       - name: data
+         kind: string
+         descriptions: :tiun.resources.resource.post.data
+ - name: resource
+   path: /api/v0/resources/:id.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: resource
+      descriptions: :tiun.resources.resource.get
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.resource.get.id
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.resource.get.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.resource.get.alphabeth
+    - name: put
+      version: 0.1
+      kind: resource
+      descriptions: :tiun.resources.resource.put
+      policy: resource.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.resource.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.resource.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.resource.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.resource.put.description
+       - name: props
+         kind: json
+         descriptions: :tiun.resources.resource.put.props
+       - name: path
+         kind: string
+         descriptions: :tiun.resources.resource.put.path
+       - name: type
+         kind: enum <Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen>
+         descriptions: :tiun.resources.resource.put.type
+       - name: resource
+         kind: file
+         skip: args
+         descriptions: :tiun.resources.resource.put.resource
+       - name: data
+         kind: string
+         descriptions: :tiun.resources.resource.put.data
+    - name: delete
+      version: 0.1
+      kind: resource
+      descriptions: :tiun.resources.resource.delete
+      policy: resource.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.resource.delete.id

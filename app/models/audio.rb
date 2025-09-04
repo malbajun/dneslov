@@ -8,8 +8,8 @@ class Audio < ApplicationRecord
    include WithDescriptions
 
    mount_uploader :audio, AudioUploader
-   #process_in_background :audio
-   #store_in_background :audio
+   process_in_background :audio
+   store_in_background :audio
 
    has_many :source_scribables, -> { where(kind: :source) }, class_name: :ScriptumScribable, as: :scribable, dependent: :delete_all
    has_many :target_scribables, -> { where(kind: :target) }, class_name: :ScriptumScribable, as: :scribable, dependent: :delete_all

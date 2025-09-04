@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_14_095721) do
+ActiveRecord::Schema[7.0].define(version: 2025_04_23_095753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -367,16 +367,33 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_14_095721) do
     t.jsonb "props"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "type", null: false, comment: "Єдьн из Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen"
+    t.binary "digest", null: false, comment: "Чисмяна подпись"
+    t.string "uri", comment: "ози изнахоѕи"
+    t.string "thumb_url", comment: "рзи нариснице за изнахоѕѣ"
+    t.binary "data", comment: "Свѧзане дане за изнахоѕѣ"
+    t.string "resource", comment: "Поле для самє изнахоѕи"
+    t.boolean "resource_processing", default: false, comment: "Обработка изнахоѕи на позадји"
+    t.string "resource_tmp", comment: "Врѣмяне дане за изнахоѕѣ для позаднє обработке"
     t.index "(((props ->> 'height'::text))::integer)", name: "height_index_on_props_resources", where: "((props ->> 'height'::text) IS NOT NULL)"
     t.index "(((props ->> 'width'::text))::integer)", name: "width_index_on_props_resources", where: "((props ->> 'width'::text) IS NOT NULL)"
+    t.index "((props ->> 'bookinfo'::text))", name: "bookinfo_index_on_props_resources", where: "((props ->> 'bookinfo'::text) IS NOT NULL)"
     t.index "((props ->> 'comment'::text))", name: "comment_index_on_props_resources", where: "((props ->> 'comment'::text) IS NOT NULL)"
     t.index "((props ->> 'event'::text))", name: "event_index_on_props_resources", where: "((props ->> 'event'::text) IS NOT NULL)"
     t.index "((props ->> 'fileinfo'::text))", name: "fileinfo_index_on_props_resources", where: "((props ->> 'fileinfo'::text) IS NOT NULL)"
     t.index "((props ->> 'imageinfo'::text))", name: "imageinfo_index_on_props_resources", where: "((props ->> 'imageinfo'::text) IS NOT NULL)"
     t.index "((props ->> 'kind'::text))", name: "kind_index_on_props_resources", where: "((props ->> 'kind'::text) IS NOT NULL)"
+    t.index "((props ->> 'pageinfo'::text))", name: "pageinfo_index_on_props_resources", where: "((props ->> 'pageinfo'::text) IS NOT NULL)"
     t.index "((props ->> 'short_name'::text))", name: "short_name_index_on_props_resources", where: "((props ->> 'short_name'::text) IS NOT NULL)"
+    t.index "((props ->> 'text'::text))", name: "text_index_on_props_resources", where: "((props ->> 'text'::text) IS NOT NULL)"
     t.index "((props ->> 'type'::text))", name: "type_index_on_props_resources", where: "((props ->> 'type'::text) IS NOT NULL)"
+    t.index ["data"], name: "index_resources_on_data"
+    t.index ["digest"], name: "index_resources_on_digest", unique: true
     t.index ["path"], name: "index_resources_on_path"
+    t.index ["resource"], name: "index_resources_on_resource"
+    t.index ["thumb_url"], name: "index_resources_on_thumb_url"
+    t.index ["type"], name: "index_resources_on_type"
+    t.index ["uri"], name: "index_resources_on_uri", unique: true
   end
 
   create_table "rites", force: :cascade do |t|
@@ -511,7 +528,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_14_095721) do
     t.index ["alphabeth_code"], name: "index_short_names_on_alphabeth_code"
     t.index ["language_code"], name: "index_short_names_on_language_code"
     t.index ["memory_id"], name: "index_short_names_on_memory_id"
-    t.index ["text", "language_code", "alphabeth_code", "memory_id"], name: "index_short_names_on_text_language_code_alphabeth_code_memory", unique: true
+    t.index ["text", "alphabeth_code"], name: "index_short_names_on_text_alphabeth_code", unique: true
     t.index ["text"], name: "index_short_names_on_text"
   end
 

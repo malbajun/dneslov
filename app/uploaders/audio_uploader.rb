@@ -21,7 +21,6 @@ class AudioUploader < CarrierWave::Uploader::Base
    #   "cache/carrierwave"
    #end
 
-   # If you upload 'file.jpg', you'll get 'image.webp' because of convert
    def filename
       "#{model.uid}.#{file.extension}"
    end

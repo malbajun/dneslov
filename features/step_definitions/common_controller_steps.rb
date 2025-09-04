@@ -15,15 +15,19 @@ end
    expect(@response).to match_response_json_yaml(doc_string)
 end
 
+То('добѫдꙛ выводъ яко:') do |doc_string|
+   expect(@response).to match_response_json_yaml(doc_string)
+end
+
 То('добѫдꙛ кодъ поврата {string}') do |code|
    expect(@response.status).to eq(code.to_i)
 end
 
-Если('запытаю добыванје из изнахоѕи {string}') do |path|
+Если('запытаю добыванје из изо {string}') do |path|
    @response = get(path)
 end
 
-Если('запытаю добыванје из изнахоѕи {string}:') do |path, table|
+Если('запытаю добыванје из изо {string}:') do |path, table|
    pre, headers = table.rows_hash.transform_values { |value| YAML.load(value) }.reduce([[], []]) do |r, (k, v)|
       if /(?<h>[^:]*):/ =~ k
          [r.first, r.last | [[h, v]]]
@@ -41,11 +45,11 @@ end
    expect(answer.to_yaml.strip).to eq(doc_string)
 end
 
-Если('запытаю изтрѣнје изнахоѕи {string}') do |url|
+Если('запытаю изтрѣнје изо {string}') do |url|
    @response = delete(url)
 end
 
-Если('запытаю изтрѣнје изнахоѕи {string}:') do |path, table|
+Если('запытаю изтрѣнје изо {string}:') do |path, table|
    pre, headers = table.rows_hash.transform_values { |value| YAML.load(value) }.reduce([[], []]) do |r, (k, v)|
       if /(?<h>[^:]*):/ =~ k
          [r.first, r.last | [[h, v]]]
