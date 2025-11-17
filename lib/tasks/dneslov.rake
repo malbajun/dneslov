@@ -61,4 +61,11 @@ namespace :dneslov do
          Znamenar.new(source: args[:source], target: args[:target]).render_xml
       end
    end
+
+   namespace :language do
+      desc "fix language letters"
+      task :name_letter_fix, [:lang, :alph] => :environment do |t, args|
+         Languager.new(language: args[:lang], alphabeth: args[:alph]).name_letter_fix
+      end
+   end
 end
