@@ -36,9 +36,7 @@ class Memory < ApplicationRecord
    has_many :places, through: :coverings
 
    default_scope do
-      order( base_year: :asc, id: :asc ).
-         select("#{table.table_alias || table.name}.*").
-         distinct_by(:base_year, "#{table.table_alias || table_name}.#{model.primary_key}")
+      order(base_year: :asc, id: :asc)
    end
 
    scope :icons, -> { joins( :slugs ).where( slugs: { text: :обр } ) }

@@ -130,7 +130,7 @@ module WithTitles
          end
 
          def title_language_code
-           @title_language ||= titles.last&.language_code
+            @title_language ||= titles.last&.language_code
          end
 
          def title_alphabeth_code

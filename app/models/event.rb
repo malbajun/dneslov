@@ -187,11 +187,12 @@ class Event < ActiveRecord::Base
    end
 
    scope :by_did_and_uno, -> did, uno do
+      rela = joins(:memory).merge(Memory.by_uno(uno))
       if /^[0-9]+$/ =~ did
-         where(id: did)
+         rela.where(id: did)
       else
-         by_default_or_specific_title(did)
-      end.joins(:memory).merge(Memory.by_uno(uno)).reorder(:base_year, "memories.id", :id)
+         rela.by_default_or_specific_title(did)
+      end.reorder(:base_year, "memories.id", :id)
    end
 
    # search by event title common via subject or event-specific
