@@ -172,7 +172,10 @@ class Picture < ApplicationRecord
 
    # callbacks
    def fill_in_digest
-      self.digest ||= Digest::SHA2.hexdigest(IO.read(image.file.file))
+      if changed.include?("image")
+         blob = image.respond_to?(:file) ? IO.read(image.file.file) : image
+         self.digest = blob ? Digest::SHA2.hexdigest(blob) : ""
+      end
    end
 
    def fill_in_uid
@@ -180,7 +183,9 @@ class Picture < ApplicationRecord
    end
 
    def fill_in_url
-      self.url = File.join *[image.asset_host.to_s, image.store_dir, image.filename]
+      if changed.include?("image")
+         self.url = File.join *[image.asset_host.to_s, image.store_dir, image.filename]
+      end
    end
 
    def fill_in_thumb_url
