@@ -184,6 +184,7 @@ group :test do
    gem 'shoulda-matchers', '~> 4.0'
    gem 'shoulda-matchers-cucumber', '~> 1.0', '>= 1.0.1'
    gem 'rspec-expectations'
+   gem 'rspec-sidekiq'
    gem 'simplecov', '~> 0.21'
    gem 'simplecov_json_formatter'
    gem 'database_cleaner-active_record'

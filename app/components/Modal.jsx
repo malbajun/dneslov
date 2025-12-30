@@ -8,6 +8,7 @@ export default class Modal extends Component {
    static defaultProps = {
       remoteName: null,
       remoteNames: null,
+      remoteCreate: null,
       meta: null,
       data: null,
    }
@@ -15,6 +16,7 @@ export default class Modal extends Component {
    static propTypes = {
       remoteName: PropTypes.string.isRequired,
       remoteNames: PropTypes.string.isRequired,
+      remoteCreate: PropTypes.string,
       meta: PropTypes.object.isRequired,
       data: PropTypes.object.isRequired,
    }
@@ -88,6 +90,7 @@ export default class Modal extends Component {
                   <Form
                      remoteName={this.props.meta.remoteName}
                      remoteNames={this.props.meta.remoteNames}
+                     remoteCreate={this.props.meta.remoteCreate}
                      meta={this.props.meta.form}
                      data={this.state.data} /></div>
                <div className="modal-footer">

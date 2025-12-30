@@ -2,13 +2,16 @@ module DefaultKey
    include ActiveSupport::Concern
 
    def default_key
-      @@default_key ;end
+      @@default_key ||= self.primary_key
+   end
 
    def default_key= key
-      @@default_key = key ;end
+      @@default_key = key || default_key
+   end
 
    def has_default_key key
-      self.default_key = key ;end
+      self.default_key = key
+   end
 
    def find *args
       if self.respond_to?( :default_key )

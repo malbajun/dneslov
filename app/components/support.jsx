@@ -56,15 +56,19 @@ export function parseDateString(string) {
 
 export function getPathsFromState(state) {
    console.debug("[getPathsFromState] <<<", state)
-   console.debug("[getPathsFromState] **", state.calendarySlug, state.memory?.slug, state.eventee, state.attituded, state.image, state.rites, state.rite)
+   console.debug("[getPathsFromState] **", state.calendarySlug, state.memory?.slug, state.eventee, state.attituded, state.image, state.rites, state.rite, state.resource, state.resources)
    let calendarySlug = state.query.c?.split(",").length == 1 && state.query.c ||
        state.query.c?.split(",")?.length == 0 && state.calendarySlug || null,
        path = "/" + [
           calendarySlug,
           (state.memory?.slug || state.eventee?.memory?.slug || state.attituded?.slug || state.image?.slug),
-          state.eventee?.id || state.attituded?.event_id || (state.attituded || state.image) && "gallery" || (state.rites || state.rite) && 'rites',
+          state.eventee?.id ||
+             state.attituded?.event_id ||
+             (state.attituded || state.image) && "gallery" ||
+             (state.resources || state.resource) && 'resources' ||
+             (state.rites || state.rite) && 'rites',
           state.attituded?.event_id && (state.attituded || state.image) && "gallery",
-          state.image?.uid || state.rite?.id
+          state.image?.uid || state.rite?.id || state.resource?.id
        ].compact().join("/"),
        jsonPath = (path === '/' && 'index' || path) + '.json',
        args = "",

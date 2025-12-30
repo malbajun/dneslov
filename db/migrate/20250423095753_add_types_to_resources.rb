@@ -14,6 +14,7 @@ class AddTypesToResources < ActiveRecord::Migration[7.0]
          t.string :uri, index: { unique: true }, comment: "ози изнахоѕи"
          t.string :thumb_url, index: true, comment: "рзи нариснице за изнахоѕѣ"
          t.column :data, :bytea, index: true, comment: "Свѧзане дане за изнахоѕѣ"
+         t.uuid :uid, index: { unique: true }, null: false, comment: "Заєдньн опознач"
          # internals
          t.string :resource, index: true, comment: "Поле для самє изнахоѕи"
          t.boolean :resource_processing, default: false, comment: "Обработка изнахоѕи на позадји"

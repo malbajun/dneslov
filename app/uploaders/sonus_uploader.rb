@@ -14,7 +14,7 @@ class SonusUploader < CarrierWave::Uploader::Base
    end
 
    def store_dir
-      "soni/#{model.uid[0..1]}"
+      "soni/#{model.uid[0]}/#{model.uid[0..1]}"
    end
 
    def filename

@@ -12,6 +12,7 @@ class Resource < ApplicationRecord
       where.not(id: Link.resourced.select(:resource_id))
    end
 
+   scope :by_uid, ->(uid) { where(uid: uid) }
    scope :by_id, ->(id) { where(id: id) }
 
    # title with or without event
@@ -29,6 +30,8 @@ class Resource < ApplicationRecord
          none
       when /^\d+$/
          by_id(uno)
+      when /^.+-.+-.+-.+-.+|[a-f0-9]{32}$/
+         by_uid(uno)
       else
          by_query_token(uno)
       end
@@ -36,11 +39,11 @@ class Resource < ApplicationRecord
 
    default_scope { order(updated_at: :desc) }
 
-   validates_presence_of :resource
+   validates_presence_of :resource, :uid
    validates_uniqueness_of :digest
    validates_uniqueness_of :uri
 
-   before_validation :fill_in_digest, :fill_in_uri
+   before_validation :fill_in_uid, :fill_in_digest, :fill_in_uri
 
    # callbacks
    def fill_in_digest
@@ -48,6 +51,10 @@ class Resource < ApplicationRecord
          blob = resource.respond_to?(:file) ? IO.read(resource.file.file) : resource
          self.digest = blob ? Digest::SHA2.hexdigest(blob) : ""
       end
+   end
+
+   def fill_in_uid
+      self.uid ||= SecureRandom.uuid
    end
 
    def fill_in_uri

@@ -1,6 +1,6 @@
 class ImageUploader < CarrierWave::Uploader::Base
    include ::CarrierWave::Backgrounder::Delay
-   include CarrierWave::RMagick
+   include ::CarrierWave::RMagick
 
    cache_storage CarrierWave::Storage::File
    storage :file
@@ -13,7 +13,7 @@ class ImageUploader < CarrierWave::Uploader::Base
    end
 
    def store_dir
-      "images/#{model.uid[0..1]}"
+      "images/#{model.uid[0]}/#{model.uid[0..1]}"
    end
 
    def cache_dir

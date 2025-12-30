@@ -13,7 +13,7 @@ class PicturaUploader < CarrierWave::Uploader::Base
    end
 
    def store_dir
-      "picturae/#{model.uid[0..1]}"
+      "picturae/#{model.uid[0]}/#{model.uid[0..1]}"
    end
 
    def cache_dir
@@ -21,7 +21,7 @@ class PicturaUploader < CarrierWave::Uploader::Base
    end
 
    def filename
-      "#{model.uid}.#{file.extension}"
+      "#{model.uid}.webp"
    end
 
    def content_type_allowlist

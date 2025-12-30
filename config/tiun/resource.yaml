@@ -15,7 +15,7 @@ types:
       descriptions: :tiun.types.resource.title
     - name: thumb_url
       kind: uri
-      descriptions: :tiun.types.resource.thumb_uri
+      descriptions: :tiun.types.resource.thumb_url
     - name: type
       kind: enum <Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen>
       descriptions: :tiun.types.resource.type

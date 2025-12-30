@@ -16,6 +16,7 @@ app/web
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
+.tmp/
 
 **/**/*~
 *.sw*
@@ -40,6 +41,7 @@ public/webpack/manifest.json
 
 public/javascripts/
 public/stylesheets/
+public/picturae/
 public/images
 public/uploads/
 public/roundels

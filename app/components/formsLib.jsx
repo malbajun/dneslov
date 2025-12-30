@@ -6,6 +6,7 @@ import Collection from 'Collection'
 import Block from 'Block'
 import HiddenField from 'HiddenField'
 import TextArea from 'TextArea'
+import Resource from 'Resource'
 import JsonEditor from 'JsonEditor'
 
 export function kindToKlass(kind) {
@@ -18,6 +19,7 @@ export function kindToKlass(kind) {
       select: SelectField,
       dynamic: DynamicField,
       block: Block,
+      uploader: Resource,
       collection: Collection,
    }
 

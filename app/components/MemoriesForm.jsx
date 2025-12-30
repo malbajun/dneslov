@@ -10,6 +10,8 @@ import SearchConditions from 'SearchConditions'
 import MemorySpans from 'MemorySpans'
 import Memory from 'Memory'
 import Eventee from 'Eventee'
+import Resourcees from 'Resourcees'
+import Resourcee from 'Resourcee'
 import Gallery from 'Gallery'
 import Image from 'Image'
 import Rites from 'Rites'
@@ -32,6 +34,8 @@ export default class MemoriesForm extends Component {
          total: 0,
       },
       memory: null,
+      resources: null,
+      resource: null,
       rites: null,
       rite: null,
       images: null,
@@ -54,6 +58,8 @@ export default class MemoriesForm extends Component {
                eventee: props.eventee,
                images: props.images,
                image: props.image,
+               resources: props.resources,
+               resource: props.resource,
                rites: props.rites,
                rite: props.rite,
                user: props.user,
@@ -88,6 +94,7 @@ export default class MemoriesForm extends Component {
       super()
 
       this.onUrlLoadRequest = this.onUrlLoadRequest.bind(this)
+      this.pushSubmit = this.pushSubmit.bind(this)
    }
 
    updateState(state) {
@@ -217,17 +224,19 @@ export default class MemoriesForm extends Component {
    // remote data processing
    // query - new query
    // path - new path request
-   pushSubmit(query, path) {
-      console.debug("[pushSubmit] <<< ", { query: query, path: path })
+   pushSubmit(queryIn, path) {
+      console.debug("[pushSubmit] <<< ", { query: queryIn, path: path })
+
+      let state = this.state, query = queryIn || { c: this.state.query.c, d: this.state.query.d }
 
       // storing current path and query
-      let [ currentPath, jsonCurrentPath ] = getPathsFromState(merge(this.state, { query: query }))
-      history.pushState({ query: this.state.query, path: jsonCurrentPath }, document.title, currentPath)
+      let [ currentPath, jsonCurrentPath ] = getPathsFromState(merge(state, { query: query }))
+      history.pushState({ query: state.query, path: jsonCurrentPath }, document.title, currentPath)
 
       // when path is undefined it is filled with current one
       path ||= jsonCurrentPath
 
-      console.debug("[pushSubmit] **", this.state, query, path)
+      console.debug("[pushSubmit] **", state, query, path)
       this.submit(query, path)
    }
 
@@ -298,6 +307,8 @@ export default class MemoriesForm extends Component {
             eventee: null,
             rites: null,
             rite: null,
+            resources: null,
+            resource: null,
             images: null,
             image: null,
             error: null})
@@ -309,6 +320,8 @@ export default class MemoriesForm extends Component {
             eventee: null,
             rites: null,
             rite: null,
+            resources: null,
+            resource: null,
             images: null,
             image: null,
             error: null})
@@ -327,6 +340,8 @@ export default class MemoriesForm extends Component {
                           eventee: null,
                           rites: null,
                           rite: null,
+                          resources: null,
+                          resource: null,
                           images: null,
                           image: null,
                           error: null})
@@ -343,6 +358,8 @@ export default class MemoriesForm extends Component {
                           eventee: eventee,
                           rites: null,
                           rite: null,
+                          resources: null,
+                          resource: null,
                           images: null,
                           image: null,
                           error: null})
@@ -359,6 +376,8 @@ export default class MemoriesForm extends Component {
                           eventee: null,
                           rites: null,
                           rite: null,
+                          resources: null,
+                          resource: null,
                           images: images,
                           error: null})
 
@@ -374,6 +393,8 @@ export default class MemoriesForm extends Component {
                           eventee: null,
                           rites: null,
                           rite: null,
+                          resources: null,
+                          resource: null,
                           images: null,
                           image: image,
                           error: null})
@@ -390,6 +411,8 @@ export default class MemoriesForm extends Component {
                           eventee: null,
                           rites: null,
                           rite: null,
+                          resources: null,
+                          resource: null,
                           images: null,
                           image: null,
                           error: null}),
@@ -514,6 +537,12 @@ export default class MemoriesForm extends Component {
                               specifiedCalendarySlug={this.state.calendarySlug}
                               selectedCalendaries={this.state.query.c?.split(",")}
                               {...this.state.image} />}
+                        {this.state.resources &&
+                           <Resourcees
+                              key='resources'
+                              total={this.props.total}
+                              onPushSubmit={this.pushSubmit}
+                              list={this.state.resources} />}
                         {this.state.rites &&
                            <Rites
                               key='rites'
@@ -523,7 +552,20 @@ export default class MemoriesForm extends Component {
                            <Rite
                               key='rite'
                               {...this.state.rite} />}
-                        {this.props.memories.list && !this.state.error && !this.state.eventee && !this.state.images && !this.state.image  && !this.state.rites && !this.state.rite && !this.state.memory &&
+                        {this.state.resource &&
+                           <Resourcee
+                              key='resource'
+                              {...this.state.resource} />}
+                        {this.props.memories.list &&
+                        !this.state.error &&
+                        !this.state.eventee &&
+                        !this.state.images &&
+                        !this.state.image &&
+                        !this.state.rites &&
+                        !this.state.rite &&
+                        !this.state.resources &&
+                        !this.state.resource &&
+                        !this.state.memory &&
                            <div>
                               <div className='row'>
                                  <SearchField

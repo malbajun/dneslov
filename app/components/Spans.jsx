@@ -11,6 +11,8 @@ export default class Spans extends Component {
       url: null,
       name: null,
       nextLoadStep: 25,
+
+      onLoadRequest: null,
    }
 
    static getDerivedStateFromProps(props, state) {
@@ -147,6 +149,8 @@ export default class Spans extends Component {
                   <Span
                      key={'object-' + object.id}
                      scheme={this.props.scheme}
+                     name={this.props.name}
+                     onLoadRequest={this.props.onLoadRequest}
                      onClick={this.onSpanClick}
                      {...object} />)}</ul></div>,
          <ReactScrollPagination

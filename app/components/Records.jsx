@@ -115,9 +115,18 @@ export default class Records extends Component {
 
    onRecordEdit(id) {
       console.debug("[onRecordEdit] <<< ")
-      let record = this.state.records.find((r) => { return r.id == id })
-      console.log("[onRecordEdit] **", id, record)
-      this.setState({current: record})
+      if (this.props.meta.remoteShow) {
+         let request = {
+            url: '/' + this.props.meta.remoteShow + '/' + id + '.json',
+            method: 'get'
+         }
+
+         axios(request).then(this.onSuccessShow.bind(this))
+      } else {
+         let record = this.state.records.find((r) => { return r.id == id })
+         console.log("[onRecordEdit] **", id, record)
+         this.setState({current: record})
+      }
    }
 
    onRecordRemove(id) {
@@ -135,6 +144,11 @@ export default class Records extends Component {
       this.setState(merge({ current: null }, e.detail || {}))
    }
 
+   onSuccessShow(response) {
+      console.debug("[onSuccessShow] <<< ", response)
+      this.setState({current: response.data})
+   }
+
    onSuccessRemove(response) {
       console.debug("[onSuccessRemove] <<< ", response)
       let record = response.data, records = this.state.records.slice()
@@ -146,7 +160,7 @@ export default class Records extends Component {
    }
 
    onSuccessLoad(response) {
-      let new_records, new_page, new_state, records = response.data, range, m
+      let new_records, new_page, new_state, records = response.data || [], range, m
       const re = new RegExp("records (?<b>\d+)-(?<e>\d+)/(?<total>\d+)")
 
       console.log("[onSuccessLoad] > response", response)

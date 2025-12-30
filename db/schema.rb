@@ -372,6 +372,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_23_095753) do
     t.string "uri", comment: "ози изнахоѕи"
     t.string "thumb_url", comment: "рзи нариснице за изнахоѕѣ"
     t.binary "data", comment: "Свѧзане дане за изнахоѕѣ"
+    t.uuid "uid", null: false, comment: "Заєдньн опознач"
     t.string "resource", comment: "Поле для самє изнахоѕи"
     t.boolean "resource_processing", default: false, comment: "Обработка изнахоѕи на позадји"
     t.string "resource_tmp", comment: "Врѣмяне дане за изнахоѕѣ для позаднє обработке"
@@ -393,6 +394,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_23_095753) do
     t.index ["resource"], name: "index_resources_on_resource"
     t.index ["thumb_url"], name: "index_resources_on_thumb_url"
     t.index ["type"], name: "index_resources_on_type"
+    t.index ["uid"], name: "index_resources_on_uid", unique: true
     t.index ["uri"], name: "index_resources_on_uri", unique: true
   end
 

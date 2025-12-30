@@ -61,6 +61,8 @@ Rails.application.routes.draw do
    get '/gallery/:uid' => 'gallery#show', as: :picture
    get '/rites' => 'rites#index', as: :rites
    get '/rites/:uno' => 'rites#show', as: :rite
+   get '/resources' => 'resources#index', as: :resources
+   get '/resources/:uno' => 'resources#show', as: :resource
    get '/:lat' => 'errors#show', constraints: { lat: /[a-z]+/ }
 
    get '/:slug' => 'memories#show', as: :slug#, constraints: { slug: /[ёа-я0-9]{1,6}/ }

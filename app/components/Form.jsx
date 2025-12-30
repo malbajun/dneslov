@@ -145,6 +145,7 @@ export default class Form extends Component {
       let record = this.serializedQuery(),
           request = { data: {}},
           request_url_base = '/' + this.props.remoteNames,
+          create_url_base = '/' + (this.props.remoteCreate || this.props.remoteNames),
           id = this.getUno()
 
       request.data[this.props.remoteName] = record
@@ -154,7 +155,7 @@ export default class Form extends Component {
          request.url = request_url_base + '/' + id + '.json'
       } else {
          request.method = 'post'
-         request.url = request_url_base + '.json'
+         request.url = create_url_base + '.json'
       }
 
       console.log("Form submit", request)
