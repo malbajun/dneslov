@@ -161,11 +161,14 @@ export const scriptumMeta = {
             'Азбука из списка должна быть выбрана': matchEmptyObject,
          }
       },
-      author: {
+      ref_title: {
          kind: 'text',
-         title: 'Автор',
-         placeholder: 'Введи автора',
+         title: 'Заголовочная ссылка',
+         placeholder: 'Заполни текстовую ссылку',
          display_scheme: '12-6-3-3',
+         visible_if: { 
+            text:  (value, _context) => { return value.isBlank() }
+         },
       },
       text: {
          kind: 'tale',
@@ -173,12 +176,40 @@ export const scriptumMeta = {
          placeholder: 'Введи текст',
          display_scheme: '12-12-12-12',
          subscribeTo: '@alphabeth_code',
+         visible_if: { 
+            ref_title:  (value, _context) => { return value.isBlank() }
+         },
          validations: {
             'Текст отсутствует': (value, context) => {
                return !context.ref_title && matchEmptyObject(value)
             },
             'Текст содержит знаки вне перечня избранной азбуки': matchLetters,
          }
+      },
+      resource_id: {
+         kind: 'dynamic',
+         title: 'Изнаходь',
+         humanized_name: 'resource_name',
+         display_scheme: '12-4-2-2',
+         placeholder: 'Начни ввод наименования изнаходи...',
+         pathname: 'api/v0/resources/ac',
+         key_name: 'value',
+         value_name: 'key',
+         validations: {
+            'Изнаходь должна быть избрана':  matchEmptyObject,
+         }
+      },
+      title: {
+         kind: 'text',
+         title: 'Написание заголовка',
+         placeholder: 'Введи написание заголовка',
+         display_scheme: '12-4-3-3',
+      },
+      author: {
+         kind: 'text',
+         title: 'Автор',
+         placeholder: 'Введи автора',
+         display_scheme: '12-4-3-3',
       },
       tone: {
          kind: 'select',
@@ -201,16 +232,6 @@ export const scriptumMeta = {
          },
          display_scheme: '12-6-1-1',
       },
-      title: {
-         kind: 'text',
-         title: 'Написание заголовка',
-         visible_if: { type: [
-            "Irmos", "Troparion", "Stichira", "Kontakion", "Exapostilarion", "SessionalHymn",
-            "Kanonion", "Kathismion", "Polileosion", "Apostichus", "CryStichira",
-            "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi", "Stichus"] },
-         placeholder: 'Введи написание заголовка',
-         display_scheme: '12-6-3-3',
-      },
       prosomeion_title: {
          kind: 'text',
          title: 'Подобен',
@@ -219,17 +240,7 @@ export const scriptumMeta = {
             "Kanonion", "Kathismion", "Polileosion", "Apostichus", "CryStichira",
             "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi"] },
          placeholder: 'Введи текст подобна',
-         display_scheme: '12-6-4-4',
-      },
-      ref_title: {
-         kind: 'text',
-         title: 'Заголовочная ссылка',
-         visible_if: { type: [
-            "Irmos", "Troparion", "Stichira", "Kontakion", "Exapostilarion", "SessionalHymn",
-            "Kanonion", "Kathismion", "Polileosion", "Apostichus", "CryStichira",
-            "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi"] },
-         placeholder: 'Заполни текстовую ссылку',
-         display_scheme: '12-6-4-4',
+         display_scheme: '12-6-3-3',
       },
       memo_scripta: {
          kind: 'collection',

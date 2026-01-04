@@ -7,6 +7,8 @@ class Scriptum < ActiveRecord::Base
 
    has_many :scriptum_scribables, dependent: :delete_all
    has_many :audios, through: :scriptum_scribables, source: :scribable, source_type: :Audio
+   has_one :resource_markup, dependent: :delete
+   has_one :resource, validate: true, through: :resource_markup, inverse_of: :scripta
    has_many :memo_scripta, inverse_of: :scriptum, dependent: :destroy
    has_many :memoes, through: :memo_scripta
    has_many :targets, through: :memo_scripta, foreign_key: :memo_id, source: :memo
@@ -35,6 +37,31 @@ class Scriptum < ActiveRecord::Base
       end
 
       select(selector.uniq).group('_value')
+   end
+
+   scope :with_resource, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{as}_resources.id AS _resource_id, #{as}_resource_titles.text AS _resource_name"
+
+      join = "
+         LEFT OUTER JOIN resource_markups AS #{as}_resource_markups
+                      ON #{this}.id = #{as}_resource_markups.scriptum_id
+         LEFT OUTER JOIN resources AS #{as}_resources
+                      ON #{as}_resource_markups.resource_id = #{as}_resources.id
+         LEFT OUTER JOIN descriptions AS #{as}_resource_titles
+                      ON #{as}_resource_titles.describable_id = #{as}_resources.id
+                     AND #{as}_resource_titles.describable_type = 'Resource'
+                     AND #{as}_resource_titles.type = 'Title'
+                     AND #{as}_resource_titles.language_code IN ('#{language_codes.join("', '")}')
+                     AND #{as}_resource_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{as}_resource_titles.text", "#{as}_resources.id")
    end
 
    scope :with_memoried_memoes, -> context do
@@ -121,4 +148,8 @@ class Scriptum < ActiveRecord::Base
    has_alphabeth on: %i(text title), novalidate: true
 
    validates :type, :memo_scripta, presence: true
+
+   def resource_id= value
+      self.resource = Resource.find_by_id(value)
+   end
 end

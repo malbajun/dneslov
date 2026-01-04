@@ -55,7 +55,22 @@ types:
       descriptions: :tiun.types.resource.data
     - name: thumb_url
       kind: uri
-      descriptions: :tiun.types.resource.thumb_uri
+      descriptions: :tiun.types.resource.thumb_url
+ - name: resource_ac
+   model: Resource
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.resource_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.resource_ac.value
 resources:
  - name: resource.index
    path: /api/v0/resources.json
@@ -103,6 +118,24 @@ resources:
          kind: string
          alias: d
          descriptions: :tiun.resources.resource.index.description
+ - name: resource.autocomplete
+   path: /api/v0/resources/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: resource_ac page
+      descriptions: :tiun.resources.resource.index
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.resources.resource.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.resource.autocomplete.query
  - name: resource.create
    path: /api/v0/resources/create.json
    methods:

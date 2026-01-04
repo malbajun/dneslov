@@ -7,6 +7,8 @@ class Resource < ApplicationRecord
    include ByQuery
 
    has_many :links, validate: true, inverse_of: :resource
+   has_many :resource_markups, dependent: :delete_all
+   has_many :scripta, validate: true, through: :resource_markups, inverse_of: :resource
 
    scope :unassigned, ->() do
       where.not(id: Link.resourced.select(:resource_id))
@@ -44,6 +46,21 @@ class Resource < ApplicationRecord
    validates_uniqueness_of :uri
 
    before_validation :fill_in_uid, :fill_in_digest, :fill_in_uri
+
+   # scopes
+   # required for autocomplete list
+   scope :with_key, -> _ do
+      selector = ['resources.id AS _key']
+
+      select(selector).group('_key').reorder("_key")
+   end
+
+   scope :with_value, -> context do
+      #TODO add search over names
+      selector = ['descriptions.text AS _value']
+
+      joins(:titles).select(selector).group('_value').reorder("_value")
+   end
 
    # callbacks
    def fill_in_digest

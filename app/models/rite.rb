@@ -166,7 +166,7 @@ class Rite < ActiveRecord::Base
 
    singleton_class.send(:alias_method, :t, :by_token)
 
-   validates_presence_of :bind_kind, :abbreviation
+   validates_presence_of :bind_kind_rite, :abbreviation
    validates_presence_of :bond_to_id, if: :bond?
    validates_absence_of :bond_to_id, unless: :bond?
    validates_uniqueness_of :id, :abbreviation

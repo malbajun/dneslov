@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_04_23_095753) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_30_221116) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -362,6 +362,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_23_095753) do
     t.index ["year_date"], name: "index_readings_on_year_date"
   end
 
+  create_table "resource_markups", force: :cascade do |t|
+    t.bigint "resource_id", comment: "квѧзка до изнахоѕи"
+    t.bigint "scriptum_id", comment: "квѧзка до писаня"
+    t.string "address", comment: "розполага на изнахоѕи"
+    t.box "placement", comment: "розмѣщенје на изнахоэи"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resource_id", "scriptum_id"], name: "index_resource_markups_on_resource_id_and_scriptum_id", unique: true
+    t.index ["resource_id"], name: "index_resource_markups_on_resource_id"
+    t.index ["scriptum_id"], name: "index_resource_markups_on_scriptum_id"
+  end
+
   create_table "resources", force: :cascade do |t|
     t.string "path"
     t.jsonb "props"
@@ -617,6 +629,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_04_23_095753) do
   add_foreign_key "memory_binds", "memories", column: "bond_to_id", on_delete: :cascade
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade
+  add_foreign_key "resource_markups", "resources", on_delete: :restrict
+  add_foreign_key "resource_markups", "scripta", on_delete: :cascade
   add_foreign_key "rites", "rites", column: "bond_to_id", on_delete: :restrict
   add_foreign_key "rites", "rites", column: "root_id", on_delete: :restrict
   add_foreign_key "service_scripta", "scripta", on_delete: :cascade

@@ -47,7 +47,7 @@ class ResourcesController < ApplicationController
    end
 
    def object_json
-      object.jsonize(only: %w(id abbreviation title description text))
+      object.jsonize(only: %w(id abbreviation title description text ))
    end
 
    def set_resources

@@ -1,18 +1,26 @@
 class BookUploader < CarrierWave::Uploader::Base
    include ::CarrierWave::Backgrounder::Delay
-   include CarrierWave::RMagick
+   include ::CarrierWave::RMagick
 
    cache_storage CarrierWave::Storage::File
    storage :file
 
-   process convert: 'djvu'
+   #process convert: 'djvu'
 
    version :thumb do
+      storage :file
+
+      process :convert => 'webp' # this should do the trick but doesn't
       process thumbnail: [400,400]
+      process :set_content_type
+
+      def filename
+         "thumb_#{model.uid}.webp"
+      end
    end
 
    def store_dir
-      "books/#{model.uid[0..1]}"
+      "books/#{model.uid[0]}/#{model.uid[0..1]}"
    end
 
    def cache_dir
@@ -24,10 +32,14 @@ class BookUploader < CarrierWave::Uploader::Base
    end
 
    def content_type_allowlist
-      [/image\//]
+      [/application\/pdf/, /application\/djvu/]
    end
 
-   def thumbnail(width, height)
+   def set_content_type *_args
+      self.file.instance_variable_set(:@content_type, "image/webp")
+   end
+
+   def thumbnail width, height
       width_in = dimension_from(width)
       height_in = dimension_from(height)
       ratio = self.width.to_f / self.height

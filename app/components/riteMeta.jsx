@@ -61,6 +61,9 @@ export const riteMeta = {
          title: 'Сокращение',
          display_scheme: '6-6-2-2',
          placeholder: 'Впиши сокращение',
+         validations: {
+            'Сокращение должно быть задано': matchEmptyObject,
+         }
       },
       language_code: {
          kind: 'dynamic',

@@ -316,10 +316,17 @@ export default class DynamicField extends Component {
    }
 
    onLoadSuccess(response) {
+      let dynamic_data
       console.debug("[onLoadSuccess] <<<")
 
-      var dynamic_data = response.data
+      if (response.data.list) {
+         dynamic_data = response.data
+      } else {
+         let range = response.headers["content-range"]
+         const { b, e, total } = /records (?<b>\d+)-(?<e>\d+)\/(?<total>\d+)/.exec(range,).groups;
 
+         dynamic_data = { list: response.data, total: response.data.total, overtotal: total }
+      }
       //this.storeDynamicData(dynamic_data)
 
       console.log("[onLoadSuccess] *", dynamic_data, "for: ",  this.triggered, "with response:", response)
