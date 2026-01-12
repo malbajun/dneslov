@@ -7,7 +7,7 @@ module DistinctBy
             this = table.table_alias || table.name
             _selector = self.select_values.dup
             if _selector.empty?
-              _selector << "ON (#{args.join(', ')}) #{this}.*"
+               selector = ["ON (#{args.join(', ')}) #{this}.*"]
             else
                selector =
                   if index = _selector.find_index {|x| x =~ /^ON/ }
