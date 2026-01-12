@@ -41,9 +41,9 @@ class Resource < ApplicationRecord
 
    default_scope { order(updated_at: :desc) }
 
-   validates_presence_of :resource, :uid
-   validates_uniqueness_of :digest
-   validates_uniqueness_of :uri
+   validates_presence_of :uid
+   validates_uniqueness_of :digest, if: -> { digest.present? }
+   validates_uniqueness_of :uri, if: -> { uri.present? }
 
    before_validation :fill_in_uid, :fill_in_digest, :fill_in_uri
 
@@ -66,7 +66,7 @@ class Resource < ApplicationRecord
    def fill_in_digest
       if changed.include?("resource")
          blob = resource.respond_to?(:file) ? IO.read(resource.file.file) : resource
-         self.digest = blob ? Digest::SHA2.hexdigest(blob) : ""
+         self.digest ||= blob ? Digest::SHA2.hexdigest(blob) : ""
       end
    end
 
@@ -85,6 +85,7 @@ class Resource < ApplicationRecord
       end
    end
 
+   # assigns
    def language= value
       self.title_language = value
       self.description_language = value
@@ -93,5 +94,54 @@ class Resource < ApplicationRecord
    def alphabeth= value
       self.title_alphabeth = value
       self.description_alphabeth = value
+   end
+
+   def memo= value
+      @memo =
+         case value
+         when Memo
+            value
+         when String
+            Memo.by_slug(value).first
+         end
+   end
+
+   # match
+   def match_year_date year_date
+      return false unless year_date
+
+      num_in = self.class.year_date2num(year_date)
+
+      (props["year_dates"] || []).map { |yd| self.class.year_date2range(yd) }.any? {|r| r === num_in }
+   end
+
+   def match_scriptum_types scriptum
+      (props["scriptum_types"] || []).include?(scriptum.type)
+   end
+
+   def match_cpages scriptum
+      cp_in = "#{scriptum.language_code}_#{scriptum.alphabeth_code}"
+
+      (props["cpages"] || []).any? {|cp| cp === cp_in }
+   end
+
+   class << self
+      def year_date2range year_date
+         if /(.*)\.\.(.*)/ =~ year_date
+            (year_date2num($1)..year_date2num($2))
+         else
+            (year_date2num(year_date)..year_date2num(year_date))
+         end
+      end
+
+      def year_date2num year_date
+         num_in = year_date.split(".")
+
+         if num_in.size > 1
+            1000 + num_in[1].to_i * 100 + num_in[0].to_i
+         else
+            num_in[0].to_i
+         end
+      end
    end
 end

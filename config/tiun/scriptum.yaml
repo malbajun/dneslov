@@ -1,0 +1,265 @@
+---
+types:
+ - name: scriptum
+   version: 0.1
+   with:
+    - title
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.scriptum.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.scriptum.title
+    - name: type
+      kind: string
+      descriptions: :tiun.types.scriptum.type
+ - name: text
+   model: Scriptum
+   version: 0.1
+   with:
+    - title
+    - description
+    - ref_titles
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.scriptum.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.scriptum.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.scriptum.description
+    - name: author
+      kind: string
+      descriptions: :tiun.types.scriptum.author
+    - name: type
+      kind: string
+      descriptions: :tiun.types.scriptum.type
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.scriptum.language_code
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.scriptum.alphabeth_code
+    - name: text
+      kind: string
+      descriptions: :tiun.types.scriptum.text
+    - name: tone
+      kind: string
+      descriptions: :tiun.types.scriptum.tone
+    - name: bind_kind
+      kind: string
+      descriptions: :tiun.types.scriptum.bind_kind
+    - name: bond_to
+      kind: string
+      descriptions: :tiun.types.scriptum.bond_to
+    - name: root
+      kind: string
+      descriptions: :tiun.types.scriptum.root
+    - name: prosomeion
+      kind: string
+      descriptions: :tiun.types.scriptum.prosomeion
+ - name: scriptum_ac
+   model: Scriptum
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.scriptum_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.scriptum_ac.value
+resources:
+ - name: scriptum.index
+   path: /api/v0/scripta.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: scriptum page
+      policy: scriptum.index
+      descriptions: :tiun.scripta.scriptum.index
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.scripta.scriptum.index.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.scripta.scriptum.index.page
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.scripta.scriptum.index.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.scripta.scriptum.index.alphabeth
+       - name: uno
+         kind: string
+         descriptions: :tiun.scripta.scriptum.index.uno
+       - name: type
+         kind: string
+         alias: k
+         descriptions: :tiun.scripta.scriptum.index.type
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.scripta.scriptum.index.query
+       - name: title
+         kind: string
+         alias: t
+         descriptions: :tiun.scripta.scriptum.index.title
+ - name: scriptum.autocomplete
+   path: /api/v0/scripta/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: scriptum_ac page
+      descriptions: :tiun.scripta.scriptum.index
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.scripta.scriptum.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.scripta.scriptum.autocomplete.query
+ - name: scriptum.create
+   path: /api/v0/scripta/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: scriptum
+      descriptions: :tiun.scripta.scriptum.create
+      policy: scriptum.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.scripta.scriptum.post.id
+       - name: language
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.description
+       - name: type
+         kind: enum <Bible, Prolog, Canto, Chant, Canticle, Orison, Magnification, Prayer, Irmos, Ikos, Troparion, Stichira, Kontakion, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, CryStichira, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Stichus, Ipakoi>
+         descriptions: :tiun.scripta.scriptum.post.type
+       - name: author
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.author
+       - name: text
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.text
+       - name: tone
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.tone
+       - name: bind_kind
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.bind_kind
+       - name: bond_to
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.bond_to
+       - name: root
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.root
+       - name: prosomeion
+         kind: string
+         descriptions: :tiun.scripta.scriptum.post.prosomeion
+ - name: scriptum
+   path: /api/v0/scripta/:uno.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: text
+      policy: scriptum.read
+      descriptions: :tiun.scripta.scriptum.get
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.scripta.scriptum.get.id
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.scripta.scriptum.get.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.scripta.scriptum.get.alphabeth
+    - name: put
+      version: 0.1
+      kind: text
+      descriptions: :tiun.scripta.scriptum.put
+      policy: scriptum.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: language
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.description
+       - name: type
+         kind: enum <Bible, Prolog, Canto, Chant, Canticle, Orison, Magnification, Prayer, Irmos, Ikos, Troparion, Stichira, Kontakion, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, CryStichira, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Stichus, Ipakoi>
+         descriptions: :tiun.scripta.scriptum.put.type
+       - name: author
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.author
+       - name: text
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.text
+       - name: tone
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.tone
+       - name: bind_kind
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.bind_kind
+       - name: bond_to
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.bond_to
+       - name: root
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.root
+       - name: prosomeion
+         kind: string
+         descriptions: :tiun.scripta.scriptum.put.prosomeion
+    - name: delete
+      version: 0.1
+      kind: scriptum
+      descriptions: :tiun.scripta.scriptum.delete
+      policy: scriptum.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.scripta.scriptum.delete.uno

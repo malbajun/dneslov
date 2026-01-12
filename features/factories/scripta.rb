@@ -16,7 +16,7 @@ FactoryBot.define do
    factory :canto, parent: :scriptum, class: :Canto do
       type { 'Canto' }
       tone { 1 }
-      prosomeion_title { Faker::Lorem.word }
+      prosomeion_id { nil }
       title { Faker::Lorem.word }
    end
 

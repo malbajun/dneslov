@@ -336,9 +336,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                                     #{as}_scripta.type AS type,
                                     #{as}_scripta.language_code AS language_code,
                                     #{as}_scripta.alphabeth_code AS alphabeth_code,
-                                    #{as}_scripta.prosomeion_title AS prosomeion_title,
+                                    #{as}_scripta.prosomeion_id AS prosomeion_id,
                                     #{as}_scripta.title AS title,
-                                    #{as}_scripta.ref_title AS ref_title,
+                                    #{as}_scripta.bond_to_id AS ref_title,
                                     __texted_audios.audio_uid AS audio_uid,
                                     __texted_audios.audio_url AS audio_url,
                                     __texted_audios.audio_kind AS audio_kind
