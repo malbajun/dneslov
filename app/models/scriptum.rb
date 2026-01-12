@@ -31,8 +31,7 @@ class Scriptum < ActiveRecord::Base
 
    scope :by_root, -> do
       if where_clause.send(:predicates).any?
-         model.where(root_id:
-            self.select('root_id')).group('root_id').distinct
+         model.where(root_id: Scriptum.select('root_id').group('root_id')).distinct
       else
          self
       end
