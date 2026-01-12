@@ -1,0 +1,213 @@
+---
+types:
+ - name: eventee
+   model: Event
+   version: 0.1
+   with:
+    - memory_short_name
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.event.id
+    - name: memory_short_name
+      kind: string
+      descriptions: :tiun.types.event.memory_short_name
+    - name: happened_at
+      kind: string
+      descriptions: :tiun.types.event.happened_at
+    - name: kind_code
+      kind: string
+      descriptions: :tiun.types.event.kind_code
+ - name: event
+   version: 0.1
+   with:
+    - title
+    - description
+    - memory_short_name
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.event.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.event.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.event.description
+    - name: memory_short_name
+      kind: string
+      descriptions: :tiun.types.event.memory_short_name
+    - name: happened_at
+      kind: string
+      descriptions: :tiun.types.event.happened_at
+    - name: kind_code
+      kind: string
+      descriptions: :tiun.types.event.kind_code
+ - name: event_ac
+   model: Event
+   version: 0.1
+   with:
+    - key
+    - memoried_value
+   fields:
+    - name: key
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.event_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.event_ac.value
+resources:
+ - name: event.index
+   path: /api/v0/events.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: event page
+      policy: event.index
+      descriptions: :tiun.events.event.index
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.events.event.index.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.events.event.index.page
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.events.event.index.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.events.event.index.alphabeth
+       - name: uno
+         kind: string
+         descriptions: :tiun.events.event.index.uno
+       - name: kind_code
+         kind: string
+         alias: k
+         descriptions: :tiun.events.event.index.kind_code
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.events.event.index.query
+ - name: event.autocomplete
+   path: /api/v0/events/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: event_ac page
+      descriptions: :tiun.events.event.index
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.events.event.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.events.event.autocomplete.query
+ - name: event.create
+   path: /api/v0/events/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: event
+      descriptions: :tiun.events.event.create
+      policy: event.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.events.event.post.id
+       - name: language
+         kind: string
+         descriptions: :tiun.events.event.post.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.events.event.post.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.events.event.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.events.event.post.description
+       - name: memory_short_name
+         kind: string
+         descriptions: :tiun.events.event.post.memory_short_name
+       - name: happened_at
+         kind: string
+         descriptions: :tiun.events.event.post.happened_at
+       - name: kind_code
+         kind: string
+         descriptions: :tiun.events.event.post.kind_code
+ - name: event
+   path: /api/v0/events/:id.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: event
+      policy: event.read
+      descriptions: :tiun.events.event.get
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.events.event.get.id
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.events.event.get.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.events.event.get.alphabeth
+    - name: put
+      version: 0.1
+      kind: text
+      descriptions: :tiun.events.event.put
+      policy: event.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: language
+         kind: string
+         descriptions: :tiun.events.event.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.events.event.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.events.event.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.events.event.put.description
+       - name: memory_short_name
+         kind: string
+         descriptions: :tiun.events.event.put.memory_short_name
+       - name: happened_at
+         kind: string
+         descriptions: :tiun.events.event.put.happened_at
+       - name: kind_code
+         kind: string
+         descriptions: :tiun.events.event.put.kind_code
+    - name: delete
+      version: 0.1
+      kind: event
+      descriptions: :tiun.events.event.delete
+      policy: event.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.events.event.delete.id

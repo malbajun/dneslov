@@ -1,2 +1,3 @@
 class Orison < Canto
-   validates :prosomeion_title, :tone, absence: true ;end
+   validates :prosomeion_id, :tone, absence: true
+end

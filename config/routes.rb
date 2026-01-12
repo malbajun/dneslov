@@ -44,7 +44,6 @@ Rails.application.routes.draw do
       get '/short_nomina' => 'nomina#all'
       get '/short_places' => 'places#all'
       get '/short_items' => 'items#all'
-      get '/short_scripta' => 'scripta#all'
       get '/short_rites' => 'rites#all'
       get '/short_roles' => 'roles#all'
       get '/icons' => 'memories#icons'

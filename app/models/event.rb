@@ -106,6 +106,7 @@ class Event < ActiveRecord::Base
    has_many :roundels, -> { where(roundels: { roundelable_type: "Event" }) }, foreign_key: :roundelable_id, dependent: :destroy
    has_many :attitudes, as: :imageable, class_name: :ImageAttitude
    has_many :pictures, through: :attitudes
+   has_many :short_names, through: :memory
    has_many :memos, dependent: :delete_all do
       def for calendary_slugs = nil
          if calendary_slugs
@@ -128,14 +129,16 @@ class Event < ActiveRecord::Base
       joins(:memos).calendaried(calendary_slugs).merge(Memo.licit).distinct
    end
    scope :by_token, -> text do
-      left_outer_joins( :kind, :titles ).
+      left_outer_joins(:kind, :titles, :short_names).
          merge(Subject.by_token(text)).
          where("unaccent(events.kind_code) ~* unaccent(?)", "\\m#{text}.*").or(
          where(type_number: text.to_i).or(
+         where("unaccent(short_names.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(names_subjects.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(descriptions_subjects.text) ~* unaccent(?)", "\\m#{text}.*")))))
+         where("unaccent(names_subjects.text) ~* unaccent(?)", "\\m#{text}.*")))))
    end
+   singleton_class.send(:alias_method, :by_query, :by_token)
+
    scope :by_event_code, -> code do
       if code =~ /^\d+$/
          where(id: code)
@@ -217,6 +220,64 @@ class Event < ActiveRecord::Base
 
       select(selector).group('_key').reorder("_key")
    end
+
+   scope :with_memoried_value, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      lang_wheres = [
+         "AND #{this}_titles.language_code IN ('#{language_codes.join("', '")}')",
+         "AND #{this}_language_names.language_code IN ('#{language_codes.join("', '")}')",
+         "AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}'
+)",
+      ] if language_codes.any?
+
+      alph_wheres = [
+         "AND #{this}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         "AND #{this}_alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         "AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+      ] if alphabeth_codes.any?
+
+      join = "LEFT OUTER JOIN subjects AS event_kinds_#{method}
+                           ON event_kinds_#{method}.kind_code = 'EventKind'
+                          AND event_kinds_#{method}.key = #{this}.kind_code
+              LEFT OUTER JOIN descriptions AS #{this}_titles
+                           ON #{this}_titles.id IS NOT NULL
+                          AND (#{this}_titles.describable_id = #{this}.id
+                          AND #{this}_titles.describable_type = 'Event'
+                          AND #{this}_titles.type = 'Title'
+                           OR #{this}_titles.describable_id = event_kinds_#{method}.id
+                          AND #{this}_titles.describable_type = 'Subject'
+                          AND #{this}_titles.type = 'Appellation')
+                              #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
+              LEFT OUTER JOIN subjects AS languages
+                           ON languages.key = #{this}_titles.language_code
+              LEFT OUTER JOIN descriptions AS #{this}_language_names
+                           ON #{this}_language_names.describable_id = languages.id
+                          AND #{this}_language_names.describable_type = 'Event'
+                              #{lang_wheres&.[](1)}
+              LEFT OUTER JOIN subjects AS alphabeths
+                           ON alphabeths.key = #{this}_titles.alphabeth_code
+              LEFT OUTER JOIN descriptions AS #{this}_alphabeth_names
+                           ON #{this}_alphabeth_names.describable_id = alphabeths.id
+                          AND #{this}_alphabeth_names.describable_type = 'Event'
+                              #{alph_wheres&.[](1)}
+              LEFT OUTER JOIN short_names AS #{this}_short_names
+                           ON #{this}_short_names.memory_id = #{this}.memory_id
+                              #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}"
+
+      selector << "#{this}_short_names.text || ' (' || #{this}_titles.text || ':' || #{this}.happened_at || ')' AS _value"
+      joins(join).select(selector).group(:id,
+         "#{this}_short_names.text",
+         "#{this}_titles.text",
+         "#{this}.happened_at")
+   end
+
 
    scope :with_value, -> context do
       language_codes = [context[:text_languages]].flatten.compact
@@ -868,9 +929,9 @@ class Event < ActiveRecord::Base
                                     #{this}_#{ast}.type AS type,
                                     #{this}_#{ast}.language_code AS language_code,
                                     #{this}_#{ast}.alphabeth_code AS alphabeth_code,
-                                    #{this}_#{ast}.prosomeion_title AS prosomeion_title,
+                                    #{this}_#{ast}.prosomeion_id AS prosomeion_id,
                                     #{this}_#{ast}.title AS title,
-                                    #{this}_#{ast}.ref_title AS ref_title,
+                                    #{this}_#{ast}.bond_to_id AS ref_title,
                                     __texted_audios.audio_uid AS audio_uid,
                                     __texted_audios.audio_url AS audio_url,
                                     __texted_audios.audio_kind AS audio_kind
@@ -895,7 +956,6 @@ class Event < ActiveRecord::Base
    accepts_nested_attributes_for :coordinate, reject_if: :all_blank
    accepts_nested_attributes_for :item, reject_if: :all_blank
 
-   singleton_class.send(:alias_method, :t, :by_token)
    singleton_class.send(:alias_method, :mid, :by_memory_id)
 
    validates_presence_of :kind, :kind_code

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_30_221116) do
+ActiveRecord::Schema[7.0].define(version: 2026_01_11_171500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -226,6 +226,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_30_221116) do
     t.string "kind", comment: "Тип свѧзке от, к, или авторство"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "event_id", comment: "квѧзка до сꙛбытја"
+    t.index ["event_id"], name: "index_memo_scripta_on_event_id"
     t.index ["kind"], name: "index_memo_scripta_on_kind"
     t.index ["memo_id", "scriptum_id", "kind"], name: "index_memo_scripta_on_memo_id_and_scriptum_id_and_kind", unique: true
     t.index ["memo_id"], name: "index_memo_scripta_on_memo_id"
@@ -380,7 +382,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_30_221116) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type", null: false, comment: "Єдьн из Book, PageSet, Pictura, Site, Sonus, Virtual, Volumen"
-    t.binary "digest", null: false, comment: "Чисмяна подпись"
+    t.binary "digest", comment: "Чисмяна подпись"
     t.string "uri", comment: "ози изнахоѕи"
     t.string "thumb_url", comment: "рзи нариснице за изнахоѕѣ"
     t.binary "data", comment: "Свѧзане дане за изнахоѕѣ"
@@ -457,7 +459,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_30_221116) do
 
   create_table "scripta", id: :serial, force: :cascade do |t|
     t.text "text"
-    t.string "prosomeion_title"
     t.string "language_code", null: false
     t.integer "tone"
     t.string "type"
@@ -467,11 +468,17 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_30_221116) do
     t.string "alphabeth_code", null: false
     t.string "author"
     t.string "description"
-    t.string "ref_title"
+    t.bigint "prosomeion_id", comment: "квѧзка до прогласа"
+    t.bigint "bond_to_id", comment: "квѧзка до свѧзочне буке"
+    t.bigint "root_id", null: false, comment: "квѧзка до корневе буке"
+    t.string "bind_kind_name", default: "несвязана", comment: "взор квѧзке: несвязана, списана, преложена, пресловена"
     t.index ["author"], name: "index_scripta_on_author"
+    t.index ["bind_kind_name"], name: "index_scripta_on_bind_kind_name"
+    t.index ["bond_to_id"], name: "index_scripta_on_bond_to_id"
     t.index ["id", "language_code"], name: "index_scripta_on_id_and_language_code"
     t.index ["language_code", "alphabeth_code"], name: "index_scripta_on_language_code_and_alphabeth_code"
-    t.index ["prosomeion_title"], name: "index_scripta_on_prosomeion_title"
+    t.index ["prosomeion_id"], name: "index_scripta_on_prosomeion_id"
+    t.index ["root_id"], name: "index_scripta_on_root_id"
     t.index ["title", "language_code"], name: "index_scripta_on_title_and_language_code"
     t.index ["title"], name: "index_scripta_on_title", unique: true
     t.index ["tone"], name: "index_scripta_on_tone"

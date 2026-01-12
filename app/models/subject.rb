@@ -22,11 +22,12 @@ class Subject < ActiveRecord::Base
    scope :by_token, -> text do
       as = table.table_alias || table.name
 
-      self.left_outer_joins(:names, :descriptions).
+      self.left_outer_joins(:names).
          where("unaccent(#{as}.key) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*")).
          distinct
    end
+   singleton_class.send(:alias_method, :by_query, :by_token)
 
    scope :by_tokens, -> string_in do
       return self if string_in.blank?
@@ -173,7 +174,6 @@ class Subject < ActiveRecord::Base
       select(selector).group(:id)
    end
 
-   singleton_class.send(:alias_method, :t, :by_token)
    singleton_class.send(:alias_method, :q, :by_tokens)
    singleton_class.send(:alias_method, :k, :by_kind_code)
 

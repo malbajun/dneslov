@@ -12,6 +12,25 @@ if Order.all.blank?
    ::Tasks.import_orders
 end
 
+if Resource.all.blank?
+   Resource.transaction do
+      data = YAML.load(IO.read(Rails.root.join('db/seeds/resources.yaml')))
+      models = data.map { |attrs| Resource.create!(attrs) }
+      # select calendary for non calendary books
+      # attach to calendary
+      models.each do |r|
+         Scriptum.find_each do |s|
+            s.memoes.find_each do |memo|
+               if r.match_year_date(memo.year_date) && r.match_cpages(s) && r.match_scriptum_types(s)
+                  s.resource = r
+                  s.save!(validate: false)
+               end
+            end if s.respond_to?(:memoes)
+         end
+      end
+   end
+end
+
 if Subject.all.blank?
    data = YAML.load(IO.read(Rails.root.join('db/seeds/subjects.yaml')))
    models = data.map { |attrs| Subject.create!(attrs) }
@@ -22,9 +41,9 @@ unless Subject.find_by(key: 'РО')
    models = langs.map { |attrs| Subject.new(attrs) }
    # fix cps
    AL_MAP = {
-     "СР": "СЕ",
-     "РУ": "РО",
-     "РП": "РУ",
+      "СР": "СЕ",
+      "РУ": "РО",
+      "РП": "РУ",
    }
 
    Subject.transaction do

@@ -14,6 +14,9 @@ export const scriptumMeta = {
       yes: "Да"
    },
    row: {
+      id: {
+         title: 'Оз',
+      },
       type: {
          title: 'Вид',
          value: (value) => {
@@ -57,30 +60,24 @@ export const scriptumMeta = {
       alphabeth_code: {
          title: 'Азбука',
       },
-      text: {
-         title: 'Буке',
-         value: (value) => {
-            if (value.title) {
-               return value.title
-            } else if (value.text && value.text.length > 30) {
-               return value.text.slice(0, 30) + '...'
-            } else {
-               return value.text
-            }
-         },
+      title: {
+         title: 'Заглавок',
       },
-      memo: {
-         title: 'Память',
-         value: (value) => { return value.memo_scripta && value.memo_scripta[0] && value.memo_scripta[0].memo_name },
+      event: {
+         title: 'Событие',
+         value: (value) => { return value.target_events && value.target_events[0] && value.target_events[0].event_name },
+      },
+      root_ref_title: {
+         title: 'Корень',
+      },
+      bond_to_ref_title: {
+         title: 'Ссылка',
       },
       tone: {
          title: 'Глас',
       },
-      prosomeion_title: {
+      prosomeion_ref_title: {
          title: 'Подобен',
-      },
-      ref_title: {
-         title: 'Ссылка на...',
       },
       author: {
          title: 'Автор',
@@ -124,7 +121,7 @@ export const scriptumMeta = {
             'Stichus': 'Стих',
             'Ipakoi': 'Ипакой' // на 17-й кафизмѣ
          },
-         display_scheme: '12-6-3-3',
+         display_scheme: '12-2-2-2',
          validations: {
             'Пункт из списка должен быть выбран': matchEmptyObject,
          },
@@ -132,8 +129,8 @@ export const scriptumMeta = {
       language_code: {
          kind: 'dynamic',
          title: 'Язык',
-         display_scheme: '12-6-3-3',
-         pathname: 'short_subjects',
+         display_scheme: '12-3-3-3',
+         pathname: 'api/v0/subjects/ac',
          humanized_name: 'language',
          context_value: { k: "Language" },
          key_name: 'value',
@@ -148,8 +145,8 @@ export const scriptumMeta = {
       alphabeth_code: {
          kind: 'dynamic',
          title: 'Азбука',
-         display_scheme: '12-6-3-3',
-         pathname: 'short_subjects',
+         display_scheme: '12-3-3-3',
+         pathname: 'api/v0/subjects/ac',
          humanized_name: 'alphabeth',
          context_value: { k: "Alphabeth" },
          key_name: 'value',
@@ -161,14 +158,34 @@ export const scriptumMeta = {
             'Азбука из списка должна быть выбрана': matchEmptyObject,
          }
       },
-      ref_title: {
+      resource_id: {
+         kind: 'dynamic',
+         title: 'Изнаходь',
+         humanized_name: 'resource_name',
+         display_scheme: '12-4-4-4',
+         placeholder: 'Начни ввод наименования изнаходи...',
+         pathname: 'api/v0/resources/ac',
+         key_name: 'value',
+         value_name: 'key',
+         validations: {
+            'Изнаходь должна быть избрана':  matchEmptyObject,
+         }
+      },
+      title: {
          kind: 'text',
-         title: 'Заголовочная ссылка',
-         placeholder: 'Заполни текстовую ссылку',
-         display_scheme: '12-6-3-3',
-         visible_if: { 
-            text:  (value, _context) => { return value.isBlank() }
-         },
+         title: 'Титул / сокращение текста',
+         placeholder: 'Введи сокращение',
+         display_scheme: '12-8-8-8',
+      },
+      root_id: {
+         kind: 'dynamic',
+         humanized_name: 'root_ref_title',
+         title: 'Корневой заголовок',
+         display_scheme: '12-4-4-4',
+         placeholder: 'Начни ввод заголовка...',
+         pathname: 'api/v0/scripta/ac',
+         key_name: 'value',
+         value_name: 'key',
       },
       text: {
          kind: 'tale',
@@ -186,30 +203,44 @@ export const scriptumMeta = {
             'Текст содержит знаки вне перечня избранной азбуки': matchLetters,
          }
       },
-      resource_id: {
+      bind_kind_name: {
+         humanized_name: 'bind_kind_humanized',
          kind: 'dynamic',
-         title: 'Изнаходь',
-         humanized_name: 'resource_name',
-         display_scheme: '12-4-2-2',
-         placeholder: 'Начни ввод наименования изнаходи...',
-         pathname: 'api/v0/resources/ac',
+         display_scheme: '12-3-3-3',
+         title: 'Вид связки',
+         placeholder: 'Начни ввод связки...',
+         pathname: 'api/v0/subjects/ac',
+         context_value: { k: "TextBindKind" },
          key_name: 'value',
          value_name: 'key',
+         subscribeTo: '@bond_to_id',
+         default: "несвязаное", // default value
+         humanized_default: "Не связанное", // default value name
          validations: {
-            'Изнаходь должна быть избрана':  matchEmptyObject,
+            'Вид связки из списка должен быть выбран': matchEmptyObject,
+            'Вид связки не должен иметь значение "Не связанное" в случае, если связаное имя задано': (value, context) => {
+               return context.bond_to_id && value == "несвязана"
+            },
+            'Вид связки должен иметь значение "Не связанное" в случае, если связаное имя отсутствует': (value, context) => {
+               return !context.bond_to_id && value != "несвязана"
+            },
          }
       },
-      title: {
-         kind: 'text',
-         title: 'Написание заголовка',
-         placeholder: 'Введи написание заголовка',
-         display_scheme: '12-4-3-3',
-      },
-      author: {
-         kind: 'text',
-         title: 'Автор',
-         placeholder: 'Введи автора',
-         display_scheme: '12-4-3-3',
+      bond_to_id: {
+         kind: 'dynamic',
+         title: 'Связаный заголовок',
+         humanized_name: 'bond_to_ref_title',
+         display_scheme: '12-4-4-4',
+         placeholder: 'Начни ввод заголовка...',
+         pathname: 'api/v0/scripta/ac',
+         key_name: 'value',
+         value_name: 'key',
+         subscribeTo: ['@bind_kind_name', '@text'],
+         validations: {
+            'Связаный заголовок не должен соответствовать текущему заголовку': (value, context) => {
+               return value && value == context.id
+            },
+         }
       },
       tone: {
          kind: 'select',
@@ -218,6 +249,7 @@ export const scriptumMeta = {
             "Irmos", "Troparion", "Stichira", "Kontakion", "Exapostilarion", "SessionalHymn",
             "Kanonion", "Kathismion", "Polileosion", "Apostichus", "CryStichira",
             "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi"] },
+         display_scheme: '12-1-1-1',
          default: "",
          codeNames: {
             '0': 'Избери глас...',
@@ -230,21 +262,24 @@ export const scriptumMeta = {
             '7': '7-й',
             '8': '8-й',
          },
-         display_scheme: '12-6-1-1',
       },
-      prosomeion_title: {
-         kind: 'text',
+      prosomeion_id: {
+         kind: 'dynamic',
          title: 'Подобен',
+         humanized_name: 'prosomeion_ref_title',
+         display_scheme: '12-4-4-4',
+         placeholder: 'Начни ввод подобна...',
+         pathname: 'api/v0/scripta/ac',
+         key_name: 'value',
+         value_name: 'key',
          visible_if: { type: [
             "Irmos", "Troparion", "Stichira", "Kontakion", "Exapostilarion", "SessionalHymn",
             "Kanonion", "Kathismion", "Polileosion", "Apostichus", "CryStichira",
             "Stichiron", "Praision", "Sedation", "Anatolion", "Resurrexion", "Ipakoi"] },
-         placeholder: 'Введи текст подобна',
-         display_scheme: '12-6-3-3',
       },
-      memo_scripta: {
+      target_events: {
          kind: 'collection',
-         title: "Памятные отношения",
+         title: "Отношения к событиям",
          action: "Добавь отношение",
          display_scheme: '12-12-12-12',
          validations: {
@@ -259,7 +294,7 @@ export const scriptumMeta = {
             kind: {
                kind: 'select',
                title: 'Род отношения',
-               display_scheme: '12-6-3-3',
+               display_scheme: '12-3-2-1',
                codeNames: {
                   '': 'Избери вид отношения...',
                   'From': 'Обращение от...',
@@ -272,13 +307,13 @@ export const scriptumMeta = {
                   'Пункт из списка должен быть выбран': matchEmptyObject,
                },
             },
-            memo_id: {
+            event_id: {
                kind: 'dynamic',
                title: 'Память',
-               humanized_name: 'memo_name',
-               display_scheme: '12-6-9-9',
+               humanized_name: 'event_name',
+               display_scheme: '12-9-10-11',
                placeholder: 'Начни ввод текста имени или описания памяти...',
-               pathname: 'short_full_memoes',
+               pathname: 'api/v0/events/ac',
                key_name: 'value',
                value_name: 'key',
                validations: {
@@ -287,15 +322,17 @@ export const scriptumMeta = {
             },
          }
       },
+      author: {
+         kind: 'text',
+         title: 'Автор',
+         placeholder: 'Введи автора',
+         display_scheme: '12-12-12-12',
+      },
       description: {
          kind: 'tale',
-         title: 'Написание описание',
-         placeholder: 'Введи описание',
+         title: 'Описание текста',
+         placeholder: 'Введи описание текста',
          display_scheme: '12-12-12-12',
-         subscribeTo: '@alphabeth_code',
-         validations: {
-            'Описание содержит знаки вне перечня избранной азбуки': matchLetters,
-         }
       },
    },
 }

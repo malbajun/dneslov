@@ -1,0 +1,990 @@
+---
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.09..30.09"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. 1-30 сентября (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 1. 1-30 сентября. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.10..30.10"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. 1-31 октября (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 2. 1-31 октября. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.11..14.11"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 3. 1-14 ноября (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 3. Часть 1. 1-14 ноября. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["15.11..30.11"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 3. 15-30 ноября (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 3. Часть 2. 15-30 ноября. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.12..16.12"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 4. 1-16 декабря (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 4. Часть 1. 1-16 декабря. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["17.12..31.12"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 4. 17-31 декабря (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 4. Часть 2. 17-31 декабря. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.01..14.01"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 5. 1-14 января (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 5. Часть 1. 1-14 января. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["15.01..31.01"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 5. 15-31 января (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 5. Часть 2. 15-31 января. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.02..29.02"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 6. 1-29 февраля (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 6. 1-29 февраля. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.03..14.03"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 7. 1-14 марта (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 7. Часть 1. 1-14 марта. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["15.03..31.03"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 7. 15-31 марта (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 7. Часть 2. 15-31 марта. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.04..15.04"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 8. 1-15 апреля (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 8. Часть 1. 1-15 апреля. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["16.04..30.04"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 8. 16-31 апреля (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 8. Часть 2. 16-31 апреля. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.05..11.05"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 9. 1-11 мая (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 9. Часть 1. 1-11 мая. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["12.05..22.05"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 9. 12-22 мая (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 9. Часть 2. 12-22 мая. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["23.05..31.05"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 9. 23-31 мая (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 9. Часть 3. 23-31 мая. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.06..15.06"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 10. 1-15 июня (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 10. Часть 1. 1-15 июня. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["16.06..30.06"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 10. 16-30 июня (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 10. Часть 2. 16-30 июня. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.07..10.07"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 11. 1-10 июля (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 11. Часть 1. 1-10 июля. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["11.07..21.07"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 11. 11-21 июля (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 11. Часть 2. 11-21 июля. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["22.07..31.07"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 11. 22-31 июля (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 11. Часть 3. 22-31 июля. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["01.08..13.08"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 12. 1-13 августа (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 12. Часть 1. 1-13 августа. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["14.09..23.09"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 12. 14-23 августа (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 12. Часть 2. 14-23 августа. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["24.09..31.09"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Том 12. 24-31 августа (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Том 12. Часть 3. 24-31 августа. Издательский совет Русской православной церкви. Москва. 2002
+- type: Resource::Book
+  props:
+    cpages: [цс_РО, ру_РО]
+    year_dates: ["11.09", "26.09..28.09", "01.10..02.10", "10.10..11.10", "15.10", "15.11", "18.11..19.11", "24.11", "27.11..28.11", "02.12", "18.12", "20.12","30.12","10.01","24.01..25.01","25.01%0","03.02","17.02","19.04","30.04","03.05","12.05","19.05","19.06","04.07..05.07","31.07","+77"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification, Living]
+  titles_attributes:
+   - text: Зелёная минея. Дополнительная (2005)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Зелёная минея. Дополнительная. Издательский совет Русской православной церкви. Москва. 2005
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.01..31.01"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. яннуарий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 1. Месяц яннуарий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.02..29.02"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. февруарий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 2. Месяц февруарий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.03..31.03"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. март (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 3. Месяц март. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.04..30.04"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. априллий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 4. Месяц априллий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.05..31.05"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. маий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 5. Месяц маий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.06..30.06"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. иуний (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 6. Месяц иуний. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.07..31.07"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. иулий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 7. Месяц иулий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.08..31.08"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. август (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 8. Месяц август. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1996."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.09..30.09"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. септемврий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 9. Месяц септемврий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1997."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.10..31.10"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. октоврий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 10. Месяц октоврий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1997."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.11..30.11"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Коричневая минея. ноемврий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 11. Месяц ноемврий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1997."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.11..31.12"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+    - text: Коричневая минея. декемврий (1893)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Минея : Том 12. Месяц декемврий. – М.: Московский Сретенский монастырь; издательство «Правило веры», 1997."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Bible]
+    year_dates: ["01.01..31.12", "-77..50"]
+  titles_attributes:
+   - text: Богослужебное Евангелие. цс (1984)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Издательство Московской Патриархии, 1984 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Bible]
+    year_dates: ["01.01..31.12", "-77..50"]
+  titles_attributes:
+   - text: Богослужебный Апостол. цс (2001)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Издательство Московской Патриархии, 2001 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Bible]
+    year_dates: ["01.01..31.12", "-77..50"]
+  titles_attributes:
+    - text: Богослужебный Апостол. цс (2023)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Издательство Московской Патриархии, 2023 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.09..31.12", "01.01..29.02"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Печерская минея. Том 1. цс (2007)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Том 1. Киево-Печерская лавра, 2007 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.03..31.08"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Печерская минея. Том 2. цс (2007)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Том 2. Киево-Печерская лавра, 2007 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.11..30.11"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Псково-Печерская минея. Ноябрь (1994)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Псково-Печерская минея. Ноябрь. Церковнославянский шрифт. Московское подворье Свято-Успенского Псково-Печерского монастыря, 1994 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.01..31.12"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Минея праздничная (1993)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Репринтное издание Донского монастыря, 1993 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Минея общая (2002)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Издательство Московской Патриархии, 2002 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: Минея общая новомученикам и исповедникам российским (2012)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Издательство Московской Патриархии, 2012 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Октоих: часть 1 (2021)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Октоих. В трех частях. Часть 1. Церковнославянский шрифт. Издательство Московской Патриархии, 2021 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Октоих: часть 2 (2021)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Октоих. В трех частях. Часть 2. Церковнославянский шрифт. Издательство Московской Патриархии, 2021 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-70..-9"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Триодь постная: часть 1 (2019)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Триодь постная: часть 1. Церковнославянский шрифт. Издательство Московской Патриархии, 2019 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-8..-1"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Триодь постная: часть 2 (2019)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Триодь постная: часть 2. Церковнославянский шрифт. Издательство Московской Патриархии, 2019 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["0..50"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Триодь цветная (2002)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Триодь цветная. Церковнославянский шрифт. Издательство Московской Патриархии, 2002 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Troparion, Kontakion, Stichira, SessionalHymn, Kathismion]
+  titles_attributes:
+   - text: "Часослов (2002)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Издательство Московской Патриархии, 2002 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Troparion, Kontakion, Stichira, SessionalHymn, Kathismion]
+  titles_attributes:
+   - text: "Часослов (2016)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Церковнославянский шрифт. Издательство Московской Патриархии, 2016 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_РО]
+    scriptum_types: [Irmos]
+  titles_attributes:
+   - text: "Ирмологий. часть 1 (1997)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Ирмологий. часть 1. Гражданский шрифт. Издательство Московской Патриархии, 1997 год"
+- type: Resource::Book
+  props:
+    cpages: [цс_РО]
+    scriptum_types: [Irmos]
+  titles_attributes:
+   - text: "Ирмологий. часть 2 (1997)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Ирмологий. часть 2. Гражданский шрифт. Издательство Московской Патриархии, 1997 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos]
+  titles_attributes:
+   - text: Ирмологий (2003)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Ирмологий. Церковнославянский шрифт. Издательство Сретенского монастыря, 2003 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Kathisma, Glory]
+  titles_attributes:
+   - text: "Псалтирь с восследованием: часть 1 (1993)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Псалтирь с восследованием: часть 1. Церковнославянский шрифт. Издательство Московской Патриархии, 1993 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Kathisma, Glory]
+  titles_attributes:
+   - text: "Псалтирь с восследованием: часть 2 (1993)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Псалтирь с восследованием: часть 2. Церковнославянский шрифт. Издательство Московской Патриархии, 1993 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Prayer]
+  titles_attributes:
+   - text: Служебник (2003)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Служебник. Церковнославянский шрифт. Издательство Московской Патриархии, 2003 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Prayer]
+  titles_attributes:
+   - text: Служебник (2011)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Служебник. Церковнославянский шрифт. Издательство Московской Патриархии, 2011 год.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.01..31.12", "-77..50"]
+  titles_attributes:
+   - text: Типикон (2015)
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Типикон. Церковнославянский шрифт. Издательство Московской Патриархии, 2015 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_РО]
+    scriptum_types: [Irmos]
+  titles_attributes:
+   - text: "Тропарион: часть 1 (1993)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Тропарион: часть 1. Гражданский шрифт. Издательство Московской Патриархии, 1993 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_РО]
+    scriptum_types: [Irmos]
+  titles_attributes:
+   - text: "Тропарион: часть 2 (1993)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Тропарион: часть 2. Гражданский шрифт. Издательство Московской Патриархии, 1993 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Prayer]
+  titles_attributes:
+   - text: "Требник (1993)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "«Большой» требник. Церковнославянский шрифт. Репринтное издание, СПб, 1993 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Канонник (1994)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Канонник. Церковнославянский шрифт. Издательство Московской Патриархии, 1994 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Prayer]
+  titles_attributes:
+   - text: "Иерейский молитвослов (2003)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Иерейский молитвослов. Церковнославянский шрифт. Репринтное издание, Харьков, 2003 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Kathisma, Glory]
+  titles_attributes:
+   - text: "Псалтирь (1913)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Псалтирь. Церковнославянский шрифт. Репринтное издание 1913 года, Москва, 1994 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-56..-49"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Сырная седмица (2024)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Церковнославянский шрифт. Свято-Троицкая Сергиева Лавра. Сергиев Посад, 2024 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-3"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Службы на каждый день Страстныя седмицы: Четверток (2020)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Службы на каждый день Страстныя седмицы: Четверток. Церковнославянский шрифт. Издательство Московской Патриархии, 2020 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-2"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Службы на каждый день Страстныя седмицы: Пяток (2020)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Службы на каждый день Страстныя седмицы: Пяток. Церковнославянский шрифт. Издательство Московской Патриархии, 2020 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-1"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Службы на каждый день Страстныя седмицы: Суббота (2020)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Службы на каждый день Страстныя седмицы: Суббота. Церковнославянский шрифт. Издательство Московской Патриархии, 2020 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["01.01..31.12", "-77..50"]
+    scriptum_types: [Bible]
+  titles_attributes:
+   - text: Библия на церковнославянском
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Библия на церковнославянском. Электронное издание в pdf.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+  titles_attributes:
+   - text: Духовное завещание святителя Митрофана Воронежского
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: Духовное завещание святителя Митрофана Воронежского. Церковнославянский шрифт. Дореволюционное издание.
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Октоих: часть 1 (1981)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Октоих: часть 1. В трех частях. Церковнославянский шрифт. Издательство Московской Патриархии, 1981 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Октоих: часть 2 (1981)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Октоих: часть 2. В трех частях. Церковнославянский шрифт. Издательство Московской Патриархии, 1981 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Октоих: часть 3 (1981)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Октоих: часть 3. В трех частях. Церковнославянский шрифт. Издательство Московской Патриархии, 1981 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-70..-9"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Триодь постная: часть 1 (2002)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Триодь постная: часть 1. Церковнославянский шрифт. Издательство Московской Патриархии, 2002 год."
+- type: Resource::Book
+  props:
+    cpages: [цс_ЦС]
+    year_dates: ["-8..-1"]
+    scriptum_types: [Irmos, Ikos, Troparion, Kontakion, Stichira, CryStichira, Exapostilarion, SessionalHymn, Kanonion, Kathismion, Polileosion, Apostichus, Stichiron, Praision, Sedation, Anatolion, Resurrexion, Ipakoi, Magnification]
+  titles_attributes:
+   - text: "Триодь постная: часть 2 (2002)"
+     language_code: ру
+     alphabeth_code: РО
+  descriptions_attributes:
+   - language_code: ру
+     alphabeth_code: РО
+     text: "Триодь постная: часть 2.ерковнославянский шрифт. Издательство Московской Патриархии, 2002 год."

@@ -1,0 +1,218 @@
+---
+types:
+ - name: subject
+   version: 0.1
+   with:
+    - title
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.subject.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.subject.title
+    - name: key
+      kind: string
+      descriptions: :tiun.types.subject.key
+ - name: text
+   model: Subject
+   version: 0.1
+   with:
+    - title
+    - description
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.subject.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.subject.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.subject.description
+    - name: key
+      kind: string
+      descriptions: :tiun.types.subject.key
+    - name: kind_code
+      kind: string
+      descriptions: :tiun.types.subject.kind_code
+    - name: meta
+      kind: json
+      descriptions: :tiun.types.subject.meta
+ - name: subject_ac
+   model: Subject
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.subject_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.subject_ac.value
+resources:
+ - name: subject.index
+   path: /api/v0/subjects.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: subject page
+      policy: subject.index
+      descriptions: :tiun.subjects.subject.index
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.subjects.subject.index.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.subjects.subject.index.page
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.subjects.subject.index.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.subjects.subject.index.alphabeth
+       - name: kind_code
+         kind: string
+         alias: k
+         descriptions: :tiun.subjects.subject.index.kind_code
+       - name: key
+         kind: string
+         alias: t
+         descriptions: :tiun.subjects.subject.index.key
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.subjects.subject.index.query
+       - name: description
+         kind: string
+         alias: d
+         descriptions: :tiun.subjects.subject.index.description
+ - name: subject.autocomplete
+   path: /api/v0/subjects/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: subject_ac page
+      descriptions: :tiun.subjects.subject.index
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.subjects.subject.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.subjects.subject.autocomplete.query
+       - name: kind_code
+         kind: string
+         alias: k
+         descriptions: :tiun.subjects.subject.autocomplete.kind
+ - name: subject.create
+   path: /api/v0/subjects/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: subject
+      descriptions: :tiun.subjects.subject.create
+      policy: subject.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.subjects.subject.post.id
+       - name: language
+         kind: string
+         descriptions: :tiun.subjects.subject.post.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.subjects.subject.post.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.subjects.subject.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.subjects.subject.post.description
+       - name: kind_code
+         kind: string
+         descriptions: :tiun.subjects.subject.post.kind_code
+       - name: key
+         kind: string
+         descriptions: :tiun.subjects.subject.post.key
+       - name: meta
+         kind: json
+         descriptions: :tiun.subjects.subject.post.meta
+ - name: subject
+   path: /api/v0/subjects/:id.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: text
+      policy: subject.read
+      descriptions: :tiun.subjects.subject.get
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.subjects.subject.get.id
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.subjects.subject.get.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.subjects.subject.get.alphabeth
+    - name: put
+      version: 0.1
+      kind: text
+      descriptions: :tiun.subjects.subject.put
+      policy: subject.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: language
+         kind: string
+         descriptions: :tiun.subjects.subject.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.subjects.subject.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.subjects.subject.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.subjects.subject.put.description
+       - name: kind_code
+         kind: string
+         descriptions: :tiun.subjects.subject.put.kind_code
+       - name: key
+         kind: string
+         descriptions: :tiun.subjects.subject.put.key
+       - name: meta
+         kind: json
+         descriptions: :tiun.subjects.subject.put.meta
+    - name: delete
+      version: 0.1
+      kind: text
+      descriptions: :tiun.subjects.subject.delete
+      policy: subject.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.subjects.subject.delete.id

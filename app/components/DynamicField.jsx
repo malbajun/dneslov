@@ -113,9 +113,13 @@ export default class DynamicField extends Component {
       if (props.value) {
          value = props.humanized_value
          data = { list: [{ value: props.humanized_value, key: props.value }], total: 1 }
+         this.state.value = props.value
+         this.state.humanizedValue = props.humanized_value
       } else if (props.default) {
          value = props.humanized_default
          data = { list: [{ value: props.humanized_default, key: props.default }], total: 1 }
+         this.state.value = props.default
+         this.state.humanizedValue = props.humanized_default
 
          //if (this.props.default) {
          //   this.updateTo(this.props.humanized_default, false)
@@ -169,8 +173,8 @@ export default class DynamicField extends Component {
    shouldComponentUpdate(nextProps, nextState) {
       return nextState.pendingRange || nextState.selectApplied ||
              nextState.matchList != this.state.matchList ||
-             this.props.value !== nextProps.value ||
-             this.props.humanized_value !== nextProps.humanized_value
+             this.state.value !== nextProps.value ||
+             this.state.humanizedValue !== nextProps.humanized_value
    }
 
    //events
@@ -217,6 +221,7 @@ export default class DynamicField extends Component {
       console.debug("[onSubscribedChanged:onChipAct] <<< ", object)
       console.log("[onChipAct] * unfix with", object)
       document.dispatchEvent(ce)
+      this.setState({value: "", humanizedValue: ""})
    }
 
    onSelectStart() {
@@ -267,6 +272,7 @@ export default class DynamicField extends Component {
       console.debug("[updateTo] ** value:", value, "detail:", detail, "valueDetail:", valueDetail, "huName: ", this.props.humanized_name)
       ce = new CustomEvent('dneslov-update-path', merge({}, { detail: { value: detail, path: this.props.name }}))
       document.dispatchEvent(ce)
+      this.setState({value: value, humanizedValue: humanizedValue})
    }
 
    getContext(contextIn) {
@@ -406,7 +412,7 @@ export default class DynamicField extends Component {
    className() {
       return [ "input-field",
                this.props.wrapperClassName,
-               this.getErrorText(this.props.value) && 'invalid' ].
+               this.getErrorText(this.state.value) && 'invalid' ].
          filter((x) => { return x }).join(" ")
    }
 
@@ -433,7 +439,7 @@ export default class DynamicField extends Component {
    }
 
    spanValue() {
-      let value = this.props.humanized_value
+      let value = this.state.humanizedValue
 
       if (this.isRangeEnabled() && Number.isInteger(this.state.start)) {
          let pre = value.slice(0, this.state.start),
@@ -459,7 +465,7 @@ export default class DynamicField extends Component {
                ref={e => this.$span = e}
                data-target={'dyna-' + this.props.name}
                className={this.className() + " dropdown-trigger"}>
-               {this.props.value &&
+               {this.state.value &&
                   <div
                      className="chip">
                      <span
@@ -476,15 +482,15 @@ export default class DynamicField extends Component {
                         className="popup btn-floating btn-small waves-effect waves-light terracota">
                         <i className="small material-icons">fingerprint</i></a>}
                   </div>}
-               {!this.props.value &&
+               {!this.state.value &&
                   [<input
                      type='text'
-                     className={"'dynamic " + (this.getErrorText(this.props.value) && 'invalid')}
+                     className={"'dynamic " + (this.getErrorText(this.state.value) && 'invalid')}
                      key={'input-' + PopupList.elementIdFromName(this.props.name)}
                      id={'input-' + PopupList.elementIdFromName(this.props.name)}
                      name={this.props.name}
                      placeholder={this.props.placeholder}
-                     value={this.props.humanized_value || ''}
+                     value={this.state.humanizedValue || ''}
                      onChange={this.onChange.bind(this)} />,
                   <PopupList
                      name={this.props.name}
@@ -496,6 +502,6 @@ export default class DynamicField extends Component {
                   htmlFor={this.props.name}>
                   {this.props.title}
                   <ErrorSpan
-                     error={this.getErrorText(this.props.value)} /></label></div></div>)
+                     error={this.getErrorText(this.state.value)} /></label></div></div>)
    }
 }
