@@ -277,12 +277,12 @@ export const memoryMeta = {
                   'Пункт из списка должен быть выбран': matchEmptyObject,
                },
             },
-            bond_to_id: {
+            bond_event_id: {
                kind: 'dynamic',
                title: 'Память',
                display_scheme: '12-6-9-10',
-               pathname: 'short_memories',
-               humanized_name: 'bond_to_name',
+               pathname: 'api/v0/events/ac',
+               humanized_name: 'bond_event_name',
                key_name: 'value',
                value_name: 'key',
                placeholder: 'Начни ввод связанной памяти...',

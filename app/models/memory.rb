@@ -31,7 +31,7 @@ class Memory < ApplicationRecord
    has_many :orders, -> { distinct.reorder('id') }, through: :memos, source: :orders
    has_many :slugs, -> { distinct.reorder('id') }, through: :orders, source: :slug
    has_many :memory_binds
-   has_many :bond_memories, through: :memory_binds, foreign_key: :bond_to_id, class_name: :Memory
+   has_many :bond_events, through: :memory_binds, foreign_key: :bond_event_id, class_name: :Event
    has_many :coverings
    has_many :places, through: :coverings
 
@@ -365,23 +365,52 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_memory_binds, -> context do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten.compact
-      alphabeth_codes = context[:codes] || Languageble.alphabeth_list_for(language_codes)
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      lang_wheres = [
+         "AND #{this}_bond_event_titles.language_code IN ('#{language_codes.join("', '")}')",
+         "AND #{this}_bond_short_names.language_code IN ('#{language_codes.join("', '")}')",
+      ] if language_codes.any?
+
+      alph_wheres = [
+         "AND #{this}_bond_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         "AND #{this}_bond_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+      ] if alphabeth_codes.any?
 
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
       selector << "COALESCE((WITH __memory_binds AS (
                        SELECT #{this}_memory_binds.id AS id,
-                              #{this}_memory_binds.bond_to_id AS bond_to_id,
+                              #{this}_memory_binds.bond_event_id AS bond_event_id,
                               #{this}_memory_binds.kind AS kind,
-                              #{this}_bond_short_names.text AS bond_to_name
+                              #{this}_bond_short_names.text || ' (' ||
+                              COALESCE(#{this}_bond_event_titles.text, '') || ':' ||
+                              #{this}_bond_events.happened_at || ')' AS bond_event_name
                          FROM memory_binds AS #{this}_memory_binds
+                         JOIN events AS #{this}_bond_events
+                           ON #{this}_bond_events.id = #{this}_memory_binds.bond_event_id
                          JOIN memories AS #{this}_bond_memories
-                           ON #{this}_bond_memories.id = #{this}_memory_binds.bond_to_id
+                           ON #{this}_bond_memories.id = #{this}_bond_events.memory_id
+                         JOIN subjects AS #{this}_bond_event_kinds
+                           ON #{this}_bond_event_kinds.key = #{this}_bond_events.kind_code
+                          AND #{this}_bond_event_kinds.kind_code = 'EventKind'
+                         JOIN descriptions AS #{this}_bond_event_titles
+                           ON #{this}_bond_event_titles.id IS NOT NULL
+                          AND (#{this}_bond_event_titles.describable_id = #{this}_bond_events.id
+                          AND #{this}_bond_event_titles.describable_type = 'Event'
+                          AND #{this}_bond_event_titles.type = 'Title'
+                           OR #{this}_bond_event_titles.describable_id = #{this}_bond_event_kinds.id
+                          AND #{this}_bond_event_titles.describable_type = 'Subject'
+                          AND #{this}_bond_event_titles.type = 'Appellation')
+                              #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
               LEFT OUTER JOIN short_names AS #{this}_bond_short_names
                            ON #{this}_bond_memories.id = #{this}_bond_short_names.memory_id
-                          AND #{this}_bond_short_names.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_bond_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                              #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
                         WHERE #{this}.id = #{this}_memory_binds.memory_id)
                        SELECT jsonb_agg(__memory_binds)
                          FROM __memory_binds), '[]'::jsonb) AS _memory_binds"
@@ -782,8 +811,10 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN slugs AS #{this}_memory_slugs
                           ON 'Memory' = #{this}_memory_slugs.sluggable_type
                          AND #{this}_bond_memories.id = #{this}_memory_slugs.sluggable_id
+             LEFT OUTER JOIN events AS #{this}_bond_events
+                          ON #{this}_bond_events.memory_id = #{this}_bond_memories.id
              LEFT OUTER JOIN memory_binds AS #{this}_memory_binds
-                          ON #{this}_bond_memories.id = #{this}_memory_binds.bond_to_id
+                          ON #{this}_bond_events.id = #{this}_memory_binds.bond_event_id
              LEFT OUTER JOIN short_names AS #{this}_bond_short_names
                           ON #{this}_bond_memories.id = #{this}_bond_short_names.memory_id
                          AND #{this}_bond_short_names.language_code IN ('#{language_codes.join("', '")}')
