@@ -11,6 +11,14 @@ export default class Modal extends Component {
       remoteCreate: null,
       meta: null,
       data: null,
+
+      i18n: {
+         close: {
+            yes: "Да",
+            title: "Закрываем без сохранения?",
+            tab: "Вы хотите закрыть вкладку. Точно закрыть?"
+         }
+      }
    }
 
    static propTypes = {
@@ -58,7 +66,14 @@ export default class Modal extends Component {
          console.debug("[componentDidRender] **", elems, modals)
          this.modal = modals[0]
          this.modal.open()
+
+         window.onbeforeunload = this.confirmExit.bind(this);
       }
+   }
+
+
+   confirmExit() {
+      return this.props.i18n.close.tab
    }
 
    onModalClosed() {
@@ -67,7 +82,23 @@ export default class Modal extends Component {
       document.dispatchEvent(ce)
    }
 
-   onCloseClick() {
+   onCloseRequest() {
+      let toast = {
+         displayLength: 10000,
+         classes: 'rounded',
+         html: this.$toast.innerHTML,
+      }
+
+      this.toast = M.toast(toast)
+
+      document.querySelector('.toast.rounded > .toast-action')
+              .addEventListener('click', this.onClose.bind(this), { passive: true })
+   }
+
+   onClose() {
+      let toast = document.querySelector('.toast-wrapper.form').parentElement
+
+      this.toast.dismiss()
       this.modal?.close()
    }
 
@@ -81,6 +112,15 @@ export default class Modal extends Component {
    renderModal() {
       return (
          <div className='enrighten'>
+            <div
+               className={'toast-wrapper form'}
+               key='toast'
+               ref={e => this.$toast = e} >
+               <span>{this.props.i18n.close.title}</span>
+               <button
+                  className="btn-flat toast-action"
+                  onClick={this.onClose.bind(this)}>
+                  {this.props.i18n.close.yes}</button></div>
             <div
                key={this.props.remoteName + '-form-modal'}
                className='form-modal modal modal-fixed-footer z-depth-2'
@@ -101,7 +141,7 @@ export default class Modal extends Component {
                                  key='close-button'
                                  type='button'
                                  className='btn close'
-                                 onClick={this.onCloseClick.bind(this)} >
+                                 onClick={this.onCloseRequest.bind(this)} >
                                  {this.props.meta.close}</button>
                               <SubmitButton
                                  title={this.state.data.id &&
