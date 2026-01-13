@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_01_11_171500) do
+ActiveRecord::Schema[7.0].define(version: 2026_01_13_011300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -269,12 +269,11 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_11_171500) do
 
   create_table "memory_binds", force: :cascade do |t|
     t.bigint "memory_id", comment: "Собственно память"
-    t.bigint "bond_to_id", comment: "Память как целевая связка"
     t.string "kind", comment: "Вид связки: источник (Source) для списков икон, опора (Base) - иконы личностей, подобие (Similar) - для установления подобия иконы иной иконевладелец (Host) - для владельцев предметов"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["bond_to_id"], name: "index_memory_binds_on_bond_to_id"
-    t.index ["memory_id", "bond_to_id"], name: "index_memory_binds_on_memory_id_and_bond_to_id", unique: true
+    t.bigint "bond_event_id", comment: "сꙛбытие яко цєлєва квѧзка"
+    t.index ["bond_event_id"], name: "index_memory_binds_on_bond_event_id"
     t.index ["memory_id"], name: "index_memory_binds_on_memory_id"
   end
 
@@ -633,7 +632,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_11_171500) do
   add_foreign_key "members", "roles", on_delete: :cascade
   add_foreign_key "members", "users", on_delete: :cascade
   add_foreign_key "memo_orders", "memories", column: "order_id", on_delete: :cascade
-  add_foreign_key "memory_binds", "memories", column: "bond_to_id", on_delete: :cascade
+  add_foreign_key "memory_binds", "events", column: "bond_event_id", on_delete: :restrict
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade
   add_foreign_key "resource_markups", "resources", on_delete: :restrict

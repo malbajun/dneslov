@@ -129,13 +129,15 @@ class Event < ActiveRecord::Base
       joins(:memos).calendaried(calendary_slugs).merge(Memo.licit).distinct
    end
    scope :by_token, -> text do
-      left_outer_joins(:kind, :titles, :short_names).
+      left_outer_joins(:kind, :descriptions, :titles, :short_names, :kind_titles).
          merge(Subject.by_token(text)).
          where("unaccent(events.kind_code) ~* unaccent(?)", "\\m#{text}.*").or(
          where(type_number: text.to_i).or(
-         where("unaccent(short_names.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(names_subjects.text) ~* unaccent(?)", "\\m#{text}.*")))))
+         where("unaccent(short_names.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(kind_titles_events.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(titles_events.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(names_subjects.text) ~* unaccent(?)", "\\m#{text}.*")))))))
    end
    singleton_class.send(:alias_method, :by_query, :by_token)
 

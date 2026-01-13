@@ -27,7 +27,7 @@ class Admin::MemoriesController < Admin::CommonController
          slug_attributes: %i(id text),
          short_names_attributes: %i(id text language_code alphabeth_code _destroy),
          coverings_attributes: %i(id add_date place_id _destroy),
-         memory_binds_attributes: %i(id kind bond_to_id _destroy),
+         memory_binds_attributes: %i(id kind bond_event_id _destroy),
          memory_names_attributes: %i(id nomen_id state_code feasible ored _destroy),
          events_attributes: [
             :id, :happened_at, :kind_code, :person_name, :type_number,

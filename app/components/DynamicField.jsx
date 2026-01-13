@@ -64,7 +64,7 @@ export default class DynamicField extends Component {
       if (permutationLimitCount) {
          tokens = value.split(/\s+/).compact().slice(0, 5)
          rex = "(?:" + tokens.permutation().map(tokens => {
-            return "(?:^|\\s)" + tokens.join(".*\\s")
+            return "(?:^|\\s|\\(|:)" + tokens.join(".*\\s")
          }).join("|") + ")"
          re = new RegExp(rex, "i")
       } else {

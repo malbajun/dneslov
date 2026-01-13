@@ -5,5 +5,5 @@
 #        владелец (Host) - для владельцев предметов
 class MemoryBind < ApplicationRecord
    belongs_to :memory
-   belongs_to :bond_to, class_name: :Memory
+   belongs_to :bond_event, class_name: :Event
 end
