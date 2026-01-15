@@ -87,6 +87,7 @@ class MemoriesController < ApplicationController
                        .with_place(context)
                        .with_titles(context)
                        .with_description(context)
+                       .with_happened_at(context)
                        .select("events.*")
                        .distinct_by('events.id')
    end

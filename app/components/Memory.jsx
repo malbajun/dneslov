@@ -196,7 +196,9 @@ export default class Memory extends Component {
          return this.happenedAtKindCodes.indexOf(x.kind_code) >= 0
       }).sortByArray(this.happenedAtKindCodes, "kind_code").flat().reduce((happenedAt, e) => {
          return happenedAt || e.happened_at
-      }, null)
+      }, props.memoes.reduce((happenedAt, m) => {
+         return happenedAt || m.happened_at
+      }, null))
    }
 
    static collectedChildren(props) {
