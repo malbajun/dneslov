@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_01_13_011300) do
+ActiveRecord::Schema[7.0].define(version: 2026_01_13_045720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -241,6 +241,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_13_011300) do
     t.string "bind_kind_code", null: false
     t.integer "bond_to_id"
     t.bigint "event_id", null: false
+    t.string "happened_at", comment: "год для помина в калѧдарю"
     t.index ["add_date"], name: "index_memoes_on_add_date"
     t.index ["bind_kind_code"], name: "index_memoes_on_bind_kind_code"
     t.index ["bond_to_id", "bind_kind_code"], name: "index_memoes_on_bond_to_id_and_bind_kind_code"
@@ -250,6 +251,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_13_011300) do
     t.index ["calendary_id"], name: "index_memoes_on_calendary_id"
     t.index ["event_id", "bond_to_id", "id"], name: "index_memoes_on_event_id_and_bond_to_id_and_id"
     t.index ["event_id"], name: "index_memoes_on_event_id"
+    t.index ["happened_at"], name: "index_memoes_on_happened_at"
     t.index ["year_date"], name: "index_memoes_on_year_date"
   end
 

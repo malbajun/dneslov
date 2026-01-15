@@ -650,6 +650,32 @@ class Event < ActiveRecord::Base
       joins(join).select(selector).group(:id, "#{as}_short_names.text")
    end
 
+   scope :with_happened_at, -> context do
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      this = table.table_alias || table.name
+      language_codes = [context[:text_language] || context[:text_languages]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector = "#{this}_memoes.happened_at AS _happened_at"
+
+      cslugs_rule = context[:calendary_slugs] ?
+         "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
+
+      join = "           JOIN memoes AS #{this}_memoes
+                           ON #{this}.id = #{this}_memoes.event_id
+                         JOIN calendaries AS #{this}_calendaries
+                           ON #{this}_calendaries.id = #{this}_memoes.calendary_id
+                         JOIN slugs AS #{this}_calendary_slugs
+                           ON #{this}_calendary_slugs.sluggable_id = #{this}_calendaries.id
+                          AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
+                              #{cslugs_rule}"
+
+      joins(join).select(selector).group(:id, "#{this}_memoes.happened_at")
+   end
+
    scope :with_orders, -> context do
       language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
@@ -702,6 +728,7 @@ class Event < ActiveRecord::Base
                        SELECT DISTINCT ON(memoes.id)
                               memoes.id AS id,
                               memoes.year_date AS year_date,
+                              memoes.happened_at AS happened_at,
                               jsonb_object_agg(DISTINCT COALESCE(memo_slugs.text, 'Null'),
                                                         order_titles_memoes.text) AS orders,
                COALESCE((WITH ___children AS (
@@ -814,7 +841,7 @@ class Event < ActiveRecord::Base
                               #{this}_children_events.id,
                               #{this}_usual_order_table.order_no,
                               #{this}_children_memories.base_year,
-                              happened_at,
+                              #{this}_children_events.happened_at,
                               children.id,
                               roundel_url,
                               short_name,

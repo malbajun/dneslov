@@ -284,7 +284,8 @@ class Memo < ApplicationRecord
    end
 
    scope :with_date, -> do
-      selector = 'events.happened_at AS _happened_at'
+      this = table.table_alias || table.name
+      selector = "COALESCE(#{this}.happened_at, events.happened_at) AS _happened_at"
 
       joins(:event).select(selector).group('_happened_at')
    end

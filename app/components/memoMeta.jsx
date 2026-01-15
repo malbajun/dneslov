@@ -26,6 +26,9 @@ export const memoMeta = {
       year_date: {
          title: 'Дата',
       },
+      happened_at: {
+         title: 'Пора',
+      },
       event: {
          title: 'Событие',
          value: (value) => { return value.event_short_title },
@@ -87,7 +90,7 @@ export const memoMeta = {
          value_name: 'key',
          title: 'Событие',
          placeholder: 'Начни ввод имени события...',
-         display_scheme: '12-6-4-4',
+         display_scheme: '12-6-4-3',
          validations: {
             "Событие должно быть избрано": /^$/
          }
@@ -117,6 +120,12 @@ export const memoMeta = {
             "Цифры должны быть введены обязательно": /^[\-+\.]+$/,
          }
       },
+      happened_at: {
+         kind: 'text',
+         title: 'Случилось в...',
+         placeholder: 'Введи пору',
+         display_scheme: '12-6-4-2',
+      },
       bind_kind_code: {
          kind: 'select',
          title: 'Вид привязки к помину',
@@ -144,7 +153,7 @@ export const memoMeta = {
          kind: 'dynamic',
          title: 'Привязаный помин',
          humanized_name: 'bond_to_title',
-         display_scheme: '12-6-4-4',
+         display_scheme: '12-6-4-3',
          placeholder: 'Начни ввод даты привязаного помина...',
          pathname: 'short_memoes',
          key_name: 'value',

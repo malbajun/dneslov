@@ -91,6 +91,7 @@ export default class Eventee extends Component {
             iconLinks: Eventee.getIconLinks(props),
             scripta: selectedScripta,
             sortedScripta: sortedScripta,
+            happenedAt: Eventee.getHappenedAt(props),
             childrenMemoes: Memory.collectedChildren(props),
             childrenTotal: Memory.collectedChildrenTotals(props), //props.children_total
             tagKeywords: Eventee.getKeywords(props.short_name, order, props.names, describedMemoes),
@@ -200,6 +201,12 @@ export default class Eventee extends Component {
       return props.memoes.reduce((order, m) => {
          return order || this.isInCalendaries(props, m) && Object.values(m.orders)[0]
       }, null)
+   }
+
+   static getHappenedAt(props) {
+      return props.memoes.reduce((happenedAt, m) => {
+         return happenedAt || m.happened_at
+      }, null) || props.happened_at
    }
 
    // system
@@ -346,9 +353,9 @@ export default class Eventee extends Component {
                      <Chip
                         className='place'
                         text={this.props.place.name} />}
-                  {this.props.happened_at && <Chip
+                  {this.state.happenedAt && <Chip
                      className='happened-at'
-                     text={this.props.happened_at} />}</div></div>
+                     text={this.state.happenedAt} />}</div></div>
             {this.props.image_url &&
                <div className='col x2 l3 m6 s12 image'>
                   <a

@@ -608,6 +608,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               memoes.id AS id,
                               memoes.year_date AS year_date,
                               events.kind_code AS kind_code,
+                              memoes.happened_at AS happened_at,
                               jsonb_object_agg(DISTINCT COALESCE(memo_slugs.text, 'Null'),
                                                         order_titles_memoes.text) AS orders,
                COALESCE((WITH ___children AS (
@@ -715,7 +716,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND children.bind_kind_code = 'соборный'
                      GROUP BY #{this}_children_slugs.text,
                               #{this}_children_memories.base_year,
-                              happened_at,
+                              #{this}_children_events.happened_at,
                               children.id,
                               roundel_url,
                               short_name,
