@@ -58,6 +58,7 @@ class Memo < ApplicationRecord
    has_many :notes, as: :describable, dependent: :delete_all, class_name: :Note
    has_many :versi, as: :describable, dependent: :delete_all, class_name: :Versus
    has_many :calendary_titles, through: :calendary, source: :titles, class_name: :Appellation
+   has_one :original_title, -> { original_title }, as: :describable, class_name: :Original, dependent: :destroy
 
    delegate :quantity, to: :memory
    delegate :quantity, to: :bond_to, prefix: true, allow_nil: true
@@ -652,6 +653,7 @@ class Memo < ApplicationRecord
    accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :versi, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memo_orders, reject_if: :all_blank, allow_destroy: true
+   accepts_nested_attributes_for :original_title, reject_if: :all_blank, allow_destroy: true
 
    validates_presence_of :calendary, :event
    validates :year_date, format: { with: /\A((0[1-9]|[1-2][0-9]|3[0-1])\.(0[1-9]|1[0-2])([%<>~][0-6])?|[+-]\d{1,3})\z/ }, if: :year_date

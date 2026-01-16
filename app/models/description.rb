@@ -8,6 +8,7 @@ class Description < ActiveRecord::Base
 
    scope :desc, -> { where(type: 'Description') }
    scope :title, -> { where(type: 'Title') }
+   scope :original_title, -> { where(type: 'Original') }
    scope :appe, -> { where(type: 'Appellation') }
    scope :descnote, -> { where(type: ['Description', 'Note'])}
    scope :annotated, -> { order(Arel.sql('length(text) ASC')).limit(1) }

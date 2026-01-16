@@ -206,6 +206,23 @@ export const memoMeta = {
             },
          }
       },
+      original_title: {
+         kind: 'block',
+         meta: {
+            id: {
+               kind: 'hidden',
+            },
+            text: {
+               kind: 'text',
+               title: 'Оригинальный заголовок в календаре',
+               placeholder: 'Введи заголовок',
+               display_scheme: '12-12-12-12',
+               validations: {
+                  "Заголовок отсутствует": matchEmptyObject,
+               }
+            },
+         }
+      },
       titles: {
          kind: 'collection',
          title: 'Заголовки',
