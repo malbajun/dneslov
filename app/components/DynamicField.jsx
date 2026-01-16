@@ -30,7 +30,7 @@ export default class DynamicField extends Component {
       humanized_default: undefined, // default value name
       begin: null,
       end: null,
-      queryKey: 't',
+      queryKey: 'q',
       selectable: false,
       wrapperClassName: null,
       title: null,

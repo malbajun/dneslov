@@ -17,6 +17,7 @@ class Nomen < ActiveRecord::Base
    scope :by_token, -> text do
       left_outer_joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").distinct
    end
+   singleton_class.send(:alias_method, :by_query, :by_token)
 
    # required for short list
    scope :with_key, -> _ do

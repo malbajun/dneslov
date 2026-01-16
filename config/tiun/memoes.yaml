@@ -1,0 +1,375 @@
+---
+types:
+ - name: memoe
+   model: Memo
+   version: 0.1
+   with:
+    - note
+    - title
+    - calendary_title
+   fields:
+    - name: id
+      kind: number
+      descriptions: :tiun.types.memoe.id
+    - name: add_date
+      kind: string
+      descriptions: :tiun.types.memoe.add_date
+    - name: year_date
+      kind: string
+      descriptions: :tiun.types.memoe.year_date
+    - name: calendary_slug
+      kind: string
+      descriptions: :tiun.types.memoe.calendary_slug
+    - name: calendary_title
+      kind: string
+      descriptions: :tiun.types.memoe.calendary_title
+    - name: bind_kind_code
+      kind: string
+      descriptions: :tiun.types.memoe.bind_kind_code
+    - name: bond_to_id
+      kind: integer
+      descriptions: :tiun.types.memoe.bond_to_id
+    - name: event_id
+      kind: integer
+      descriptions: :tiun.types.memoe.event_id
+    - name: memory_uno
+      kind: string
+      descriptions: :tiun.types.memo.memory_uno
+    - name: happened_at
+      kind: string
+      descriptions: :tiun.types.memo.happened_at
+    - name: order_unos
+      kind: array string
+      descriptions: :tiun.types.memo.order_unos
+    - name: title
+      kind: string
+      descriptions: :tiun.types.memo.title
+    - name: note
+      kind: string
+      descriptions: :tiun.types.memo.note
+ - name: memo
+   version: 0.1
+   with:
+    - description
+    - note
+    - title
+    - links
+    - memory_event
+    - memo_orders
+    - bond_to_year_date
+    - bond_to_detailed
+    - calendary_title
+   fields:
+    - name: id
+      kind: number
+      descriptions: :tiun.types.memo.id
+    - name: add_date
+      kind: string
+      descriptions: :tiun.types.memo.add_date
+    - name: year_date
+      kind: string
+      descriptions: :tiun.types.memo.year_date
+    - name: calendary_slug
+      kind: string
+      descriptions: :tiun.types.memo.calendary_slug
+    - name: calendary_title
+      kind: string
+      descriptions: :tiun.types.memo.calendary_title
+    - name: bind_kind_code
+      kind: string
+      descriptions: :tiun.types.memo.bind_kind_code
+    - name: bond_to_id
+      kind: integer
+      descriptions: :tiun.types.memo.bond_to_id
+    - name: bond_to_id
+      kind: integer
+      descriptions: :tiun.types.memo.bond_to_id
+    - name: bond_to_detailed
+      kind: integer
+      descriptions: :tiun.types.memo.bond_to_detailed
+    - name: event_id
+      kind: integer
+      descriptions: :tiun.types.memo.event_id
+    - name: memory_uno
+      kind: string
+      descriptions: :tiun.types.memo.memory_uno
+    - name: happened_at
+      kind: string
+      descriptions: :tiun.types.memo.happened_at
+    - name: order_unos
+      kind: array string
+      descriptions: :tiun.types.memo.order_unos
+    - name: title
+      kind: string
+      descriptions: :tiun.types.memo.title
+    - name: note
+      kind: string
+      descriptions: :tiun.types.memo.note
+    - name: description
+      kind: string
+      descriptions: :tiun.types.memo.description
+    - name: links
+      kind: array url
+      descriptions: :tiun.types.memo.links
+ - name: memo_dac
+   model: Memo
+   version: 0.1
+   with:
+    - key
+    - value_memoried
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.memo_dac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.memo_dac.value
+ - name: memo_ac
+   model: Memo
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.memo_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.memo_ac.value
+resources:
+ - name: memo.index
+   path: /api/v0/memoes.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: memoe page
+      descriptions: :tiun.resources.memo.index
+      auth: no
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.memo.index.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.memo.index.page
+       - name: memory_uno
+         kind: string
+         descriptions: :tiun.resources.memo.index.memory_uno
+       - name: calendary_uno
+         kind: string
+         descriptions: :tiun.resources.memo.index.calendary_uno
+       - name: order_uno
+         kind: string
+         descriptions: :tiun.resources.memo.index.order_uno
+       - name: bind_kind_code
+         kind: string
+         descriptions: :tiun.resources.memo.index.bind_kind_code
+       - name: event_id
+         kind: integer
+         descriptions: :tiun.resources.memo.index.event_id
+       - name: title
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.memo.index.title
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.resources.memo.index.query
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memo.index.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memo.index.alphabeth
+ - name: memo.detailed_autocomplete
+   path: /api/v0/memoes/dac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: memo_dac page
+      descriptions: :tiun.resources.memo.detailed_autocomplete
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.resources.memo.detailed_autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.memo.detailed_autocomplete.query
+ - name: memo.autocomplete
+   path: /api/v0/memoes/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: memo_ac page
+      descriptions: :tiun.resources.memo.autocomplete
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.resources.memo.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.memo.autocomplete.query
+ - name: memo.create
+   path: /api/v0/memoes/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: memo
+      descriptions: :tiun.resources.memo.create
+      auth: memo.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.memo.create.id
+       - name: add_date
+         kind: string
+         descriptions: :tiun.resources.memo.create.add_date
+       - name: year_date
+         kind: string
+         descriptions: :tiun.resources.memo.create.year_date
+       - name: calendary_uno
+         kind: string
+         descriptions: :tiun.resources.memo.create.calendary_uno
+       - name: bind_kind_code
+         kind: string
+         descriptions: :tiun.resources.memo.create.bind_kind_code
+       - name: bond_to_id
+         kind: integer
+         descriptions: :tiun.resources.memo.create.bond_to_id
+       - name: event_id
+         kind: integer
+         descriptions: :tiun.resources.memo.create.event_id
+       - name: memory_uno
+         kind: string
+         descriptions: :tiun.resources.memo.create.memory_uno
+       - name: happened_at
+         kind: string
+         descriptions: :tiun.resources.memo.create.happened_at
+       - name: order_unos
+         kind: array string
+         descriptions: :tiun.resources.memo.create.order_unos
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.memo.create.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.memo.create.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.memo.create.title
+       - name: note
+         kind: string
+         descriptions: :tiun.resources.memo.create.note
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.memo.create.description
+       - name: links
+         kind: array url
+         descriptions: :tiun.resources.memo.create.links
+ - name: memo
+   path: /api/v0/memoes/:id.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: memo
+      descriptions: :tiun.resources.memo.get
+      auth: no
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: id
+         kind: string
+         descriptions: :tiun.resources.memo.get.id
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.memo.get.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.memo.get.alphabeth
+    - name: put
+      version: 0.1
+      kind: memo
+      descriptions: :tiun.resources.memo.put
+      auth: memo.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.memo.put.id
+       - name: add_date
+         kind: string
+         descriptions: :tiun.resources.memo.put.add_date
+       - name: year_date
+         kind: string
+         descriptions: :tiun.resources.memo.put.year_date
+       - name: calendary_uno
+         kind: string
+         descriptions: :tiun.resources.memo.put.calendary_uno
+       - name: bind_kind_code
+         kind: string
+         descriptions: :tiun.resources.memo.put.bind_kind_code
+       - name: bond_to_id
+         kind: integer
+         descriptions: :tiun.resources.memo.put.bond_to_id
+       - name: event_id
+         kind: integer
+         descriptions: :tiun.resources.memo.put.event_id
+       - name: memory_uno
+         kind: string
+         descriptions: :tiun.resources.memo.put.memory_uno
+       - name: happened_at
+         kind: string
+         descriptions: :tiun.resources.memo.put.happened_at
+       - name: order_unos
+         kind: array string
+         descriptions: :tiun.resources.memo.put.order_unos
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memo.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memo.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.memo.put.title
+       - name: note
+         kind: string
+         descriptions: :tiun.resources.memo.put.note
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.memo.put.description
+       - name: links
+         kind: array url
+         descriptions: :tiun.resources.memo.put.links
+    - name: delete
+      version: 0.1
+      kind: memo
+      descriptions: :tiun.resources.memo.delete
+      auth: memo.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: string
+         descriptions: :tiun.resources.memo.delete.id
