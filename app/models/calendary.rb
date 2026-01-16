@@ -66,6 +66,7 @@ class Calendary < ActiveRecord::Base
          where( "unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*" ).or(
          where( "unaccent(titles_calendaries.text) ~* unaccent(?)", "\\m#{text}.*" )))))
    end
+   singleton_class.send(:alias_method, :by_query, :by_token)
 
    scope :by_tokens, -> string_in do
       return self if string_in.blank?

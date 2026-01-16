@@ -7,7 +7,7 @@ class Item < ActiveRecord::Base
    accepts_nested_attributes_for :item_type
 
    scope :by_token, -> token { unscoped.joins( :item_type ).merge(ItemType.by_token( token )) }
-
+   singleton_class.send(:alias_method, :by_query, :by_token)
    singleton_class.send(:alias_method, :t, :by_token)
 
    # required for short list

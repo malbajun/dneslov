@@ -1,0 +1,36 @@
+---
+types:
+ - name: item_ac
+   model: Item
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.item_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.item_ac.value
+resources:
+ - name: item.autocomplete
+   path: /api/v0/items/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: item_ac page
+      descriptions: :tiun.items.item.index
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.items.item.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.items.item.autocomplete.query

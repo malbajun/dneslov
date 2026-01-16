@@ -4,7 +4,11 @@ types:
    model: Memory
    version: 0.1
    with:
+    - pure_slug
     - memoed
+    - title
+    - note
+    - short_name
    fields:
     - name: id
       kind: number
@@ -61,6 +65,13 @@ types:
    with:
     - pure_slug
     - memoed
+    - short_name
+    - title
+    - description
+    - note
+    - tweet
+    - links
+    - memory_names
    fields:
     - name: id
       kind: integer
@@ -98,6 +109,21 @@ types:
     - name: roundel_url
       kind: url
       descriptions: :tiun.types.memory.roundel_url
+ - name: memory_ac
+   model: Memory
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.memory_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.memory_ac.value
 resources:
  - name: memory.index
    path: /api/v0/memories.json
@@ -138,6 +164,34 @@ resources:
          kind: string
          alias: k
          descriptions: :tiun.resources.memory.index.kind
+ - name: memory.autocomplete
+   path: /api/v0/memories/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: memory_ac page
+      descriptions: :tiun.resources.memory.autocomplete
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.resources.memory.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.resources.memory.autocomplete.query
+       - name: type
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.memory.autocomplete.type
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memory.create.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memory.create.alphabeth
  - name: memory.create
    path: /api/v0/memories/create.json
    methods:
@@ -167,8 +221,44 @@ resources:
          kind: enum <Building, Concept, Council, Group, Identity, Order, Place, Subsisten, Thing>
          descriptions: :tiun.resources.memory.create.type
        - name: kind
-         kind: enum <>
+         kind: string
          descriptions: :tiun.resources.memory.create.kind
+       - name: council
+         kind: string
+         descriptions: :tiun.resources.memory.create.council
+       - name: significance
+         kind: string
+         descriptions: :tiun.resources.memory.create.significance
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memory.create.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memory.create.alphabeth
+       - name: short_name
+         kind: string
+         descriptions: :tiun.resources.memory.create.short_name
+       - name: coverings
+         kind: memory_uno array
+         descriptions: :tiun.resources.memory.create.coverings
+       - name: memory_binds
+         kind: memory_uno array
+         descriptions: :tiun.resources.memory.create.memory_binds
+       - name: tweet
+         kind: string
+         descriptions: :tiun.resources.memory.create.tweet
+       - name: note
+         kind: string
+         descriptions: :tiun.resources.memory.create.note
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.memory.create.description
+       - name: links
+         kind: uri array
+         descriptions: :tiun.resources.memory.create.links
+       - name: memory_names
+         kind: memory_name array
+         descriptions: :tiun.resources.memory.create.memory_names
  - name: memory
    path: /api/v0/memories/:uno.json
    methods:
@@ -197,6 +287,9 @@ resources:
       auth: memory.update
       allowed_errors: [200, 404, 422.3, 500]
       args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.memory.put.id
        - name: slug
          kind: string
          descriptions: :tiun.resources.memory.put.slug
@@ -213,8 +306,44 @@ resources:
          kind: enum <Building, Concept, Council, Group, Identity, Order, Place, Subsisten, Thing>
          descriptions: :tiun.resources.memory.put.type
        - name: kind
-         kind: enum <>
+         kind: string
          descriptions: :tiun.resources.memory.put.kind
+       - name: council
+         kind: string
+         descriptions: :tiun.resources.memory.put.council
+       - name: significance
+         kind: string
+         descriptions: :tiun.resources.memory.put.significance
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memory.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memory.put.alphabeth
+       - name: short_name
+         kind: string
+         descriptions: :tiun.resources.memory.put.short_name
+       - name: coverings
+         kind: memory_uno array
+         descriptions: :tiun.resources.memory.put.coverings
+       - name: memory_binds
+         kind: memory_uno array
+         descriptions: :tiun.resources.memory.put.memory_binds
+       - name: tweet
+         kind: string
+         descriptions: :tiun.resources.memory.put.tweet
+       - name: note
+         kind: string
+         descriptions: :tiun.resources.memory.put.note
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.memory.put.description
+       - name: links
+         kind: uri array
+         descriptions: :tiun.resources.memory.put.links
+       - name: memory_names
+         kind: memory_name array
+         descriptions: :tiun.resources.memory.put.memory_names
     - name: delete
       version: 0.1
       kind: memory

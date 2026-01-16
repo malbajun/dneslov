@@ -19,6 +19,7 @@ class Name < ActiveRecord::Base
       join_name = table.table_alias || table.name
       where("unaccent(#{join_name}.text) ~* unaccent(?)", "\\m#{text}.*")
    end
+   singleton_class.send(:alias_method, :by_query, :by_token)
    singleton_class.send(:alias_method, :t, :by_token)
 
    scope :by_tokens, -> string_in do

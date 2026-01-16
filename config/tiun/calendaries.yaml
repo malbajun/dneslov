@@ -1,8 +1,16 @@
 ---
 types:
- - name: calendary
-   version: 1.0
+ - name: calendarie
+   model: Calendary
+   version: 0.1
+   with:
+    - title
+    - ref_titles
+    - slug
    fields:
+    - name: slug
+      kind: integer
+      descriptions: :tiun.types.calendary.slug
     - name: language
       kind: string
       descriptions: :tiun.types.calendary.language
@@ -22,12 +30,71 @@ types:
     - name: meta
       kind: json
       descriptions: :tiun.types.calendary.meta
-    - name: kind
-      kind: enum <Term, Saying, Interpretation, Idiom>
-      descriptions: :tiun.types.calendary.kind
-    - name: attitudes
-      kind: calendary_attitude
-      descriptions: :tiun.types.calendary.attitudes
+    - name: title
+      kind: string
+      descriptions: :tiun.types.calendary.title
+ - name: calendary
+   version: 1.0
+   with:
+    - title
+    - description
+    - ref_titles
+    - slug
+    - links
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.calendary.id
+    - name: slug
+      kind: integer
+      descriptions: :tiun.types.calendary.slug
+    - name: language
+      kind: string
+      descriptions: :tiun.types.calendary.language
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.calendary.alphabeth
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.calendary.language_code
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.calendary.alphabeth_code
+    - name: dictionary_uri
+      optional: true
+      kind: uri
+      descriptions: :tiun.types.calendary.dictionary_uri
+    - name: value
+      kind: string
+      descriptions: :tiun.types.calendary.value
+    - name: tags
+      kind: string list
+      descriptions: :tiun.types.calendary.tags
+    - name: meta
+      kind: json
+      descriptions: :tiun.types.calendary.meta
+    - name: title
+      kind: string
+      descriptions: :tiun.types.calendary.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.calendary.description
+ - name: calendary_ac
+   model: Calendary
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.calendary_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.calendary_ac.value
 resources:
  - name: calendary.index
    path: /api/v1/calendaries.json
@@ -41,16 +108,161 @@ resources:
       args:
        - name: per_page
          kind: natural
-         default: 10 
+         default: 10
          maximum: 50
          descriptions: :tiun.resources.calendary.index.args.per_page
        - name: page
          kind: natural
          default: 1
          descriptions: :tiun.resources.calendary.index.args.page
-       - name: c
+       - name: calendary_slugs
          kind: string
-         descriptions: :tiun.resources.calendary.index.args.c
+         alias: c
+         descriptions: :tiun.resources.calendary.index.args.calendary_slugs
        - name: licit
          kind: bool
          descriptions: :tiun.resources.calendary.index.args.licit
+ - name: calendary.autocomplete
+   path: /api/v0/calendaries/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: calendary_ac page
+      descriptions: :tiun.resources.calendary.index
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.resources.calendary.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.calendary.autocomplete.query
+ - name: calendary.create
+   path: /api/v0/calendaries/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: calendary
+      descriptions: :tiun.resources.calendary.create
+      policy: calendary.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.calendary.post.id
+       - name: slug
+         kind: string
+         descriptions: :tiun.resources.calendary.post.slug
+       - name: language_code
+         kind: string
+         descriptions: :tiun.resources.calendary.post.language_code
+       - name: alphabeth_code
+         kind: string
+         descriptions: :tiun.resources.calendary.post.alphabeth_code
+       - name: licit
+         kind: boolean
+         descriptions: :tiun.resources.calendary.post.licit
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.calendary.post.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.calendary.post.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.calendary.post.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.calendary.post.description
+       - name: links
+         kind: uri list
+         descriptions: :tiun.resources.calendary.post.links
+       - name: author_name
+         kind: string
+         descriptions: :tiun.resources.calendary.post.author_name
+       - name: date
+         kind: string
+         descriptions: :tiun.resources.calendary.post.date
+       - name: meta
+         kind: json
+         descriptions: :tiun.resources.calendary.post.meta
+ - name: calendary
+   path: /api/v0/calendaries/:uno.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: text
+      policy: calendary.read
+      descriptions: :tiun.resources.calendary.get
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.calendary.get.uno
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.calendary.get.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.calendary.get.alphabeth
+    - name: put
+      version: 0.1
+      kind: text
+      descriptions: :tiun.resources.calendary.put
+      policy: calendary.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.calendary.put.id
+       - name: slug
+         kind: string
+         descriptions: :tiun.resources.calendary.put.slug
+       - name: language_code
+         kind: string
+         descriptions: :tiun.resources.calendary.put.language_code
+       - name: alphabeth_code
+         kind: string
+         descriptions: :tiun.resources.calendary.put.alphabeth_code
+       - name: licit
+         kind: boolean
+         descriptions: :tiun.resources.calendary.put.licit
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.calendary.put.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.calendary.put.alphabeth
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.calendary.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.calendary.put.description
+       - name: links
+         kind: uri list
+         descriptions: :tiun.resources.calendary.put.links
+       - name: author_name
+         kind: string
+         descriptions: :tiun.resources.calendary.put.author_name
+       - name: date
+         kind: string
+         descriptions: :tiun.resources.calendary.put.date
+       - name: meta
+         kind: json
+         descriptions: :tiun.resources.calendary.put.meta
+    - name: delete
+      version: 0.1
+      kind: calendary
+      descriptions: :tiun.resources.calendary.delete
+      policy: calendary.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: uno
+         kind: string
+         descriptions: :tiun.resources.calendary.delete.uno

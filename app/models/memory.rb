@@ -70,6 +70,7 @@ class Memory < ApplicationRecord
          where("unaccent(notes_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
          Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
+   singleton_class.send(:alias_method, :by_q, :by_token)
 
    # by title with short_name
    scope :by_title, -> text do

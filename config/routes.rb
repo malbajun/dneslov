@@ -32,20 +32,6 @@ Rails.application.routes.draw do
       resources :scripta, param: :id, except: :edit
       resources :roles, param: :id, except: :edit
 
-
-      get '/short_subjects' => 'subjects#all'
-      get '/short_orders' => 'orders#all'
-      get '/short_calendaries' => 'calendaries#all'
-      get '/short_memoes' => 'memoes#all'
-      get '/short_full_memoes' => 'memoes#memoried'
-      get '/short_events' => 'events#all'
-      get '/short_memories' => 'memories#all'
-      get '/short_names' => 'names#all'
-      get '/short_nomina' => 'nomina#all'
-      get '/short_places' => 'places#all'
-      get '/short_items' => 'items#all'
-      get '/short_rites' => 'rites#all'
-      get '/short_roles' => 'roles#all'
       get '/icons' => 'memories#icons'
    end
 

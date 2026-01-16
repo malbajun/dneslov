@@ -21,6 +21,7 @@ class Rite < ActiveRecord::Base
       where("unaccent(rites.text) ~* unaccent(?)", "\\m#{text}.*")
          .or(Rite.where("unaccent(rites.abbreviation) ~* unaccent(?)", "\\m#{text}.*"))
    end
+   singleton_class.send(:alias_method, :by_query, :by_token)
 
    # by universal numbering object: by id, by abbreviation or by title
    scope :by_uno, ->(uno) do
