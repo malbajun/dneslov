@@ -175,6 +175,7 @@ class Memo < ApplicationRecord
          where( "memoes.add_date ~* ?", "\\m#{text}.*" ).or(
          where( "memoes.year_date ~* ?", "\\m#{text}.*" ))))))
    end
+   singleton_class.send(:alias_method, :by_query, :by_token)
 
    scope :by_event_id, -> (event_id) do
       where(event_id: event_id)

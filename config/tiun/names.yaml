@@ -1,0 +1,256 @@
+---
+types:
+ - name: namee
+   model: Name
+   version: 0.1
+   with:
+    - nomina
+   by: root
+   fields:
+    - name: id
+      kind: number
+      descriptions: :tiun.types.namee.id
+    - name: text
+      kind: integer
+      descriptions: :tiun.types.namee.text
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.namee.language_code
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.namee.alphabeth_code
+    - name: bond_to_name
+      kind: integer
+      descriptions: :tiun.types.namee.bond_to_name
+    - name: root_name
+      kind: integer
+      descriptions: :tiun.types.namee.root_name
+    - name: bind_kind_name
+      kind: string
+      descriptions: :tiun.types.namee.bind_kind_name
+ - name: name
+   version: 0.1
+   with:
+    - locale_names
+    - nomina
+    - links
+    - description
+   by: root
+   fields:
+    - name: id
+      kind: number
+      descriptions: :tiun.types.name.id
+    - name: text
+      kind: integer
+      descriptions: :tiun.types.name.text
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.name.language_code
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.name.alphabeth_code
+    - name: language
+      kind: string
+      descriptions: :tiun.types.name.language
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.name.alphabeth
+    - name: bond_to_id
+      kind: integer
+      descriptions: :tiun.types.name.bond_to_id
+    - name: root_id
+      kind: integer
+      descriptions: :tiun.types.name.root_id
+    - name: bond_to_name
+      kind: integer
+      descriptions: :tiun.types.name.bond_to_name
+    - name: root_name
+      kind: integer
+      descriptions: :tiun.types.name.root_name
+    - name: bind_kind_name
+      kind: string
+      descriptions: :tiun.types.name.bind_kind_name
+    - name: bind_kind_path
+      kind: url
+      descriptions: :tiun.types.name.bind_kind_path
+    - name: modifier
+      kind: string
+      descriptions: :tiun.types.name.modifier
+    - name: title
+      kind: string
+      descriptions: :tiun.types.name.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.name.description
+    - name: links
+      kind: array url
+      descriptions: :tiun.types.name.links
+ - name: name_ac
+   model: Name
+   version: 0.1
+   with:
+    - key
+    - value
+   fields:
+    - name: key
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.name_ac.key
+    - name: value
+      kind: string
+      readonly: true
+      descriptions: :tiun.types.name_ac.value
+resources:
+ - name: name.index
+   path: /api/v0/names.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: name_span page
+      descriptions: :tiun.resources.name.index
+      auth: no
+      allowed_errors: [200, 204, 206, 416, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 10
+         maximum: 50
+         descriptions: :tiun.resources.name.index.per_page
+       - name: page
+         kind: natural
+         alias: p
+         default: 1
+         descriptions: :tiun.resources.name.index.page
+       - name: root_id
+         kind: integer
+         descriptions: :tiun.resources.name.index.root_id
+       - name: query
+         kind: string
+         alias: q
+         descriptions: :tiun.resources.name.index.query
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.name.index.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.name.index.alphabeth
+ - name: name.autocomplete
+   path: /api/v0/names/ac.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: name_ac page
+      descriptions: :tiun.resources.name.autocomplete
+      allowed_errors: [200, 204, 206, 422.3, 500]
+      args:
+       - name: per
+         kind: natural
+         default: 500
+         maximum: 500
+         descriptions: :tiun.resources.name.autocomplete.per_page
+       - name: query
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.name.autocomplete.query
+ - name: name.create
+   path: /api/v0/names/create.json
+   methods:
+    - name: post
+      version: 0.1
+      kind: name
+      descriptions: :tiun.resources.name.create
+      auth: name.create
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.name.create.id
+       - name: text
+         kind: integer
+         descriptions: :tiun.resources.name.create.text
+       - name: language_code
+         kind: string
+         alias: lc
+         descriptions: :tiun.resources.name.create.language_code
+       - name: alphabeth_code
+         kind: string
+         alias: ac
+         descriptions: :tiun.resources.name.create.alphabeth_code
+       - name: bond_to_id
+         kind: integer
+         descriptions: :tiun.resources.name.create.bond_to_id
+       - name: root_id
+         kind: integer
+         descriptions: :tiun.resources.name.create.root_id
+       - name: bind_kind_name
+         kind: string
+         descriptions: :tiun.resources.name.create.bind_kind_name
+       - name: modifier
+         kind: string
+         descriptions: :tiun.resources.name.create.modifier
+ - name: name
+   path: /api/v0/names/:id.json
+   methods:
+    - name: get
+      version: 0.1
+      kind: name
+      descriptions: :tiun.resources.name.get
+      auth: no
+      allowed_errors: [200, 404, 406, 422.3, 500]
+      args:
+       - name: id
+         kind: string
+         descriptions: :tiun.resources.name.get.id
+       - name: language
+         kind: string
+         alias: l
+         descriptions: :tiun.resources.name.get.language
+       - name: alphabeth
+         kind: string
+         alias: a
+         descriptions: :tiun.resources.name.get.alphabeth
+    - name: put
+      version: 0.1
+      kind: name
+      descriptions: :tiun.resources.name.put
+      auth: name.update
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: integer
+         descriptions: :tiun.resources.name.put.id
+       - name: text
+         kind: integer
+         descriptions: :tiun.resources.name.put.text
+       - name: language_code
+         kind: string
+         alias: lc
+         descriptions: :tiun.resources.name.put.language_code
+       - name: alphabeth_code
+         kind: string
+         alias: ac
+         descriptions: :tiun.resources.name.put.alphabeth_code
+       - name: bond_to_id
+         kind: integer
+         descriptions: :tiun.resources.name.put.bond_to_id
+       - name: root_id
+         kind: integer
+         descriptions: :tiun.resources.name.put.root_id
+       - name: bind_kind_name
+         kind: string
+         descriptions: :tiun.resources.name.put.bind_kind_name
+       - name: modifier
+         kind: string
+         descriptions: :tiun.resources.name.put.modifier
+    - name: delete
+      version: 0.1
+      kind: name
+      descriptions: :tiun.resources.name.delete
+      auth: name.remove
+      allowed_errors: [200, 404, 422.3, 500]
+      args:
+       - name: id
+         kind: string
+         descriptions: :tiun.resources.name.delete.id

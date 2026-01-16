@@ -3,7 +3,8 @@ types:
  - name: subject
    version: 0.1
    with:
-    - title
+    - kind_title
+    - name
    fields:
     - name: id
       kind: integer
@@ -19,8 +20,10 @@ types:
    model: Subject
    version: 0.1
    with:
-    - title
+    - kind_title
     - description
+    - name
+    - links
    fields:
     - name: id
       kind: integer
@@ -91,7 +94,7 @@ resources:
          descriptions: :tiun.subjects.subject.index.kind_code
        - name: key
          kind: string
-         alias: t
+         alias: T
          descriptions: :tiun.subjects.subject.index.key
        - name: query
          kind: string
@@ -117,7 +120,7 @@ resources:
          descriptions: :tiun.subjects.subject.autocomplete.per_page
        - name: query
          kind: string
-         alias: t
+         alias: q
          descriptions: :tiun.subjects.subject.autocomplete.query
        - name: kind_code
          kind: string
@@ -136,6 +139,15 @@ resources:
        - name: id
          kind: integer
          descriptions: :tiun.subjects.subject.post.id
+       - name: kind_code
+         kind: string
+         descriptions: :tiun.subjects.subject.post.kind_code
+       - name: key
+         kind: string
+         descriptions: :tiun.subjects.subject.post.key
+       - name: meta
+         kind: json
+         descriptions: :tiun.subjects.subject.post.meta
        - name: language
          kind: string
          descriptions: :tiun.subjects.subject.post.language
@@ -148,15 +160,9 @@ resources:
        - name: description
          kind: string
          descriptions: :tiun.subjects.subject.post.description
-       - name: kind_code
-         kind: string
-         descriptions: :tiun.subjects.subject.post.kind_code
-       - name: key
-         kind: string
-         descriptions: :tiun.subjects.subject.post.key
-       - name: meta
-         kind: json
-         descriptions: :tiun.subjects.subject.post.meta
+       - name: links
+         kind: url array
+         descriptions: :tiun.subjects.subject.post.links
  - name: subject
    path: /api/v0/subjects/:id.json
    methods:
@@ -185,6 +191,15 @@ resources:
       policy: subject.update
       allowed_errors: [200, 404, 422.3, 500]
       args:
+       - name: kind_code
+         kind: string
+         descriptions: :tiun.subjects.subject.put.kind_code
+       - name: key
+         kind: string
+         descriptions: :tiun.subjects.subject.put.key
+       - name: meta
+         kind: json
+         descriptions: :tiun.subjects.subject.put.meta
        - name: language
          kind: string
          descriptions: :tiun.subjects.subject.put.language
@@ -197,15 +212,9 @@ resources:
        - name: description
          kind: string
          descriptions: :tiun.subjects.subject.put.description
-       - name: kind_code
-         kind: string
-         descriptions: :tiun.subjects.subject.put.kind_code
-       - name: key
-         kind: string
-         descriptions: :tiun.subjects.subject.put.key
-       - name: meta
-         kind: json
-         descriptions: :tiun.subjects.subject.put.meta
+       - name: links
+         kind: url array
+         descriptions: :tiun.subjects.subject.put.links
     - name: delete
       version: 0.1
       kind: text
