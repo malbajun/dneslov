@@ -195,7 +195,7 @@ export const memoMeta = {
                kind: 'dynamic',
                title: 'Чин',
                pathname: 'api/v0/memories/ac',
-               context_value: { t: "Language" },
+               context_value: { t: "Order" },
                humanized_name: 'order',
                key_name: 'value',
                value_name: 'key',
@@ -205,6 +205,20 @@ export const memoMeta = {
                   "Чин отсутствует": matchEmptyObject,
                   'Чин содержит знаки вне перечня избранной азбуки': matchLetters,
                }
+            },
+         }
+      },
+      original_title: {
+         kind: 'block',
+         meta: {
+            id: {
+               kind: 'hidden',
+            },
+            text: {
+               kind: 'text',
+               title: 'Оригинальный заголовок в календаре',
+               placeholder: 'Введи заголовок',
+               display_scheme: '12-12-12-12',
             },
          }
       },

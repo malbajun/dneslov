@@ -8,6 +8,7 @@ class Description < ActiveRecord::Base
 
    scope :desc, -> { where(type: 'Description') }
    scope :title, -> { where(type: 'Title') }
+   scope :original_title, -> { where(type: 'Original') }
    scope :appe, -> { where(type: 'Appellation') }
    scope :descnote, -> { where(type: ['Description', 'Note'])}
    scope :annotated, -> { order(Arel.sql('length(text) ASC')).limit(1) }
@@ -39,8 +40,6 @@ class Description < ActiveRecord::Base
       self.where(describable_type: "Memo",
                  describable_id: ids)
    end
-
-   validates :text, :language_code, :alphabeth_code, presence: true
 
    before_create -> { self.type ||= 'Description' }
 

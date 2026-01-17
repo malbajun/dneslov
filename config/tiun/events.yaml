@@ -116,8 +116,22 @@ resources:
          descriptions: :tiun.events.event.autocomplete.per_page
        - name: query
          kind: string
-         alias: t
+         alias: q
          descriptions: :tiun.events.event.autocomplete.query
+       - name: memory_id
+         kind: string
+         alias: by_memory_id
+         descriptions: :tiun.events.event.autocomplete.memory_id
+       - name: type
+         kind: string
+         alias: t
+         descriptions: :tiun.resources.memory.autocomplete.type
+       - name: language
+         kind: string
+         descriptions: :tiun.resources.memory.create.language
+       - name: alphabeth
+         kind: string
+         descriptions: :tiun.resources.memory.create.alphabeth
  - name: event.create
    path: /api/v0/events/create.json
    methods:

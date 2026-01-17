@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_01_13_045720) do
+ActiveRecord::Schema[7.0].define(version: 2026_01_17_001242) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -93,12 +93,12 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_13_045720) do
   end
 
   create_table "descriptions", id: :serial, force: :cascade do |t|
-    t.string "language_code", null: false
+    t.string "language_code"
     t.bigint "describable_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "describable_type", default: "Memory", null: false
-    t.string "alphabeth_code", null: false
+    t.string "alphabeth_code"
     t.string "type"
     t.text "text"
     t.index "md5(text)", name: "descriptions_text_index"

@@ -58,6 +58,7 @@ class Memo < ApplicationRecord
    has_many :notes, as: :describable, dependent: :delete_all, class_name: :Note
    has_many :versi, as: :describable, dependent: :delete_all, class_name: :Versus
    has_many :calendary_titles, through: :calendary, source: :titles, class_name: :Appellation
+   has_one :original_title, -> { original_title }, as: :describable, class_name: :Original, dependent: :destroy
 
    delegate :quantity, to: :memory
    delegate :quantity, to: :bond_to, prefix: true, allow_nil: true
@@ -252,6 +253,29 @@ class Memo < ApplicationRecord
          memoes.year_date || ')]' AS _value"
 
       joins(joi).select(selector).group(:id, "#{as}_short_names.text", "#{as}_events.happened_at", "#{as}_event_titles.text", "#{as}_titles.text", "#{as}_calendary_titles.text", "memoes.year_date")
+   end
+
+   scope :with_original, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<as>[^']*)'/ =~ caller.grep(/delegation/)[1]
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "jsonb_build_object(
+         'id', descriptions_#{as}.id,
+         'text', descriptions_#{as}.text) AS _original_title"
+
+      join =
+         "LEFT OUTER JOIN descriptions AS descriptions_#{as}
+                       ON descriptions_#{as}.describable_type = '#{model}'
+                      AND descriptions_#{as}.describable_id = #{this}.id
+                      AND descriptions_#{as}.type = 'Original'
+                      AND descriptions_#{as}.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                      AND descriptions_#{as}.language_code IN ('#{language_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "descriptions_#{as}.id", "descriptions_#{as}.text")
    end
 
    scope :with_usual_event_code, -> _context do
@@ -653,6 +677,7 @@ class Memo < ApplicationRecord
    accepts_nested_attributes_for :notes, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :versi, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memo_orders, reject_if: :all_blank, allow_destroy: true
+   accepts_nested_attributes_for :original_title, reject_if: :all_blank, allow_destroy: true
 
    validates_presence_of :calendary, :event
    validates :year_date, format: { with: /\A((0[1-9]|[1-2][0-9]|3[0-1])\.(0[1-9]|1[0-2])([%<>~][0-6])?|[+-]\d{1,3})\z/ }, if: :year_date
