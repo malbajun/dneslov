@@ -255,6 +255,29 @@ class Memo < ApplicationRecord
       joins(joi).select(selector).group(:id, "#{as}_short_names.text", "#{as}_events.happened_at", "#{as}_event_titles.text", "#{as}_titles.text", "#{as}_calendary_titles.text", "memoes.year_date")
    end
 
+   scope :with_original, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<as>[^']*)'/ =~ caller.grep(/delegation/)[1]
+
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "jsonb_build_object(
+         'id', descriptions_#{as}.id,
+         'text', descriptions_#{as}.text) AS _original_title"
+
+      join =
+         "LEFT OUTER JOIN descriptions AS descriptions_#{as}
+                       ON descriptions_#{as}.describable_type = '#{model}'
+                      AND descriptions_#{as}.describable_id = #{this}.id
+                      AND descriptions_#{as}.type = 'Original'
+                      AND descriptions_#{as}.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                      AND descriptions_#{as}.language_code IN ('#{language_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "descriptions_#{as}.id", "descriptions_#{as}.text")
+   end
+
    scope :with_usual_event_code, -> _context do
       selector = 'usual_order_table.order_no AS _usual_event_code'
       list = Event::USUAL.map.with_index {|x, i| "('#{x}', #{i})" }

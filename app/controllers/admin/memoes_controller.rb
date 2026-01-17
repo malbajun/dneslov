@@ -18,7 +18,7 @@ class Admin::MemoesController < Admin::CommonController
 
    def index_with_list
       %w(with_descriptions with_notes with_titles with_links with_memory_event
-         with_memo_orders with_bond_to_year_date with_bond_to_detailed with_calendary_title)
+         with_memo_orders with_bond_to_year_date with_bond_to_detailed with_calendary_title with_original)
    end
 
    def permitted_params

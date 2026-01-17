@@ -1,4 +1,5 @@
 class Tweet < Description
+   validates :text, :language_code, :alphabeth_code, presence: true
    validate :all_downcase, if: :present?
 
    def all_downcase

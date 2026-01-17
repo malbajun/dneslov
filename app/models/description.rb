@@ -41,8 +41,6 @@ class Description < ActiveRecord::Base
                  describable_id: ids)
    end
 
-   validates :text, :language_code, :alphabeth_code, presence: true
-
    before_create -> { self.type ||= 'Description' }
 
    before_validation :fill_in_la
