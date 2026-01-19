@@ -9,7 +9,7 @@ export default class MemorySpan extends Component {
       slug: null,
       defaultCalendarySlug: null,
       roundelUrl: null,
-      happenedAt: null,
+      haits: [],
       orders: {},
       orderTweet: null,
       orderShortName: null,
@@ -19,7 +19,6 @@ export default class MemorySpan extends Component {
       yearDate: null,
       bindKindCode: null,
       calendarySlug: null,
-      eventTitle: null,
       usualEventCode: null,
 
       onLoadRequest: null,
@@ -123,9 +122,10 @@ export default class MemorySpan extends Component {
                <span
                   className='name short'>
                   {this.props.title}</span>
-               <Chip
-                  className='year-date'
-                  text={this.props.happenedAt} /></div>
+               {this.props.haits.map((hait) => <Chip
+                  className='hait'
+                  texts={[hait.event_title, hait.happened_at]} />)}
+               </div>
             {this.props.description &&
                <div
                   className='collapsible-body description'

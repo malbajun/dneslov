@@ -6,6 +6,7 @@ export default class Chip extends Component {
       className: null,
       url: '',
       texts: [],
+      text: null,
       data: null,
       color: null,
       action: null,
@@ -15,7 +16,8 @@ export default class Chip extends Component {
    static propTypes = {
       className: PropTypes.string,
       url: PropTypes.string,
-      text: PropTypes.string.isRequired,
+      text: PropTypes.string,
+      texts: PropTypes.array,
       data: PropTypes.object,
       color: PropTypes.string,
       action: PropTypes.string,
@@ -63,6 +65,10 @@ export default class Chip extends Component {
 
    actionIcon() {
       return this.state.action == 'remove' && 'close' || this.state.action
+   }
+
+   texts() {
+      return this.props.text ? [this.props.text] : this.props.texts
    }
 
    renderText(text) {
@@ -121,15 +127,20 @@ export default class Chip extends Component {
 
       return (
          <div
-            key={this.props.text + ' link'}
             ref={e => this.$link = e}
-            className={this.className()}
-            data-position="top"
-            data-tooltip={this.props.tooltip || null}
-            style={{ backgroundColor: '#' + this.props.color }} >
-            {this.renderText(this.props.text)}
-            {this.state.action &&
-               <i
-                  className={this.closeClassName()}
-                  onClick={this.onAct.bind(this)} >{
-                  this.actionIcon()}</i>}</div>)}}
+            className={"chip-group"} >
+            {this.texts().map((text) => <div
+               className={this.className()}
+               data-position="top"
+               data-tooltip={this.props.tooltip || null}
+               style={{ backgroundColor: '#' + this.props.color }} >
+               {this.renderText(text)}
+               {this.state.action &&
+                  <i
+                     className={this.closeClassName()}
+                     onClick={this.onAct.bind(this)} >{
+                     this.actionIcon()}</i>}</div>)}
+         </div>
+      )
+   }
+}
