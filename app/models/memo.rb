@@ -408,7 +408,7 @@ class Memo < ApplicationRecord
          "#{this}_#{ast}_memories.type")
    end
 
-   # with hait = memo\event happened_at, event id, event title
+   # with hait = memo\event happened_at, event_kind_code, event id, event title, bind_kind_code
    scope :with_haits, -> context do
       this = table.table_alias || table.name
       language_codes = context[:language] ? [context[:language]] : context[:text_languages]
@@ -437,6 +437,8 @@ class Memo < ApplicationRecord
                              ON(#{this}_memories.base_year,
                                 #{this}_memory_events.id)
                              #{this}_memory_events.id AS event_id,
+                             #{this}_memory_events.kind_code AS event_kind_code,
+                             #{this}_memory_memoes.bind_kind_code AS bind_kind_code,
                              COALESCE(#{this}_event_titles.text, #{this}_event_kind_titles.text) AS event_title,
                              COALESCE(#{this}_memory_memoes.happened_at, #{this}_memory_events.happened_at) AS happened_at
                         FROM memories AS #{this}_memories
@@ -464,6 +466,7 @@ class Memo < ApplicationRecord
                     GROUP BY #{this}_memories.base_year,
                              #{this}_memory_events.id,
                              #{this}_memory_memoes.happened_at,
+                             #{this}_memory_memoes.bind_kind_code,
                              event_title
                     ORDER BY #{this}_memories.base_year,
                              #{this}_memory_events.id,

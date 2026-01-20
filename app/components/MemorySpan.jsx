@@ -94,6 +94,20 @@ export default class MemorySpan extends Component {
       }
    }
 
+   generateTexts(hait) {
+      let bind_kind_code = null, event_title = null
+
+      if (hait.bind_kind_code != "несвязаный") {
+         bind_kind_code = hait.bind_kind_code;
+      }
+
+      if (hait.event_kind_code != "Veneration") {
+         event_title = hait.event_title;
+      }
+
+      return [event_title, bind_kind_code, hait.happened_at].compact()
+   }
+
    render() {
       console.log("[render] > props:", this.props, "state:", this.state)
 
@@ -124,7 +138,7 @@ export default class MemorySpan extends Component {
                   {this.props.title}</span>
                {this.props.haits.map((hait) => <Chip
                   className='hait'
-                  texts={[hait.event_title, hait.happened_at]} />)}
+                  texts={this.generateTexts(hait)} />)}
                </div>
             {this.props.description &&
                <div
