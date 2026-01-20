@@ -86,11 +86,7 @@ export default class Chip extends Component {
          }
 
          parts = parts.concat(partsIn.map((textIn) => {
-            if (this.props.url) {
-               return <a href={this.properUrl()} target='_blank' >{textIn}</a>
-            } else {
-               return <span>{textIn}</span>
-            }
+            return <span>{textIn}</span>
          }))
       }
 
@@ -103,7 +99,8 @@ export default class Chip extends Component {
 
    // handlers
    onLinkClick(e) {
-      if (e.target.href) {
+      console.log("werewerew", this.props.url)
+      if (this.props.url) {
           e.stopPropagation()
           e.preventDefault()
           window.open(this.props.url, '_blank')
@@ -114,12 +111,6 @@ export default class Chip extends Component {
       e.stopPropagation()
       this.setState({ action: null })
       this.props.onAct(this.props.data)
-   }
-
-   properUrl() {
-      let url = this.props.url.replace(/^http:\/\//, 'https://')
-
-      return url
    }
 
    render() {

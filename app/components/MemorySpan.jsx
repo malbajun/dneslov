@@ -79,9 +79,7 @@ export default class MemorySpan extends Component {
    }
 
    linkToMemory() {
-      let eventId = this.props.usualEventCode ? this.props.eventId : null
-
-      return "/" + [this.props.slug, eventId].compact().join("/")
+      return "/" + this.props.slug
    }
 
    orders() {
@@ -92,6 +90,10 @@ export default class MemorySpan extends Component {
             return res.concat([[this.props.orders[key], key]])
          }, [])
       }
+   }
+
+   generateUrl(hait) {
+      return '/' + this.props.slug + '/' + hait.event_id
    }
 
    generateTexts(hait) {
@@ -138,6 +140,7 @@ export default class MemorySpan extends Component {
                   {this.props.title}</span>
                {this.props.haits.map((hait) => <Chip
                   className='hait'
+                  url={this.generateUrl(hait)}
                   texts={this.generateTexts(hait)} />)}
                </div>
             {this.props.description &&
