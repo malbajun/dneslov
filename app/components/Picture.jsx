@@ -188,30 +188,19 @@ export default class Picture extends Component {
                <meta id="meta-description" name="description" content={this.getDescription()} />
             </MetaTags>
             <div className='col s12'>
-               {! this.props.specific_title && [
+               {[
                   this.state.order &&
                      <Chip
-                        color={this.getSlugColor(this.props.order || this.props.memory?.order)}
+                        className='order'
+                        color={this.getSlugColor(this.state.order)}
                         text={this.state.order} />,
                   <Name
                      short_name={this.props.memory?.short_name}
                      url={getUrlsFrom(this.props.specifiedCalendarySlug, this.props.memory.slug)[0]}
                      names={this.props.names} />,
                   <Chip
-                     color={this.getSlugColor(this.state.title)}
-                     text={this.state.title} />,]}
-               {this.props.specific_title &&
-                  <span>
-                     {this.props.specific_title}</span>}
-               {this.props.place?.name &&
-                  <Chip
-                     className='place'
-                     text={this.props.place.name} />}
-               {this.props.happened_at && <Chip
-                  text={this.props.happened_at} />}</div>
-            {this.props.date && false && <Chip
-               cclassName={this.classNameForYearDate()}
-               text={this.props.date} />}
+                     classNames={['event', 'happened_at', 'place']}
+                     texts={[this.props.specific_title || this.state.title, this.state.happenedAt, this.props.place?.name].compact()} />,]}</div>
             {this.state.iconLinks.isPresent() &&
                <Carousel
                   images={this.state.iconLinks} />}
@@ -228,6 +217,7 @@ export default class Picture extends Component {
                      <div className='col s12'>
                         {this.state.links.map((link) =>
                            <Chip
+                              className='external'
                               key={link.id}
                               url={link.url}
                               color={Memory.getColorForLink(link)}

@@ -110,6 +110,7 @@ export default class Rite extends Component {
          <div className='row rite'>
             <div className={'col'}>
                <Chip
+                  className='transparent'
                   text={this.props.i18n.rite} />
                <span>{this.props.title || this.props.abbreviation}</span>
                <Markdown source={this.props.description} />

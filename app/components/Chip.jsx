@@ -3,9 +3,13 @@ import PropTypes from 'prop-types'
 
 export default class Chip extends Component {
    static defaultProps = {
+      wrapperClassName: null,
       className: null,
+      classNames: [],
       url: '',
+      urls: [],
       texts: [],
+      text: null,
       data: null,
       color: null,
       action: null,
@@ -13,9 +17,11 @@ export default class Chip extends Component {
    }
 
    static propTypes = {
+      wrapperClassName: PropTypes.string,
       className: PropTypes.string,
       url: PropTypes.string,
-      text: PropTypes.string.isRequired,
+      text: PropTypes.string,
+      texts: PropTypes.array,
       data: PropTypes.object,
       color: PropTypes.string,
       action: PropTypes.string,
@@ -53,8 +59,15 @@ export default class Chip extends Component {
       this.$link.removeEventListener('click', this.onLinkClick)
    }
 
-   className() {
-      return 'chip ' + (this.props.className || '') + (this.props.tooltip ? ' tooltipped' : "")
+   classNameFor(index) {
+      let classNames = this.props.className ? [this.props.className] : this.props.classNames,
+          className = classNames[index] || ''
+
+      return 'chip ' + className + (this.props.tooltip ? ' tooltipped' : "")
+   }
+
+   urlFor(index) {
+      return this.props.url || this.props.urls[index]
    }
 
    closeClassName() {
@@ -65,7 +78,11 @@ export default class Chip extends Component {
       return this.state.action == 'remove' && 'close' || this.state.action
    }
 
-   renderText(text) {
+   texts() {
+      return this.props.text ? [this.props.text] : this.props.texts.compact()
+   }
+
+   renderText(text, index) {
       let parts = [], partsIn = []
 
       if (this.props.children) {
@@ -80,11 +97,8 @@ export default class Chip extends Component {
          }
 
          parts = parts.concat(partsIn.map((textIn) => {
-            if (this.props.url) {
-               return <a href={this.properUrl()} target='_blank' >{textIn}</a>
-            } else {
-               return <span>{textIn}</span>
-            }
+            return <span
+               data-url={this.urlFor(index)} >{textIn}</span>
          }))
       }
 
@@ -97,10 +111,12 @@ export default class Chip extends Component {
 
    // handlers
    onLinkClick(e) {
-      if (e.target.href) {
+      let url = e.target.getAttribute("data-url")
+
+      if (url) {
           e.stopPropagation()
           e.preventDefault()
-          window.open(this.props.url, '_blank')
+          window.open(url, '_blank')
       }
    }
 
@@ -110,26 +126,25 @@ export default class Chip extends Component {
       this.props.onAct(this.props.data)
    }
 
-   properUrl() {
-      let url = this.props.url.replace(/^http:\/\//, 'https://')
-
-      return url
-   }
-
    render() {
       console.debug("[render] **", { 'this.props': this.props, 'this.state': this.state })
 
       return (
          <div
-            key={this.props.text + ' link'}
             ref={e => this.$link = e}
-            className={this.className()}
-            data-position="top"
-            data-tooltip={this.props.tooltip || null}
-            style={{ backgroundColor: '#' + this.props.color }} >
-            {this.renderText(this.props.text)}
-            {this.state.action &&
-               <i
-                  className={this.closeClassName()}
-                  onClick={this.onAct.bind(this)} >{
-                  this.actionIcon()}</i>}</div>)}}
+            className={"chip-group " + this.props.wrapperClassName || ''} >
+            {this.texts().map((text, index) => <div
+               className={this.classNameFor(index)}
+               data-position="top"
+               data-tooltip={this.props.tooltip || null}
+               style={{ backgroundColor: '#' + this.props.color }} >
+               {this.renderText(text, index)}
+               {this.state.action &&
+                  <i
+                     className={this.closeClassName()}
+                     onClick={this.onAct.bind(this)} >{
+                     this.actionIcon()}</i>}</div>)}
+         </div>
+      )
+   }
+}

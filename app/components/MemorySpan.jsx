@@ -1,15 +1,18 @@
 import { Component } from 'react'
+import { mixin } from 'lodash-decorators'
 
 import Chip from 'Chip'
 import Name from 'Name'
 import Markdown from 'Markdown'
+import GetSlugColor from 'mixins/GetSlugColor'
 
+@mixin(GetSlugColor)
 export default class MemorySpan extends Component {
    static defaultProps = {
       slug: null,
       defaultCalendarySlug: null,
       roundelUrl: null,
-      happenedAt: null,
+      haits: [],
       orders: {},
       orderTweet: null,
       orderShortName: null,
@@ -19,7 +22,6 @@ export default class MemorySpan extends Component {
       yearDate: null,
       bindKindCode: null,
       calendarySlug: null,
-      eventTitle: null,
       usualEventCode: null,
 
       onLoadRequest: null,
@@ -50,9 +52,7 @@ export default class MemorySpan extends Component {
 
    // events
    onAvatarClick(e) {
-      let eventId = this.props.usualEventCode ? this.props.eventId : null
-
-      this.props.onLoadRequest(this.props.slug, eventId)
+      this.props.onLoadRequest(this.props.slug)
 
       e.stopPropagation()
       e.preventDefault()
@@ -80,9 +80,7 @@ export default class MemorySpan extends Component {
    }
 
    linkToMemory() {
-      let eventId = this.props.usualEventCode ? this.props.eventId : null
-
-      return "/" + [this.props.slug, eventId].compact().join("/")
+      return "/" + this.props.slug
    }
 
    orders() {
@@ -93,6 +91,38 @@ export default class MemorySpan extends Component {
             return res.concat([[this.props.orders[key], key]])
          }, [])
       }
+   }
+
+   generateUrl(hait) {
+      return '/' + this.props.slug + '/' + hait.event_id
+   }
+
+   generateClassName(hait) {
+      let bind_kind_code = null, event_title = null
+
+      if (hait.bind_kind_code != "несвязаный") {
+         bind_kind_code = 'event_kind';
+      }
+
+      if (hait.event_kind_code != "Veneration") {
+         event_title = 'event';
+      }
+
+      return [event_title, bind_kind_code, 'happened_at'].compact()
+   }
+
+   generateTexts(hait) {
+      let bind_kind_code = null, event_title = null
+
+      if (hait.bind_kind_code != "несвязаный") {
+         bind_kind_code = hait.bind_kind_code;
+      }
+
+      if (hait.event_kind_code != "Veneration") {
+         event_title = hait.event_title;
+      }
+
+      return [event_title, bind_kind_code, hait.happened_at].compact()
    }
 
    render() {
@@ -117,15 +147,18 @@ export default class MemorySpan extends Component {
                   {this.hasNoImage() &&
                      <i className='material-icons circle terracota z-depth-1'>perm_identity</i>}</a>
                {this.orders().map((order) => <Chip
-                     color={'gray'}
+                     className='order'
+                     color={this.getSlugColor(order.first())}
                      tooltip={order.last()}
                      text={order.first()} />)}
                <span
                   className='name short'>
                   {this.props.title}</span>
-               <Chip
-                  className='year-date'
-                  text={this.props.happenedAt} /></div>
+               {this.props.haits.map((hait) => <Chip
+                  classNames={this.generateClassName(hait)}
+                  url={this.generateUrl(hait)}
+                  texts={this.generateTexts(hait)} />)}
+               </div>
             {this.props.description &&
                <div
                   className='collapsible-body description'

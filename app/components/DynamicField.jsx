@@ -5,7 +5,6 @@ import axios from 'axios'
 import { merge } from 'merge-anything'
 
 import ErrorSpan from 'ErrorSpan'
-import Chip from 'Chip'
 import Validation from 'Validation'
 import Subscribed from 'mixins/Subscribed'
 import ValueToObject from 'mixins/ValueToObject'

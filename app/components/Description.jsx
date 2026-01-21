@@ -89,7 +89,8 @@ export default class Description extends Component {
                                  short_name={memo.title} />
                               <Chip
                                  key={memo.calendary_slug + '-description-year-date'}
-                                 className='year-date right'
+                                 wrapperClassName='right'
+                                 className='celebrate_date'
                                  text={memo.year_date}
                                  color={this.getSlugColor(memo.year_date)}
                                  url={memo.url} /></div>

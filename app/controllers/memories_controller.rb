@@ -109,7 +109,7 @@ class MemoriesController < ApplicationController
                                   .with_date
                                   .with_roundel_url
                                   .with_bond_to_title(context)
-                                  .with_event_title(context)
+                                  .with_haits(context)
                                   .with_orders(context)
                                   .with_sort_event_code(context)
                                   .with_usual_event_code(context)

@@ -1,0 +1,292 @@
+.chip-group {
+   border-radius: 2rem;
+   color: rgba(47,16,95,0.6);
+   margin: .25rem .125rem;
+   position: relative;
+   display: inline-flex;
+   vertical-align: middle;
+   box-sizing: border-box;
+   font-size: 90%;
+   --bd-example-padding: 1.5rem;
+   --bs-gutter-x: 3rem;
+   --bs-gutter-y: 0;
+
+   height: auto;
+   flex-direction: row;
+   overflow: hidden;
+
+   &.right {
+      float: right;
+      top: 0.25rem;
+
+      &:before {
+         flex-grow: 1;
+      }
+   }
+
+   .chip {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+      position: relative;
+      flex: 1 1 auto;
+      cursor: pointer;
+      --bs-chip-padding-x: 1rem;
+      --bs-chip-padding-x-tiny: 0.25rem;
+      --bs-chip-padding-y: 0.325rem;
+      --bs-chip-font-family: ;
+      --bs-chip-font-size: 1rem;
+      --bs-chip-font-weight: 400;
+      --bs-chip-line-height: 1.5;
+      --bs-chip-color: var(--bs-body-color);
+      --bs-chip-bg: transparent;
+      --bs-chip-border-width: var(--bs-border-width);
+      --bs-chip-border-color: transparent;
+      --bs-chip-hover-border-color: transparent;
+      --bs-chip-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15),0 1px 1px rgba(0, 0, 0, 0.075);
+      --bs-chip-disabled-opacity: 0.65;
+      --bs-chip-focus-box-shadow: 0 0 0 0.25rem rgba(var(--bs-chip-focus-shadow-rgb), .5);
+      display: inline-block;
+      padding: var(--bs-chip-padding-y) var(--bs-chip-padding-x);
+      padding-left: var(--bs-chip-padding-x-tiny);
+      padding-right: var(--bs-chip-padding-x-tiny);
+      font-family: var(--bs-chip-font-family);
+      font-size: var(--bs-chip-font-size);
+      font-weight: var(--bs-chip-font-weight);
+      line-height: var(--bs-chip-line-height);
+      color: var(--bs-chip-color);
+      text-align: center;
+      text-decoration: none;
+      vertical-align: middle;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+      border: var(--bs-chip-border-width) solid var(--bs-chip-border-color);
+      border-radius: var(--bs-chip-border-radius);
+      background-color: var(--bs-chip-bg);
+      transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+      height: auto;
+      margin: 0;
+      overflow: auto;
+      //margin: 0.2rem;
+      //overflow: hidden;
+
+      &:first-child {
+         border-top-left-radius: 2rem;
+         border-bottom-left-radius: 2rem;
+         padding-left: var(--bs-chip-padding-x);
+         padding-right: var(--bs-chip-padding-x-tiny);
+         --bs-chip-color: #000;
+         --bs-chip-border-color: #fffcf0;
+         --bs-chip-hover-color: #000;
+         --bs-chip-hover-border-color: #fffcf2;
+         --bs-chip-focus-shadow-rgb: 217,164,6;
+         --bs-chip-active-color: #000;
+         --bs-chip-active-border-color: #fffcf2;
+         --bs-chip-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+         --bs-chip-disabled-color: #000;
+         --bs-chip-disabled-border-color: #fffcf0;
+      }
+
+      &:last-child {
+         border-top-right-radius: 2rem;
+         border-bottom-right-radius: 2rem;
+         padding-left: calc(2*var(--bs-chip-padding-x-tiny));
+         padding-right: var(--bs-chip-padding-x);
+         --bs-chip-color: #000;
+         --bs-chip-border-color: #e1f0ea;
+         --bs-chip-hover-color: #000;
+         --bs-chip-hover-border-color: #e1f0ea;
+         --bs-chip-focus-shadow-rgb: 60,153,110;
+         --bs-chip-active-color: #fff;
+         --bs-chip-active-border-color: #e1fce6;
+         --bs-chip-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+         --bs-chip-disabled-color: #fff;
+         --bs-chip-disabled-border-color: #e1f0ea;
+      }
+
+      &:first-child:last-child {
+         padding: var(--bs-chip-padding-y) var(--bs-chip-padding-x);
+      }
+
+      &.transparent {
+         background-color: transparent;
+      }
+
+      &.date {
+         --bs-chip-bg: rgba(248, 248, 248, 1);
+         --bs-chip-hover-bg: rgba(250, 250, 250, 1);
+         --bs-chip-active-bg: rgba(240, 240, 240, 0.8);
+         --bs-chip-disabled-bg: rgba(252, 252, 252, 0.1);
+      }
+
+      &.calendary {
+         --bs-chip-bg: rgba(47, 16, 95, 1);
+         --bs-chip-hover-bg: #fffcf2;
+         --bs-chip-active-bg: #fffcf3;
+         --bs-chip-disabled-bg: #fffcf0;
+      }
+
+      &.query {
+         --bs-chip-bg: rgba(240, 255, 240, 1);
+         --bs-chip-hover-bg: #fffcf2;
+         --bs-chip-active-bg: #fffcf3;
+         --bs-chip-disabled-bg: #fffcf0;
+      }
+
+      &.order {
+         --bs-chip-bg: rgba(255, 255, 240, 1);
+         --bs-chip-hover-bg: #fffcf2;
+         --bs-chip-active-bg: #fffcf3;
+         --bs-chip-disabled-bg: #fffcf0;
+      }
+
+      &.event {
+         --bs-chip-bg: rgba(230, 245, 240, 1);
+         &:hover {
+            --bs-chip-hover-bg: rgba(230, 245, 240, 0.8);
+         }
+         &:active {
+            --bs-chip-active-bg: rgba(210, 225, 220, 1);
+         }
+         &.disabled {
+            --bs-chip-disabled-bg: rgba(230, 245, 240, 0.1);
+         }
+      }
+
+      &.event_kind {
+         --bs-chip-bg: rgba(240, 255, 245, 1);
+         &:hover {
+            --bs-chip-hover-bg: rgba(240, 255, 245, 0.8);
+         }
+         &:active {
+            --bs-chip-active-bg: rgba(220, 235, 225, 1);
+         }
+         &.disabled {
+            --bs-chip-disabled-bg: rgba(240, 255, 245, 0.1);
+         }
+      }
+
+      &.happened_at {
+         --bs-chip-bg: rgba(190, 255, 222, 1);
+         --bs-chip-hover-bg: #e1f0ea;
+         --bs-chip-active-bg: #e1fce6;
+         --bs-chip-disabled-bg: #e1f0ea;
+      }
+
+      &.place {
+         --bs-chip-bg: rgba(200, 237, 255, 1);
+         --bs-chip-hover-bg: #fffcf2;
+         --bs-chip-active-bg: #fffcf3;
+         --bs-chip-disabled-bg: #fffcf0;
+      }
+
+      &.celebrate_date {
+         --bs-chip-bg: rgba(240, 240, 240, 1);
+         --bs-chip-hover-bg: #fffcf2;
+         --bs-chip-active-bg: #fffcf3;
+         --bs-chip-disabled-bg: #fffcf0;
+      }
+
+      &.external {
+         --bs-chip-bg: rgba(221, 221, 255, 1);
+         --bs-chip-hover-bg: #fffcf2;
+         --bs-chip-active-bg: #fffcf3;
+         --bs-chip-disabled-bg: #fffcf0;
+      }
+
+      &.error {
+         --bs-chip-bg: rgba(255, 128, 128, 0.6);
+         --bs-chip-hover-bg: #fffcf2;
+         --bs-chip-active-bg: #fffcf3;
+         --bs-chip-disabled-bg: #fffcf0;
+      }
+
+      &.nearby {
+         border: 0.1rem solid #88c5eb;;
+      }
+
+      & > div,a,span {
+         padding-left: 0.8rem;
+         padding-right: 0.8rem;
+
+         &:last-child {
+            background-color: rgb(220, 255, 220);
+         }
+
+         &:only-child {
+            background-color: transparent !important;
+         }
+      }
+
+      &.year-date, &.happened-at {
+         padding: 0 0.4rem 0 0.4rem;
+         background-color: #f8f8f8 !important;
+         &.right {
+            margin-top: 0.5rem;
+         }
+      }
+
+      &.date {
+         background-color: #f8f8f8 !important;
+      }
+
+      &.calendary {
+         background-color: #f0f8ff !important;
+      }
+
+      & > h2, & > h4, & > h5 {
+         text-align: center;
+      }
+
+      .close {
+         line-height: inherit;
+         font-size: inherit;
+      }
+
+      .unfix {
+         line-height: inherit;
+         font-size: inherit;
+         cursor: pointer;
+         float: right;
+         padding-left: 0.6rem;
+         padding-right: 0.6rem;
+      }
+
+      span {
+         margin: 0;
+         padding: 0;
+         display: inline;
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         background-color: transparent;
+         display: inline-flex;
+
+         white-space: nowrap;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         margin-left: 0.2rem;
+         margin-right: 0.2rem;
+         -moz-user-select: auto;
+         -webkit-user-select: auto;
+         -ms-user-select: auto;
+
+         .plain {
+            margin: 0;
+            padding: 0;
+            white-space: pre-wrap;
+
+            &.selected {
+               background-color: aliceblue;
+            }
+         }
+
+         &.multiline {
+            white-space: pre-wrap;
+         }
+      }
+   }
+}

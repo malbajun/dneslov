@@ -21,6 +21,7 @@ export default class Error extends Component {
          <div
             className={this.props.appendClassName}>
             <Chip
+               className='error'
                color={this.getSlugColor(this.props.error.code)}
                text={this.props.error.code} />
             <Name

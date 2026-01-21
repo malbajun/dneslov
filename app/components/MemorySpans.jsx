@@ -170,7 +170,7 @@ export default class MemorySpans extends Component {
                         defaultCalendarySlug={this.props.defaultCalendarySlug}
                         url={memory.url}
                         roundelUrl={memory.roundel_url}
-                        happenedAt={memory.happened_at}
+                        haits={memory.haits}
                         orders={memory.orders}
                         orderTweet={memory.order_tweet}
                         orderShortName={memory.order_short_name}
@@ -180,7 +180,6 @@ export default class MemorySpans extends Component {
                         bindKindCode={memory.bind_kind_code}
                         calendarySlug={memory.calendary_slug}
                         eventId={memory.event_id}
-                        eventTitle={memory.event_title}
                         usualEventCode={memory.usual_event_code}
                         onLoadRequest={this.props.onLoadRequest} />)}</ul>}
             {this.props.manualFetch && this.state.totalMemories > this.state.memories.length &&
