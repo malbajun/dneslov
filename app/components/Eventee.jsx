@@ -332,10 +332,11 @@ export default class Eventee extends Component {
          <div className='row event'>
             <div className={'col' + this.getInfoClass()}>
                <div className='row'>
-                  {! this.props.specific_title && [
+                  {[
                      this.state.order &&
                         <Chip
-                           color={this.getSlugColor(this.props.order || this.props.memory?.order)}
+                           className='order'
+                           color={this.getSlugColor(this.state.order)}
                            text={this.state.order} />,
                      <Name
                         short_name={this.props.memory?.short_name}
@@ -344,18 +345,8 @@ export default class Eventee extends Component {
                         klugs={this.state.klugs}
                         names={this.props.names} />,
                      <Chip
-                        color={this.getSlugColor(this.state.title)}
-                        text={this.state.title} />,]}
-                  {this.props.specific_title &&
-                     <span>
-                        {this.props.specific_title}</span>}
-                  {this.props.place?.name &&
-                     <Chip
-                        className='place'
-                        text={this.props.place.name} />}
-                  {this.state.happenedAt && <Chip
-                     className='happened-at'
-                     text={this.state.happenedAt} />}</div></div>
+                        classNames={['event', 'happened_at', 'place']}
+                        texts={[this.props.specific_title || this.state.title, this.state.happenedAt, this.props.place?.name].compact()} />,]}</div></div>
             {this.props.image_url &&
                <div className='col x2 l3 m6 s12 image'>
                   <a

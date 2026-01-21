@@ -37,7 +37,7 @@ export default class SearchConditions extends Component {
                className='col xl12 l12 m12 s12'
                id='search-conditions' >
                <Chip
-                  className='white'
+                  className='transparent'
                   text='Выборка:' />
                {this.props.date && <Chip
                   className='date'
@@ -58,7 +58,7 @@ export default class SearchConditions extends Component {
                   <Chip
                      key={index}
                      data={{token: token}}
-                     className='token'
+                     className='query'
                      text={token}
                      action='remove'
                      onAct={this.onChipAct.bind(this)} />)}</div></div>)}}

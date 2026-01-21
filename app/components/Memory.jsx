@@ -355,6 +355,7 @@ export default class Memory extends Component {
                <div className='row'>
                   {this.state.order &&
                      <Chip
+                        className='order'
                         color={this.getSlugColor(this.state.order)}
                         text={this.state.order} />}
                   <Name
@@ -362,9 +363,9 @@ export default class Memory extends Component {
                      defaultNameInCalendary={this.state.title}
                      klugs={this.state.klugs}
                      names={this.props.names} />
-                  {this.state.happenedAt && <Chip
-                     className='happened-at'
-                     text={this.state.happenedAt} />}</div>
+                  {(this.state.happenedAt || this.props.place?.name) && <Chip
+                        classNames={['happened_at', 'place']}
+                        texts={[this.state.happenedAt, this.props.place?.name].compact()} />}</div>
                {this.state.links.isPresent() &&
                   <div className='row'>
                      <div className='col s12'>
@@ -376,6 +377,7 @@ export default class Memory extends Component {
                                  <Chip
                                     key={'link-'+link.id}
                                     url={link.url}
+                                    className='external'
                                     color={Memory.getColorForLink(link)}
                                     text={Memory.getLinkText(link)} />)}</div></div></div></div>}
                {this.state.coverings.isPresent() &&
@@ -388,7 +390,7 @@ export default class Memory extends Component {
                               {this.state.coverings.map((c) =>
                                  <Chip
                                     key={'covering-' + c.id}
-                                    color={Memory.getColorForLink(c.name)}
+                                    className='place'
                                     text={c.name} />)}</div></div></div></div>}</div>
             {this.props.image_url &&
                <div className='col x2 l3 m6 s12 image'>
@@ -432,6 +434,7 @@ export default class Memory extends Component {
                      <div className='col s12'>
                         {this.props.bond_memories.filterMap((bm) =>
                            <Chip
+                              className='order'
                               url={getUrlsFrom(this.props.specifiedCalendarySlug, bm.slug)[0]}
                               text={[bm.order, bm.name]} />)}</div></div></div>}
             {this.state.describedMemoes.isPresent() &&

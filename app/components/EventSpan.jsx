@@ -50,7 +50,7 @@ export default class EventSpan extends Component {
    }
 
    classNameForYearDate() {
-      return 'year-date right ' + (this.props.active && "nearby" || "")
+      return 'celebrate_date' + (this.props.active && " nearby" || "")
    }
 
    placeUrl() {
@@ -75,14 +75,11 @@ export default class EventSpan extends Component {
                   short_name={this.state.title}
                   url={getUrlsFrom(this.props.specifiedCalendarySlug, this.props.slug, this.props.id)[0]} />
                <Chip
-                  className='happened-at'
-                  text={this.props.happenedAt} />
-               {(!this.props.place?.names?.isBlank() || this.props.place?.description) &&
-                  <Chip
-                     className='place'
-                     url={this.placeUrl()}
-                     text={generateFullName(this.props.place.names) || this.props.place?.description} />}
+                  classNames={['happened_at', 'place']}
+                  urls={[null, this.placeUrl()]}
+                  texts={[this.props.happenedAt, generateFullName(this.props.place.names) || this.props.place?.description]} />
                {this.props.date && <Chip
+                  wrapperClassName='right'
                   className={this.classNameForYearDate()}
                   text={this.props.date} />}</div>
             <div

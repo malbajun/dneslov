@@ -3,8 +3,11 @@ import PropTypes from 'prop-types'
 
 export default class Chip extends Component {
    static defaultProps = {
+      wrapperClassName: null,
       className: null,
+      classNames: [],
       url: '',
+      urls: [],
       texts: [],
       text: null,
       data: null,
@@ -14,6 +17,7 @@ export default class Chip extends Component {
    }
 
    static propTypes = {
+      wrapperClassName: PropTypes.string,
       className: PropTypes.string,
       url: PropTypes.string,
       text: PropTypes.string,
@@ -55,8 +59,15 @@ export default class Chip extends Component {
       this.$link.removeEventListener('click', this.onLinkClick)
    }
 
-   className() {
-      return 'chip ' + (this.props.className || '') + (this.props.tooltip ? ' tooltipped' : "")
+   classNameFor(index) {
+      let classNames = this.props.className ? [this.props.className] : this.props.classNames,
+          className = classNames[index] || ''
+
+      return 'chip ' + className + (this.props.tooltip ? ' tooltipped' : "")
+   }
+
+   urlFor(index) {
+      return this.props.url || this.props.urls[index]
    }
 
    closeClassName() {
@@ -68,10 +79,10 @@ export default class Chip extends Component {
    }
 
    texts() {
-      return this.props.text ? [this.props.text] : this.props.texts
+      return this.props.text ? [this.props.text] : this.props.texts.compact()
    }
 
-   renderText(text) {
+   renderText(text, index) {
       let parts = [], partsIn = []
 
       if (this.props.children) {
@@ -86,7 +97,8 @@ export default class Chip extends Component {
          }
 
          parts = parts.concat(partsIn.map((textIn) => {
-            return <span>{textIn}</span>
+            return <span
+               data-url={this.urlFor(index)} >{textIn}</span>
          }))
       }
 
@@ -99,11 +111,12 @@ export default class Chip extends Component {
 
    // handlers
    onLinkClick(e) {
-      console.log("werewerew", this.props.url)
-      if (this.props.url) {
+      let url = e.target.getAttribute("data-url")
+
+      if (url) {
           e.stopPropagation()
           e.preventDefault()
-          window.open(this.props.url, '_blank')
+          window.open(url, '_blank')
       }
    }
 
@@ -119,13 +132,13 @@ export default class Chip extends Component {
       return (
          <div
             ref={e => this.$link = e}
-            className={"chip-group"} >
-            {this.texts().map((text) => <div
-               className={this.className()}
+            className={"chip-group " + this.props.wrapperClassName || ''} >
+            {this.texts().map((text, index) => <div
+               className={this.classNameFor(index)}
                data-position="top"
                data-tooltip={this.props.tooltip || null}
                style={{ backgroundColor: '#' + this.props.color }} >
-               {this.renderText(text)}
+               {this.renderText(text, index)}
                {this.state.action &&
                   <i
                      className={this.closeClassName()}

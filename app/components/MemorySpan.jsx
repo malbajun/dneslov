@@ -1,9 +1,12 @@
 import { Component } from 'react'
+import { mixin } from 'lodash-decorators'
 
 import Chip from 'Chip'
 import Name from 'Name'
 import Markdown from 'Markdown'
+import GetSlugColor from 'mixins/GetSlugColor'
 
+@mixin(GetSlugColor)
 export default class MemorySpan extends Component {
    static defaultProps = {
       slug: null,
@@ -49,9 +52,7 @@ export default class MemorySpan extends Component {
 
    // events
    onAvatarClick(e) {
-      let eventId = this.props.usualEventCode ? this.props.eventId : null
-
-      this.props.onLoadRequest(this.props.slug, eventId)
+      this.props.onLoadRequest(this.props.slug)
 
       e.stopPropagation()
       e.preventDefault()
@@ -96,6 +97,20 @@ export default class MemorySpan extends Component {
       return '/' + this.props.slug + '/' + hait.event_id
    }
 
+   generateClassName(hait) {
+      let bind_kind_code = null, event_title = null
+
+      if (hait.bind_kind_code != "несвязаный") {
+         bind_kind_code = 'event_kind';
+      }
+
+      if (hait.event_kind_code != "Veneration") {
+         event_title = 'event';
+      }
+
+      return [event_title, bind_kind_code, 'happened_at'].compact()
+   }
+
    generateTexts(hait) {
       let bind_kind_code = null, event_title = null
 
@@ -132,14 +147,15 @@ export default class MemorySpan extends Component {
                   {this.hasNoImage() &&
                      <i className='material-icons circle terracota z-depth-1'>perm_identity</i>}</a>
                {this.orders().map((order) => <Chip
-                     color={'gray'}
+                     className='order'
+                     color={this.getSlugColor(order.first())}
                      tooltip={order.last()}
                      text={order.first()} />)}
                <span
                   className='name short'>
                   {this.props.title}</span>
                {this.props.haits.map((hait) => <Chip
-                  className='hait'
+                  classNames={this.generateClassName(hait)}
                   url={this.generateUrl(hait)}
                   texts={this.generateTexts(hait)} />)}
                </div>
