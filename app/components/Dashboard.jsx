@@ -41,7 +41,7 @@ export default class Dashboard extends Component {
          let parts = window.location.href.split("#"),
              [meta, renderer] = Dashboard.remetaFor(parts[1])
 
-         if (parts[1]) {
+         if (parts[1] && meta) {
             return {
                prevProps: props,
                user: props.user,
@@ -66,7 +66,7 @@ export default class Dashboard extends Component {
    static remetaFor(page) {
       let renderer, meta
 
-      if (page && Metas[page].constructor.name == "Array") {
+      if (page && Metas[page] && Metas[page].constructor.name == "Array") {
          renderer = Metas[page][1]
          meta = Metas[page][0]
       } else {
@@ -80,7 +80,9 @@ export default class Dashboard extends Component {
    onClick(page) {
       let [meta, renderer] = Dashboard.remetaFor(page)
 
-      this.setState({ meta: meta, page: page, renderer: renderer, meta: meta })
+      if (meta) {
+         this.setState({ meta: meta, page: page, renderer: renderer, meta: meta })
+      }
    }
 
    componentDidCatch(error, errorInfo) {

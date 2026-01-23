@@ -25,7 +25,7 @@ export default class Collection extends Component {
 
    static propTypes = {
       name: PropTypes.string.isRequired,
-      value: PropTypes.object.isRequired,
+      value: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
       title: PropTypes.string.isRequired,
       action: PropTypes.string.isRequired,
       meta: PropTypes.object.isRequired,
