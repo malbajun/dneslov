@@ -385,47 +385,43 @@ class Event < ActiveRecord::Base
               WITH RECURSIVE ____names(level,path,id,name_id,name_bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
               WITH RECURSIVE tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
                       SELECT 0,
-                             nm.text,
+                             n.text,
                              n.id,
                              n.name_id,
                              n.bind_kind_name,
                              n.bond_to_id,
                              n.root_id,
-                             nm.alphabeth_code,
-                             nm.language_code,
-                             nm.text,
+                             n.alphabeth_code,
+                             n.language_code,
+                             n.text,
                              mn.state_code,
                              mn.mode,
                              mn.feasible
                         FROM nomina n
-                        JOIN names nm
-                          ON nm.id = n.name_id
                         JOIN memory_names mn
                           ON mn.nomen_id = n.id
                          AND mn.memory_id = #{ast}.id
                        UNION
 
                       SELECT 0,
-                             nm.text,
+                             n.text,
                              n.id,
                              n.name_id,
                              n.bind_kind_name,
                              n.bond_to_id,
                              n.root_id,
-                             nm.alphabeth_code,
-                             nm.language_code,
-                             nm.text,
+                             n.alphabeth_code,
+                             n.language_code,
+                             n.text,
                              tt.state_code,
                              tt.mode,
                              tt.feasible
                         FROM nomina n
                         JOIN tt
                           ON n.root_id = tt.root_id AND tt.bond_to_id = n.name_id
-                        JOIN names nm
-                          ON nm.id = n.name_id
-                        JOIN names nm_t
+                        JOIN nomina nm_t
                           ON nm_t.id = tt.name_id
-                         AND nm_t.language_code <> nm.language_code
+                         AND nm_t.language_code <> n.language_code
              LEFT OUTER JOIN memory_names mn
                           ON n.root_id = mn.nomen_id
                          AND mn.memory_id = #{ast}.id)
@@ -434,15 +430,15 @@ class Event < ActiveRecord::Base
 
                        UNION
                       SELECT level + 1,
-                             path || ' > ' || nm.text,
+                             path || ' > ' || n.text,
                              n.id,
                              n.name_id,
                              n.bind_kind_name,
                              n.bond_to_id,
                              n.root_id,
-                             nm.alphabeth_code,
-                             nm.language_code,
-                             nm.text,
+                             n.alphabeth_code,
+                             n.language_code,
+                             n.text,
                              t.state_code,
                              t.mode,
                              t.feasible
@@ -450,11 +446,9 @@ class Event < ActiveRecord::Base
                         JOIN ____names t
                           ON n.bond_to_id = t.name_id
                          AND n.root_id = t.root_id
-                        JOIN names nm
-                          ON nm.id = n.name_id
-                        JOIN names nm_t
+                        JOIN nomina nm_t
                           ON nm_t.id = t.name_id
-                         AND nm_t.language_code <> nm.language_code
+                         AND nm_t.language_code <> n.language_code
              LEFT OUTER JOIN memory_names mn
                           ON n.root_id = mn.nomen_id
                          AND mn.memory_id = #{ast}.id),

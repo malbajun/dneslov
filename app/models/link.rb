@@ -1,4 +1,4 @@
-class Link < ActiveRecord::Base
+class Link < ApplicationRecord
    belongs_to :resource, inverse_of: :links, optional: true
 
    validates :type, :info_type, presence: true

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_01_17_001242) do
+ActiveRecord::Schema[7.0].define(version: 2026_01_21_202224) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -294,33 +294,30 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_17_001242) do
     t.index ["state_code"], name: "index_memory_names_on_state_code"
   end
 
-  create_table "names", id: :serial, force: :cascade do |t|
-    t.text "text", null: false
-    t.string "language_code", null: false
-    t.string "alphabeth_code", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["alphabeth_code"], name: "index_names_on_alphabeth_code"
-    t.index ["language_code"], name: "index_names_on_language_code"
-    t.index ["text", "alphabeth_code"], name: "index_names_on_text_and_alphabeth_code", unique: true
-    t.index ["text"], name: "index_names_on_text"
-  end
-
   create_table "nomina", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.bigint "bond_to_id"
-    t.bigint "root_id"
+    t.bigint "bond_to_id", comment: "квѧзка на свѧзно имѧ"
+    t.bigint "root_id", comment: "квѧзка на корнєво имѧ, образує скупину смысла"
     t.string "bind_kind_name", null: false
-    t.bigint "name_id", null: false
+    t.bigint "name_id", comment: "устарѣ"
     t.string "bind_kind_path"
-    t.string "modifier"
+    t.string "modifier", comment: "дане претвъра"
+    t.text "text"
+    t.string "language_code", limit: 6
+    t.string "alphabeth_code", limit: 6
+    t.string "rules", default: [], array: true
+    t.string "kind", comment: "взор правила претвъра"
+    t.index ["alphabeth_code"], name: "index_nomina_on_alphabeth_code"
     t.index ["bond_to_id", "bind_kind_name"], name: "index_nomina_on_bond_to_id_and_bind_kind_name"
-    t.index ["bond_to_id", "name_id"], name: "index_nomina_on_bond_to_id_and_name_id", unique: true
     t.index ["bond_to_id"], name: "index_nomina_on_bond_to_id"
+    t.index ["language_code"], name: "index_nomina_on_language_code"
     t.index ["modifier"], name: "index_nomina_on_modifier"
     t.index ["name_id"], name: "index_nomina_on_name_id"
     t.index ["root_id"], name: "index_nomina_on_root_id"
+    t.index ["rules"], name: "index_nomina_on_rules"
+    t.index ["text", "language_code", "alphabeth_code", "kind", "bond_to_id"], name: "index_nomina_text_la_kind_bond_to_id", unique: true
+    t.index ["text"], name: "index_nomina_on_text", using: :gin
   end
 
   create_table "orders", id: :serial, force: :cascade do |t|

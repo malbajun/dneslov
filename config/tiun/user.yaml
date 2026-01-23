@@ -14,9 +14,9 @@ types:
    model: User
    version: 1.0
    fields:
-    - name: user_names
+    - name: user_nomina
       kind: user_name array
-      descriptions: :tiun.types.user.user_names
+      descriptions: :tiun.types.user.user_nomina
     - name: descriptions
       kind: description array
       descriptions: :tiun.types.user.descriptions
@@ -139,9 +139,9 @@ resources:
        - name: default_name
          kind: string
          descriptions: :tiun.resources.user.post.default_name
-       - name: user_names
+       - name: user_nomina
          kind: user_name array
-         descriptions: :tiun.resources.user.post.user_names
+         descriptions: :tiun.resources.user.post.user_nomina
        - name: accounts
          kind: account array
          descriptions: :tiun.resources.user.post.accounts
@@ -197,9 +197,9 @@ resources:
        - name: default_name
          kind: string
          descriptions: :tiun.resources.user.put.default_name
-       - name: user_names
+       - name: user_nomina
          kind: user_name array
-         descriptions: :tiun.resources.user.put.user_names
+         descriptions: :tiun.resources.user.put.user_nomina
        - name: accounts
          kind: account array
          descriptions: :tiun.resources.user.put.accounts

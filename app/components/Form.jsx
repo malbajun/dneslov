@@ -261,7 +261,7 @@ export default class Form extends Component {
                   } else if (value[0]) {
                      preValue = { [key]: value }
                   } else {
-                     preValue = { [key]: {} }
+                     preValue = { [key]: [] }
                   }
                } else {
                   preValue = { [key]: value }

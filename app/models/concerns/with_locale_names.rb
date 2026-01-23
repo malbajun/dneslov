@@ -73,11 +73,11 @@ module WithLocaleNames
          end
 
          def language= value
-            self.language_code ||= Subject.where(kind_code: "Language").joins(:names).where(names: { text: value}).first.key
+            self.language_code ||= Subject.where(kind_code: "Language").joins(:nomina).where(nomina: { text: value}).first.key
          end
 
          def alphabeth= value
-            self.alphabeth_code ||= Subject.where(kind_code: "Alphabeth").joins(:names).where(names: { text: value}).first.key
+            self.alphabeth_code ||= Subject.where(kind_code: "Alphabeth").joins(:nomina).where(nomina: { text: value}).first.key
          end
       end
    end

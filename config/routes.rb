@@ -26,7 +26,7 @@ Rails.application.routes.draw do
       resources :memories, param: :id, except: :edit
       resources :calendaries, param: :id, except: :edit
       resources :memoes, param: :id, except: :edit
-      resources :names, param: :id, except: :edit
+      resources :nomina, param: :id, except: :edit
       resources :orders, param: :id, except: :edit
       resources :subjects, param: :id, except: :edit
       resources :scripta, param: :id, except: :edit

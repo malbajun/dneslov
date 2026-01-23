@@ -3,7 +3,7 @@ import { merge } from 'merge-anything'
 
 import { calendaryMeta } from 'calendaryMeta'
 import { memoryMeta } from 'memoryMeta'
-import { nameMeta } from 'nameMeta'
+import { nomenMeta } from 'nomenMeta'
 import { memoMeta } from 'memoMeta'
 import { orderMeta } from 'orderMeta'
 import { subjectMeta } from 'subjectMeta'
@@ -22,7 +22,7 @@ const Metas = {
    'resources': resourceMeta,
    'calendaries': calendaryMeta,
    'memories': memoryMeta,
-   'names': nameMeta,
+   'nomina': nomenMeta,
    'memoes': memoMeta,
    'scripta': scriptumMeta,
    'rites': riteMeta,

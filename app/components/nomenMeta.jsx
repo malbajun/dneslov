@@ -1,10 +1,10 @@
-import { matchLanguages, matchAlphabeths, matchLetters, matchEmptyObject, matchCodes, matchEmptyCollection } from 'matchers'
+import { matchLanguages, matchAlphabeths, matchLetters, matchEmptyObject, matchCodes, matchEmptyCollection, matchValidJson } from 'matchers'
 import UrlRegexp from 'UrlRegexp'
 
-export const nameMeta = {
+export const nomenMeta = {
    default: "text",
-   remoteName: 'name',
-   remoteNames: 'names',
+   remoteName: 'nomen',
+   remoteNames: 'nomina',
    title: 'Имена',
    new: 'Новое имя',
    update: 'Обнови имя',
@@ -24,26 +24,24 @@ export const nameMeta = {
       alphabeth_code: {
          title: 'Азбука',
       },
-      bind_kind_name: {
+      bind_kind_humanized: {
          title: 'Связка',
-         value: (value) => {
-            return value.nomina && value.nomina[0]?.bind_kind_name
-         },
       },
       bond_to_name: {
          title: 'Связано с...',
-         value: (value) => {
-            return value.nomina && value.nomina[0]?.bond_to_name
-         },
       },
       root_name: {
          title: 'Корневое имя',
-         value: (value) => {
-            return value.nomina && value.nomina[0]?.root_name
-         },
+      },
+      rules: {
+         title: 'Набор правил',
+         value: (value) => { return value.rules.join(", ") },
       },
    },
    form: {
+      id: {
+         kind: 'hidden',
+      },
       text: {
          kind: 'text',
          name: 'text',
@@ -88,79 +86,74 @@ export const nameMeta = {
             'Азбука из списка должна быть выбрана': matchEmptyObject,
          }
       },
-      nomina: {
-         kind: 'collection',
-         title: 'Связи',
-         action: 'Добавь связь',
-         single: 'Связь',
-         placeholder: 'Введи связь',
-         display_scheme: '12-12-12-12',
+      root_id: {
+         kind: 'dynamic',
+         humanized_name: 'root_name',
+         title: 'Корневое имя',
+         display_scheme: '12-3-3-4',
+         placeholder: 'Начни ввод имени...',
+         pathname: 'api/v0/nomina/ac',
+         key_name: 'value',
+         value_name: 'key',
+      },
+      bind_kind_name: {
+         humanized_name: 'bind_kind_humanized',
+         kind: 'dynamic',
+         display_scheme: '12-3-3-2',
+         title: 'Вид связки',
+         placeholder: 'Начни ввод связки...',
+         pathname: 'api/v0/subjects/ac',
+         context_value: { k: "NameBind" },
+         key_name: 'value',
+         value_name: 'key',
+         subscribeTo: '@bond_to_id',
+         default: "несвязаное", // default value
+         humanized_default: "Не связанное", // default value name
          validations: {
-            'Минимум одна связь должна быть задана':  matchEmptyCollection
-         },
-         meta: {
-            id: {
-               kind: 'hidden',
+            'Вид связки из списка должен быть выбран': matchEmptyObject,
+            'Вид связки не должен иметь значение "Не связанное" в случае, если связаное имя задано': (value, context) => {
+               return context.bond_to_id && value == "несвязаное"
             },
-            root_id: {
-               kind: 'dynamic',
-               humanized_name: 'root_name',
-               title: 'Корневое имя',
-               display_scheme: '12-3-3-4',
-               placeholder: 'Начни ввод имени...',
-               pathname: 'api/v0/names/ac',
-               key_name: 'value',
-               value_name: 'key',
+            'Вид связки должен иметь значение "Не связанное" в случае, если связаное имя отсутствует': (value, context) => {
+               return !context.bond_to_id && value != "несвязаное"
             },
-            bind_kind_name: {
-               humanized_name: 'bind_kind_humanized',
-               kind: 'dynamic',
-               display_scheme: '12-3-3-2',
-               title: 'Вид связки',
-               placeholder: 'Начни ввод связки...',
-               pathname: 'api/v0/subjects/ac',
-               context_value: { k: "NameBind" },
-               key_name: 'value',
-               value_name: 'key',
-               subscribeTo: '@bond_to_id',
-               default: "несвязаное", // default value
-               humanized_default: "Не связанное", // default value name
-               validations: {
-                  'Вид связки из списка должен быть выбран': matchEmptyObject,
-                  'Вид связки не должен иметь значение "Не связанное" в случае, если связаное имя задано': (value, context) => {
-                     return context.bond_to_id && value == "несвязаное"
-                  },
-                  'Вид связки должен иметь значение "Не связанное" в случае, если связаное имя отсутствует': (value, context) => {
-                     return !context.bond_to_id && value != "несвязаное"
-                  },
-               }
+         }
+      },
+      bond_to_id: {
+         kind: 'dynamic',
+         title: 'Связаное имя',
+         humanized_name: 'bond_to_name',
+         display_scheme: '12-3-3-4',
+         placeholder: 'Начни ввод имени...',
+         pathname: 'api/v0/nomina/ac',
+         key_name: 'value',
+         value_name: 'key',
+         subscribeTo: ['@bind_kind_name', '@text'],
+         validations: {
+            'Связаное имя не должно соответствовать названию текущего имени': (value, context) => {
+               return value && value == context.id
             },
-            bond_to_id: {
-               kind: 'dynamic',
-               title: 'Связаное имя',
-               humanized_name: 'bond_to_name',
-               display_scheme: '12-3-3-4',
-               placeholder: 'Начни ввод имени...',
-               pathname: 'api/v0/names/ac',
-               key_name: 'value',
-               value_name: 'key',
-               subscribeTo: ['@bind_kind_name', '@text'],
-               validations: {
-                  'Связаное имя не должно соответствовать названию текущего имени': (value, context) => {
-                     return value && value == context.id
-                  },
-               }
-            },
-            modifier: {
-               kind: 'text',
-               name: 'modifier',
-               title: 'Прилаживатель (модификатор)',
-               placeholder: 'Введи прилаживатель (модификатор)',
-               display_scheme: '12-3-3-2',
-               visible_if: { bind_kind_name: ["прилаженое"] },
-               subscribeTo: '@bind_kind_name',
-            },
-         },
+         }
+      },
+      modifier: {
+         kind: 'text',
+         name: 'modifier',
+         title: 'Прилаживатель (модификатор)',
+         placeholder: 'Введи прилаживатель (модификатор)',
+         display_scheme: '12-3-3-2',
+         visible_if: { bind_kind_name: ["прилаженое"] },
+         subscribeTo: '@bind_kind_name',
+      },
+      rules: {
+         kind: 'json',
+         title: 'Правила преобразования как набор',
+         action: 'Добавь правило',
+         display_scheme: '12-12-12-12',
+         default: [], // default value
+         validations: {
+            'Минимум одно правило должно быть задана':  matchEmptyObject,
+            'Правила имеют неверный формат JSON': matchValidJson
+         }
       },
       descriptions: {
          kind: 'collection',

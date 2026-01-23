@@ -3,7 +3,7 @@ module WithLinks
 
    def self.included base
       base.class_eval do
-         has_many :links, as: :info, dependent: :destroy
+         has_many :links, as: :info, dependent: :delete_all
 
          scope :with_links, -> context do
             join_name = table.table_alias || table.name
