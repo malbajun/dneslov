@@ -23,9 +23,9 @@ class Scriptum < ActiveRecord::Base
    has_many :target, through: :memo_scripta, foreign_key: :event_id, source: :event
 
    scope :by_token, -> text do
-      as = table.table_alias || table.name
-      where("unaccent(#{as}.description) ~* unaccent(?)", "\\m#{text}.*").or(
-      where("unaccent(#{as}.text) ~* unaccent(?)", "\\m#{text}.*"))
+      this = table.table_alias || table.name
+      where("unaccent(#{this}.description) ~* unaccent(?)", "\\m#{text}.*").or(
+      where("unaccent(#{this}.text) ~* unaccent(?)", "\\m#{text}.*"))
    end
    singleton_class.send(:alias_method, :by_query, :by_token)
 
@@ -80,9 +80,9 @@ class Scriptum < ActiveRecord::Base
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
       selector.concat [
-         'root_scripta.title AS root_ref_title',
-         'bond_to_scripta.title AS bond_to_ref_title',
-         'prosomeion_scripta.title AS prosomeion_ref_title' ]
+         'root_scripta.title AS _root_ref_title',
+         'bond_to_scripta.title AS _bond_to_ref_title',
+         'prosomeion_scripta.title AS _prosomeion_ref_title' ]
 
       join = "LEFT OUTER JOIN scripta AS root_scripta
                            ON root_scripta.id = #{this}.root_id
@@ -108,7 +108,7 @@ class Scriptum < ActiveRecord::Base
       as = model.reflections[rela]&.name
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
-      selector << "#{as}_resources.id AS _resource_id, #{as}_resource_titles.text AS _resource_name"
+      selector << "#{as}_resources.id AS _resource_id, #{as}_resource_titles.text AS _resource_title"
 
       join = "
          LEFT OUTER JOIN resource_markups AS #{as}_resource_markups

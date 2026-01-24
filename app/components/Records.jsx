@@ -51,6 +51,7 @@ export default class Records extends Component {
 
       this.onRecordUpdate = this.onRecordUpdate.bind(this)
       this.onModalClose = this.onModalClose.bind(this)
+      this.fetchNext = this.fetchNext.bind(this)
    }
 
    componentDidMount() {
@@ -160,7 +161,7 @@ export default class Records extends Component {
    }
 
    onSuccessLoad(response) {
-      let new_records, new_page, new_state, records = response.data || [], range, m
+      let new_records, new_page, new_state, records = response.data || [], range, m, total
       const re = new RegExp("records (?<b>\d+)-(?<e>\d+)/(?<total>\d+)")
 
       console.log("[onSuccessLoad] > response", response)
@@ -186,7 +187,8 @@ export default class Records extends Component {
          }
       } else {
          range = response.headers["content-range"]
-         const { b, e, total } = /records (?<b>\d+)-(?<e>\d+)\/(?<total>\d+)/.exec(range,).groups;
+         const { b, e, totalIn } = /records (?<b>\d+)-(?<e>\d+)\/(?<totalIn>\d+)/.exec(range,).groups;
+         total = parseInt(totalIn)
 
          if (b > 0 || !this.state.records) {
             new_records = this.state.records.slice()
@@ -210,13 +212,12 @@ export default class Records extends Component {
 
       new_state = {
          records: new_records,
-         total: records.total,
+         total: total || records.total,
          page: new_page,
-         query: merge(this.state.query,
-                     {
-                        q: response.config.params.q,
-                        p: response.config.params.p
-                     }),
+         query: merge(this.state.query, {
+            q: response.config.params.q,
+            p: response.config.params.p
+         }),
       }
 
       console.log("[onSuccessLoad] * ", response.config.url)
@@ -265,7 +266,7 @@ export default class Records extends Component {
    }
 
    render() {
-      console.log("[render] * this.props:", this.props, "this.state:", this.state)
+      console.log("[render] * this.props:", this.props, "this.state:", this.state, this.state.records.length, this.state.total)
 
       return [
          <div>
@@ -314,8 +315,8 @@ export default class Records extends Component {
                         onRemove={this.onRecordRemove.bind(this)} />)}</tbody></table>
             <ReactScrollPagination
                excludeElement='header'
-               loadedTotal={this.props.records.list.length}
+               loadedTotal={this.state.records.length}
                total={this.state.total}
-               fetchFunc={this.fetchNext.bind(this)} /></div>]
+               fetchFunc={this.fetchNext} /></div>]
    }
 }
