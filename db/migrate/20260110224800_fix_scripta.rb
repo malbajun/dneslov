@@ -1,5 +1,5 @@
 class FixScripta < ActiveRecord::Migration[7.0]
-   #safety_assured
+   safety_assured
 
    def change
       change_table :scripta do |t|

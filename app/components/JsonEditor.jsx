@@ -18,7 +18,6 @@ export default class JsonEditor extends Component {
       name: 'text',
       value: "",
       wrapperClassName: null,
-      placeholder: null,
       data: null,
       validations: {},
       default: {},
@@ -26,9 +25,8 @@ export default class JsonEditor extends Component {
 
    static propTypes = {
       name: PropTypes.string.isRequired,
-      value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.object, PropTypes.array]),
       wrapperClassName: PropTypes.string.isRequired,
-      placeholder: PropTypes.string.isRequired,
       data: PropTypes.object,
       validations: PropTypes.object.isRequired,
    }

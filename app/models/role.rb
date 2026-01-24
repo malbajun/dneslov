@@ -33,8 +33,8 @@ class Role < ApplicationRecord
 
       selector << "COALESCE((with __members AS (
                       SELECT DISTINCT ON(account_type, account_no)
-                             #{this}_names.text AS name,
-                             #{this}_names.id AS name_id,
+                             #{this}_nomina.text AS name,
+                             #{this}_nomina.id AS name_id,
                              #{this}_accounts.no AS account_no,
                              #{this}_accounts.type AS account_type
                         FROM members
@@ -42,14 +42,12 @@ class Role < ApplicationRecord
                           ON #{this}_users.id = members.user_id
              LEFT OUTER JOIN accounts AS #{this}_accounts
                           ON #{this}_accounts.user_id = #{this}_users.id
-             LEFT OUTER JOIN user_names AS #{this}_user_names
-                          ON #{this}_user_names.user_id = #{this}_users.id
+             LEFT OUTER JOIN user_names AS #{this}_user_nomina
+                          ON #{this}_user_nomina.user_id = #{this}_users.id
              LEFT OUTER JOIN nomina AS #{this}_nomina
-                          ON #{this}_nomina.id = #{this}_user_names.nomen_id
-             LEFT OUTER JOIN names AS #{this}_names
-                          ON #{this}_nomina.name_id = #{this}_names.id
+                          ON #{this}_nomina.id = #{this}_user_nomina.nomen_id
                        WHERE members.role_id = #{this}.id
-                    GROUP BY name, #{this}_names.id, account_type, account_no)
+                    GROUP BY name, #{this}_nomina.id, account_type, account_no)
                       SELECT jsonb_agg(__members)
                         FROM __members), '[]'::jsonb) AS _members"
 

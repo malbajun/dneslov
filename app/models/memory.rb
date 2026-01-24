@@ -18,7 +18,6 @@ class Memory < ApplicationRecord
    has_many :memory_names, dependent: :destroy
    has_many :short_names, dependent: :destroy
    has_many :nomina, through: :memory_names
-   has_many :names, through: :nomina
    has_many :paterics, as: :info, dependent: :destroy, class_name: :PatericLink
    has_many :events, dependent: :destroy
    has_many :memos, through: :events
@@ -68,7 +67,7 @@ class Memory < ApplicationRecord
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(tweets_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(notes_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
-         Nomen.joins(:name).where("unaccent(names.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
+         Nomen.where("unaccent(nomina.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
    singleton_class.send(:alias_method, :by_q, :by_token)
 
@@ -219,47 +218,43 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
               WITH RECURSIVE __names(level,path,id,name_id,name_bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
               WITH RECURSIVE tt(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_alphabeth_code,name_language_code,name_text,state_code,mode,feasible) AS (
                       SELECT 0,
-                             nm.text,
+                             n.text,
                              n.id,
                              n.name_id,
                              n.bind_kind_name,
                              n.bond_to_id,
                              n.root_id,
-                             nm.alphabeth_code,
-                             nm.language_code,
-                             nm.text,
+                             n.alphabeth_code,
+                             n.language_code,
+                             n.text,
                              mn.state_code,
                              mn.mode,
                              mn.feasible
                         FROM nomina n
-                        JOIN names nm
-                          ON nm.id = n.name_id
                         JOIN memory_names mn
                           ON mn.nomen_id = n.id
                          AND mn.memory_id = memories.id
                        UNION
 
                       SELECT 0,
-                             nm.text,
+                             n.text,
                              n.id,
                              n.name_id,
                              n.bind_kind_name,
                              n.bond_to_id,
                              n.root_id,
-                             nm.alphabeth_code,
-                             nm.language_code,
-                             nm.text,
+                             n.alphabeth_code,
+                             n.language_code,
+                             n.text,
                              tt.state_code,
                              tt.mode,
                              tt.feasible
                         FROM nomina n
                         JOIN tt
                           ON n.root_id = tt.root_id AND tt.bond_to_id = n.name_id
-                        JOIN names nm
-                          ON nm.id = n.name_id
-                        JOIN names nm_t
+                        JOIN nomina nm_t
                           ON nm_t.id = tt.name_id
-                         AND nm_t.language_code <> nm.language_code
+                         AND nm_t.language_code <> n.language_code
              LEFT OUTER JOIN memory_names mn
                           ON n.root_id = mn.nomen_id
                          AND mn.memory_id = memories.id)
@@ -268,15 +263,15 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
                        UNION
                       SELECT level + 1,
-                             path || ' > ' || nm.text,
+                             path || ' > ' || n.text,
                              n.id,
                              n.name_id,
                              n.bind_kind_name,
                              n.bond_to_id,
                              n.root_id,
-                             nm.alphabeth_code,
-                             nm.language_code,
-                             nm.text,
+                             n.alphabeth_code,
+                             n.language_code,
+                             n.text,
                              t.state_code,
                              t.mode,
                              t.feasible
@@ -284,18 +279,16 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                         JOIN __names t
                           ON n.bond_to_id = t.name_id
                          AND n.root_id = t.root_id
-                        JOIN names nm
-                          ON nm.id = n.name_id
-                        JOIN names nm_t
+                        JOIN nomina nm_t
                           ON nm_t.id = t.name_id
-                         AND nm_t.language_code <> nm.language_code
+                         AND nm_t.language_code <> n.language_code
              LEFT OUTER JOIN memory_names mn
                           ON n.root_id = mn.nomen_id
                          AND mn.memory_id = memories.id)
                       SELECT jsonb_agg(__names)
                         FROM __names
                        WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')
-                         AND __names.name_alphabeth_code IN ('#{alphabeth_codes.join("', '")}')), '[]'::jsonb) AS _names"
+                         AND __names.name_alphabeth_code IN ('#{alphabeth_codes.join("', '")}')), '[]'::jsonb) AS _nomina"
 
       select(selector).group(:id)
    end
@@ -1174,7 +1167,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                         WITH __memory_names AS (
                       SELECT memory_names.id AS id,
                              nomina.id AS nomen_id,
-                             names.text || COALESCE(' < ' || bond_toes.text, '') || ' (' || names.language_code|| '_' || names.alphabeth_code || ')' AS name,
+                             nomina.text || COALESCE(' < ' || bond_toes.text, '') || ' (' || nomina.language_code|| '_' || nomina.alphabeth_code || ')' AS name,
                              memory_names.state_code AS state_code,
                              memory_name_state_titles.text AS state_name,
                              memory_names.mode AS mode,
@@ -1188,13 +1181,11 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                              #{lang_wheres&.first} #{alph_wheres&.first}
              LEFT OUTER JOIN nomina
                           ON nomina.id = memory_names.nomen_id
-             LEFT OUTER JOIN names
-                          ON names.id = nomina.name_id
-             LEFT OUTER JOIN names AS bond_toes
+             LEFT OUTER JOIN nomina AS bond_toes
                           ON bond_toes.id = nomina.bond_to_id
                        WHERE memory_names.memory_id = memories.id
                          AND memory_names.id IS NOT NULL
-                    GROUP BY memory_names.id, names.text, bond_toes.text, memory_name_state_titles.text, names.language_code, names.alphabeth_code, nomina.id)
+                    GROUP BY memory_names.id, nomina.text, bond_toes.text, memory_name_state_titles.text, nomina.language_code, nomina.alphabeth_code, nomina.id)
                       SELECT jsonb_agg(__memory_names)
                         FROM __memory_names), '[]'::jsonb) AS _memory_names"
 
