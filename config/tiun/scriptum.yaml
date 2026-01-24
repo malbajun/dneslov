@@ -4,24 +4,8 @@ types:
    version: 0.1
    with:
     - title
-   fields:
-    - name: id
-      kind: integer
-      readonly: true
-      descriptions: :tiun.types.scriptum.id
-    - name: title
-      kind: string
-      descriptions: :tiun.types.scriptum.title
-    - name: type
-      kind: string
-      descriptions: :tiun.types.scriptum.type
- - name: text
-   model: Scriptum
-   version: 0.1
-   with:
-    - title
-    - description
     - ref_titles
+    - resource
    fields:
     - name: id
       kind: integer
@@ -30,12 +14,6 @@ types:
     - name: title
       kind: string
       descriptions: :tiun.types.scriptum.title
-    - name: description
-      kind: string
-      descriptions: :tiun.types.scriptum.description
-    - name: author
-      kind: string
-      descriptions: :tiun.types.scriptum.author
     - name: type
       kind: string
       descriptions: :tiun.types.scriptum.type
@@ -45,25 +23,87 @@ types:
     - name: alphabeth_code
       kind: string
       descriptions: :tiun.types.scriptum.alphabeth_code
+    - name: bond_to_ref_title
+      kind: string
+      descriptions: :tiun.types.scriptum.bond_to_ref_title
+    - name: root_ref_title
+      kind: string
+      descriptions: :tiun.types.scriptum.root_ref_title
+    - name: prosomeion_ref_title
+      kind: string
+      descriptions: :tiun.types.scriptum.prosomeion_ref_title
+    - name: resource_title
+      kind: string
+      descriptions: :tiun.types.scriptum.resource_title
+ - name: text
+   model: Scriptum
+   version: 0.1
+   with:
+    - title
+    - description
+    - ref_titles
+    - resource
+    - bind_kind_name
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.text.id
+    - name: title
+      kind: string
+      descriptions: :tiun.types.text.title
+    - name: description
+      kind: string
+      descriptions: :tiun.types.text.description
+    - name: author
+      kind: string
+      descriptions: :tiun.types.text.author
+    - name: type
+      kind: string
+      descriptions: :tiun.types.text.type
+    - name: language_code
+      kind: string
+      descriptions: :tiun.types.text.language_code
+    - name: alphabeth_code
+      kind: string
+      descriptions: :tiun.types.text.alphabeth_code
     - name: text
       kind: string
-      descriptions: :tiun.types.scriptum.text
+      descriptions: :tiun.types.text.text
     - name: tone
       kind: string
-      descriptions: :tiun.types.scriptum.tone
+      descriptions: :tiun.types.text.tone
     - name: bind_kind
       kind: string
-      descriptions: :tiun.types.scriptum.bind_kind
-    - name: bond_to
+      descriptions: :tiun.types.text.bind_kind
+    - name: bind_kind_humanized
       kind: string
-      descriptions: :tiun.types.scriptum.bond_to
-    - name: root
+      descriptions: :tiun.types.text.bind_kind_humanized
+    - name: bond_to_id
       kind: string
-      descriptions: :tiun.types.scriptum.root
-    - name: prosomeion
+      descriptions: :tiun.types.text.bond_to_id
+    - name: bond_to_title
       kind: string
-      descriptions: :tiun.types.scriptum.prosomeion
- - name: scriptum_ac
+      descriptions: :tiun.types.text.bond_to_ref_title
+    - name: root_id
+      kind: string
+      descriptions: :tiun.types.text.root_id
+    - name: root_title
+      kind: string
+      descriptions: :tiun.types.text.root_ref_title
+    - name: prosomeion_id
+      kind: string
+      descriptions: :tiun.types.text.prosomeion_id
+    - name: prosomeion_title
+      kind: string
+      descriptions: :tiun.types.text.prosomeion_ref_title
+    - name: resource_id
+      kind: string
+      descriptions: :tiun.types.text.resource_id
+    - name: resource_title
+      kind: string
+      descriptions: :tiun.types.text.resource_title
+ - name: text_ac
    model: Scriptum
    version: 0.1
    with:
@@ -91,7 +131,7 @@ resources:
       args:
        - name: per
          kind: natural
-         default: 10
+         default: 25
          maximum: 50
          descriptions: :tiun.scripta.scriptum.index.per_page
        - name: page

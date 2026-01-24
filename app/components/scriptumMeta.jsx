@@ -2,7 +2,7 @@ import { matchLanguages, matchAlphabeths, matchLetters, matchEmptyObject, matchC
 
 export const scriptumMeta = {
    default: "text", //TODO (value) => { return value.text || value.ref_title || value.title },
-   remoteNames: 'scripta',
+   remoteNames: 'api/v0/scripta',
    remoteName: 'scriptum',
    title: 'Тексты',
    new: 'Новый текст',
@@ -63,24 +63,17 @@ export const scriptumMeta = {
       title: {
          title: 'Заглавок',
       },
-      event: {
-         title: 'Событие',
-         value: (value) => { return value.target_events && value.target_events[0] && value.target_events[0].event_name },
-      },
       root_ref_title: {
          title: 'Корень',
       },
       bond_to_ref_title: {
          title: 'Ссылка',
       },
-      tone: {
-         title: 'Глас',
-      },
       prosomeion_ref_title: {
          title: 'Подобен',
       },
-      author: {
-         title: 'Автор',
+      resource_title: {
+         title: 'Изнаходь',
       },
    },
    form: {
