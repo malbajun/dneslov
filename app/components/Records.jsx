@@ -51,6 +51,8 @@ export default class Records extends Component {
 
       this.onRecordUpdate = this.onRecordUpdate.bind(this)
       this.onModalClose = this.onModalClose.bind(this)
+      this.onSuccessShow = this.onSuccessShow.bind(this)
+      this.onSuccessRemove = this.onSuccessRemove.bind(this)
       this.fetchNext = this.fetchNext.bind(this)
    }
 
@@ -122,7 +124,7 @@ export default class Records extends Component {
             method: 'get'
          }
 
-         axios(request).then(this.onSuccessShow.bind(this))
+         axios(request).then(this.onSuccessShow)
       } else {
          let record = this.state.records.find((r) => { return r.id == id })
          console.log("[onRecordEdit] **", id, record)
@@ -137,7 +139,7 @@ export default class Records extends Component {
       }
 
       console.debug("[onRecordRemove] ** ", request)
-      axios(request).then(this.onSuccessRemove.bind(this))
+      axios(request).then(this.onSuccessRemove)
    }
 
    onModalClose(e) {

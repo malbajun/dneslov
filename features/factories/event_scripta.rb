@@ -1,7 +1,7 @@
 FactoryBot.define do
-   factory :memo_scriptum do
+   factory :event_scriptum do
       scriptum { build(:scriptum) }
-      memo { build(:memo) }
+      event { build(:event) }
       kind { "To" }
    end
 end

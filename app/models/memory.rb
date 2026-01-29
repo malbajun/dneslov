@@ -93,7 +93,7 @@ class Memory < ApplicationRecord
 
    # by unique universal numbering object: by id, by slug, by short_name
    scope :by_uno, ->(uno) do
-      case uno
+      case uno.to_s
       when /^\s*$/
          none
       when /^\s*\d+\s*$/

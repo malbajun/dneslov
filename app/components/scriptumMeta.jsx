@@ -3,6 +3,7 @@ import { matchLanguages, matchAlphabeths, matchLetters, matchEmptyObject, matchC
 export const scriptumMeta = {
    default: "text", //TODO (value) => { return value.text || value.ref_title || value.title },
    remoteNames: 'api/v0/scripta',
+   remoteShow: 'api/v0/scripta',
    remoteName: 'scriptum',
    title: 'Тексты',
    new: 'Новый текст',
@@ -68,9 +69,6 @@ export const scriptumMeta = {
       },
       bond_to_ref_title: {
          title: 'Ссылка',
-      },
-      prosomeion_ref_title: {
-         title: 'Подобен',
       },
       resource_title: {
          title: 'Изнаходь',
@@ -154,7 +152,7 @@ export const scriptumMeta = {
       resource_id: {
          kind: 'dynamic',
          title: 'Изнаходь',
-         humanized_name: 'resource_name',
+         humanized_name: 'resource_title',
          display_scheme: '12-4-4-4',
          placeholder: 'Начни ввод наименования изнаходи...',
          pathname: 'api/v0/resources/ac',
@@ -200,21 +198,21 @@ export const scriptumMeta = {
          humanized_name: 'bind_kind_humanized',
          kind: 'dynamic',
          display_scheme: '12-3-3-3',
-         title: 'Вид связки',
-         placeholder: 'Начни ввод связки...',
+         title: 'Вид привязки текста',
+         placeholder: 'Начни ввод привязки...',
          pathname: 'api/v0/subjects/ac',
          context_value: { k: "TextBindKind" },
          key_name: 'value',
          value_name: 'key',
          subscribeTo: '@bond_to_id',
-         default: "несвязаное", // default value
-         humanized_default: "Не связанное", // default value name
+         default: "несвязана", // default value
+         humanized_default: "Не привязанное", // default value name
          validations: {
-            'Вид связки из списка должен быть выбран': matchEmptyObject,
-            'Вид связки не должен иметь значение "Не связанное" в случае, если связаное имя задано': (value, context) => {
+            'Вид привязки из списка должен быть выбран': matchEmptyObject,
+            'Вид привязки не должен иметь значение "Не связанный" в случае, если связаный текст задан': (value, context) => {
                return context.bond_to_id && value == "несвязана"
             },
-            'Вид связки должен иметь значение "Не связанное" в случае, если связаное имя отсутствует': (value, context) => {
+            'Вид привязки должен иметь значение "Не связанный" в случае, если связаный текст отсутствует': (value, context) => {
                return !context.bond_to_id && value != "несвязана"
             },
          }
@@ -302,15 +300,15 @@ export const scriptumMeta = {
             },
             event_id: {
                kind: 'dynamic',
-               title: 'Память',
-               humanized_name: 'event_name',
+               title: 'Событие',
+               humanized_name: 'event_title',
                display_scheme: '12-9-10-11',
-               placeholder: 'Начни ввод текста имени или описания памяти...',
+               placeholder: 'Начни ввод текста имени или описания события...',
                pathname: 'api/v0/events/ac',
                key_name: 'value',
                value_name: 'key',
                validations: {
-                  'Память должна быть избрана':  matchEmptyObject,
+                  'События должна быть избрана':  matchEmptyObject,
                }
             },
          }
