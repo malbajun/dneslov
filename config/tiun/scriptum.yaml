@@ -3,7 +3,6 @@ types:
  - name: scriptum
    version: 0.1
    with:
-    - title
     - ref_titles
     - resource
    fields:
@@ -29,9 +28,6 @@ types:
     - name: root_ref_title
       kind: string
       descriptions: :tiun.types.scriptum.root_ref_title
-    - name: prosomeion_ref_title
-      kind: string
-      descriptions: :tiun.types.scriptum.prosomeion_ref_title
     - name: resource_title
       kind: string
       descriptions: :tiun.types.scriptum.resource_title
@@ -39,11 +35,12 @@ types:
    model: Scriptum
    version: 0.1
    with:
-    - title
     - description
     - ref_titles
     - resource
     - bind_kind_name
+    - locale_names
+    - target_events
    fields:
     - name: id
       kind: integer
@@ -64,37 +61,43 @@ types:
     - name: language_code
       kind: string
       descriptions: :tiun.types.text.language_code
+    - name: language
+      kind: string
+      descriptions: :tiun.types.text.language
     - name: alphabeth_code
       kind: string
       descriptions: :tiun.types.text.alphabeth_code
+    - name: alphabeth
+      kind: string
+      descriptions: :tiun.types.text.alphabeth
     - name: text
       kind: string
       descriptions: :tiun.types.text.text
     - name: tone
-      kind: string
+      kind: integer
       descriptions: :tiun.types.text.tone
-    - name: bind_kind
+    - name: bind_kind_name
       kind: string
-      descriptions: :tiun.types.text.bind_kind
+      descriptions: :tiun.types.text.bind_kind_name
     - name: bind_kind_humanized
       kind: string
       descriptions: :tiun.types.text.bind_kind_humanized
     - name: bond_to_id
       kind: string
       descriptions: :tiun.types.text.bond_to_id
-    - name: bond_to_title
+    - name: bond_to_ref_title
       kind: string
       descriptions: :tiun.types.text.bond_to_ref_title
     - name: root_id
       kind: string
       descriptions: :tiun.types.text.root_id
-    - name: root_title
+    - name: root_ref_title
       kind: string
       descriptions: :tiun.types.text.root_ref_title
     - name: prosomeion_id
       kind: string
       descriptions: :tiun.types.text.prosomeion_id
-    - name: prosomeion_title
+    - name: prosomeion_ref_title
       kind: string
       descriptions: :tiun.types.text.prosomeion_ref_title
     - name: resource_id
@@ -103,6 +106,9 @@ types:
     - name: resource_title
       kind: string
       descriptions: :tiun.types.text.resource_title
+    - name: target_events
+      kind: memo_scriptee array
+      descriptions: :tiun.types.text.target_events
  - name: text_ac
    model: Scriptum
    version: 0.1

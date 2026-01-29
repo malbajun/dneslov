@@ -4,6 +4,7 @@ class Scriptum < ActiveRecord::Base
    include Languageble
    include Tokens
    include WithLocaleNames
+   include WithDescriptions
 
    has_many :scriptum_scribables, dependent: :delete_all
    has_many :audios, through: :scriptum_scribables, source: :scribable, source_type: :Audio
@@ -17,11 +18,13 @@ class Scriptum < ActiveRecord::Base
    belongs_to :root, primary_key: :id, foreign_key: :root_id, class_name: :Scriptum
 
    has_many :memo_scripta, inverse_of: :scriptum, dependent: :destroy
-   has_many :target_events, inverse_of: :scriptum, dependent: :destroy, class_name: :MemoScriptum
+   has_many :target_events, inverse_of: :scriptum, dependent: :destroy, class_name: :EventScriptum
    has_many :memoes, through: :memo_scripta
-   has_many :events, through: :memo_scripta
+   has_many :events, through: :target_events
    has_many :target, through: :memo_scripta, foreign_key: :event_id, source: :event
 
+   scope :by_id, -> id { where(id: id.to_s.strip) }
+   scope :by_title, -> title { where(title: title.strip) }
    scope :by_token, -> text do
       this = table.table_alias || table.name
       where("unaccent(#{this}.description) ~* unaccent(?)", "\\m#{text}.*").or(
@@ -34,6 +37,18 @@ class Scriptum < ActiveRecord::Base
          model.where(root_id: Scriptum.select('root_id').group('root_id')).distinct
       else
          self
+      end
+   end
+
+   # by unique universal numbering object: by id or by title
+   scope :by_uno, ->(uno) do
+      case uno.to_s
+      when /^\s*$/
+         none
+      when /^\s*\d+\s*$/
+         by_id(uno)
+      else
+         by_title(uno)
       end
    end
 
@@ -66,7 +81,7 @@ class Scriptum < ActiveRecord::Base
       join = "LEFT OUTER JOIN subjects AS #{as}_bind_kinds
                            ON #{as}_bind_kinds.kind_code = 'TextBindKind'
                           AND #{as}_bind_kinds.key = #{this}.bind_kind_name
-                         JOIN descriptions AS #{as}_bind_kind_names
+              LEFT OUTER JOIN descriptions AS #{as}_bind_kind_names
                            ON #{as}_bind_kind_names.describable_id = #{as}_bind_kinds.id
                           AND #{as}_bind_kind_names.describable_type = 'Subject'
                           AND #{as}_bind_kind_names.language_code IN ('#{language_codes.join("', '")}')
@@ -146,15 +161,15 @@ class Scriptum < ActiveRecord::Base
 
       selector = "COALESCE((
                         WITH __target_events AS (
-                      SELECT memo_scripta.id AS id,
-                             memo_scripta.kind AS kind,
+                      SELECT event_scripta.id AS id,
+                             event_scripta.kind AS kind,
                              #{this}_events.id AS event_id,
                              #{this}_short_names.text || ' (' ||
                              COALESCE(#{this}_event_titles.text, '') || ':' ||
-                             #{this}_events.happened_at || ')' AS event_name
-                        FROM memo_scripta
+                             #{this}_events.happened_at || ')' AS event_title
+                        FROM event_scripta
              LEFT OUTER JOIN events AS #{this}_events
-                          ON #{this}_events.id = memo_scripta.event_id
+                          ON #{this}_events.id = event_scripta.event_id
                         JOIN subjects AS #{this}_event_kinds
                           ON #{this}_event_kinds.key = #{this}_events.kind_code
                          AND #{this}_event_kinds.kind_code = 'EventKind'
@@ -171,8 +186,8 @@ class Scriptum < ActiveRecord::Base
                           ON #{this}_short_names.memory_id = #{this}_events.memory_id
                              #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
 
-                       WHERE memo_scripta.scriptum_id = #{this}.id
-                    GROUP BY memo_scripta.id, #{this}_short_names.text, #{this}_events.id, memo_scripta.kind, #{this}_events.happened_at, #{this}_event_titles.text)
+                       WHERE event_scripta.scriptum_id = #{this}.id
+                    GROUP BY event_scripta.id, #{this}_short_names.text, #{this}_events.id, event_scripta.kind, #{this}_events.happened_at, #{this}_event_titles.text)
                       SELECT jsonb_agg(__target_events)
                         FROM __target_events), '[]'::jsonb) AS _target_events"
 
@@ -181,10 +196,11 @@ class Scriptum < ActiveRecord::Base
 
    has_alphabeth on: %i(text title), novalidate: true
 
-   validates_presence_of :type, :title
+   validates_presence_of :type, :title, :bind_kind_name
    validates_presence_of :bond_to_id, if: :bond?
    validates_absence_of :bond_to_id, unless: :bond?
 
+   before_validation -> { self.bind_kind_name ||= 'несвязана' }, on: :create
    before_validation :generate_title, unless: :bond?
    after_save :fill_root_id, unless: :root_id?
 
