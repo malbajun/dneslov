@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
+ActiveRecord::Schema[7.0].define(version: 2026_02_01_182100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -101,6 +101,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.string "alphabeth_code"
     t.string "type"
     t.text "text"
+    t.tsvector "tsv"
+    t.index "language_code, alphabeth_code, describable_type, md5(text)", name: "index_descriptions_on_la_type_text", unique: true, where: "((type)::text = 'Appellation'::text)"
     t.index "md5(text)", name: "descriptions_text_index"
     t.index ["alphabeth_code"], name: "index_descriptions_on_alphabeth_code"
     t.index ["describable_id", "describable_type", "alphabeth_code", "language_code", "type"], name: "describable_alphabeth_language_type_index", unique: true
@@ -112,6 +114,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.index ["language_code", "alphabeth_code", "type", "describable_id", "describable_type"], name: "index_on_language_code_alphabeth_code_type_and_describables"
     t.index ["language_code", "type", "describable_id", "describable_type"], name: "index_on_language_code_type_and_describables"
     t.index ["language_code"], name: "index_descriptions_on_language_code"
+    t.index ["tsv"], name: "index_descriptions_on_tsv", using: :gin
     t.index ["type"], name: "index_descriptions_on_type"
   end
 
@@ -578,6 +581,23 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.index ["kind_code", "key", "id"], name: "index_subjects_on_kind_code_and_key_and_id"
     t.index ["kind_code", "key"], name: "index_subjects_on_kind_code_and_key"
     t.index ["kind_code"], name: "index_subjects_on_kind_code"
+  end
+
+  create_table "taggables", force: :cascade do |t|
+    t.string "taggable_type", null: false
+    t.bigint "taggable_id", null: false, comment: "квѧзка до помѣченых"
+    t.bigint "tag_id", null: false, comment: "квѧзка до мѣте"
+    t.index ["tag_id"], name: "index_taggables_on_tag_id"
+    t.index ["taggable_id", "taggable_type", "tag_id"], name: "index_taggables_on_taggable_id_and_taggable_type_and_tag_id", unique: true
+    t.index ["taggable_type", "taggable_id"], name: "index_taggables_on_taggable"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "kind", default: "обычна", null: false, comment: "взор мѣте: обычна, помѣстна"
+    t.integer "tagged_count", default: 0, null: false, comment: "счєтник помѣченых"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kind"], name: "index_tags_on_kind"
   end
 
   create_table "tokina", force: :cascade do |t|

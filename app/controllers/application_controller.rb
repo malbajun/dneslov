@@ -11,6 +11,17 @@ class ApplicationController < ActionController::Base
       @json_request ||= request.format.json? || request.media_type == "application/json"
    end
 
+   def default_attributes
+      @default_attributes ||= {
+         language_code: @language,
+         alphabeth_code: @alphabeth,
+      }
+   end
+
+   def set_context
+      set_languages
+   end
+
    def set_languages
       # NOTE the default values
       @text_languages ||= %i(ру)

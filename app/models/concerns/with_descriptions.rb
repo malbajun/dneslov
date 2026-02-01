@@ -133,14 +133,14 @@ module WithDescriptions
 
          def fill_in_description
             if @description
-               lc_pre = description_language_code || respond_to?(:language_code) && language_code || nil
-               ac_pre = description_alphabeth_code || respond_to?(:alphabeth_code) && alphabeth_code || nil
+               lc_pre = description_language_code || @language_code
+               ac_pre = description_alphabeth_code || @alphabeth_code
                lc, ac = Languageble.la_for_string(@description, lc_pre, ac_pre)
 
-               if description = descriptions.where(language_code: description_language_code || lc, alphabeth_code: description_alphabeth_code || ac).first
+               if description = descriptions.where(language_code: lc, alphabeth_code: ac).first
                   description.update_attribute(:text, @description)
                else
-                  descriptions << Description.new(text: @description, language_code: description_language_code || lc, alphabeth_code: description_alphabeth_code || ac)
+                  descriptions << Description.new(text: @description, language_code: lc, alphabeth_code: ac)
                end
             end
          end

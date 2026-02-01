@@ -13,12 +13,14 @@ import { roleMeta } from 'roleMeta'
 import { userMeta } from 'userMeta'
 import { homeMeta } from 'homeMeta'
 import { resourceMeta } from 'resourceMeta'
+import { tagMeta } from 'tagMeta'
 import Home from 'Home'
 import User from 'User'
 import Login from 'Login'
 import Records from 'Records'
 
 const Metas = {
+   'tags': tagMeta,
    'resources': resourceMeta,
    'calendaries': calendaryMeta,
    'memories': memoryMeta,

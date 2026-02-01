@@ -18,6 +18,8 @@ export default class SelectField extends Component {
       validations: {},
       title: null,
       value: null,
+      default: "", // default value
+      humanized_default: undefined, // default value name
    }
 
    static propTypes = {
@@ -85,7 +87,7 @@ export default class SelectField extends Component {
                key={this.props.name}
                id={this.props.name}
                name={this.props.name}
-               defaultValue={this.props.value || ''}
+               defaultValue={this.props.value || this.props.default || ''}
                required='required'
                onChange={this.onChange.bind(this)} />
             {Object.keys(this.props.codeNames).map((option) =>

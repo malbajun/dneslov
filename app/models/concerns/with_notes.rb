@@ -17,7 +17,7 @@ module WithNotes
             join = "LEFT JOIN descriptions AS #{as}_notes
                            ON #{as}_notes.describable_id = #{this}.id
                           AND #{as}_notes.describable_type = '#{model}'
-                          AND #{as}_notes.type IN ('Note', 'Appellation')"
+                          AND #{as}_notes.type IN ('Note')"
 
             joins(join).where("#{as}_notes.text ~* ?", note)
          end
@@ -37,7 +37,7 @@ module WithNotes
                kind_where =
                                "OR notes.describable_id = #{as}_kinds.id
                                AND notes.describable_type = 'Subject'
-                               AND notes.type IN ('Note', 'Appellation')"
+                               AND notes.type IN ('Note')"
             end
 
             if language_codes.any?
@@ -80,7 +80,7 @@ module WithNotes
                              WHERE notes.id IS NOT NULL
                                AND (notes.describable_id = #{as}.id
                                AND notes.describable_type = '#{model}'
-                               AND notes.type IN ('Note', 'Appellation')
+                               AND notes.type IN ('Note')
                                    #{kind_where}) #{lang_wheres&.last} #{alph_wheres&.last}
                           GROUP BY notes.id, notes.describable_type, notes.text,
                                    language_names.text, alphabeth_names.text)
@@ -102,7 +102,7 @@ module WithNotes
             join = "LEFT OUTER JOIN descriptions AS #{as}_notes
                                  ON #{as}_notes.describable_id = #{as}.id
                                 AND #{as}_notes.describable_type = '#{model}'
-                                AND #{as}_notes.type IN ('Note', 'Appellation')
+                                AND #{as}_notes.type IN ('Note')
                                 AND #{as}_notes.language_code IN ('#{language_codes.join("', '")}')"
 
             joins(join).select(selector.uniq).group('_note', "#{as}.id")

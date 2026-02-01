@@ -145,7 +145,7 @@ export default class Form extends Component {
       let record = this.serializedQuery(),
           request = { data: {}},
           request_url_base = '/' + this.props.remoteNames,
-          create_url_base = '/' + (this.props.remoteCreate || this.props.remoteNames),
+          create_url_base = '/' + (this.props.remoteCreate || this.props.remoteNames + '/create'),
           id = this.getUno()
 
       request.data[this.props.remoteName] = record
