@@ -1,3 +1,8 @@
+То('сѫбуке сѫ таковы:') do |table|
+   ctx = table.rows_hash.transform_values { |value| YAML.load(value) }
+   @_context = context.merge(ctx.symbolize_keys)
+end
+
 Если('сдѣлаю {string} запытъ до адреса {string}') do |proto, address|
    @response = send(proto.downcase, address)
 end

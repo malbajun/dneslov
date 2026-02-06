@@ -54,6 +54,10 @@ module TotalSize
       Rails.cache.fetch(["count", "query", rela.to_sql], expires_in: 1.week) do
          model.connection.select_all("WITH cnt AS(#{rela.to_sql}) SELECT COUNT(*) FROM cnt").rows[0][0]
       end
+   rescue => e
+      Kernel.puts("Invalid exception: #{e.message} with SQL: #{rela.to_sql}")
+
+      0
    end
 
    def total_size

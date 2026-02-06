@@ -87,18 +87,20 @@ resources:
          alias: p
          default: 1
          descriptions: :tiun.resources.tag.index.page
-       - name: appellation
+       - name: uno
          kind: string
-         descriptions: :tiun.resources.tag.index.appellation
+         descriptions: :tiun.resources.tag.index.uno
        - name: query
          kind: string
          alias: q
          descriptions: :tiun.resources.tag.index.query
        - name: language
          kind: string
+         alias: l
          descriptions: :tiun.resources.tag.index.language
        - name: alphabeth
          kind: string
+         alias: a
          descriptions: :tiun.resources.tag.index.alphabeth
  - name: tag.autocomplete
    path: /api/v0/tags/ac.json
@@ -133,26 +135,28 @@ resources:
          descriptions: :tiun.resources.tag.create.id
        - name: language
          kind: string
-         alias: l
+         alias: l, language_code
+         context: true
          descriptions: :tiun.resources.tag.create.language
        - name: alphabeth
          kind: string
-         alias: a
+         alias: a, alphabeth_code
+         context: alphabeth
          descriptions: :tiun.resources.tag.create.alphabeth
        - name: kind
          kind: string
          descriptions: :tiun.resources.tag.create.kind
-       - name: title
-         kind: string
-         descriptions: :tiun.resources.tag.create.title
        - name: appellation
          kind: string
          descriptions: :tiun.resources.tag.create.appellation
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.tag.create.title
        - name: description
          kind: string
          descriptions: :tiun.resources.tag.create.description
  - name: tag
-   path: /api/v0/tags/:id.json
+   path: /api/v0/tags/:uno.json
    methods:
     - name: get
       version: 0.1
@@ -161,9 +165,9 @@ resources:
       auth: no
       allowed_errors: [200, 404, 406, 422.3, 500]
       args:
-       - name: id
+       - name: uno
          kind: string
-         descriptions: :tiun.resources.tag.get.id
+         descriptions: :tiun.resources.tag.get.uno
        - name: language
          kind: string
          alias: l
@@ -179,21 +183,25 @@ resources:
       auth: tag.update
       allowed_errors: [200, 404, 422.3, 500]
       args:
-       - name: id
+       - name: uno
          kind: integer
-         descriptions: :tiun.resources.tag.put.id
+         descriptions: :tiun.resources.tag.put.uno
        - name: language
          kind: string
+         alias: l, language_code
+         context: language
          descriptions: :tiun.resources.tag.put.language
        - name: alphabeth
          kind: string
+         alias: a, alphabeth_code
+         context: true
          descriptions: :tiun.resources.tag.put.alphabeth
-       - name: title
-         kind: string
-         descriptions: :tiun.resources.tag.put.title
        - name: appellation
          kind: string
          descriptions: :tiun.resources.tag.put.appellation
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.tag.put.title
        - name: description
          kind: string
          descriptions: :tiun.resources.tag.put.description
@@ -204,6 +212,6 @@ resources:
       auth: tag.remove
       allowed_errors: [200, 404, 422.3, 500]
       args:
-       - name: id
+       - name: uno
          kind: string
-         descriptions: :tiun.resources.tag.delete.id
+         descriptions: :tiun.resources.tag.delete.uno

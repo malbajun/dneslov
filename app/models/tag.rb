@@ -6,18 +6,19 @@ class Tag < ApplicationRecord
    include ByToken
 
    has_many :taggables
+   belongs_to :tag_kind, primary_key: :key, foreign_key: :kind, class_name: :Subject
 
    scope :by_query, -> text do
       left_outer_joins(:descriptions, :titles, :appellations).
          where("unaccent(titles_tags.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(descriptions_tags.text) ~* unaccent(?)", "\\m#{text}.*")))
+         where("unaccent(appellations_tags.text) ~* unaccent(?)", "\\m#{text}.*")))
    end
    singleton_class.send(:alias_method, :by_q, :by_query)
 
    scope :by_id, ->(id) { where(id: id.to_s.strip) }
 
-   # by unique universal numbering object: by id, by slug, by short_name
+   # by unique universal numbering object by id or appellation
    scope :by_uno, ->(uno) do
       case uno.to_s
       when /^\s*$/
@@ -27,6 +28,42 @@ class Tag < ApplicationRecord
       else
          by_appellation(uno)
       end
+   end
+
+#   scope :sec_language, ->(l, context = {}) do
+#      language_code =
+#         Subject.
+#         where(kind_code: "Language").
+#         joins(:appellations).
+#         where(descriptions: { text: l}).first&.key || l
+#      self.instance_variable_set("@language_code", language_code)
+#
+#      self
+#   end
+#
+#   scope :sec_alphabeth, ->(a, context = {}) do
+#      alphabeth_code =
+#         Subject.
+#         where(kind_code: "Alphabeth").
+#         joins(:appellations).
+#         where(descriptions: { text: a}).first&.key || a
+#      self.instance_variable_set("@alphabeth_code", alphabeth_code)
+#
+#      self
+#   end
+
+   scope :by_language, ->(l) do
+      joins(:descriptions, :titles, :appellations).
+         where("unaccent(titles_tags.alphabeth_code) ~* ?", l).or(
+         where("unaccent(descriptions.text) ~* ?", l).or(
+         where("unaccent(appellations_tags.text) ~* ?", l)))
+   end
+
+   scope :by_alphabeth, ->(a) do
+      joins(:descriptions, :titles, :appellations).
+         where("unaccent(titles_tags.alphabeth_code) ~* ?", a).or(
+         where("unaccent(descriptions.text) ~* ?", a).or(
+         where("unaccent(appellations_tags.text) ~* ?", a)))
    end
 
    # required for short list

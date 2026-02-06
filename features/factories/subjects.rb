@@ -5,11 +5,12 @@ FactoryBot.define do
       meta { "{}" }
 
       transient do
-         name { nil }
+         appellation { nil }
+         la { "ру_РО" }
       end
 
       after(:build) do |s, e|
-         s.names << build(:appellation, text: e.name) if e.name
+         s.appellations << build(:appellation, text: e.appellation, language_code: e.la[0..1], alphabeth_code: e.la[3..4]) if e.appellation
       end
    end
 
@@ -46,6 +47,13 @@ FactoryBot.define do
       kind_code { 'NameKind' }
 
       association :kind, factory: :subject_kind, key: "NameKind", strategy: :find_build
+   end
+
+   factory :tag_kind, parent: :subject, class: :Subject do
+      key { 'обычна' }
+      kind_code { 'TagKind' }
+
+      association :kind, factory: :subject_kind, key: "TagKind", strategy: :find_build
    end
 
    factory :rite_bind, parent: :subject, class: :Subject do

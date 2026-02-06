@@ -3,6 +3,8 @@ module WithAppellations
 
    def self.included base
       base.class_eval do
+         extend La
+
          attr_writer :appellation, :appellation_language, :appellation_alphabeth, :appellation_language_code, :appellation_alphabeth_code
 
          has_many :appellations, as: :describable, class_name: :Appellation, dependent: :delete_all
@@ -21,13 +23,15 @@ module WithAppellations
                           AND #{as}_appellations.describable_type = '#{model}'
                           AND #{as}_appellations.type IN ('Appellation')"
 
-            joins(join).where("#{as}_appellations.text ~* ?", appellation)
+            joins(join).where("#{as}_appellations.text = ?", appellation)
          end
 
          scope :with_appellations, -> context do
             this = table.table_alias || table.name
-            language_codes = context[:language] ? [context[:language]] : context[:text_languages]
-            alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+            language_codes = self.instance_variable_get("@language_code") ||
+               context[:language] ? [context[:language]] : context[:text_languages]
+            alphabeth_codes = self.instance_variable_get("@alphabeth_code") ||
+               context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
             /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
             as = context[:as] || model.reflections[rela]&.name || rela
             selector = self.select_values.dup
@@ -97,8 +101,6 @@ module WithAppellations
 
          scope :with_appellation, -> context do
             this = table.table_alias || table.name
-            language_codes = context[:language] ? [context[:language]] : context[:text_languages]
-            alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
             /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
             as = context[:as] || model.reflections[rela]&.name || rela
             selector = self.select_values.dup
@@ -108,9 +110,8 @@ module WithAppellations
             join = "LEFT OUTER JOIN descriptions AS #{this}_appellations
                                  ON #{this}_appellations.describable_id = #{this}.id
                                 AND #{this}_appellations.describable_type = '#{model}'
-                                AND #{this}_appellations.type IN ('Appellation')
-                                AND #{this}_appellations.language_code IN ('#{language_codes.join("', '")}')
-                                AND #{this}_appellations.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+                                AND #{this}_appellations.type IN ('Appellation') " +
+               model.apply_la(self, context) {|(x, y)| "AND #{this}_appellations.#{x} IN ('#{y}')" }.join(" ")
 
             joins(join).select(selector.uniq).group('_appellation', "#{this}.id")
          end
@@ -122,7 +123,7 @@ module WithAppellations
          before_validation :fill_in_appellation
 
          def appellation_language
-           @appellation_language ||= appellations.last&.language.name
+            @appellation_language ||= appellations.last&.language.name
          end
 
          def appellation_alphabeth
@@ -137,16 +138,54 @@ module WithAppellations
             @appellation_alphabeth_code ||= appellations.last&.alphabeth_code
          end
 
+         def language= value
+            language_code =
+               Subject.
+               where(kind_code: "Language").
+               joins(:appellations).
+               where(descriptions: { text: value}).
+               first&.key || Subject.
+               where(key: value, kind_code: "Language").
+               first&.key
+
+            instance_variable_set("@language", value) if language_code
+
+            if respond_to?(:language_code=)
+               self.language_code = language_code
+            else
+               instance_variable_set("@language_code", language_code)
+            end
+         end
+
+         def alphabeth= value
+            alphabeth_code =
+               Subject.
+               where(kind_code: "Alphabeth").
+               joins(:appellations).
+               where(descriptions: { text: value}).
+               first&.key || Subject.
+               where(key: value, kind_code: "Alphabeth").
+               first&.key
+
+            instance_variable_set("@alphabeth", value) if alphabeth_code
+
+            if respond_to?(:alphabeth_code=)
+               self.alphabeth_code = alphabeth_code
+            else
+               instance_variable_set("@alphabeth_code", alphabeth_code)
+            end
+         end
+
          def fill_in_appellation
             if @appellation
                lc_pre = appellation_language_code || @language_code
                ac_pre = appellation_alphabeth_code || @alphabeth_code
                lc, ac = Languageble.la_for_string(@appellation, lc_pre, ac_pre)
 
-               if appellation = appellations.where(language_code: lc, alphabeth_code: ac).first
+               if appellation = appellations.where(language_code: lc_pre || lc, alphabeth_code: ac_pre || ac).first
                   appellation.update_attribute(:text, @appellation)
                else
-                  appellations << Appellation.new(text: @appellation, language_code: lc, alphabeth_code: ac)
+                  appellations << Appellation.new(text: @appellation, language_code: lc_pre || lc, alphabeth_code: ac_pre || ac)
                end
             end
          end

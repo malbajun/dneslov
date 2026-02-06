@@ -10,12 +10,12 @@ module WithLocaleNames
 
             join = "LEFT OUTER JOIN subjects AS #{this}_languages
                                  ON #{this}_languages.key = #{this}.language_code
-                    LEFT OUTER JOIN descriptions AS #{this}_language_names
-                                 ON #{this}_language_names.describable_id = #{this}_languages.id
-                                AND #{this}_language_names.describable_type = 'Subject'
-                                AND #{this}_language_names.language_code IN ('#{language_codes.join("', '")}')"
+                    LEFT OUTER JOIN descriptions AS #{this}_language_appellations
+                                 ON #{this}_language_appellations.describable_id = #{this}_languages.id
+                                AND #{this}_language_appellations.describable_type = 'Subject'
+                                AND #{this}_language_appellations.language_code IN ('#{language_codes.join("', '")}')"
 
-            wheres = ["#{this}.language_code = ? OR #{this}_language_names.text = ?", l, l]
+            wheres = ["#{this}.language_code = ? OR #{this}_language_appellations.text = ?", l, l]
 
             joins(join).where(*wheres)
          end
@@ -27,12 +27,12 @@ module WithLocaleNames
 
             join = "LEFT OUTER JOIN subjects AS #{this}_alphabeths
                                  ON #{this}_alphabeths.key = #{this}.alphabeth_code
-                    LEFT OUTER JOIN descriptions AS #{this}_alphabeth_names
-                                 ON #{this}_alphabeth_names.describable_id = #{this}_alphabeths.id
-                                AND #{this}_alphabeth_names.describable_type = 'Subject'
-                                AND #{this}_alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+                    LEFT OUTER JOIN descriptions AS #{this}_alphabeth_appellations
+                                 ON #{this}_alphabeth_appellations.describable_id = #{this}_alphabeths.id
+                                AND #{this}_alphabeth_appellations.describable_type = 'Subject'
+                                AND #{this}_alphabeth_appellations.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
 
-            wheres = ["#{this}.alphabeth_code = ? OR #{this}_alphabeth_names.text = ?", a, a]
+            wheres = ["#{this}.alphabeth_code = ? OR #{this}_alphabeth_appellations.text = ?", a, a]
 
             joins(join).where(*wheres)
          end
@@ -70,14 +70,6 @@ module WithLocaleNames
                                     #{alph_wheres}"
 
             joins(join).select(selector.uniq).group(:id, 'language_names.text', 'alphabeth_names.text')
-         end
-
-         def language= value
-            self.language_code ||= Subject.where(kind_code: "Language").joins(:nomina).where(nomina: { text: value}).first.key
-         end
-
-         def alphabeth= value
-            self.alphabeth_code ||= Subject.where(kind_code: "Alphabeth").joins(:nomina).where(nomina: { text: value}).first.key
          end
       end
    end

@@ -530,6 +530,7 @@ module Languageble
       #
       #     has_alphabeth on: name: true
       #     has_alphabeth on: { text: [:nosyntax, allow: " ‑" ] }
+      #     has_alphabeth on: { text: [:nospecific, allow: " ‑" ] }
       #     has_alphabeth on: [ :name, :text ]
       #     has_alphabeth novalidate: true
       #
@@ -614,11 +615,11 @@ module Languageble
 
          alphabeths = scores.last.last.transpose.last
          language =
-            alphabeths.map {|a| ALPHABETH_TREE[a] }.flatten.compact.sort do |x, y|
-               x == preferred_language.to_s.to_sym ? -1 : LANGUAGE_TREE.keys.index(x) <=> LANGUAGE_TREE.keys.index(y)
+            alphabeths.map {|a| ALPHABETH_TREE[a] }.flatten.uniq.compact.sort_by do |x|
+               x == preferred_language.to_s.to_sym ? -1 : LANGUAGE_TREE.keys.index(x)
             end.first
          alphabeth =
-            (alphabeths & [LANGUAGE_TREE[language]].flatten).sort do |x, y|
+            (alphabeths & [LANGUAGE_TREE[language]].flatten.uniq).sort_by do |x|
                x == preferred_alphabeth.to_s.to_sym ? -1 : 1
             end.first
 

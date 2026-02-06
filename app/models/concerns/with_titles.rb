@@ -143,10 +143,10 @@ module WithTitles
                ac_pre = title_alphabeth_code || @alphabeth_code
                lc, ac = Languageble.la_for_string(@title, lc_pre, ac_pre)
 
-               if title = titles.where(language_code: lc, alphabeth_code: ac).first
+               if title = titles.where(language_code: lc_pre || lc, alphabeth_code: ac_pre || ac).first
                   title.update_attribute(:text, @title)
                else
-                  titles << Title.new(text: @title, language_code: lc, alphabeth_code: ac)
+                  titles << Title.new(text: @title, language_code: lc_pre || lc, alphabeth_code: ac_pre || ac)
                end
             end
          end

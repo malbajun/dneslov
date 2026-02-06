@@ -137,10 +137,10 @@ module WithDescriptions
                ac_pre = description_alphabeth_code || @alphabeth_code
                lc, ac = Languageble.la_for_string(@description, lc_pre, ac_pre)
 
-               if description = descriptions.where(language_code: lc, alphabeth_code: ac).first
+               if description = descriptions.where(language_code: lc_pre || lc, alphabeth_code: ac_pre || ac).first
                   description.update_attribute(:text, @description)
                else
-                  descriptions << Description.new(text: @description, language_code: lc, alphabeth_code: ac)
+                  descriptions << Description.new(text: @description, language_code: lc_pre || lc, alphabeth_code: ac_pre || ac)
                end
             end
          end
