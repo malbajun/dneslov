@@ -26,6 +26,9 @@
          | language_code   | др                                   |
          | alphabeth_code  | ДР                                   |
       * єствує имѧ "Град" помѣчено сꙛ "Мѣтаа"
+      * сꙛбуке для правача сѫ таковы:
+         | language        | ру                                   |
+         | alphabeth       | РУ                                   |
 
    @get @collection @json
    Пример: Запрос к правачу мѣт в АПИ при отсутствии мѣт
@@ -42,7 +45,7 @@
          ---
          - id: 10000
            kind: обычна
-           appellation:
+           appellation: Мѣта
            tagged_count: 0
          - id: 10001
            kind: помѣстна
@@ -60,7 +63,7 @@
          ---
          - id: 10000
            kind: обычна
-           appellation:
+           appellation: Мѣта
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-9/1"
@@ -74,7 +77,7 @@
          ---
          - id: 10000
            kind: обычна
-           appellation:
+           appellation: Мѣта
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-9/1"
@@ -88,21 +91,24 @@
          ---
          - id: 10000
            kind: обычна
-           appellation:
+           appellation: Мѣта
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-9/1"
 
    @get @collection @search @json
    Пример: Користник искає во спису мѣт по взору мѣте
-      Если запытаю добыванје из изо "/api/v0/tags.json?a=ДР"
+      Если сꙛбуке для правача сѫ таковы:
+         | language        | др                                   |
+         | alphabeth       | ДР                                   |
+      И запытаю добыванје из изо "/api/v0/tags.json?a=ДР"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          - id: 10001
            kind: помѣстна
-           appellation:
+           appellation: Мѣтаа
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-9/1"
@@ -130,7 +136,7 @@
          ---
          - id: 10000
            kind: обычна
-           appellation:
+           appellation: Мѣта
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-9/1"
@@ -144,7 +150,7 @@
          ---
          - id: 10000
            kind: обычна
-           appellation:
+           appellation: Мѣта
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-0/2"
@@ -189,6 +195,9 @@
 
    @create @object @json
    Пример: Користник створяє мѣту
+      Если сꙛбуке для правача сѫ таковы:
+         | language        | вс                                   |
+         | alphabeth       | НЦ                                   |
       Если запытаю створенје изо мѣте "/api/v0/tags/create.json" сꙛ даными:
          | id              | 10002                                |
          | appellation     | Мѣтаб                                |
@@ -333,16 +342,19 @@
          ---
          id: 10000
          kind: обычна
-         kind_title:
-         appellation:
-         title:
-         description:
+         kind_title: Простая мѣтка
+         appellation: Мѣта
+         title: Славник Титул
+         description: Описаловое
          tagged_count: 0
          """
 
    @delete @object @json
    Пример: Користник изтьрає иззначену плашкој мѣту 
-      Если запытаю изтрѣнје изо "/api/v0/tags/Мѣтаа.json"
+      Если сꙛбуке для правача сѫ таковы:
+         | language        | др                                   |
+         | alphabeth       | ДР                                   |
+      И запытаю изтрѣнје изо "/api/v0/tags/Мѣтаа.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
@@ -350,9 +362,9 @@
          id: 10001
          kind: помѣстна
          kind_title:
-         appellation:
-         title:
-         description:
+         appellation: Мѣтаа
+         title: Славника Титул
+         description: Описалово
          tagged_count: 0
          """
       И изнахоѕи мѣте "Мѣтаа" не бѫдє

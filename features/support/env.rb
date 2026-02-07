@@ -12,6 +12,7 @@ require 'cucumber/rails'
 require 'simplecov'
 require "simplecov_json_formatter"
 require 'shoulda-matchers/cucumber'
+require 'mocha/api'
 require 'factory_bot'
 require 'faker'
 require 'ffaker'
@@ -21,6 +22,7 @@ FactoryBot.lint
 
 World(FactoryBot::Syntax::Methods)
 World(Rack::Test::Methods)
+World(Mocha::API)
 
 FFMPEG.logger = Logger.new(nil)
 
@@ -94,6 +96,16 @@ After do
    FileUtils.rm_rf(Dir["#{Rails.root}/public/images"])
    FileUtils.rm_rf(Dir["#{Rails.root}/public/roundels"])
    FileUtils.rm_rf(Dir["#{Rails.root}/public/uploads"])
+end
+
+Around do |scenario, block|
+   begin
+      mocha_setup
+      block.call
+      mocha_verify
+   ensure
+      mocha_teardown
+   end
 end
 
 at_exit do

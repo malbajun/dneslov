@@ -24,6 +24,18 @@ end
    expect(@response).to match_response_json_yaml(doc_string)
 end
 
+Если('сꙛбуке для правача сѫ таковы:') do |table|
+   hash =
+      {
+         text_languages: %i(ру),
+         service_languages: %i(цс),
+         language: "ру",
+         alphabeth: "РО"
+      }.merge(table.rows_hash.symbolize_keys)
+
+   ApplicationController.stubs(:languages_defaults).returns(hash)
+end
+
 То('добѫдꙛ кодъ поврата {string}') do |code|
    expect(@response.status).to eq(code.to_i)
 end

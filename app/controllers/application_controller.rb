@@ -22,12 +22,19 @@ class ApplicationController < ActionController::Base
       set_languages
    end
 
+   def self.languages_defaults
+      {
+         text_languages: %i(ру),
+         service_languages: %i(цс),
+         language: "ру",
+         alphabeth: "РО"
+      }
+   end
+
    def set_languages
-      # NOTE the default values
-      @text_languages ||= %i(ру)
-      @service_languages ||= %i(цс)
-      @language ||= "ру"
-      @alphabeth ||= "РО"
+      self.class.languages_defaults.each do |k, v|
+         self.instance_variable_set(:"@#{k}", v)
+      end
    end
 
    def context
