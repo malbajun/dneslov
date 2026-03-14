@@ -4,12 +4,12 @@
 # are locale specific, and you may define rules for as many different
 # locales as you wish. All of these examples are active by default:
 ActiveSupport::Inflector.inflections(:en) do |inflect|
-   inflect.plural /(.*o)$/i, '\1es'
-   inflect.singular /(.*o)es$/i, '\1'
-   inflect.plural /(.*)en$/i, '\1ina'
-   inflect.singular /(.*)ina/i, '\1en'
-   inflect.plural /(.*)us$/i, '\1i'
-   inflect.singular /(.*)i$/i, '\1us'
+   inflect.singular /(.*)(oes|o)$/i, '\1o'
+   inflect.singular /(.*)(ina|en)/i, '\1en'
+   inflect.singular /(.*)(i|us)$/i, '\1us'
+   inflect.plural /(.*)(o|oes)$/i, '\1oes'
+   inflect.plural /(.*)(en|ina)$/i, '\1ina'
+   inflect.plural /(.*)(us|i)$/i, '\1i'
 #   inflect.plural /(.*)um$/i, '\1a'
 #   inflect.singular /(.*)a/i, '\1um'
 #   inflect.plural /^(ox)$/i, '\1en'
