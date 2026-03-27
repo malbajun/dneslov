@@ -145,9 +145,10 @@ export default class Form extends Component {
       let record = this.serializedQuery(),
           request = { data: {}},
           request_url_base = '/' + this.props.remoteNames,
-          create_url_base = '/' + (this.props.remoteCreate || this.props.remoteNames),
+          create_url_base = '/' + (this.props.remoteCreate || (this.props.remoteNames + '/create')),
           id = this.getUno()
 
+      console.log("[onSubmit] * record:", record)
       request.data[this.props.remoteName] = record
 
       if (id) {
@@ -158,7 +159,7 @@ export default class Form extends Component {
          request.url = create_url_base + '.json'
       }
 
-      console.log("Form submit", request)
+      console.debug("[onSubmit] * request:", request)
 
       axios(request)
         .then(this.onSubmitSuccess.bind(this))
@@ -180,7 +181,7 @@ export default class Form extends Component {
                   return value && value.constructor.name === "Object" && this.serializedHash(v) || v
                })
             } else {
-               result[key + '_attributes'] = value
+               result[key] = value
             }
             break
          case 'Object':
@@ -190,7 +191,7 @@ export default class Form extends Component {
                   return value && value.constructor.name === "Object" && this.serializedHash(v) || v
                })
             } else {
-               result[key + '_attributes'] = this.serializedHash(value)
+               result[key] = this.serializedHash(value)
             }
             break
          default:
@@ -269,7 +270,7 @@ export default class Form extends Component {
                break
             case 'Object':
                if (schemeIn) {
-                  tmpValue = merge({ _pos: entries.indexOf([key, value]) }, Form.deserializedHash(value, schemeIn[key]))
+                  tmpValue = Form.deserializedHash(value, schemeIn[key])
                   preValue = { [key]: tmpValue }
                } else {
                   preValue = { [key]: value }

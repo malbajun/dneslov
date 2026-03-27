@@ -24,7 +24,6 @@ export const calendaryMeta = {
          title: 'Имя',
          value: makeTitle,
          source: 'titles',
-         filter: { type: "Appellation" },
       },
       licit: {
          title: 'thumb_up',
@@ -112,7 +111,7 @@ export const calendaryMeta = {
          action: "Добавь имя",
          display_scheme: '12-12-12-12',
          source: "titles",
-         filter: { type: "Appellation" },
+         filter: { type: "Title" },
          validations: {
             'Минимум одно имя должно быть задано':  matchEmptyCollection,
             'Языки в именах не могут совпадать': matchLanguages,

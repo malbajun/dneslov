@@ -1,3 +1,8 @@
+То('сѫбуке сѫ таковы:') do |table|
+   ctx = table.rows_hash.transform_values { |value| YAML.load(value) }
+   @_context = context.merge(ctx.symbolize_keys)
+end
+
 Если('сдѣлаю {string} запытъ до адреса {string}') do |proto, address|
    @response = send(proto.downcase, address)
 end
@@ -17,6 +22,18 @@ end
 
 То('добѫдꙛ выводъ яко:') do |doc_string|
    expect(@response).to match_response_json_yaml(doc_string)
+end
+
+Если('сꙛбуке для правача сѫ таковы:') do |table|
+   hash =
+      {
+         text_languages: %i(ру),
+         service_languages: %i(цс),
+         language: "ру",
+         alphabeth: "РО"
+      }.merge(table.rows_hash.symbolize_keys)
+
+   ApplicationController.stubs(:languages_defaults).returns(hash)
 end
 
 То('добѫдꙛ кодъ поврата {string}') do |code|

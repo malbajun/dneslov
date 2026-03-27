@@ -57,6 +57,9 @@ html {
          opacity: 0.4 !important;
       }
 
+      &.add-to-list {
+         margin-top: 1.4rem;
+      }
    }
 
    .modal {
@@ -273,14 +276,6 @@ html {
 
       & > .material-icons {
          padding-top: 0.8rem;
-      }
-
-      // fixed dynamic field
-      & > .chip {
-         margin-top: 0.7rem;
-         width: -webkit-stretch;
-         width: -moz-available;
-         width: stretch;
       }
 
       .invalid + label.active:after {

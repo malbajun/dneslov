@@ -4,6 +4,8 @@ types:
    model: Nomen
    version: 0.1
    by: root
+   with:
+    - tags
    fields:
     - name: id
       kind: number
@@ -27,14 +29,21 @@ types:
       kind: string
       descriptions: :tiun.types.name.bind_kind_name
     - name: rules
-      kind: string
+      kind: string array
       descriptions: :tiun.types.name.rules
+    - name: tags
+      kind: tag_ac array
+      descriptions: :tiun.types.name.tags
  - name: nomen
    version: 0.1
    with:
     - locale_names
     - links
     - description
+    - root_name
+    - bind_kind_name
+    - bond_to_name
+    - tags
    by: root
    fields:
     - name: id
@@ -79,6 +88,9 @@ types:
     - name: rules
       kind: string array
       descriptions: :tiun.types.nomen.rules
+    - name: tags
+      kind: tag_ac array
+      descriptions: :tiun.types.name.tags
     - name: modifier
       kind: string
       descriptions: :tiun.types.nomen.modifier
@@ -174,7 +186,7 @@ resources:
          kind: integer
          descriptions: :tiun.resources.nomen.create.id
        - name: text
-         kind: integer
+         kind: string
          descriptions: :tiun.resources.nomen.create.text
        - name: language_code
          kind: string
@@ -199,6 +211,15 @@ resources:
        - name: rules
          kind: string array
          descriptions: :tiun.resources.nomen.create.rules
+       - name: tags
+         kind: integer array
+         descriptions: :tiun.resources.nomen.create.tags
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.nomen.create.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.nomen.create.description
        - name: modifier
          kind: string
          descriptions: :tiun.resources.nomen.create.modifier
@@ -259,6 +280,15 @@ resources:
        - name: rules
          kind: string array
          descriptions: :tiun.resources.nomen.put.rules
+       - name: tags
+         kind: integer array
+         descriptions: :tiun.resources.nomen.put.tags
+       - name: title
+         kind: string
+         descriptions: :tiun.resources.nomen.put.title
+       - name: description
+         kind: string
+         descriptions: :tiun.resources.nomen.put.description
        - name: modifier
          kind: string
          descriptions: :tiun.resources.nomen.put.modifier

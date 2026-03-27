@@ -1,4 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
+   extend TotalSize
+   extend DefaultKey
+
    self.abstract_class = true
 
    scope :ranged_with, ->(range) do

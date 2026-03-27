@@ -42,7 +42,7 @@ module WithTitles
                kind_where =
                                "OR titles.describable_id = #{as}_kinds.id
                                AND titles.describable_type = 'Subject'
-                               AND titles.type IN ('Title', 'Appellation')"
+                               AND titles.type IN ('Title')"
             end
 
             if language_codes.any?
@@ -85,7 +85,7 @@ module WithTitles
                              WHERE titles.id IS NOT NULL
                                AND (titles.describable_id = #{as}.id
                                AND titles.describable_type = '#{model}'
-                               AND titles.type IN ('Title', 'Appellation')
+                               AND titles.type IN ('Title')
                                    #{kind_where}) #{lang_wheres&.last} #{alph_wheres&.last}
                           GROUP BY titles.id, titles.describable_type, titles.text,
                                    language_names.text, alphabeth_names.text)
@@ -108,7 +108,7 @@ module WithTitles
             join = "LEFT OUTER JOIN descriptions AS #{this}_titles
                                  ON #{this}_titles.describable_id = #{this}.id
                                 AND #{this}_titles.describable_type = '#{model}'
-                                AND #{this}_titles.type IN ('Title', 'Appellation')
+                                AND #{this}_titles.type IN ('Title')
                                 AND #{this}_titles.language_code IN ('#{language_codes.join("', '")}')
                                 AND #{this}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
 
@@ -139,14 +139,14 @@ module WithTitles
 
          def fill_in_title
             if @title
-               lc_pre = title_language_code || respond_to?(:language_code) && language_code || nil
-               ac_pre = title_alphabeth_code || respond_to?(:alphabeth_code) && alphabeth_code || nil
+               lc_pre = title_language_code || @language_code
+               ac_pre = title_alphabeth_code || @alphabeth_code
                lc, ac = Languageble.la_for_string(@title, lc_pre, ac_pre)
 
-               if title = titles.where(language_code: title_language_code || lc, alphabeth_code: title_alphabeth_code || ac).first
+               if title = titles.where(language_code: lc_pre || lc, alphabeth_code: ac_pre || ac).first
                   title.update_attribute(:text, @title)
                else
-                  titles << Title.new(text: @title, language_code: title_language_code || lc, alphabeth_code: title_alphabeth_code || ac)
+                  titles << Title.new(text: @title, language_code: lc_pre || lc, alphabeth_code: ac_pre || ac)
                end
             end
          end

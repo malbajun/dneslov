@@ -3,8 +3,6 @@
 # quantity[string]      - количество
 #
 class Memory < ApplicationRecord
-   extend TotalSize
-   extend DefaultKey
    extend Informatible
    include DistinctBy
    include WithTitles

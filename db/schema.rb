@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -101,6 +101,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.string "alphabeth_code"
     t.string "type"
     t.text "text"
+    t.tsvector "tsv"
+    t.index "language_code, alphabeth_code, describable_type, md5(text)", name: "index_descriptions_on_la_type_text", unique: true, where: "((type)::text = 'Appellation'::text)"
     t.index "md5(text)", name: "descriptions_text_index"
     t.index ["alphabeth_code"], name: "index_descriptions_on_alphabeth_code"
     t.index ["describable_id", "describable_type", "alphabeth_code", "language_code", "type"], name: "describable_alphabeth_language_type_index", unique: true
@@ -112,6 +114,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.index ["language_code", "alphabeth_code", "type", "describable_id", "describable_type"], name: "index_on_language_code_alphabeth_code_type_and_describables"
     t.index ["language_code", "type", "describable_id", "describable_type"], name: "index_on_language_code_type_and_describables"
     t.index ["language_code"], name: "index_descriptions_on_language_code"
+    t.index ["tsv"], name: "index_descriptions_on_tsv", using: :gin
     t.index ["type"], name: "index_descriptions_on_type"
   end
 
@@ -317,6 +320,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.string "alphabeth_code", limit: 6
     t.string "rules", default: [], array: true
     t.string "kind", comment: "взор правила претвъра"
+    t.bigint "tag_ids", default: [], comment: "квѧзък набор до мѣте", array: true
     t.index ["alphabeth_code"], name: "index_nomina_on_alphabeth_code"
     t.index ["bond_to_id", "bind_kind_name"], name: "index_nomina_on_bond_to_id_and_bind_kind_name"
     t.index ["bond_to_id"], name: "index_nomina_on_bond_to_id"
@@ -325,6 +329,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.index ["name_id"], name: "index_nomina_on_name_id"
     t.index ["root_id"], name: "index_nomina_on_root_id"
     t.index ["rules"], name: "index_nomina_on_rules"
+    t.index ["tag_ids"], name: "index_nomina_on_tag_ids"
     t.index ["text", "language_code", "alphabeth_code", "kind", "bond_to_id"], name: "index_nomina_text_la_kind_bond_to_id", unique: true
     t.index ["text"], name: "index_nomina_on_text", using: :gin
   end
@@ -580,6 +585,14 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
     t.index ["kind_code"], name: "index_subjects_on_kind_code"
   end
 
+  create_table "tags", force: :cascade do |t|
+    t.string "kind", default: "обычна", null: false, comment: "взор мѣте: обычна, помѣстна"
+    t.integer "tagged_count", default: 0, null: false, comment: "счєтник помѣченых"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kind"], name: "index_tags_on_kind"
+  end
+
   create_table "tokina", force: :cascade do |t|
     t.string "code", null: false
     t.string "type", null: false
@@ -632,7 +645,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_26_202453) do
   add_foreign_key "calendaries", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade
-  add_foreign_key "event_scripta", "events", on_delete: :cascade
+  add_foreign_key "event_scripta", "events", column: "event_id", on_delete: :cascade
   add_foreign_key "event_scripta", "scripta", on_delete: :cascade
   add_foreign_key "events", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "image_attitudes", "pictures", on_delete: :cascade

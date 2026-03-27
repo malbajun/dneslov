@@ -18,7 +18,6 @@ class Calendary < ActiveRecord::Base
 
    belongs_to :place, optional: true
 
-   has_many :titles, as: :describable, dependent: :delete_all, class_name: :Appellation
    has_many :wikies, as: :info, dependent: :delete_all, class_name: :WikiLink
    has_many :beings, as: :info, dependent: :delete_all, class_name: :BeingLink
    has_many :memos, dependent: :delete_all

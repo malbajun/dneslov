@@ -7,7 +7,7 @@ module Spec
          locale: I18n.locale,
          calendary_slugs: ['днес'],
          language: 'ру',
-         alphabeth: 'РО',
+         alphabeth: 'РУ',
       }
    end
 

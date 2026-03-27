@@ -1,8 +1,6 @@
 class Description < ActiveRecord::Base
    include Languageble
 
-   has_alphabeth on: :text, novalidate: true
-
    belongs_to :describable, polymorphic: true
    belongs_to :memo, polymorphic: true, foreign_key: :describable_id, foreign_type: :describable_type, class_name: :Memo
 

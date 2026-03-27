@@ -13,6 +13,7 @@ class Subject < ActiveRecord::Base
 
    belongs_to :kind, primary_key: :key, foreign_key: :kind_code, class_name: :Subject
 
+   has_many :appellations, as: :describable, dependent: :delete_all
    has_many :names, as: :describable, dependent: :delete_all, class_name: :Appellation do
       def for language_codes
          where( language_code: language_codes ).first
@@ -22,7 +23,7 @@ class Subject < ActiveRecord::Base
    scope :by_token, -> text do
       as = table.table_alias || table.name
 
-      self.left_outer_joins(:names).
+      self.left_outer_joins(:appellations).
          where("unaccent(#{as}.key) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*")).
          distinct
@@ -63,13 +64,13 @@ class Subject < ActiveRecord::Base
       if language_codes.any?
          lang_wheres =
             ["AND titles.language_code IN ('#{language_codes.join("', '")}')",
-             "AND language_names.language_code IN ('#{language_codes.join("', '")}')"]
+             "AND language_appellations.language_code IN ('#{language_codes.join("', '")}')"]
       end
 
       if alphabeth_codes.any?
          alph_wheres =
             ["AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
-             "AND alphabeth_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+             "AND alphabeth_appellations.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
       end
 
       #binding.pry
@@ -81,15 +82,15 @@ class Subject < ActiveRecord::Base
                           #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
               LEFT OUTER JOIN subjects AS languages
                            ON languages.key = titles.language_code
-              LEFT OUTER JOIN descriptions AS language_names
-                           ON language_names.describable_id = languages.id
-                          AND language_names.describable_type = 'Subject'
+              LEFT OUTER JOIN descriptions AS language_appellations
+                           ON language_appellations.describable_id = languages.id
+                          AND language_appellations.describable_type = 'Subject'
                           #{lang_wheres&.[](1)}
               LEFT OUTER JOIN subjects AS alphabeths
                            ON alphabeths.key = titles.alphabeth_code
-              LEFT OUTER JOIN descriptions AS alphabeth_names
-                           ON alphabeth_names.describable_id = alphabeths.id
-                          AND alphabeth_names.describable_type = 'Subject'
+              LEFT OUTER JOIN descriptions AS alphabeth_appellations
+                           ON alphabeth_appellations.describable_id = alphabeths.id
+                          AND alphabeth_appellations.describable_type = 'Subject'
                           #{alph_wheres&.[](1)}"
 
       selector << "titles.text AS _value"

@@ -34,7 +34,7 @@ module MacrosSupport
                /икоса?/                            => Ikos,
                /молитв[аы]/                        => Prayer,
                /богородич(?:ен|на)/                => Troparion,
-               /им(?:я|ени)/                       => Name,
+               /им(?:я|ени)/                       => Nomen,
                /описан(?:ий|ие|ия|ье)/             => Description,
                /наименован(?:ий|ие|ия|ье)/         => Appellation,
                /событи[еяю]/                       => Event,
@@ -49,9 +49,9 @@ module MacrosSupport
                /служебн(?:ая|ой|ую) ссылк[аиу]/    => ServiceLink,
                /памят[ьи]/                         => Memory,
                /памятно(?:е|го) им(?:я|ени)/       => MemoryName,
-               /лично(?:е|го) им(?:я|ени)/         => Name,
-               /отчеств[оа]/                       => Name,
-               /фамили[ияю]/                       => Name,
+               /лично(?:е|го) им(?:я|ени)/         => Nomen,
+               /отчеств[оа]/                       => Nomen,
+               /фамили[ияю]/                       => Nomen,
                /предмета?/                         => Item,
                /тип[ау]? предмета/                 => ItemType,
                /слуга?/                            => Slug,
@@ -177,7 +177,7 @@ module MacrosSupport
    def extract_key_to r, key
       similar_to = r.delete(key)
       if similar_to
-         r[key] = Name.where(similar_to.deep_dup).first ; end ; end
+         r[key] = Nomen.where(similar_to.deep_dup).first ; end ; end
 
    def make_attrs_for hash, model
       joins = []

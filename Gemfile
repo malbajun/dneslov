@@ -189,6 +189,7 @@ group :test do
    gem 'simplecov_json_formatter'
    gem 'database_cleaner-active_record'
    gem 'database_cleaner-redis'
+   gem 'mocha'
    gem "launchy"
    gem "capybara"
    # gem "selenium-webdriver"
