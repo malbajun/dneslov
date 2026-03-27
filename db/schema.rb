@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_02_01_182100) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -320,6 +320,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_01_182100) do
     t.string "alphabeth_code", limit: 6
     t.string "rules", default: [], array: true
     t.string "kind", comment: "взор правила претвъра"
+    t.bigint "tag_ids", default: [], comment: "квѧзък набор до мѣте", array: true
     t.index ["alphabeth_code"], name: "index_nomina_on_alphabeth_code"
     t.index ["bond_to_id", "bind_kind_name"], name: "index_nomina_on_bond_to_id_and_bind_kind_name"
     t.index ["bond_to_id"], name: "index_nomina_on_bond_to_id"
@@ -328,6 +329,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_01_182100) do
     t.index ["name_id"], name: "index_nomina_on_name_id"
     t.index ["root_id"], name: "index_nomina_on_root_id"
     t.index ["rules"], name: "index_nomina_on_rules"
+    t.index ["tag_ids"], name: "index_nomina_on_tag_ids"
     t.index ["text", "language_code", "alphabeth_code", "kind", "bond_to_id"], name: "index_nomina_text_la_kind_bond_to_id", unique: true
     t.index ["text"], name: "index_nomina_on_text", using: :gin
   end
@@ -583,15 +585,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_01_182100) do
     t.index ["kind_code"], name: "index_subjects_on_kind_code"
   end
 
-  create_table "taggables", force: :cascade do |t|
-    t.string "taggable_type", null: false
-    t.bigint "taggable_id", null: false, comment: "квѧзка до помѣченых"
-    t.bigint "tag_id", null: false, comment: "квѧзка до мѣте"
-    t.index ["tag_id"], name: "index_taggables_on_tag_id"
-    t.index ["taggable_id", "taggable_type", "tag_id"], name: "index_taggables_on_taggable_id_and_taggable_type_and_tag_id", unique: true
-    t.index ["taggable_type", "taggable_id"], name: "index_taggables_on_taggable"
-  end
-
   create_table "tags", force: :cascade do |t|
     t.string "kind", default: "обычна", null: false, comment: "взор мѣте: обычна, помѣстна"
     t.integer "tagged_count", default: 0, null: false, comment: "счєтник помѣченых"
@@ -652,7 +645,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_01_182100) do
   add_foreign_key "calendaries", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade
-  add_foreign_key "event_scripta", "events", on_delete: :cascade
+  add_foreign_key "event_scripta", "events", column: "event_id", on_delete: :cascade
   add_foreign_key "event_scripta", "scripta", on_delete: :cascade
   add_foreign_key "events", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "image_attitudes", "pictures", on_delete: :cascade

@@ -3,8 +3,9 @@ import UrlRegexp from 'UrlRegexp'
 
 export const nomenMeta = {
    default: "text",
+   remoteNames: 'api/v0/nomina',
+   remoteShow: 'api/v0/nomina',
    remoteName: 'nomen',
-   remoteNames: 'nomina',
    title: 'Имена',
    new: 'Новое имя',
    update: 'Обнови имя',
@@ -153,6 +154,25 @@ export const nomenMeta = {
          validations: {
             'Минимум одно правило должно быть задана':  matchEmptyObject,
             'Правила имеют неверный формат JSON': matchValidJson
+         }
+      },
+      tags: {
+         kind: 'set',
+         title: 'Метки',
+         single: 'Метка',
+         placeholder: 'Добавь метку',
+         display_scheme: '12-12-12-12',
+         pathname: 'api/v0/tags/ac',
+         meta: {
+            id: {
+               kind: 'hidden',
+            },
+            text: {
+               kind: 'text',
+               name: 'text',
+               placeholder: 'Введи имя метки',
+               display_scheme: '4-3-2-2',
+            }
          }
       },
       descriptions: {

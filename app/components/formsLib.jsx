@@ -8,6 +8,7 @@ import HiddenField from 'HiddenField'
 import TextArea from 'TextArea'
 import Resource from 'Resource'
 import JsonEditor from 'JsonEditor'
+import SlugFlow from 'SlugFlow'
 
 export function kindToKlass(kind) {
    const klassTable = {
@@ -21,6 +22,7 @@ export function kindToKlass(kind) {
       block: Block,
       uploader: Resource,
       collection: Collection,
+      set: SlugFlow,
    }
 
    let klass = klassTable[kind]

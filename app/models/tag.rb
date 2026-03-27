@@ -5,14 +5,32 @@ class Tag < ApplicationRecord
    include WithAppellations
    include ByToken
 
-   has_many :taggables
    belongs_to :tag_kind, primary_key: :key, foreign_key: :kind, class_name: :Subject
 
    scope :by_query, -> text do
-      left_outer_joins(:descriptions, :titles, :appellations).
-         where("unaccent(titles_tags.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(appellations_tags.text) ~* unaccent(?)", "\\m#{text}.*")))
+      this = table.table_alias || table.name
+      /`(?<method>(?:by_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      join = "LEFT OUTER JOIN descriptions AS #{as}_descriptions_tags
+                           ON #{as}_descriptions_tags.describable_type = 'Tag'
+                          AND #{as}_descriptions_tags.describable_id = tags.id
+                          AND #{as}_descriptions_tags.type = 'Description'
+              LEFT OUTER JOIN descriptions AS #{as}_titles_tags
+                           ON #{as}_titles_tags.describable_type = 'Tag'
+                          AND #{as}_titles_tags.describable_id = tags.id
+                          AND #{as}_titles_tags.type = 'Title'
+              LEFT OUTER JOIN descriptions AS #{as}_appellations_tags
+                           ON #{as}_appellations_tags.describable_type = 'Tag'
+                          AND #{as}_appellations_tags.describable_id = tags.id
+                          AND #{as}_appellations_tags.type = 'Appellation'"
+
+      joins(join).
+         where("unaccent(#{as}_titles_tags.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(#{as}_descriptions_tags.text) ~* unaccent(?)", "\\m#{text}.*").or(
+         where("unaccent(#{as}_appellations_tags.text) ~* unaccent(?)", "\\m#{text}.*")))
    end
    singleton_class.send(:alias_method, :by_q, :by_query)
 
@@ -30,45 +48,62 @@ class Tag < ApplicationRecord
       end
    end
 
-#   scope :sec_language, ->(l, context = {}) do
-#      language_code =
-#         Subject.
-#         where(kind_code: "Language").
-#         joins(:appellations).
-#         where(descriptions: { text: l}).first&.key || l
-#      self.instance_variable_set("@language_code", language_code)
-#
-#      self
-#   end
-#
-#   scope :sec_alphabeth, ->(a, context = {}) do
-#      alphabeth_code =
-#         Subject.
-#         where(kind_code: "Alphabeth").
-#         joins(:appellations).
-#         where(descriptions: { text: a}).first&.key || a
-#      self.instance_variable_set("@alphabeth_code", alphabeth_code)
-#
-#      self
-#   end
-
    scope :by_language, ->(l) do
-      joins(:descriptions, :titles, :appellations).
-         where("unaccent(titles_tags.alphabeth_code) ~* ?", l).or(
-         where("unaccent(descriptions.text) ~* ?", l).or(
-         where("unaccent(appellations_tags.text) ~* ?", l)))
+      this = table.table_alias || table.name
+      /`(?<method>(?:by_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      join = "LEFT OUTER JOIN descriptions AS #{as}_descriptions_tags
+                           ON #{as}_descriptions_tags.describable_type = 'Tag'
+                          AND #{as}_descriptions_tags.describable_id = tags.id
+                          AND #{as}_descriptions_tags.type = 'Description'
+              LEFT OUTER JOIN descriptions AS #{as}_titles_tags
+                           ON #{as}_titles_tags.describable_type = 'Tag'
+                          AND #{as}_titles_tags.describable_id = tags.id
+                          AND #{as}_titles_tags.type = 'Title'
+              LEFT OUTER JOIN descriptions AS #{as}_appellations_tags
+                           ON #{as}_appellations_tags.describable_type = 'Tag'
+                          AND #{as}_appellations_tags.describable_id = tags.id
+                          AND #{as}_appellations_tags.type = 'Appellation'"
+
+      joins(join).
+         where("#{as}_titles_tags.language_code = ?", l).or(
+         where("#{as}_descriptions_tags.language_code = ?", l).or(
+         where("#{as}_appellations_tags.language_code = ?", l)))
    end
 
    scope :by_alphabeth, ->(a) do
-      joins(:descriptions, :titles, :appellations).
-         where("unaccent(titles_tags.alphabeth_code) ~* ?", a).or(
-         where("unaccent(descriptions.text) ~* ?", a).or(
-         where("unaccent(appellations_tags.text) ~* ?", a)))
+      this = table.table_alias || table.name
+      /`(?<method>(?:by_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      join = "LEFT OUTER JOIN descriptions AS #{as}_descriptions_tags
+                           ON #{as}_descriptions_tags.describable_type = 'Tag'
+                          AND #{as}_descriptions_tags.describable_id = tags.id
+                          AND #{as}_descriptions_tags.type = 'Description'
+              LEFT OUTER JOIN descriptions AS #{as}_titles_tags
+                           ON #{as}_titles_tags.describable_type = 'Tag'
+                          AND #{as}_titles_tags.describable_id = tags.id
+                          AND #{as}_titles_tags.type = 'Title'
+              LEFT OUTER JOIN descriptions AS #{as}_appellations_tags
+                           ON #{as}_appellations_tags.describable_type = 'Tag'
+                          AND #{as}_appellations_tags.describable_id = tags.id
+                          AND #{as}_appellations_tags.type = 'Appellation'"
+
+      joins(join).
+         where("#{as}_titles_tags.alphabeth_code = ?", a).and(
+         where("#{as}_descriptions_tags.alphabeth_code = ?", a).and(
+         where("#{as}_appellations_tags.alphabeth_code = ?", a)))
    end
 
    # required for short list
    scope :with_key, -> _ do
-      selector = [ "descriptions.#{primary_key} AS _key" ]
+      this = table.table_alias || table.name
+      selector = [ "#{this}.#{primary_key} AS _key" ]
 
       select(selector).group('_key').reorder("_key")
    end

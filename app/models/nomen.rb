@@ -22,7 +22,7 @@ class Nomen < ActiveRecord::Base
    belongs_to :bond_to, primary_key: :id, foreign_key: :bond_to_id, class_name: :Nomen
    belongs_to :root, primary_key: :id, foreign_key: :root_id, class_name: :Nomen
 
-   has_alphabeth on: { text: [ :nosyntax, allow: " ‑" ] }, novalidate: true
+   has_alphabeth on: { text: [ :nosyntax, allow: " ‑" ] }
 
    scope :by_token, -> text do
       this = table.table_alias || table.name
@@ -107,6 +107,33 @@ class Nomen < ActiveRecord::Base
       model.where(root_id: self.select(:root_id))
    end
 
+   scope :with_tags, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE((WITH __tags AS (
+                           SELECT #{this}_tags.id AS id,
+                                  #{this}_tag_names.text
+                             FROM tags AS #{this}_tags
+                  LEFT OUTER JOIN descriptions AS #{this}_tag_names
+                               ON #{this}_tag_names.describable_id = #{this}_tags.id
+                              AND #{this}_tag_names.describable_type = 'Tag'
+                              AND #{this}_tag_names.type = 'Appellation'
+                              AND #{this}_tag_names.language_code IN ('#{language_codes.join("', '")}')
+                              AND #{this}_tag_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                            WHERE #{this}_tags.id IN (
+                           SELECT DISTINCT unnest(#{this}.tag_ids)
+                             FROM #{this} AS #{this}_nomina
+                            WHERE #{this}_nomina.id = #{this}.id))
+                           SELECT jsonb_object_agg(__tags.id,
+                                                   __tags.text)
+                             FROM __tags), '{}'::jsonb) AS _tags"
+
+      select(selector).group(:id)
+   end
+
    scope :with_bind_kind_name, -> context do
       this = table.table_alias || table.name
       language_codes = context[:language] ? [context[:language]] : context[:text_languages]
@@ -160,5 +187,25 @@ class Nomen < ActiveRecord::Base
 
    def rules= value
       super(value.is_a?(String) ? JSON.parse(value) : value)
+   end
+
+   def tags= tags_in
+      tags =
+         tags_in.map do |t|
+            case t
+            when Integer
+               t
+            when /^\d+$/
+               t.to_i
+            else
+               Tag.by_appellation(t).first&.id
+            end
+         end.compact
+
+      self.tag_ids = tags
+   end
+
+   def tags
+      Tag.where(id: tag_ids)
    end
 end

@@ -1,0 +1,34 @@
+html {
+   .input-field {
+      &.slug-flow {
+         width: auto !important;
+         padding: 0 0.25rem;
+      }
+
+      & > .chip {
+         margin-top: 0.7rem;
+         --bs-chip-color: rgba(0, 0, 0, 0.6);
+         --bs-chip-bg: #e4e4e4;
+         width: -webkit-stretch;
+         width: -moz-available;
+         width: stretch;
+
+         &:has(+ label) {
+            border-radius: 2rem;
+            padding-left: var(--bs-chip-padding-x);
+            padding-right: var(--bs-chip-padding-x);
+
+            & > div,a,span,i {
+               &:first-child {
+                  padding-right: 0.5rem;
+               }
+
+               &:last-child {
+                  margin-right: -0.5rem;
+                  background-color: var(--bs-chip-bg);
+               }
+            }
+         }
+      }
+   }
+}
