@@ -43,13 +43,13 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - id: 10000
-           kind: обычна
-           appellation: Мѣта
-           tagged_count: 0
          - id: 10001
            kind: помѣстна
            appellation:
+           tagged_count: 0
+         - id: 10000
+           kind: обычна
+           appellation: Мѣта
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-9/2"
@@ -148,9 +148,9 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - id: 10000
-           kind: обычна
-           appellation: Мѣта
+         - id: 10001
+           kind: помѣстна
+           appellation:
            tagged_count: 0
          """
       А добѫдꙛ охватъ "0-0/2"
@@ -159,9 +159,9 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - id: 10001
-           kind: помѣстна
-           appellation:
+         - id: 10000
+           kind: обычна
+           appellation: Мѣта
            tagged_count: 0
          """
       А добѫдꙛ охватъ "1-1/2"
