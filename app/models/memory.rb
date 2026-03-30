@@ -17,7 +17,7 @@ class Memory < ApplicationRecord
    has_many :short_names, dependent: :destroy
    has_many :nomina, through: :memory_names
    has_many :paterics, as: :info, dependent: :destroy, class_name: :PatericLink
-   has_many :events, dependent: :destroy
+   has_many :events, dependent: :destroy, class_name: :Event
    has_many :memos, through: :events
    has_many :service_scripta, through: :services
    has_many :scripta, through: :service_scripta
@@ -1290,16 +1290,16 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    def short_name= short_name
-      sn = ShortName.new(text: short_name)
+      sn = ShortName.new(text: short_name, language_code: @language_code, alphabeth_code: @alphabeth_code)
 
       if sn.valid?
-         if sno = short_names.where(language_code: "ср", alphabeth_code: "СР").first
+         if sno = short_names.find {|sno| sno.language_code == sn.language_code && sno.alphabeth_code == sn.alphabeth_code}
             sno.update!(text: short_name)
          else
             short_names << sn
          end
       else
-         errors.add(:short_names, "Unable to cerate invalid short name: '#{short_name}'")
+         errors.add(:short_names, "Unable to create invalid short name: '#{short_name}'")
       end
    end
 end

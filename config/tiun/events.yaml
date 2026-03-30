@@ -89,9 +89,9 @@ resources:
          kind: string
          alias: a
          descriptions: :tiun.events.event.index.alphabeth
-       - name: uno
+       - name: id
          kind: string
-         descriptions: :tiun.events.event.index.uno
+         descriptions: :tiun.events.event.index.id
        - name: kind_code
          kind: string
          alias: k
@@ -189,7 +189,7 @@ resources:
          descriptions: :tiun.events.event.get.alphabeth
     - name: put
       version: 0.1
-      kind: text
+      kind: event
       descriptions: :tiun.events.event.put
       policy: event.update
       allowed_errors: [200, 404, 422.3, 500]

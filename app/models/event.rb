@@ -8,9 +8,8 @@
 #    t.string "order"
 #    t.string "council"
 #
-class Event < ActiveRecord::Base
+class Event < ApplicationRecord
    extend Informatible
-   extend TotalSize
    include DistinctBy
    include WithTitles
    include WithDescriptions
@@ -97,10 +96,15 @@ class Event < ActiveRecord::Base
       'Resurrection',
    ]
 
+   ######################
+   # references relations
    belongs_to :memory
    belongs_to :place, optional: true
    belongs_to :item, optional: true
    belongs_to :kind, primary_key: :key, foreign_key: :kind_code, class_name: :Subject
+
+   ########################
+   # has one/many realtions
    has_one :coordinate, as: :info, inverse_of: :info, class_name: :CoordLink
    has_many :kind_titles, through: :kind, source: :names
    has_many :roundels, -> { where(roundels: { roundelable_type: "Event" }) }, foreign_key: :roundelable_id, dependent: :destroy
@@ -119,6 +123,9 @@ class Event < ActiveRecord::Base
    end
    has_many :calendaries, -> { distinct }, through: :memos
 
+   #####################
+   # model filter scopes
+   default_scope { order(created_at: :asc) }
    scope :notice, -> { where(kind_code: NOTICE) }
    scope :usual, -> { where(kind_code: USUAL) }
    scope :calendaried, ->(calendary_slugs) { self.joins(:memos).where(memoes: { calendary_id: Calendary.by_slugs(calendary_slugs).unscope(:select).select(:id) }) }
@@ -128,6 +135,9 @@ class Event < ActiveRecord::Base
 
       joins(:memos).calendaried(calendary_slugs).merge(Memo.licit).distinct
    end
+
+   ########################
+   # by something searchers
    scope :by_token, -> text do
       left_outer_joins(:kind, :descriptions, :titles, :short_names, :kind_titles).
          merge(Subject.by_token(text)).
@@ -136,8 +146,7 @@ class Event < ActiveRecord::Base
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(short_names.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(kind_titles_events.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(titles_events.text) ~* unaccent(?)", "\\m#{text}.*").or(
-         where("unaccent(names_subjects.text) ~* unaccent(?)", "\\m#{text}.*")))))))
+         where("unaccent(titles_events.text) ~* unaccent(?)", "\\m#{text}.*"))))))
    end
    singleton_class.send(:alias_method, :by_query, :by_token)
 
@@ -216,6 +225,45 @@ class Event < ActiveRecord::Base
       end
    end
 
+   scope :by_language, ->(l) do
+      this = table.table_alias || table.name
+      /`(?<method>(?:by_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      join = "LEFT OUTER JOIN descriptions AS #{as}_titles_events
+                           ON #{as}_titles_events.describable_type = 'Tag'
+                          AND #{as}_titles_events.describable_id = events.id
+                          AND #{as}_titles_events.type = 'Title'
+              LEFT OUTER JOIN short_names AS #{as}_short_names
+                           ON #{as}_short_names.memory_id = #{this}.memory_id"
+
+      joins(join).
+         where("#{as}_titles_events.language_code = ?", l).or(
+         where("#{as}_short_names.language_code = ?", l))
+   end
+
+   scope :by_alphabeth, ->(a) do
+      this = table.table_alias || table.name
+      /`(?<method>(?:by_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+
+      join = "LEFT OUTER JOIN descriptions AS #{as}_titles_events
+                           ON #{as}_titles_events.describable_type = 'Tag'
+                          AND #{as}_titles_events.describable_id = events.id
+                          AND #{as}_titles_events.type = 'Title'
+              LEFT OUTER JOIN short_names AS #{as}_short_names
+                           ON #{as}_short_names.memory_id = #{this}.memory_id"
+
+      joins(join).
+         where("#{as}_titles_events.alphabeth_code = ?", a).or(
+         where("#{as}_short_names.alphabeth_code = ?", a))
+   end
+
+   #########################
    # required for short list
    scope :with_key, -> _ do
       selector = [ 'events.id AS _key' ]
@@ -975,16 +1023,38 @@ class Event < ActiveRecord::Base
       select(selector).group(:id)
    end
 
+   scope :with_memory_short_name, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "#{as}_memory_short_names.text AS _memory_short_name"
+
+      join = "LEFT OUTER JOIN short_names AS #{as}_memory_short_names
+                           ON #{as}_memory_short_names.memory_id = #{this}.memory_id
+                          AND #{as}_memory_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_memory_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group(:id, "#{as}_memory_short_names.text")
+   end
+
    accepts_nested_attributes_for :place, reject_if: :all_blank
    accepts_nested_attributes_for :coordinate, reject_if: :all_blank
    accepts_nested_attributes_for :item, reject_if: :all_blank
 
    singleton_class.send(:alias_method, :mid, :by_memory_id)
 
-   validates_presence_of :kind, :kind_code
+   validates_presence_of :kind, :kind_code, :memory
 
    def all_pictures
       pictures
+   end
+
+   def memory_short_name= value
+      self.memory = Memory.by_short_name(value).first
    end
 
    def self.year_date_for year_date, date_in, julian

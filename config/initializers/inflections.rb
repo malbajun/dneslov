@@ -14,6 +14,7 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.singular /(.*)a/i, '\1um'
 #   inflect.plural /^(ox)$/i, '\1en'
 #   inflect.singular /^(ox)en/i, '\1'
+   inflect.irregular 'event', 'events'
    inflect.irregular 'audio', 'audios'
 #   inflect.uncountable %w( fish sheep )
 end

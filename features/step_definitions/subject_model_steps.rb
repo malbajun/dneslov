@@ -6,19 +6,19 @@ end
    FactoryBot.find_create(:alphabeth, key: code, name: name)
 end
 
-Допустим("есть язык {string}") do |string|
+Допустим("єствує ѧзык {string}") do |string|
    FactoryBot.find_create(:language, key: string)
 end
 
-Допустим("есть алфавит {string}") do |string|
+Допустим("єствує азбука {string}") do |string|
    FactoryBot.find_create(:alphabeth, key: string)
 end
 
-Допустим("есть событие {string}") do |string|
-   FactoryBot.find_create(:event_kind, key: string).save!
+Допустим("єствує взор сꙛбытя {string} яко {string}") do |name, code|
+   FactoryBot.find_create(:event_kind, key: code, name: name)
 end
 
-Допустим("есть события {string}") do |string|
+Допустим("сѫчвуѫ сꙛбытя {string}") do |string|
    string.split(",").each do |key|
       FactoryBot.find_create(:event_kind, key: key.strip).save!
    end

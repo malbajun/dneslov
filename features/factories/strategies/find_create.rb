@@ -12,6 +12,10 @@ class FindCreateStrategy
 
       value
    end
+
+   def to_sym
+      :find_create
+   end
 end
 
 FactoryBot.register_strategy(:find_create, FindCreateStrategy)
