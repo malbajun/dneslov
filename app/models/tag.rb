@@ -5,8 +5,16 @@ class Tag < ApplicationRecord
    include WithAppellations
    include ByToken
 
+   ######################
+   # references relations
    belongs_to :tag_kind, primary_key: :key, foreign_key: :kind, class_name: :Subject
 
+   #####################
+   # model filter scopes
+   default_scope { order(created_at: :desc) }
+
+   ########################
+   # by something searchers
    scope :by_query, -> text do
       this = table.table_alias || table.name
       /`(?<method>(?:by_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
@@ -95,11 +103,12 @@ class Tag < ApplicationRecord
                           AND #{as}_appellations_tags.type = 'Appellation'"
 
       joins(join).
-         where("#{as}_titles_tags.alphabeth_code = ?", a).and(
-         where("#{as}_descriptions_tags.alphabeth_code = ?", a).and(
+         where("#{as}_titles_tags.alphabeth_code = ?", a).or(
+         where("#{as}_descriptions_tags.alphabeth_code = ?", a).or(
          where("#{as}_appellations_tags.alphabeth_code = ?", a)))
    end
 
+   #########################
    # required for short list
    scope :with_key, -> _ do
       this = table.table_alias || table.name
