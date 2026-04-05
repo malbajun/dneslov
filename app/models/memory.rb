@@ -17,7 +17,8 @@ class Memory < ApplicationRecord
    has_many :short_names, dependent: :destroy
    has_many :nomina, through: :memory_names
    has_many :paterics, as: :info, dependent: :destroy, class_name: :PatericLink
-   has_many :events, dependent: :destroy, class_name: :Event
+   has_many :event_roles, inverse_of: :memory, class_name: :EventRole, dependent: :delete_all
+   has_many :events, through: :event_roles, class_name: :Event
    has_many :memos, through: :events
    has_many :service_scripta, through: :services
    has_many :scripta, through: :service_scripta
@@ -335,11 +336,11 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                                     __texted_audios.audio_url AS audio_url,
                                     __texted_audios.audio_kind AS audio_kind
                                FROM scripta AS #{as}_scripta
-                               JOIN events
-                                 ON memories.id = events.memory_id
-                                AND events.kind_code IN ('#{Event::NOTICE.join("','")}')
+                               JOIN event_roles
+                                 ON memories.id = event_roles.memory_id
+                                AND event_roles.event_kind_code IN ('#{Event::NOTICE.join("','")}')
                                JOIN memoes AS #{as}_memoes
-                                 ON events.id = #{as}_memoes.event_id
+                                 ON event_roles.event_id = #{as}_memoes.event_id
                                JOIN memo_scripta
                                  ON memo_scripta.memo_id = #{as}_memoes.id
                                     #{calendaries_join}
@@ -384,16 +385,18 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               COALESCE(#{this}_bond_event_titles.text, '') || ':' ||
                               #{this}_bond_events.happened_at || ')' AS bond_event_name
                          FROM memory_binds AS #{this}_memory_binds
+                         JOIN event_roles AS #{this}_bond_event_roles
+                           ON #{this}_bond_event_roles.event_id = #{this}_memory_binds.bond_event_id
                          JOIN events AS #{this}_bond_events
-                           ON #{this}_bond_events.id = #{this}_memory_binds.bond_event_id
+                           ON #{this}_bond_events.id = #{this}_bond_event_roles.event_id
                          JOIN memories AS #{this}_bond_memories
-                           ON #{this}_bond_memories.id = #{this}_bond_events.memory_id
+                           ON #{this}_bond_memories.id = #{this}_bond_event_roles.memory_id
                          JOIN subjects AS #{this}_bond_event_kinds
-                           ON #{this}_bond_event_kinds.key = #{this}_bond_events.kind_code
+                           ON #{this}_bond_event_kinds.key = #{this}_bond_event_roles.event_kind_code
                           AND #{this}_bond_event_kinds.kind_code = 'EventKind'
                          JOIN descriptions AS #{this}_bond_event_titles
                            ON #{this}_bond_event_titles.id IS NOT NULL
-                          AND (#{this}_bond_event_titles.describable_id = #{this}_bond_events.id
+                          AND (#{this}_bond_event_titles.describable_id = #{this}_bond_event_roles.event_id
                           AND #{this}_bond_event_titles.describable_type = 'Event'
                           AND #{this}_bond_event_titles.type = 'Title'
                            OR #{this}_bond_event_titles.describable_id = #{this}_bond_event_kinds.id
@@ -492,13 +495,16 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                            ON #{this}_memoes.bond_to_id = #{this}_memo_hosts.id
                           AND #{this}_memoes.bind_kind_code = 'соборный'
                           AND #{this}_memoes.calendary_id = #{this}_memo_hosts.calendary_id
-                         JOIN events AS #{this}_host_events
-                           ON #{this}_memo_hosts.event_id = #{this}_host_events.id
-                          AND #{this}_host_events.memory_id = #{id}"
+                         JOIN event_roles AS #{this}_host_event_roles
+                           ON #{this}_memo_hosts.event_id = #{this}_host_event_roles.event_id
+                          AND #{this}_host_event_roles.memory_id = #{id}"
       end
 
-      join =            "JOIN events AS #{this}_events
-                           ON #{this}.id = #{this}_events.memory_id
+      join =            "
+                         JOIN event_roles AS #{this}_event_roles
+                           ON #{this}.id = #{this}_event_roles.memory_id
+                         JOIN events AS #{this}_events
+                           ON #{this}_event_roles.event_id = #{this}_events.id
                          JOIN memoes AS #{this}_memoes
                            ON #{this}_memoes.event_id = #{this}_events.id
                          JOIN slugs AS #{this}_#{as}_slugs
@@ -549,7 +555,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{this}_roundels.roundelable_type AS type
                          FROM roundels AS #{this}_roundels
                         WHERE #{this}_roundels.url IS NOT NULL
-                          AND (#{this}_events.memory_id = #{this}_roundels.roundelable_id
+                          AND (#{this}_event_roles.memory_id = #{this}_roundels.roundelable_id
                           AND 'Memory' = #{this}_roundels.roundelable_type
                            OR #{this}_events.id = #{this}_roundels.roundelable_id
                           AND 'Event' = #{this}_roundels.roundelable_type)
@@ -599,7 +605,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                        SELECT DISTINCT ON(memoes.id)
                               memoes.id AS id,
                               memoes.year_date AS year_date,
-                              events.kind_code AS kind_code,
+                              #{this}_event_roles.event_kind_code AS kind_code,
                               memoes.happened_at AS happened_at,
                               jsonb_object_agg(DISTINCT COALESCE(memo_slugs.text, 'Null'),
                                                         order_titles_memoes.text) AS orders,
@@ -607,11 +613,11 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                        SELECT DISTINCT ON(children_slugs.text)
                               children_slugs.text AS slug
                          FROM slugs AS children_slugs
-                         JOIN events AS #{this}_children_events
-                           ON children_slugs.sluggable_id = #{this}_children_events.memory_id
+                         JOIN event_roles AS #{this}_children_event_roles
+                           ON children_slugs.sluggable_id = #{this}_children_event_roles.memory_id
                           AND children_slugs.sluggable_type = 'Memory'
                          JOIN memoes AS children
-                           ON children.event_id = #{this}_children_events.id
+                           ON children.event_id = #{this}_children_event_roles.event_id
                           AND children.bind_kind_code = 'соборный'
                          JOIN memoes AS hosts
                            ON children.bond_to_id = hosts.id
@@ -621,9 +627,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                            ON #{this}_calendary_slugs.sluggable_id = memoes.calendary_id
                           AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
                               #{cslugs_rule2}
-                         JOIN events AS #{this}_host_events
-                           ON hosts.event_id = #{this}_host_events.id
-                          AND #{this}_host_events.memory_id = #{this}.id)
+                         JOIN event_roles AS #{this}_host_event_roles
+                           ON hosts.event_id = #{this}_host_event_roles.event_id
+                          AND #{this}_host_event_roles.memory_id = #{this}.id)
                        SELECT COUNT(___children.slug)
                          FROM ___children), 0) AS children_total,
                COALESCE((WITH __children AS (
@@ -641,12 +647,14 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{this}_children_notes.text AS note,
                               json_agg(distinct #{this}_calendary_slugs.text) AS calendary_slugs
                          FROM memoes AS children
+                         JOIN event_roles AS #{this}_children_event_roles
+                           ON children.event_id = #{this}_children_event_roles.event_id
                          JOIN events AS #{this}_children_events
-                           ON children.event_id = #{this}_children_events.id
+                           ON #{this}_children_events.id = #{this}_children_event_roles.event_id
                          JOIN memories AS #{this}_children_memories
-                           ON #{this}_children_memories.id = #{this}_children_events.memory_id
+                           ON #{this}_children_memories.id = #{this}_children_event_roles.memory_id
                          JOIN slugs AS #{this}_children_slugs
-                           ON #{this}_children_slugs.sluggable_id = #{this}_children_events.memory_id
+                           ON #{this}_children_slugs.sluggable_id = #{this}_children_event_roles.memory_id
                           AND #{this}_children_slugs.sluggable_type = 'Memory'
                          JOIN calendaries AS #{this}_calendaries
                            ON #{this}_calendaries.id = memoes.calendary_id
@@ -691,9 +699,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{this}_child_roundels.roundelable_type AS type
                          FROM roundels AS #{this}_child_roundels
                         WHERE #{this}_child_roundels.url IS NOT NULL
-                          AND (#{this}_children_events.memory_id = #{this}_child_roundels.roundelable_id
+                          AND (#{this}_children_event_roles.memory_id = #{this}_child_roundels.roundelable_id
                           AND 'Memory' = #{this}_child_roundels.roundelable_type
-                           OR #{this}_children_events.id = #{this}_child_roundels.roundelable_id
+                           OR #{this}_children_event_roles.event_id = #{this}_child_roundels.roundelable_id
                           AND 'Event' = #{this}_child_roundels.roundelable_type)
                      ORDER BY random()
                         LIMIT 1) AS #{this}_child_roundels
@@ -734,9 +742,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                            ON calendary_slugs.sluggable_id = calendaries.id
                           AND calendary_slugs.sluggable_type = 'Calendary'
                           #{cslugs_rule}
-              LEFT OUTER JOIN events
-                           ON memoes.event_id = events.id
-                          AND events.kind_code IN ('#{Event::NOTICE.join("','")}')
+              LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                           ON memoes.event_id = #{this}_event_roles.event_id
+                          AND #{this}_event_roles.event_kind_code IN ('#{Event::NOTICE.join("','")}')
               LEFT OUTER JOIN links AS calendary_links
                            ON calendary_links.info_id = calendaries.id
                           AND calendary_links.info_type = 'Calendary'
@@ -776,10 +784,10 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
-                        WHERE events.memory_id = #{this}.id
+                        WHERE #{this}_event_roles.memory_id = #{this}.id
                           AND calendaries.licit = 't'
                      GROUP BY memoes.id, year_date, title, description, calendary_slug,
-                              calendary_title, calendary_url, memo_links.url, events.kind_code)
+                              calendary_title, calendary_url, memo_links.url, #{this}_event_roles.event_kind_code)
                        SELECT jsonb_agg(__memoes)
                          FROM __memoes), '[]'::jsonb) AS _memoes"
 
@@ -804,18 +812,18 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN slugs AS #{this}_memory_slugs
                           ON 'Memory' = #{this}_memory_slugs.sluggable_type
                          AND #{this}_bond_memories.id = #{this}_memory_slugs.sluggable_id
-             LEFT OUTER JOIN events AS #{this}_bond_events
-                          ON #{this}_bond_events.memory_id = #{this}_bond_memories.id
+             LEFT OUTER JOIN event_roles AS #{this}_bond_event_roles
+                          ON #{this}_bond_event_roles.memory_id = #{this}_bond_memories.id
              LEFT OUTER JOIN memory_binds AS #{this}_memory_binds
-                          ON #{this}_bond_events.id = #{this}_memory_binds.bond_event_id
+                          ON #{this}_bond_event_roles.event_id = #{this}_memory_binds.bond_event_id
              LEFT OUTER JOIN short_names AS #{this}_bond_short_names
                           ON #{this}_bond_memories.id = #{this}_bond_short_names.memory_id
                          AND #{this}_bond_short_names.language_code IN ('#{language_codes.join("', '")}')
                          AND #{this}_bond_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-             LEFT OUTER JOIN events AS #{this}_events
-                          ON #{this}.id = #{this}_events.memory_id
+             LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                          ON #{this}.id = #{this}_event_roles.memory_id
              LEFT OUTER JOIN memoes AS #{this}_memoes
-                          ON #{this}_memoes.event_id = #{this}_events.id
+                          ON #{this}_memoes.event_id = #{this}_event_roles.event_id
              LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
                           ON #{this}_memo_orders.memo_id = #{this}_memoes.id
              LEFT OUTER JOIN descriptions AS #{this}_order_tweets
@@ -842,12 +850,12 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                              #{this}_roundels.roundelable_id AS id,
                              #{this}_roundels.roundelable_type AS type
                         FROM roundels AS #{this}_roundels
-             LEFT OUTER JOIN events AS #{this}_events
-                          ON #{this}_events.memory_id = #{this}.id
+                        JOIN event_roles AS #{this}_event_roles
+                          ON #{this}_event_roles.memory_id = #{this}.id
                        WHERE #{this}_roundels.url IS NOT NULL
                          AND (#{this}.id = #{this}_roundels.roundelable_id
                          AND 'Memory' = #{this}_roundels.roundelable_type
-                          OR #{this}_events.id = #{this}_roundels.roundelable_id
+                          OR #{this}_event_roles.event_id = #{this}_roundels.roundelable_id
                          AND 'Event' = #{this}_roundels.roundelable_type)
                     ORDER BY random()
                        LIMIT 1) AS #{this}_roundels
@@ -912,13 +920,13 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND orders.type = 'Order'
                          JOIN memoes
                            ON memoes.id = memo_orders.memo_id
-                         JOIN events
-                           ON events.id = event_id
+                         JOIN event_roles
+                           ON event_roles.event_id = memoes.event_id
               LEFT OUTER JOIN descriptions AS order_names
                            ON order_names.describable_id = orders.id
                           AND order_names.describable_type = 'Memory'
                           AND order_names.language_code IN ('#{language_codes.join("', '")}')
-                        WHERE events.memory_id = memories.id
+                        WHERE event_roles.memory_id = memories.id
                      GROUP BY orders.id, order_names.text)
                        SELECT jsonb_agg(__orders)
                          FROM __orders), '[]'::jsonb) AS _orders"
@@ -1131,7 +1139,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                          AND event_kind_titles.describable_type = 'Subject'
                          AND event_kind_titles.type = 'Appellation'
                              #{lang_wheres&.[](6)} #{alph_wheres&.[](6)}
-                       WHERE events.memory_id = memories.id
+                        JOIN event_roles AS #{this}_event_roles
+                          ON events.id = #{this}_event_roles.event_id
+                       WHERE #{this}_event_roles.memory_id = memories.id
                     GROUP BY events.id, place_names.text, item_names.text, #{this}_item_type_names.text, event_kind_titles.text)
                       SELECT jsonb_agg(__events)
                         FROM __events), '[]'::jsonb) AS _events"
@@ -1198,7 +1208,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    accepts_nested_attributes_for :memory_binds, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memory_names, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :paterics, reject_if: :all_blank, allow_destroy: true
-   accepts_nested_attributes_for :events, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memos, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :coverings, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank
@@ -1211,7 +1220,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    before_validation :set_base_year, on: :create
 
    def all_pictures
-     pictures.or(Picture.by_event(events))
+      pictures.or(Picture.by_event(events))
    end
 
    def set_base_year

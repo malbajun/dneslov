@@ -17,7 +17,7 @@ FactoryBot.define do
 
       after(:build) do |o, e|
          o.kind = e.kind || association(:event_kind) unless o.kind_code
-         o.memory = build(:memory, without_events: true) unless o.memory
+         o.memories |= [build(:memory, without_events: true)] if o.memories.blank?
       end
    end
 end

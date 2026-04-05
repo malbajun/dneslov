@@ -17,10 +17,14 @@ class Roundel < ApplicationRecord
    scope :by_id, ->(id) { where(id: id) }
    scope :by_memory_id, ->(id) do
       this = table.table_alias || table.name
-      join = "LEFT OUTER JOIN events AS #{this}_events ON #{this}_events.id = roundels.roundelable_id AND roundels.roundelable_type = 'Event'
-              LEFT OUTER JOIN memories AS #{this}_memories ON #{this}_memories.id = roundels.roundelable_id AND roundels.roundelable_type = 'Memory'"
+      join = "LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                           ON #{this}_event_roles.event_id = roundels.roundelable_id
+                          AND roundels.roundelable_type = 'Event'
+              LEFT OUTER JOIN memories AS #{this}_memories
+                           ON #{this}_memories.id = roundels.roundelable_id
+                          AND roundels.roundelable_type = 'Memory'"
 
-      wherec = "#{this}_events.memory_id = ? OR #{this}_memories.id = ?"
+      wherec = "#{this}_event_roles.memory_id = ? OR #{this}_memories.id = ?"
 
       joins(join).where(wherec, id, id)
    end

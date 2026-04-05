@@ -182,8 +182,10 @@ class Scriptum < ActiveRecord::Base
                          AND #{this}_event_titles.describable_type = 'Subject'
                          AND #{this}_event_titles.type = 'Appellation')
                              #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
+                        JOIN event_roles AS #{this}_event_roles
+                          ON #{this}_events.id = #{this}_event_roles.event_id
              LEFT OUTER JOIN short_names AS #{this}_short_names
-                          ON #{this}_short_names.memory_id = #{this}_events.memory_id
+                          ON #{this}_short_names.memory_id = #{this}_event_roles.memory_id
                              #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
 
                        WHERE event_scripta.scriptum_id = #{this}.id

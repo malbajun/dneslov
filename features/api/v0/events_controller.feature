@@ -54,17 +54,17 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - id: 200201
-           title: Событье
-           description: Описалово Событья
-           memory_short_name: Память
-           happened_at: '1001'
-           kind_code: Event
          - id: 200202
            title:
            description:
            memory_short_name:
            happened_at: '2002'
+           kind_code: Event
+         - id: 200201
+           title: Событье
+           description: Описалово Событья
+           memory_short_name: Память
+           happened_at: '1001'
            kind_code: Event
          """
       А добѫдꙛ охватъ "0-9/2"
@@ -229,10 +229,10 @@
          ---
          id: 200203
          happened_at: 2002
-         memory_id: 100100
          kind_code: Event
          memory_short_name: Памѧть
          description: Описалово Сꙛбытјя
+         memory_short_name: Памѧть
          """
 
    @create @object @json @error @422
@@ -257,7 +257,7 @@
          errors:
          - Titles text contains invalid char(s) "gnorw" for the specified alphabeth "РУ"
          - Titles is invalid
-         - Memory can't be blank
+         - Event roles can't be blank
          """
       А изнахоѕи сꙛбытя "10003" не бѫдє
 

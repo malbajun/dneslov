@@ -39,7 +39,7 @@ end
       order(:updated_at).
       last
 
-   expect(event).to match_record_yaml(doc_string)
+   expect(event.jsonize).to match_record_yaml(doc_string)
 end
 
 То('изнахоѕи сꙛбытя {string} не бѫдє') do |uno|

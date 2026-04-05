@@ -30,11 +30,16 @@ class Picture < ApplicationRecord
    scope :by_id, ->(id) { where(id: id) }
    scope :by_memory_id, ->(id) do
       this = table.table_alias || table.name
-      join = "LEFT OUTER JOIN image_attitudes AS #{this}_attitudes ON #{this}_attitudes.picture_id = #{this}.id
-              LEFT OUTER JOIN events AS #{this}_events ON #{this}_events.id = #{this}_attitudes.imageable_id AND #{this}_attitudes.imageable_type = 'Event'
-              LEFT OUTER JOIN memories AS #{this}_memories ON #{this}_memories.id = #{this}_attitudes.imageable_id AND #{this}_attitudes.imageable_type = 'Memory'"
+      join = "           JOIN image_attitudes AS #{this}_attitudes
+                           ON #{this}_attitudes.picture_id = #{this}.id
+              LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                           ON #{this}_event_roles.event_id = #{this}_attitudes.imageable_id
+                          AND #{this}_attitudes.imageable_type = 'Event'
+              LEFT OUTER JOIN memories AS #{this}_memories
+                           ON #{this}_memories.id = #{this}_attitudes.imageable_id
+                          AND #{this}_attitudes.imageable_type = 'Memory'"
 
-      wherec = "#{this}_events.memory_id = ? OR #{this}_memories.id = ?"
+      wherec = "#{this}_event_roles.memory_id = ? OR #{this}_memories.id = ?"
 
       joins(join).where(wherec, id, id)
    end
@@ -115,15 +120,15 @@ class Picture < ApplicationRecord
                               #{this}_#{as}_slugs.text AS slug,
                               #{this}_#{as}_short_names.text AS memory_title,
                               COALESCE(#{this}_#{as}_event_titles.text, #{as}_#{this}_default_titles.text, '') AS event_title,
-                              #{this}_#{as}_events.id AS event_id
+                              #{this}_#{as}_event_roles.event_id AS event_id
                          FROM image_attitudes
-              LEFT OUTER JOIN events AS #{this}_#{as}_events
-                           ON image_attitudes.imageable_id = #{this}_#{as}_events.id
+              LEFT OUTER JOIN event_roles AS #{this}_#{as}_event_roles
+                           ON image_attitudes.imageable_id = #{this}_#{as}_event_roles.event_id
                           AND image_attitudes.imageable_type = 'Event'
                          JOIN slugs AS #{this}_#{as}_slugs
                            ON (#{this}_#{as}_slugs.sluggable_id = image_attitudes.imageable_id
                           AND 'Memory' = image_attitudes.imageable_type
-                           OR #{this}_#{as}_slugs.sluggable_id = #{this}_#{as}_events.memory_id)
+                           OR #{this}_#{as}_slugs.sluggable_id = #{this}_#{as}_event_roles.memory_id)
                           AND #{this}_#{as}_slugs.sluggable_type = 'Memory'
 
                          JOIN short_names AS #{this}_#{as}_short_names
@@ -133,14 +138,14 @@ class Picture < ApplicationRecord
                           AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
 
               LEFT OUTER JOIN descriptions AS #{this}_#{as}_event_titles
-                           ON #{this}_#{as}_event_titles.describable_id = #{this}_#{as}_events.id
+                           ON #{this}_#{as}_event_titles.describable_id = #{this}_#{as}_event_roles.event_id
                           AND #{this}_#{as}_event_titles.describable_type = 'Event'
                           AND #{this}_#{as}_event_titles.language_code IN ('#{language_codes.join("', '")}')
                           AND #{this}_#{as}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                           AND #{this}_#{as}_event_titles.type = 'Title'
 
               LEFT OUTER JOIN subjects AS #{this}_#{as}_kinds
-                           ON #{this}_#{as}_events.kind_code = #{this}_#{as}_kinds.key
+                           ON #{this}_#{as}_event_roles.event_kind_code = #{this}_#{as}_kinds.key
               LEFT OUTER JOIN descriptions AS #{as}_#{this}_default_titles
                            ON #{this}_#{as}_kinds.id = #{as}_#{this}_default_titles.describable_id
                           AND #{as}_#{this}_default_titles.describable_type = 'Subject'
