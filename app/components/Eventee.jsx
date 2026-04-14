@@ -94,7 +94,7 @@ export default class Eventee extends Component {
             happenedAt: Eventee.getHappenedAt(props),
             childrenMemoes: Memory.collectedChildren(props),
             childrenTotal: Memory.collectedChildrenTotals(props), //props.children_total
-            tagKeywords: Eventee.getKeywords(props.short_name, order, props.names, describedMemoes),
+            tagKeywords: Eventee.getKeywords(props.short_name, order, props.nomina, describedMemoes),
             tagTitle: Eventee.getTagTitle(props.short_name, order, describedMemoes),
             tagDescription: Eventee.getDescription(props.short_name, order, describedMemoes, sortedScripta),
          }
@@ -265,11 +265,11 @@ export default class Eventee extends Component {
 //             this.props.titles.reduce((res, x) => { return res + " " + x.text }, "")
 //   }
 //
-   static getKeywords(shortName, order, names, describedMemoes) {
+   static getKeywords(shortName, order, nomina, describedMemoes) {
       let array = [
          order,
          shortName,
-         names.map(x => x.name_text),
+         nomina.map(x => x.name_text),
          describedMemoes.map(x => x.title)
       ].flat().uniq()
 
@@ -343,7 +343,7 @@ export default class Eventee extends Component {
                         url={getUrlsFrom(this.props.specifiedCalendarySlug, this.props.memory.slug)[0]}
                         defaultNameInCalendary={this.state.title}
                         klugs={this.state.klugs}
-                        names={this.props.names} />,
+                        names={this.props.nomina} />,
                      <Chip
                         classNames={['event', 'happened_at', 'place']}
                         texts={[this.props.specific_title || this.state.title, this.state.happenedAt, this.props.place?.name].compact()} />,]}</div></div>

@@ -335,7 +335,6 @@ class Event < ApplicationRecord
          "#{this}.happened_at")
    end
 
-
    scope :with_value, -> context do
       language_codes = [context[:text_languages]].flatten.compact
       alphabeth_codes = Languageble.alphabeth_list_for(language_codes)
@@ -773,6 +772,34 @@ class Event < ApplicationRecord
 
       #binding.pry
       select(selector).group(:id)
+   end
+
+   scope :with_title, -> context do
+      language_codes = [context[:text_language] || context[:text_languages] || context[:language]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_alphabeth] || context[:alphabeth] || Languageble.alphabeth_list_for(language_codes)].flatten
+      this = table.table_alias || table.name
+
+      selector = self.select_values.dup << "#{this}.*" <<
+         "COALESCE(#{this}_event_titles.text,
+                   #{this}_default_titles.text,
+                   NULL) AS _title"
+
+      join = "LEFT OUTER JOIN descriptions AS #{this}_event_titles
+                           ON #{this}.id = #{this}_event_titles.describable_id
+                          AND #{this}_event_titles.type = 'Title'
+                          AND #{this}_event_titles.describable_type = 'Event'
+                          AND #{this}_event_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                         JOIN subjects AS #{this}_kinds
+                           ON #{this}.kind_code = #{this}_kinds.key
+              LEFT OUTER JOIN descriptions AS #{this}_default_titles
+                           ON #{this}_kinds.id = #{this}_default_titles.describable_id
+                          AND #{this}_default_titles.type = 'Title'
+                          AND #{this}_default_titles.describable_type = 'Subject'
+                          AND #{this}_default_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_default_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group("#{this}_event_titles.text", "#{this}_default_titles.text")
    end
 
    # with memoes and children via memoes

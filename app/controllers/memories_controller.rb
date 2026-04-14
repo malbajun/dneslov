@@ -86,10 +86,12 @@ class MemoriesController < ApplicationController
                        .with_short_memoes(context)
                        .with_place(context)
                        .with_titles(context)
+                       .with_title(context)
                        .with_description(context)
                        .with_happened_at(context)
                        .select("events.*")
                        .distinct_by('events.id')
+                       .reorder('events.id', "events.created_at DESC")
    end
 
    def cslugs

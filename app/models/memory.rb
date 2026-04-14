@@ -903,37 +903,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       joins(join).select(selector).group(:id, "#{as}_slugs.id", "#{as}_slugs.text")
    end
 
-   scope :with_orders, -> context do
-      language_codes = [context[:text_languages]].flatten
-      selector = self.select_values.dup
-      if self.select_values.dup.empty?
-         selector << 'memories.*'
-      end
-
-      selector << "COALESCE((WITH __orders AS (
-                       SELECT DISTINCT ON(orders.id)
-                              orders.id AS id,
-                              order_names.text AS name
-                         FROM memories AS orders
-                         JOIN memo_orders
-                           ON memo_orders.order_id = orders.id
-                          AND orders.type = 'Order'
-                         JOIN memoes
-                           ON memoes.id = memo_orders.memo_id
-                         JOIN event_roles
-                           ON event_roles.event_id = memoes.event_id
-              LEFT OUTER JOIN descriptions AS order_names
-                           ON order_names.describable_id = orders.id
-                          AND order_names.describable_type = 'Memory'
-                          AND order_names.language_code IN ('#{language_codes.join("', '")}')
-                        WHERE event_roles.memory_id = memories.id
-                     GROUP BY orders.id, order_names.text)
-                       SELECT jsonb_agg(__orders)
-                         FROM __orders), '[]'::jsonb) AS _orders"
-
-      select(selector).group(:id)
-   end
-
    scope :with_attitude_to, -> context do
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = context[:as] || model.reflections[rela]&.name || rela
@@ -1010,6 +979,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       #binding.pry
       select(selector).group(:id)
    end
+
    scope :with_events, -> context do
       this = table.table_alias || table.name
       language_codes = [context[:text_languages]].flatten.compact
