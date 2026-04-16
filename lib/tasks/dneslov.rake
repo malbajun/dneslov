@@ -68,4 +68,11 @@ namespace :dneslov do
          Languager.new(language: args[:lang], alphabeth: args[:alph]).name_letter_fix
       end
    end
+
+   namespace :event do
+      desc "merge similar events via memo"
+      task :merge, [:slugs] => :environment do |t, args|
+         Eventer.new(slugs: args[:slugs]&.split(/,/)).merge
+      end
+   end
 end

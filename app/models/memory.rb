@@ -19,14 +19,14 @@ class Memory < ApplicationRecord
    has_many :paterics, as: :info, dependent: :destroy, class_name: :PatericLink
    has_many :event_roles, inverse_of: :memory, class_name: :EventRole, dependent: :delete_all
    has_many :events, through: :event_roles, class_name: :Event
-   has_many :memos, through: :events
+   has_many :memoes, through: :events, class_name: :Memo
    has_many :service_scripta, through: :services
    has_many :scripta, through: :service_scripta
-   has_many :calendaries, -> { distinct.reorder('id') }, through: :memos
+   has_many :calendaries, -> { distinct.reorder('id') }, through: :memoes
    has_many :roundels, -> { where(roundels: { roundelable_type: "Memory" }) }, foreign_key: :roundelable_id, dependent: :destroy
    has_many :attitudes, as: :imageable, class_name: :ImageAttitude
    has_many :pictures, through: :attitudes
-   has_many :orders, -> { distinct.reorder('id') }, through: :memos, source: :orders
+   has_many :orders, -> { distinct.reorder('id') }, through: :memoes, source: :orders
    has_many :slugs, -> { distinct.reorder('id') }, through: :orders, source: :slug
    has_many :memory_binds
    has_many :bond_events, through: :memory_binds, foreign_key: :bond_event_id, class_name: :Event
@@ -38,6 +38,7 @@ class Memory < ApplicationRecord
    end
 
    scope :icons, -> { joins( :slugs ).where( slugs: { text: :обр } ) }
+   scope :council, -> { where(type: "Council") }
 
    scope :by_short_name, -> name { joins(:short_names).where(short_names: { text: name }) }
    scope :by_slug, -> slug do
@@ -53,11 +54,11 @@ class Memory < ApplicationRecord
 
    scope :in_calendaries, -> calendaries_in do
       calendaries = calendaries_in.is_a?(String) && calendaries_in.split(',') || calendaries_in
-      left_outer_joins( :memos ).merge( Memo.in_calendaries( calendaries )).distinct
+      left_outer_joins(:memoes).merge( Memo.in_calendaries( calendaries )).distinct
    end
 
    scope :by_date, -> (date, julian = false) do
-      left_outer_joins(:memos).merge(Memo.by_date(date, julian)).distinct
+      left_outer_joins(:memoes).merge(Memo.by_date(date, julian)).distinct
    end
 
    scope :by_token, -> text do
@@ -340,7 +341,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                                  ON memories.id = event_roles.memory_id
                                 AND event_roles.event_kind_code IN ('#{Event::NOTICE.join("','")}')
                                JOIN memoes AS #{as}_memoes
-                                 ON event_roles.event_id = #{as}_memoes.event_id
+                                 ON event_roles.id = #{as}_memoes.event_role_id
                                JOIN memo_scripta
                                  ON memo_scripta.memo_id = #{as}_memoes.id
                                     #{calendaries_join}
@@ -496,7 +497,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND #{this}_memoes.bind_kind_code = 'соборный'
                           AND #{this}_memoes.calendary_id = #{this}_memo_hosts.calendary_id
                          JOIN event_roles AS #{this}_host_event_roles
-                           ON #{this}_memo_hosts.event_id = #{this}_host_event_roles.event_id
+                           ON #{this}_memo_hosts.event_role_id = #{this}_host_event_roles.id
                           AND #{this}_host_event_roles.memory_id = #{id}"
       end
 
@@ -506,7 +507,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                          JOIN events AS #{this}_events
                            ON #{this}_event_roles.event_id = #{this}_events.id
                          JOIN memoes AS #{this}_memoes
-                           ON #{this}_memoes.event_id = #{this}_events.id
+                           ON #{this}_memoes.event_role_id = #{this}_event_roles.id
                          JOIN slugs AS #{this}_#{as}_slugs
                            ON #{this}_#{as}_slugs.sluggable_id = #{this}.id
                           AND #{this}_#{as}_slugs.sluggable_type = 'Memory'
@@ -617,7 +618,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                            ON children_slugs.sluggable_id = #{this}_children_event_roles.memory_id
                           AND children_slugs.sluggable_type = 'Memory'
                          JOIN memoes AS children
-                           ON children.event_id = #{this}_children_event_roles.event_id
+                           ON children.event_role_id = #{this}_children_event_roles.event_id
                           AND children.bind_kind_code = 'соборный'
                          JOIN memoes AS hosts
                            ON children.bond_to_id = hosts.id
@@ -628,7 +629,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
                               #{cslugs_rule2}
                          JOIN event_roles AS #{this}_host_event_roles
-                           ON hosts.event_id = #{this}_host_event_roles.event_id
+                           ON hosts.event_role_id = #{this}_host_event_roles.id
                           AND #{this}_host_event_roles.memory_id = #{this}.id)
                        SELECT COUNT(___children.slug)
                          FROM ___children), 0) AS children_total,
@@ -648,7 +649,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               json_agg(distinct #{this}_calendary_slugs.text) AS calendary_slugs
                          FROM memoes AS children
                          JOIN event_roles AS #{this}_children_event_roles
-                           ON children.event_id = #{this}_children_event_roles.event_id
+                           ON children.event_role_id = #{this}_children_event_roles.id
                          JOIN events AS #{this}_children_events
                            ON #{this}_children_events.id = #{this}_children_event_roles.event_id
                          JOIN memories AS #{this}_children_memories
@@ -743,7 +744,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND calendary_slugs.sluggable_type = 'Calendary'
                           #{cslugs_rule}
               LEFT OUTER JOIN event_roles AS #{this}_event_roles
-                           ON memoes.event_id = #{this}_event_roles.event_id
+                           ON memoes.event_role_id = #{this}_event_roles.id
                           AND #{this}_event_roles.event_kind_code IN ('#{Event::NOTICE.join("','")}')
               LEFT OUTER JOIN links AS calendary_links
                            ON calendary_links.info_id = calendaries.id
@@ -823,7 +824,7 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
              LEFT OUTER JOIN event_roles AS #{this}_event_roles
                           ON #{this}.id = #{this}_event_roles.memory_id
              LEFT OUTER JOIN memoes AS #{this}_memoes
-                          ON #{this}_memoes.event_id = #{this}_event_roles.event_id
+                          ON #{this}_memoes.event_role_id = #{this}_event_roles.id
              LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
                           ON #{this}_memo_orders.memo_id = #{this}_memoes.id
              LEFT OUTER JOIN descriptions AS #{this}_order_tweets
@@ -951,8 +952,10 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
                               order_titles_memoes.text AS name
                          FROM memories AS orders
+              LEFT OUTER JOIN event_roles
+                           ON #{this}.id = event_roles.memory_id
               LEFT OUTER JOIN memoes
-                           ON #{this}.id = memoes.event_id
+                           ON #{this}_event_roles.id = memoes.event_role_id
               LEFT OUTER JOIN calendaries
                            ON calendaries.id = memoes.calendary_id
               LEFT OUTER JOIN slugs AS calendary_slugs
@@ -1178,7 +1181,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    accepts_nested_attributes_for :memory_binds, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :memory_names, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :paterics, reject_if: :all_blank, allow_destroy: true
-   accepts_nested_attributes_for :memos, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :coverings, reject_if: :all_blank, allow_destroy: true
    accepts_nested_attributes_for :slug, reject_if: :all_blank
 
@@ -1189,10 +1191,20 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    before_create :set_slug
    before_validation :set_base_year, on: :create
 
+   # custom has many relations
    def all_pictures
       pictures.or(Picture.by_event(events))
    end
 
+   #def bond_memoes
+   #   Memo.where(bond_to_id: self.memoes.select(:id))
+   #end
+
+   def bond_event_roles
+      EventRole.joins(:memoes).merge(Memo.by_bond_to(self.memoes.select(:id)))
+   end
+
+   # setters
    def set_base_year
       types = %w(Resurrection Repose Writing Appearance Translation Sanctification)
 

@@ -265,18 +265,14 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_31_194034) do
     t.bigint "calendary_id", null: false
     t.string "bind_kind_code", null: false
     t.integer "bond_to_id"
-    t.bigint "event_id", null: false
     t.string "happened_at", comment: "год для помина в калѧдарю"
     t.bigint "event_role_id"
     t.index ["add_date"], name: "index_memoes_on_add_date"
     t.index ["bind_kind_code"], name: "index_memoes_on_bind_kind_code"
     t.index ["bond_to_id", "bind_kind_code"], name: "index_memoes_on_bond_to_id_and_bind_kind_code"
     t.index ["bond_to_id"], name: "index_memoes_on_bond_to_id"
-    t.index ["calendary_id", "event_id", "year_date"], name: "index_memoes_on_calendary_id_and_event_id_and_year_date", unique: true
     t.index ["calendary_id", "year_date"], name: "index_memoes_on_calendary_id_and_year_date"
     t.index ["calendary_id"], name: "index_memoes_on_calendary_id"
-    t.index ["event_id", "bond_to_id", "id"], name: "index_memoes_on_event_id_and_bond_to_id_and_id"
-    t.index ["event_id"], name: "index_memoes_on_event_id"
     t.index ["event_role_id"], name: "index_memoes_on_event_role_id"
     t.index ["happened_at"], name: "index_memoes_on_happened_at"
     t.index ["year_date"], name: "index_memoes_on_year_date"

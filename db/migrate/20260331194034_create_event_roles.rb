@@ -62,6 +62,10 @@ class CreateEventRoles < ActiveRecord::Migration[7.0]
             [
               "DELETE FROM descriptions
                      WHERE describable_type = 'EventRole'",
+                   "UPDATE memoes
+                       SET event_id = event_roles.event_id
+                      FROM event_roles
+                     WHERE memoes.event_role_id = event_roles.id",
                    "UPDATE events
                        SET memory_id = event_roles.memory_id
                       FROM event_roles
@@ -70,6 +74,7 @@ class CreateEventRoles < ActiveRecord::Migration[7.0]
          end
       end
 
-      remove_column :events, :memory_id, type: :bigint, null: false
+      remove_column :memoes, :event_id, :bigint
+      remove_column :events, :memory_id, :bigint
    end
 end

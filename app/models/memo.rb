@@ -52,7 +52,7 @@ class Memo < ApplicationRecord
    has_many :slugs, -> { distinct.reorder('id') }, through: :orders, source: :slug
    has_many :short_names, through: :memory
    has_many :order_titles, through: :orders, source: :tweets
-   has_many :bond_memo_titles, through: :bond_to, source: :titles
+   has_many :bond_to_memo_titles, through: :bond_to, source: :titles
    has_many :event_titles, through: :event_role, source: :titles
    has_many :services, as: :info, inverse_of: :info # TODO додаь задачу превода service_links/ServiceLink во Service
    has_many :titles, -> { title }, as: :describable, dependent: :delete_all
@@ -60,6 +60,7 @@ class Memo < ApplicationRecord
    has_many :versi, as: :describable, dependent: :delete_all, class_name: :Versus
    has_many :calendary_titles, through: :calendary, source: :titles, class_name: :Appellation
    has_one :original_title, -> { original_title }, as: :describable, class_name: :Original, dependent: :destroy
+   has_many :bond_memoes, primary_key: :id, foreign_key: :bond_to_id, class_name: :Memo
 
    delegate :quantity, to: :memory
    delegate :quantity, to: :bond_to, prefix: true, allow_nil: true
@@ -80,6 +81,8 @@ class Memo < ApplicationRecord
    scope :by_slug, ->(slugs) do
       joins(:memory).merge(Memory.unscoped.by_slug(slugs)).reorder(:id)
    end
+
+   scope :by_bond_to, ->(ids) { where(bond_to_id: ids) }
 
    scope :first_in_calendary, -> do
       sql = self.joins(:calendary_slug, :memory)
@@ -120,9 +123,9 @@ class Memo < ApplicationRecord
                           #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
 
                          JOIN event_roles AS #{this}_event_roles
-                           ON #{this}.event_id = #{this}_event_roles.event_id
+                           ON #{this}.event_role_id = #{this}_event_roles.id
               LEFT OUTER JOIN events AS #{this}_events
-                           ON #{this}_events.id = #{this}.event_id
+                           ON #{this}_events.id = #{this}_event_roles.event_id
                          JOIN subjects AS #{this}_event_kinds
                            ON #{this}_event_kinds.key = #{this}_events.kind_code
                           AND #{this}_event_kinds.kind_code = 'EventKind'
@@ -224,9 +227,9 @@ class Memo < ApplicationRecord
                          AND #{as}_titles.type = 'Title'
                          #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
                         JOIN event_roles AS #{as}_event_roles
-                          ON #{this}.id = #{as}_event_roles.event_id
+                          ON #{as}.event_role_id = #{as}_event_roles.id
              LEFT OUTER JOIN events AS #{as}_events
-                          ON #{as}.event_id = #{as}_events.id
+                          ON #{as}_event_roles.event_id = #{as}_events.id
                         JOIN subjects AS #{as}_event_kinds
                           ON #{as}_event_kinds.key = #{as}_events.kind_code
                          AND #{as}_event_kinds.kind_code = 'EventKind'
@@ -393,9 +396,9 @@ class Memo < ApplicationRecord
                       AND #{this}_#{ast}_titles.type = 'Title'
                       AND #{this}_#{ast}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                       AND #{this}_#{ast}_titles.language_code IN ('#{language_codes.join("', '")}')
+                     JOIN event_roles AS #{this}_#{ast}_event_roles
+                       ON #{this}_#{ast}_event_roles.id = #{this}_#{ast}.event_role_id
           LEFT OUTER JOIN events AS #{this}_#{ast}_events
-                       ON #{this}_#{ast}_events.id = #{this}_#{ast}.event_id
-                     JOIN event_roles AS #{this}_#{ast}_#{ast}_event_roles
                        ON #{this}_#{ast}_events.id = #{this}_#{ast}_event_roles.event_id
           LEFT OUTER JOIN subjects AS #{this}_#{ast}_event_kinds
                        ON #{this}_#{ast}_event_kinds.key = #{this}_#{ast}_events.kind_code
@@ -456,11 +459,11 @@ class Memo < ApplicationRecord
                              COALESCE(#{this}_memory_memoes.happened_at, #{this}_memory_events.happened_at) AS happened_at
                         FROM memories AS #{this}_memories
                         JOIN event_roles AS #{this}_event_roles
-                          ON #{this}.event_id = #{this}_event_roles.event_id
+                          ON #{this}.event_role_id = #{this}_event_roles.id
                         JOIN events AS #{this}_memory_events
                           ON #{this}_memory_events.id = #{this}_event_roles.event_id
                         JOIN memoes AS #{this}_memory_memoes
-                          ON #{this}_memory_memoes.event_id = #{this}_event_roles.event_id
+                          ON #{this}_memory_memoes.event_role_id = #{this}_event_roles.id
              LEFT OUTER JOIN descriptions AS #{this}_event_titles
                           ON #{this}_event_titles.describable_id = #{this}_event_roles.id
                          AND #{this}_event_titles.describable_type = 'EventRole'
@@ -573,8 +576,10 @@ class Memo < ApplicationRecord
                           AND titles.language_code IN ('#{language_codes.join("', '")}')
                           AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
 
+              LEFT OUTER JOIN events AS bond_to_memo_event_roles
+                           ON bond_to_memo_event_roles.id = bond_to_memoes.event_role_id
               LEFT OUTER JOIN events AS bond_to_memo_events
-                           ON bond_to_memo_events.id = bond_to_memoes.event_id
+                           ON bond_to_memo_events.id = bond_to_memo_event_roles.event_id
               LEFT OUTER JOIN subjects AS bond_to_event_kinds
                            ON bond_to_event_kinds.key = bond_to_memo_events.kind_code
                           AND bond_to_event_kinds.kind_code = 'EventKind'
@@ -705,9 +710,9 @@ class Memo < ApplicationRecord
          ]
       end
 
-      join = "LEFT OUTER JOIN events AS #{this}_memo_events
-                           ON memoes.event_id = #{this}_memo_events.id
-                         JOIN event_roles AS #{this}_memo_event_roles
+      join = "LEFT OUTER JOIN event_roles AS #{this}_memo_event_roles
+                           ON #{this}.event_role_id = #{this}_memo_event_roles.id
+              LEFT OUTER JOIN events AS #{this}_memo_events
                            ON #{this}_memo_events.id = #{this}_memo_event_roles.event_id
                          JOIN memories AS memo_event_memories
                            ON #{this}_memo_event_roles.memory_id = memo_event_memories.id

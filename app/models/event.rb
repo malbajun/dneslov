@@ -112,7 +112,7 @@ class Event < ApplicationRecord
    has_many :pictures, through: :attitudes
    has_many :memories, through: :event_roles, class_name: :Memory
    has_many :short_names, through: :memories
-   has_many :memos, dependent: :delete_all do
+   has_many :memoes, through: :event_roles do
       def for calendary_slugs = nil
          if calendary_slugs
             calendary_ids = Calendary.by_slugs(calendary_slugs).unscope(:select).select(:id)
@@ -122,19 +122,19 @@ class Event < ApplicationRecord
          end
       end
    end
-   has_many :calendaries, -> { distinct }, through: :memos
+   has_many :calendaries, -> { distinct }, through: :memoes
 
    #####################
    # model filter scopes
    default_scope { order(created_at: :desc) }
    scope :notice, -> { where(kind_code: NOTICE) }
    scope :usual, -> { where(kind_code: USUAL) }
-   scope :calendaried, ->(calendary_slugs) { self.joins(:memos).where(memoes: { calendary_id: Calendary.by_slugs(calendary_slugs).unscope(:select).select(:id) }) }
-   scope :memoed, -> { joins(:memos).merge(Memo.licit).distinct }
+   scope :calendaried, ->(calendary_slugs) { self.joins(:memoes).where(memoes: { calendary_id: Calendary.by_slugs(calendary_slugs).unscope(:select).select(:id) }) }
+   scope :memoed, -> { joins(:memoes).merge(Memo.licit).distinct }
    scope :memoed_for, ->(context) do
       calendary_slugs = context[:calendary_slugs]
 
-      joins(:memos).calendaried(calendary_slugs).merge(Memo.licit).distinct
+      joins(:memoes).calendaried(calendary_slugs).merge(Memo.licit).distinct
    end
 
    ########################
@@ -237,10 +237,10 @@ class Event < ApplicationRecord
                            ON #{as}_titles_events.describable_type = 'Tag'
                           AND #{as}_titles_events.describable_id = events.id
                           AND #{as}_titles_events.type = 'Title'
-                         JOIN event_roles AS #{this}_event_roles
-                           ON #{this}.id = #{this}_event_roles.event_id
+                         JOIN event_roles AS #{this}_#{as}_event_roles
+                           ON #{this}.id = #{this}_#{as}_event_roles.event_id
               LEFT OUTER JOIN short_names AS #{as}_short_names
-                           ON #{as}_short_names.memory_id = #{this}_event_roles.memory_id"
+                           ON #{as}_short_names.memory_id = #{this}_#{as}_event_roles.memory_id"
 
       joins(join).
          where("#{as}_titles_events.language_code = ?", l).or(
@@ -559,6 +559,9 @@ class Event < ApplicationRecord
    scope :with_short_memoes, -> context do
       language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
+      this = table.table_alias || table.name
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
 
       selector = "COALESCE((WITH __memoes AS (
                        SELECT DISTINCT ON(memoes.id)
@@ -597,7 +600,9 @@ class Event < ApplicationRecord
                           AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
-                        WHERE memoes.event_id = events.id
+                         JOIN event_roles AS #{this}_#{as}_event_roles
+                           ON #{this}_#{as}_event_roles.event_id = #{this}.id
+                        WHERE memoes.event_role_id = #{this}_#{as}_event_roles.id
                           AND memoes.bond_to_id IS NULL
                           AND memoes.id IS NOT NULL
                      GROUP BY memoes.id, year_date, title)
@@ -710,9 +715,9 @@ class Event < ApplicationRecord
    end
 
    scope :with_happened_at, -> context do
+      this = table.table_alias || table.name
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = context[:as] || model.reflections[rela]&.name || rela
-      this = table.table_alias || table.name
       language_codes = [context[:text_language] || context[:text_languages]].flatten
       alphabeth_codes = [context[:codes] || context[:text_language] || Languageble.alphabeth_list_for(language_codes)].flatten
 
@@ -723,8 +728,10 @@ class Event < ApplicationRecord
       cslugs_rule = context[:calendary_slugs] ?
          "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
-      join = "           JOIN memoes AS #{this}_memoes
-                           ON #{this}.id = #{this}_memoes.event_id
+      join = "           JOIN event_roles AS #{this}_#{as}_event_roles
+                           ON #{this}.id = #{this}_#{as}_event_roles.event_id
+                         JOIN memoes AS #{this}_memoes
+                           ON #{this}_#{as}_event_roles.id = #{this}_memoes.event_role_id
                          JOIN calendaries AS #{this}_calendaries
                            ON #{this}_calendaries.id = #{this}_memoes.calendary_id
                          JOIN slugs AS #{this}_calendary_slugs
@@ -739,14 +746,18 @@ class Event < ApplicationRecord
       language_codes = [ context[:text_languages] ].flatten
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       this = table.table_alias || table.name
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
 
       selector = "COALESCE((WITH __orders AS (
                        SELECT DISTINCT ON(memo_slugs.text)
                               COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
                               order_titles_memoes.text AS name
                          FROM memories AS orders
+              LEFT OUTER JOIN event_roles AS #{this}_#{as}_event_roles
+                           ON #{this}.id = #{this}_#{as}_event_roles.event_id
               LEFT OUTER JOIN memoes
-                           ON #{this}.id = memoes.event_id
+                           ON #{this}_#{as}_event_roles.id = memoes.event_role_id
               LEFT OUTER JOIN calendaries
                            ON calendaries.id = memoes.calendary_id
               LEFT OUTER JOIN slugs AS calendary_slugs
@@ -828,13 +839,15 @@ class Event < ApplicationRecord
                            ON children_slugs.sluggable_id = #{this}_children_event_roles.memory_id
                           AND children_slugs.sluggable_type = 'Memory'
                          JOIN memoes AS children
-                           ON children.event_id = #{this}_children_event_roles.event_id
+                           ON children.event_role_id = #{this}_children_event_roles.id
                           AND children.bind_kind_code = 'соборный'
                          JOIN memoes AS hosts
                            ON children.bond_to_id = hosts.id
-                          AND hosts.event_id = #{this}.id
                           AND hosts.calendary_id = children.calendary_id
                           AND memoes.calendary_id = children.calendary_id
+                         JOIN event_roles AS #{this}_host_event_roles
+                           ON hosts.event_role_id = #{this}_host_event_roles.id
+                          AND #{this}_host_event_roles.event_id = #{this}.id
                          JOIN slugs AS #{this}_calendary_slugs
                            ON #{this}_calendary_slugs.sluggable_id = memoes.calendary_id
                           AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
@@ -858,9 +871,9 @@ class Event < ApplicationRecord
                               #{this}_children_notes.text AS note,
                               json_agg(distinct #{this}_calendary_slugs.text) AS calendary_slugs
                          FROM memoes AS children
-                         JOIN events AS #{this}_children_events
-                           ON children.event_id = #{this}_children_events.id
                          JOIN event_roles AS #{this}_#{as}_children_event_roles
+                           ON children.event_role_id = #{this}_#{as}_children_event_roles.id
+                         JOIN events AS #{this}_children_events
                            ON #{this}_children_events.id = #{this}_#{as}_children_event_roles.event_id
                          JOIN memories AS #{this}_children_memories
                            ON #{this}_children_memories.id = #{this}_#{as}_children_event_roles.memory_id
@@ -997,7 +1010,9 @@ class Event < ApplicationRecord
                           AND order_titles_memoes.describable_type = 'Memory'
                           AND order_titles_memoes.type IN ('Tweet')
                           AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
-                        WHERE memoes.event_id = events.id
+                         JOIN event_roles AS #{this}_#{as}_event_roles
+                           ON #{this}_#{as}_event_roles.event_id = #{this}.id
+                        WHERE memoes.event_role_id = #{this}_#{as}_event_roles.id
                           AND calendaries.licit = 't'
                      GROUP BY memoes.id, year_date, title, description, calendary_slug,
                               calendary_title, calendary_url, memo_links.url)
@@ -1056,8 +1071,10 @@ class Event < ApplicationRecord
                                     __texted_audios.audio_url AS audio_url,
                                     __texted_audios.audio_kind AS audio_kind
                                FROM #{ast} AS #{this}_#{ast}
+                               JOIN event_roles AS #{this}_#{ast}_event_roles
+                                 ON #{this}.id = #{this}_#{ast}_event_roles.event_id
                                JOIN memoes AS #{this}_memoes
-                                 ON #{this}.id = #{this}_memoes.event_id
+                                 ON #{this}_#{ast}_event_roles.id = #{this}_memoes.event_role_id
                                JOIN memo_#{ast}
                                  ON memo_#{ast}.memo_id = #{this}_memoes.id
                                     #{calendaries_join}
@@ -1102,6 +1119,10 @@ class Event < ApplicationRecord
 
    def all_pictures
       pictures
+   end
+
+   def bond_event_roles
+      EventRole.joins(:memoes).merge(Memo.by_bond_to(self.memoes.select(:id)))
    end
 
    def memory_short_name= value
