@@ -4,6 +4,11 @@ namespace :dneslov do
       task :council_proceed, [:c, :a] => :environment do |t, args|
          MemoryCouncilListToEmbeddedMemoesService.new(calendaries: args[:c].split(":"), fake: ((args[:a] || "false") == "false")).convert
       end
+
+      desc "Merge memories if one have short name and they matches descriptions"
+      task :merge, [:description, :description_from] => :environment do |t, args|
+         MemoryService.new(description: args[:description], description_from: args[:description_from]).merge
+      end
    end
 
    namespace :image do
