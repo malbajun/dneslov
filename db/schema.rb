@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_03_31_194034) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_11_150506) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -126,11 +126,13 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_31_194034) do
     t.string "event_kind_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "place_id", comment: "Ссылка на место"
     t.index ["agonism"], name: "index_event_roles_on_agonism"
     t.index ["event_id", "memory_id"], name: "index_event_roles_on_event_id_and_memory_id", unique: true
     t.index ["event_id"], name: "index_event_roles_on_event_id"
     t.index ["event_kind_code"], name: "index_event_roles_on_event_kind_code"
     t.index ["memory_id"], name: "index_event_roles_on_memory_id"
+    t.index ["place_id"], name: "index_event_roles_on_place_id"
     t.index ["type"], name: "index_event_roles_on_type"
   end
 
@@ -658,6 +660,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_31_194034) do
   add_foreign_key "coverings", "memories", on_delete: :cascade
   add_foreign_key "event_roles", "events", on_delete: :cascade
   add_foreign_key "event_roles", "memories", on_delete: :cascade
+  add_foreign_key "event_roles", "places", on_delete: :restrict
   add_foreign_key "event_scripta", "events", on_delete: :cascade
   add_foreign_key "event_scripta", "scripta", on_delete: :cascade
   add_foreign_key "events", "memories", column: "place_id", on_delete: :cascade

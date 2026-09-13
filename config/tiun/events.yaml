@@ -5,23 +5,31 @@ types:
    version: 0.1
    with:
     - memory_short_name
+    - place
+    - kind
    fields:
     - name: id
       kind: integer
       readonly: true
       descriptions: :tiun.types.event.id
+    - name: kind
+      kind: string
+      descriptions: :tiun.types.event.kind
     - name: memory_short_name
       kind: string
       descriptions: :tiun.types.event.memory_short_name
     - name: happened_at
       kind: string
       descriptions: :tiun.types.event.happened_at
-    - name: kind_code
+    - name: place
       kind: string
-      descriptions: :tiun.types.event.kind_code
+      descriptions: :tiun.types.event.place
  - name: event
    version: 0.1
    with:
+    - kind
+    - item
+    - place
     - title
     - description
     - memory_short_name
@@ -30,6 +38,12 @@ types:
       kind: integer
       readonly: true
       descriptions: :tiun.types.event.id
+    - name: kind
+      kind: string
+      descriptions: :tiun.types.event.kind
+    - name: kind_code
+      kind: string
+      descriptions: :tiun.types.event.kind_code
     - name: title
       kind: string
       descriptions: :tiun.types.event.title
@@ -42,9 +56,18 @@ types:
     - name: happened_at
       kind: string
       descriptions: :tiun.types.event.happened_at
-    - name: kind_code
+    - name: place_slug
       kind: string
-      descriptions: :tiun.types.event.kind_code
+      descriptions: :tiun.types.event.place_slug
+    - name: place
+      kind: string
+      descriptions: :tiun.types.event.place
+    - name: item_id
+      kind: string
+      descriptions: :tiun.types.event.item_id
+    - name: item
+      kind: string
+      descriptions: :tiun.types.event.item
  - name: event_ac
    model: Event
    version: 0.1
@@ -66,7 +89,7 @@ resources:
    methods:
     - name: get
       version: 0.1
-      kind: event page
+      kind: eventee page
       policy: event.index
       descriptions: :tiun.events.event.index
       allowed_errors: [200, 204, 206, 416, 422.3, 500]
@@ -100,6 +123,13 @@ resources:
          kind: string
          alias: q
          descriptions: :tiun.events.event.index.query
+       - name: title
+         kind: string
+         alias: t
+         descriptions: :tiun.events.event.index.title
+       - name: type
+         kind: string
+         descriptions: :tiun.events.event.index.type
  - name: event.autocomplete
    path: /api/v0/events/ac.json
    methods:
@@ -118,20 +148,23 @@ resources:
          kind: string
          alias: q
          descriptions: :tiun.events.event.autocomplete.query
+       - name: title
+         kind: string
+         alias: t
+         descriptions: :tiun.events.event.autocomplete.title
        - name: memory_id
          kind: string
          alias: by_memory_id
          descriptions: :tiun.events.event.autocomplete.memory_id
        - name: type
          kind: string
-         alias: t
-         descriptions: :tiun.resources.memory.autocomplete.type
+         descriptions: :tiun.events.event.autocomplete.type
        - name: language
          kind: string
-         descriptions: :tiun.resources.memory.create.language
+         descriptions: :tiun.events.event.autocomplete.language
        - name: alphabeth
          kind: string
-         descriptions: :tiun.resources.memory.create.alphabeth
+         descriptions: :tiun.events.event.autocomplete.alphabeth
  - name: event.create
    path: /api/v0/events/create.json
    methods:
@@ -166,6 +199,12 @@ resources:
        - name: kind_code
          kind: string
          descriptions: :tiun.events.event.post.kind_code
+       - name: place_uno
+         kind: string
+         descriptions: :tiun.events.event.post.place_uno
+       - name: item_uno
+         kind: string
+         descriptions: :tiun.events.event.post.item_uno
  - name: event
    path: /api/v0/events/:id.json
    methods:
@@ -215,6 +254,12 @@ resources:
        - name: kind_code
          kind: string
          descriptions: :tiun.events.event.put.kind_code
+       - name: place_uno
+         kind: string
+         descriptions: :tiun.events.event.put.place_uno
+       - name: item_uno
+         kind: string
+         descriptions: :tiun.events.event.put.item_uno
     - name: delete
       version: 0.1
       kind: event

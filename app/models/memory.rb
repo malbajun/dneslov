@@ -5,6 +5,7 @@
 class Memory < ApplicationRecord
    extend Informatible
    include DistinctBy
+   include WithTales
    include WithTitles
    include WithDescriptions
    include WithTweets
@@ -40,7 +41,14 @@ class Memory < ApplicationRecord
    scope :icons, -> { joins( :slugs ).where( slugs: { text: :обр } ) }
    scope :council, -> { where(type: "Council") }
 
-   scope :by_short_name, -> name { joins(:short_names).where(short_names: { text: name }) }
+   scope :by_short_name, -> name do
+      joins(:short_names).
+      where(Arel.sql("unaccent(short_names.text) = unaccent('#{name}')"))
+   end
+   scope :about_short_name, -> name do
+      joins(:short_names).
+      where(Arel.sql("unaccent(short_names.text) ~* unaccent('#{name}')"))
+   end
    scope :by_slug, -> slug do
       this = table.table_alias || table.name
       join = "JOIN slugs AS #{this}_slugs
@@ -62,14 +70,14 @@ class Memory < ApplicationRecord
    end
 
    scope :by_token, -> text do
-      left_outer_joins(:short_names, :names, :descriptions, :notes, :tweets, :slug).
+      left_outer_joins(:short_names, :descriptions, :notes, :tweets, :slug, :nomina).
          where("unaccent(short_names.text) ~* ?", "\\m#{text}.*").or(
          where("unaccent(descriptions.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(tweets_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(
          where("unaccent(notes_memories.text) ~* unaccent(?)", "\\m#{text}.*").or(merge(
          Nomen.where("unaccent(nomina.text) ~* unaccent(?)", "\\m#{text}.*").by_root)).or(where(slugs: {text: text.split(",")}))))).distinct
    end
-   singleton_class.send(:alias_method, :by_q, :by_token)
+   singleton_class.send(:alias_method, :by_query, :by_token)
 
    # by title with short_name
    scope :by_title, -> text do
@@ -88,6 +96,7 @@ class Memory < ApplicationRecord
 
       joins(join).where(selector).distinct
    end
+   singleton_class.send(:alias_method, :by_t, :by_title)
 
    scope :by_id, ->(id) { where(id: id.to_s.strip) }
 
@@ -114,9 +123,29 @@ class Memory < ApplicationRecord
 
    scope :with_value, -> context do
       #TODO add search over names
-      selector = [ 'short_names.text AS _value' ]
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
 
-      joins(:short_names).select(selector).group('_value').reorder("_value")
+      selector = self.select_values.dup
+
+      /`(?<method_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
+
+      if language_codes.any?
+         lang_wheres =
+            ["AND ac_short_names.language_code IN ('#{language_codes.join("', '")}')"]
+      end
+
+      if language_codes.any? && alphabeth_codes.any?
+         alph_wheres =
+            ["AND ac_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"]
+      end
+
+      join = "           JOIN short_names AS ac_short_names
+                           ON ac_short_names.memory_id = memories.id
+                          #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}"
+
+      selector << "ac_short_names.text AS _value"
+      joins(join).select(selector).group(:id, "ac_short_names.text").distinct
    end
 
    scope :with_short_name, -> context do
@@ -952,8 +981,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
                               order_titles_memoes.text AS name
                          FROM memories AS orders
-              LEFT OUTER JOIN event_roles
-                           ON #{this}.id = event_roles.memory_id
+              LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                           ON #{this}.id = #{this}_event_roles.memory_id
               LEFT OUTER JOIN memoes
                            ON #{this}_event_roles.id = memoes.event_role_id
               LEFT OUTER JOIN calendaries
@@ -1173,7 +1202,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       select(selector).group(:id)
    end
 
-   singleton_class.send(:alias_method, :t, :by_token)
    singleton_class.send(:alias_method, :d, :by_date)
    singleton_class.send(:alias_method, :c, :in_calendaries)
 

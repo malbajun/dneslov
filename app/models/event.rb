@@ -104,7 +104,6 @@ class Event < ApplicationRecord
 
    ########################
    # has one/many realtions
-   has_one :coordinate, as: :info, inverse_of: :info, class_name: :CoordLink
    has_many :event_roles, inverse_of: :event, class_name: :EventRole, dependent: :delete_all
    has_many :kind_titles, through: :kind, source: :names
    has_many :roundels, -> { where(roundels: { roundelable_type: "Event" }) }, foreign_key: :roundelable_id, dependent: :destroy
@@ -170,6 +169,7 @@ class Event < ApplicationRecord
               LEFT OUTER JOIN descriptions AS #{this}_default_titles
                            ON #{this}_kinds.id = #{this}_default_titles.describable_id
                           AND #{this}_default_titles.describable_type = 'Subject'
+                          AND #{this}_default_titles.type = 'Appellation'
                          JOIN event_roles AS #{this}_event_roles
                            ON #{this}.id = #{this}_event_roles.event_id
                          JOIN slugs AS #{this}_memory_slugs
@@ -429,12 +429,82 @@ class Event < ApplicationRecord
       joins(join).select(selector).group(:id, "#{this}_roundels.url")
    end
 
+   scope :with_item, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE(#{as}_names.text, #{as}_type_names.text) AS _item"
+
+      if language_codes.any?
+         lang_wheres = [
+            "AND #{as}_names.language_code IN ('#{language_codes.join("', '")}')",
+            "AND #{as}_type_names.language_code IN ('#{language_codes.join("', '")}')",
+         ]
+      end
+
+      if language_codes.any? && alphabeth_codes.any?
+         alph_wheres = [
+            "AND #{as}_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+            "AND #{as}_type_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')",
+         ]
+      end
+
+      join = "LEFT OUTER JOIN items AS #{this}_items
+                           ON #{this}_items.id = #{this}.item_id
+              LEFT OUTER JOIN descriptions AS #{as}_names
+                           ON #{as}_names.describable_id = #{this}_items.id
+                          AND #{as}_names.describable_type = 'Item'
+                             #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
+              LEFT OUTER JOIN descriptions AS #{as}_type_names
+                           ON #{as}_type_names.describable_id = #{this}_items.item_type_id
+                          AND #{as}_type_names.describable_type = 'ItemType'
+                              #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}"
+
+      joins(join).select(selector).group("#{as}_names.text", "#{as}_type_names.text")
+   end
+
    scope :with_place, -> context do
+      this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      selector = self.select_values.dup
+      selector << "#{this}.*" if selector.empty?
+      selector << "COALESCE(#{as}_memory_short_names.text, #{as}_descriptions.text) AS _place" <<
+                  "#{as}_slugs.id AS _place_slug"
+
+      join = "           JOIN event_roles AS #{as}_event_roles
+                           ON #{this}.id = #{as}_event_roles.event_id
+              LEFT OUTER JOIN memories AS #{as}_memories
+                           ON #{as}_memories.id = COALESCE(#{this}.place_id, #{as}_event_roles.place_id)
+              LEFT OUTER JOIN short_names AS #{as}_memory_short_names
+                           ON #{as}_memory_short_names.memory_id = #{as}_memories.id
+                          AND #{as}_memory_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_memory_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN descriptions AS #{as}_descriptions
+                           ON #{as}_descriptions.describable_id = #{as}_memories.id
+                          AND #{as}_descriptions.describable_type = 'Memory'
+                          AND #{as}_descriptions.type = 'Tale'
+                          AND #{as}_descriptions.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{as}_descriptions.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN slugs AS #{as}_slugs
+                           ON #{as}_slugs.sluggable_id = #{as}_memories.id
+                          AND #{as}_slugs.sluggable_type = 'Memory'"
+
+      joins(join).select(selector).group("#{as}_memory_short_names.text", "#{as}_descriptions.text", "_place_slug")
+   end
+
+   scope :with_place_name, -> context do
       language_codes = [context[:text_languages]].flatten
       alphabeth_codes = [context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)].flatten
       this = table.table_alias || table.name
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
-      as = model.reflections[rela]&.name
+      as = context[:as] || model.reflections[rela]&.name || rela
       ast = as.to_s.tableize
       as_model = as.to_s.camelize
 
@@ -518,7 +588,7 @@ class Event < ApplicationRecord
                        WHERE t.r = 1),
                              __names AS (
                       SELECT DISTINCT ON(id)
-                             id, 
+                             id,
                              feasible,
                              mode,
                              name_alphabeth_code,
@@ -529,7 +599,7 @@ class Event < ApplicationRecord
                              path,
                              state_code
                         FROM ___names
-                       GROUP BY id, feasible, mode, name_alphabeth_code, name_bind_kind_name, name_language_code, name_text, level, path, state_code)
+                    GROUP BY id, feasible, mode, name_alphabeth_code, name_bind_kind_name, name_language_code, name_text, level, path, state_code)
                       SELECT jsonb_agg(__names)
                         FROM __names
                        WHERE __names.name_language_code IN ('#{language_codes.join("', '")}')
@@ -538,8 +608,8 @@ class Event < ApplicationRecord
       join = "           JOIN events AS #{this}_#{as}_events
                            ON #{this}.id = #{this}_#{as}_events.id
               LEFT OUTER JOIN memories AS #{ast}
-                           ON #{this}_#{as}_events.#{as}_id = #{ast}.id
-                          AND #{ast}.type = '#{as_model}'
+                           ON #{this}_#{as}_events.place_id = #{ast}.id
+                          AND #{ast}.type = 'Place'
               LEFT OUTER JOIN slugs AS #{as}_slugs
                            ON #{as}_slugs.sluggable_id = #{ast}.id
                           AND #{as}_slugs.sluggable_type = 'Memory'
@@ -785,32 +855,42 @@ class Event < ApplicationRecord
       select(selector).group(:id)
    end
 
+   scope :with_kind, -> context do
+      language_codes = [context[:text_language] || context[:text_languages] || context[:language]].flatten
+      alphabeth_codes = [context[:codes] || context[:text_alphabeth] || context[:alphabeth] || Languageble.alphabeth_list_for(language_codes)].flatten
+      this = table.table_alias || table.name
+
+      selector = self.select_values.dup << "#{this}.*" <<
+         "#{this}_default_titles.text AS _kind"
+
+      join = "           JOIN subjects AS #{this}_kinds
+                           ON #{this}.kind_code = #{this}_kinds.key
+              LEFT OUTER JOIN descriptions AS #{this}_default_titles
+                           ON #{this}_kinds.id = #{this}_default_titles.describable_id
+                          AND #{this}_default_titles.type = 'Appellation'
+                          AND #{this}_default_titles.describable_type = 'Subject'
+                          AND #{this}_default_titles.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_default_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      joins(join).select(selector).group("#{this}_default_titles.text")
+   end
+
    scope :with_title, -> context do
       language_codes = [context[:text_language] || context[:text_languages] || context[:language]].flatten
       alphabeth_codes = [context[:codes] || context[:text_alphabeth] || context[:alphabeth] || Languageble.alphabeth_list_for(language_codes)].flatten
       this = table.table_alias || table.name
 
       selector = self.select_values.dup << "#{this}.*" <<
-         "COALESCE(#{this}_event_titles.text,
-                   #{this}_default_titles.text,
-                   NULL) AS _title"
+         "#{this}_event_titles.text AS _title"
 
       join = "LEFT OUTER JOIN descriptions AS #{this}_event_titles
                            ON #{this}.id = #{this}_event_titles.describable_id
                           AND #{this}_event_titles.type = 'Title'
                           AND #{this}_event_titles.describable_type = 'Event'
                           AND #{this}_event_titles.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-                         JOIN subjects AS #{this}_kinds
-                           ON #{this}.kind_code = #{this}_kinds.key
-              LEFT OUTER JOIN descriptions AS #{this}_default_titles
-                           ON #{this}_kinds.id = #{this}_default_titles.describable_id
-                          AND #{this}_default_titles.type = 'Title'
-                          AND #{this}_default_titles.describable_type = 'Subject'
-                          AND #{this}_default_titles.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_default_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+                          AND #{this}_event_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
 
-      joins(join).select(selector).group("#{this}_event_titles.text", "#{this}_default_titles.text")
+      joins(join).select(selector).group("#{this}_event_titles.text")
    end
 
    # with memoes and children via memoes
@@ -1109,14 +1189,12 @@ class Event < ApplicationRecord
       joins(join).select(selector).group(:id, "#{as}_memory_short_names.text")
    end
 
-   accepts_nested_attributes_for :place, reject_if: :all_blank
-   accepts_nested_attributes_for :coordinate, reject_if: :all_blank
-   accepts_nested_attributes_for :item, reject_if: :all_blank
-
    singleton_class.send(:alias_method, :mid, :by_memory_id)
 
    validates_presence_of :kind, :kind_code, :event_roles
 
+   # properties
+   # as scope
    def all_pictures
       pictures
    end

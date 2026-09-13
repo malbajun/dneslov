@@ -57,7 +57,7 @@ module TotalSize
    rescue => e
       Kernel.puts("Invalid exception: #{e.message} with SQL: #{rela.to_sql}")
 
-      0
+      -1
    end
 
    def total_size
