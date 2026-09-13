@@ -12,8 +12,9 @@ class FindBuildStrategy
 
       instance_pre = klass.new
       ignored = aa.instance_variable_get(:@attribute_list).ignored.map {|x|x.name}
+      attr_list = klass.new.attributes.symbolize_keys.keys
       attrs = attrs_in.group_by do |(key,_)|
-         if instance_pre.respond_to?("by_#{key}") || instance_pre.attributes.keys.include?(key.to_s)
+         if klass.respond_to?("by_#{key}") || attr_list.include?(key)
             true
          elsif !ignored.include?(key)
             false

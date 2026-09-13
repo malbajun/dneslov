@@ -4,11 +4,11 @@ FactoryBot.define do
       language_code { nil }
       alphabeth_code { nil }
 
-      association :item
-      place factory: :place, without_place: true, without_events: true
-
       transient do
+         without_roles { nil }
          without_place { nil }
+         place_short_name { nil }
+         item_id { nil }
       end
 
       transient do
@@ -17,7 +17,13 @@ FactoryBot.define do
 
       after(:build) do |o, e|
          o.kind = e.kind || association(:event_kind) unless o.kind_code
-         o.memories |= [build(:memory, without_events: true)] if o.memories.blank?
+         o.item = find_build(:item, id: e.item_id) if e.item_id
+         o.place =
+            if e.place_short_name
+               find_build(:place, short_name: e.place_short_name, without_place: true, without_events: true)
+            else
+               find_build(:place, without_place: true, without_events: true)
+            end
       end
    end
 end

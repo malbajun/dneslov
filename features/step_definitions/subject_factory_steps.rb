@@ -15,12 +15,12 @@ end
 end
 
 Допустим("єствує взор сꙛбытя {string} яко {string}") do |name, code|
-   FactoryBot.find_create(:event_kind, key: code, name: name)
+   FactoryBot.find_create(:event_kind, key: code, name: name, appellation: name)
 end
 
-Допустим("сѫчвуѫ сꙛбытя {string}") do |string|
-   string.split(",").each do |key|
-      FactoryBot.find_create(:event_kind, key: key.strip).save!
+Допустим('сѫ взори сꙛбытєв {string}') do |codes|
+   codes.split(/,\s*/) do |code|
+      FactoryBot.find_create(:event_kind, key: code, appellation: name)
    end
 end
 

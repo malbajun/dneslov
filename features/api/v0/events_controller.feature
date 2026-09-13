@@ -6,7 +6,12 @@
       * єствує азбука "Русская" яко "РУ"
       * єствує ѧзык "Всисловенский" яко "вс"
       * єствує азбука "Всисловенщина" яко "НЦ"
-      * єствує взор сꙛбытя "Сꙛбытя взор" яко "Event"
+      * єствує взор вещи "Вещь" яко "вещь"
+      * єствує взор сꙛбытя "Событья взор" яко "Событье"
+      * єствує вещь сꙛ даными:
+         | id                 | 10100                                |
+         | item_type_title    | Вещь                                 |
+         | title              | Предмет                              |
       * єствує памѧть сꙛ даными:
          | id                 | 100100                               |
          | language_code      | вс                                   |
@@ -19,27 +24,37 @@
          | alphabeth_code     | РУ                                   |
          | short_name         | Память                               |
          | without_events     | true                                 |
+      * єствує мѣсто сꙛ даными:
+         | id                 | 100102                               |
+         | language_code      | ру                                   |
+         | alphabeth_code     | РУ                                   |
+         | short_name         | Град                                 |
+         | without_events     | true                                 |
       * єствує сꙛбытє сꙛ даными:
          | id                 | 200201                               |
-         | title              | Событье                              |
+         | title              | Событие                              |
          | description        | Описалово Событья                    |
          | kind_code          | Event                                |
          | language_code      | ру                                   |
          | alphabeth_code     | РУ                                   |
          | happened_at        | "1001"                               |
          | memory_short_name  | Память                               |
+         | place_short_name   | Град                                 |
+         | kind_code          | Событье                              |
+         | item_id            | 10100                                |
       * єствує сꙛбытє сꙛ даными:
          | id                 | 200202                               |
-         | title              | Сꙛбытје                              |
+         | title              | Сꙛбытье                              |
          | description        | Описалово Сꙛбытјя                    |
-         | kind_code          | Event                                |
          | language_code      | вс                                   |
          | alphabeth_code     | НЦ                                   |
          | happened_at        | "2002"                               |
          | memory_short_name  | Памѧть                               |
+         | place_short_name   | Град                                 |
+         | kind_code          | Событье                              |
       * сꙛбуке для правача сѫ таковы:
-         | language        | ру                                   |
-         | alphabeth       | РУ                                   |
+         | language           | ру                                   |
+         | alphabeth          | РУ                                   |
 
    @get @collection @json
    Пример: Запрос к правачу сꙛбытєв в АПИ при отсутствии сꙛбытєв
@@ -55,17 +70,15 @@
          """
          ---
          - id: 200202
-           title:
-           description:
+           kind: Событья взор
            memory_short_name:
            happened_at: '2002'
-           kind_code: Event
+           place: Град
          - id: 200201
-           title: Событье
-           description: Описалово Событья
+           kind: Событья взор
            memory_short_name: Память
            happened_at: '1001'
-           kind_code: Event
+           place: Град
          """
       А добѫдꙛ охватъ "0-9/2"
 
@@ -77,27 +90,25 @@
          """
          ---
          - id: 200201
-           title: Событье
-           description: Описалово Событья
+           kind: Событья взор
            memory_short_name: Память
            happened_at: '1001'
-           kind_code: Event
+           place: Град
          """
       А добѫдꙛ охватъ "0-9/1"
 
    @get @collection @search @json
    Пример: Користник искає во спису сꙛбытєв по типу
-      Если запытаю добыванје из изо "/api/v0/events.json?q=Событье"
+      Если запытаю добыванје из изо "/api/v0/events.json?q=Событие"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          - id: 200201
-           title: Событье
-           description: Описалово Событья
+           kind: Событья взор
            memory_short_name: Память
            happened_at: '1001'
-           kind_code: Event
+           place: Град
          """
       А добѫдꙛ охватъ "0-9/1"
 
@@ -109,11 +120,10 @@
          """
          ---
          - id: 200201
-           title: Событье
-           description: Описалово Событья
+           kind: Событья взор
            memory_short_name: Память
            happened_at: '1001'
-           kind_code: Event
+           place: Град
          """
       А добѫдꙛ охватъ "0-9/1"
 
@@ -128,16 +138,25 @@
          """
          ---
          - id: 200201
-           title:
-           description:
+           kind: ''
            memory_short_name:
            happened_at: '1001'
-           kind_code: Event
+           place: ''
          """
       А добѫдꙛ охватъ "0-9/1"
 
    @get @collection @search @json
    Пример: Користник искає во спису сꙛбытєв по взору сꙛбытя
+      Если єствує сꙛбытє сꙛ даными:
+         | id                 | 200203                               |
+         | title              | Сꙛбытје                              |
+         | description        | Описалово Сꙛбытјя                    |
+         | kind_code          | Event                                |
+         | language_code      | вс                                   |
+         | alphabeth_code     | НЦ                                   |
+         | happened_at        | "3003"                               |
+         | memory_short_name  | Памѧть                               |
+         | kind_code          | Событье                              |
       Если запытаю добыванје из изо "/api/v0/events.json?a=ДР&l=ру"
       То добѫдꙛ кодъ поврата "204"
       И добѫдꙛ пустъ выводъ
@@ -158,11 +177,10 @@
          """
          ---
          - id: 200202
-           title:
-           description:
+           kind: Событья взор
            memory_short_name:
            happened_at: '2002'
-           kind_code: Event
+           place: Град
          """
       А добѫдꙛ охватъ "0-0/2"
       Если сдѣлаю "GET" запытъ до адреса "/api/v0/events.json" сꙛ доводом "per=1&p=2"
@@ -171,11 +189,10 @@
          """
          ---
          - id: 200201
-           title: Событье
-           description: Описалово Событья
+           kind: Событья взор
            memory_short_name: Память
            happened_at: '1001'
-           kind_code: Event
+           place: Град
          """
       А добѫдꙛ охватъ "1-1/2"
       Если сдѣлаю "GET" запытъ до адреса "/api/v0/events.json" сꙛ доводом "per=1&p=3"
@@ -209,31 +226,64 @@
    @create @object @json
    Пример: Користник створяє сꙛбытё
       Если сꙛбуке для правача сѫ таковы:
-         | language        | вс                                   |
-         | alphabeth       | НЦ                                   |
+         | language           | вс                                   |
+         | alphabeth          | НЦ                                   |
       Если запытаю створенје изо сꙛбытя "/api/v0/events/create.json" сꙛ даными:
          | id                 | 200203                               |
-         | title              | Сꙛбытје                              |
-         | description        | Описалово Сꙛбытјя                    |
-         | kind_code          | Event                                |
          | language_code      | вс                                   |
          | alphabeth_code     | НЦ                                   |
-         | happened_at        | "2002"                               |
+         | title              | Сꙛбытје                              |
+         | description        | Описалово Сꙛбытјя                    |
          | memory_short_name  | Памѧть                               |
+         | happened_at        | "2002"                               |
+         | kind_code          | Событье                              |
+         | place_uno          | Град                                 |
+         | item_uno           | Предмет                              |
       То добѫдꙛ кодъ поврата "200"
       А сѫбуке сѫ таковы:
-         | language        | вс                                   |
-         | alphabeth       | НЦ                                   |
+         | language           | вс                                   |
+         | alphabeth          | НЦ                                   |
       И изнахоѕь сꙛбытя "200203" бѫдє яко:
          """
          ---
          id: 200203
          happened_at: 2002
-         kind_code: Event
-         memory_short_name: Памѧть
+         kind_code: Событье
+         title: Сꙛбытје
          description: Описалово Сꙛбытјя
          memory_short_name: Памѧть
          """
+
+
+   @create @object @json @error @422
+   Пример: Користник створяє сꙛбытё
+      Если сꙛбуке для правача сѫ таковы:
+         | language           | вс                                   |
+         | alphabeth          | НЦ                                   |
+      Если запытаю створенје изо сꙛбытя "/api/v0/events/create.json" сꙛ даными:
+         | id                 | 200203                               |
+         | language_code      | вс                                   |
+         | alphabeth_code     | НЦ                                   |
+         | title              | Сꙛбытје                              |
+         | description        | Описалово Сꙛбытјя                    |
+         | memory_short_name  | Памѧть                               |
+         | happened_at        | "2002"                               |
+         | place_uno          | Град                                 |
+         | item_uno           | Предмет                              |
+      То добѫдꙛ кодъ поврата "422"
+      А сѫбуке сѫ таковы:
+         | language           | вс                                   |
+         | alphabeth          | НЦ                                   |
+      И добѫдꙛ выводъ:
+         """
+         ---
+         status: 422
+         errors:
+         - Kind can't be blank
+         - Kind code can't be blank
+         """
+      А изнахоѕи сꙛбытя "10003" не бѫдє
+
 
    @create @object @json @error @422
    Пример: Користник кушає створити погрѣшну сꙛбытё во вымолву, и не можє
@@ -246,10 +296,11 @@
          | alphabeth_code     | РУ                                   |
          | happened_at        | "2002"                               |
          | memory_short_name  | Памятя                               |
+         | kind_code          | Событье                              |
       То добѫдꙛ кодъ поврата "422"
       А сѫбуке сѫ таковы:
-         | language        | ру                                   |
-         | alphabeth       | РУ                                   |
+         | language           | ру                                   |
+         | alphabeth          | РУ                                   |
       И добѫдꙛ выводъ:
          """
          ---
@@ -257,7 +308,8 @@
          errors:
          - Titles text contains invalid char(s) "gnorw" for the specified alphabeth "РУ"
          - Titles is invalid
-         - Event roles can't be blank
+         - Memories can't be assigned by short name 'Памятя'
+         - Memories can't be blank
          """
       А изнахоѕи сꙛбытя "10003" не бѫдє
 
@@ -272,6 +324,7 @@
          | alphabeth_code     | РУ                                   |
          | happened_at        | "2002"                               |
          | memory_short_name  | Память                               |
+         | kind_code          | Событье                              |
       То добѫдꙛ кодъ поврата "422"
       А сѫбуке сѫ таковы:
          | language        | ру                                   |
@@ -297,6 +350,7 @@
          | alphabeth_code     | РУ                                   |
          | happened_at        | "2002"                               |
          | memory_short_name  | Память                               |
+         | kind_code          | Событье                              |
       То добѫдꙛ кодъ поврата "200"
       А сѫбуке сѫ таковы:
          | language        | ру                                   |
@@ -305,19 +359,24 @@
          """
          ---
          id: 200203
+         kind: Событья взор
+         kind_code: Событье
          title: Титуля
          description: not wrong
          memory_short_name: Память
          happened_at: '2002'
-         kind_code: Event
+         place_slug:
+         place: ''
+         item_id:
+         item:
          """
       А изнахоѕь сꙛбытя "200203" бѫдє єствовати
 
    @update @object @json @error @404
    Пример: Користник поновяє дане сꙛбытя
       Если сѫбуке сѫ таковы:
-         | language        | ру                                   |
-         | alphabeth       | РУ                                   |
+         | language           | ру                                   |
+         | alphabeth          | РУ                                   |
       И запытаю одсланје сꙛбытя в изнаходь "/api/v0/events/200201.json" сꙛ даными:
          | id                 | 200203                               |
          | title              | Титуля                               |
@@ -327,16 +386,22 @@
          | alphabeth_code     | РУ                                   |
          | happened_at        | "2002"                               |
          | memory_short_name  | Память                               |
+         | kind_code          | Событье                              |
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          id: 200201
+         kind: Событья взор
+         kind_code: Событье
          title: Титуля
          description: not wrong
          memory_short_name: Память
          happened_at: '2002'
-         kind_code: Event
+         place_slug: 100102
+         place: Град
+         item_id: 10100
+         item: Предмет
          """
       Если запытаю добыванје из изо "/api/v0/events/200201.json"
       То добѫдꙛ кодъ поврата "200"
@@ -344,11 +409,16 @@
          """
          ---
          id: 200201
+         kind: Событья взор
+         kind_code: Событье
          title: Титуля
          description: not wrong
          memory_short_name: Память
          happened_at: '2002'
-         kind_code: Event
+         place_slug: 100102
+         place: Град
+         item_id: 10100
+         item: Предмет
          """
       Если запытаю добыванје из изо "/api/v0/events/200203.json"
       То добѫдꙛ кодъ поврата "404"
@@ -356,36 +426,46 @@
    @get @object @json
    Пример: Користник добыває дане сꙛбытя· иззначену озом
       Если сѫбуке сѫ таковы:
-         | language        | ру                                   |
-         | alphabeth       | РУ                                   |
+         | language           | ру                                   |
+         | alphabeth          | РУ                                   |
       И запытаю добыванје из изо "/api/v0/events/200201.json"
       То добѫдꙛ выводъ:
          """
          ---
          id: 200201
-         title: Событье
+         kind: Событья взор
+         kind_code: Событье
+         title: Событие
          description: Описалово Событья
          memory_short_name: Память
          happened_at: '1001'
-         kind_code: Event
+         place_slug: 100102
+         place: Град
+         item_id: 10100
+         item: Предмет
          """
 
    @delete @object @json
    Пример: Користник изтьрає иззначену озом сꙛбытё 
       Если сꙛбуке для правача сѫ таковы:
-         | language        | вс                                   |
-         | alphabeth       | НЦ                                   |
+         | language           | вс                                   |
+         | alphabeth          | НЦ                                   |
       И запытаю изтрѣнје изо "/api/v0/events/200202.json"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
          ---
          id: 200202
-         title: Сꙛбытје
+         kind: ''
+         kind_code: Событье
+         title: Сꙛбытье
          description: Описалово Сꙛбытјя
          memory_short_name: Памѧть
          happened_at: '2002'
-         kind_code: Event
+         place_slug: 100102
+         place: ''
+         item_id:
+         item:
          """
       И изнахоѕи сꙛбытя "Мѣтаа" не бѫдє
 

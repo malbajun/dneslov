@@ -475,8 +475,8 @@ class Event < ApplicationRecord
       as = context[:as] || model.reflections[rela]&.name || rela
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
-      selector << "COALESCE(#{as}_memory_short_names.text, #{as}_descriptions.text) AS _place" <<
-                  "#{as}_slugs.id AS _place_slug"
+      selector << "COALESCE(#{as}_memory_short_names.text, #{as}_descriptions.text, '') AS _place" <<
+                  "#{as}_slugs.sluggable_id AS _place_slug"
 
       join = "           JOIN event_roles AS #{as}_event_roles
                            ON #{this}.id = #{as}_event_roles.event_id
@@ -861,7 +861,7 @@ class Event < ApplicationRecord
       this = table.table_alias || table.name
 
       selector = self.select_values.dup << "#{this}.*" <<
-         "#{this}_default_titles.text AS _kind"
+         "COALESCE(#{this}_default_titles.text, '') AS _kind"
 
       join = "           JOIN subjects AS #{this}_kinds
                            ON #{this}.kind_code = #{this}_kinds.key
@@ -1179,7 +1179,7 @@ class Event < ApplicationRecord
       selector << "#{this}.*" if selector.empty?
       selector << "#{as}_memory_short_names.text AS _memory_short_name"
 
-      join = "           JOIN event_roles AS #{this}_#{as}_event_roles
+      join = "LEFT OUTER JOIN event_roles AS #{this}_#{as}_event_roles
                            ON #{this}.id = #{this}_#{as}_event_roles.event_id
               LEFT OUTER JOIN short_names AS #{as}_memory_short_names
                            ON #{as}_memory_short_names.memory_id = #{this}_#{as}_event_roles.memory_id
@@ -1191,7 +1191,12 @@ class Event < ApplicationRecord
 
    singleton_class.send(:alias_method, :mid, :by_memory_id)
 
-   validates_presence_of :kind, :kind_code, :event_roles
+   validates_presence_of :kind, :kind_code
+   validates_presence_of :memories, if: -> () do
+      if @short_name && self.memories.blank?
+         self.errors.add(:memories, "can't be assigned by short name '#{@short_name}'")
+      end
+   end
 
    # properties
    # as scope
@@ -1204,7 +1209,9 @@ class Event < ApplicationRecord
    end
 
    def memory_short_name= value
-      self.memories |= [Memory.by_short_name(value).first].compact
+      if memory = Memory.by_short_name(@short_name = value).first
+         self.memories |= [memory]
+      end
    end
 
    def self.year_date_for year_date, date_in, julian

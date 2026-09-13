@@ -1,12 +1,17 @@
-Допустим(/^есть чин "([^"]*)"$/) do |order|
-   create( :order, order: order ) ; end
+То('памѧть со заглавом {string} не будє єствовати') do |title|
+   memory = Memory.by_title(title).first
+   expect(memory).to be_blank
+end
 
-Допустим(/^есть память "(.*)"$/) do |short_name|
-   create( :memory, short_name: short_name ) ; end
+То('изнахоѕи памѧти {string} не бѫдє') do |name|
+   memories = Memory.by_uno(name)
+   expect(memories).to be_blank
+end
 
-Допустим(/^суть памяти "([^"]*)"$/) do |names|
-   names.split(/\s*,\s*/).each do |short_name|
-      create( :memory, short_name: short_name ) ; end ; end
+То('изнахоѕь памѧти {string} бѫдє яко:') do |name, doc_string|
+   memory = Memory.by_uno(name).order(:updated_at).last
+   expect(memory).to match_record_yaml(doc_string)
+end
 
 То(/^свойство '(.*)' памяти "([^"]*)" не может быть пустым$/) do |attr, short_name|
    name = Memory.by_short_name(short_name).first
