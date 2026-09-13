@@ -1,27 +1,28 @@
 FactoryBot.define do
    factory :event do
       happened_at { Date.today.to_s }
-
-      kind { association :event_kind }
-      association :item
-      place factory: :place, without_place: true, without_events: true
+      language_code { nil }
+      alphabeth_code { nil }
 
       transient do
+         without_roles { nil }
          without_place { nil }
+         place_short_name { nil }
+         item_id { nil }
       end
 
       transient do
-         title { FFaker::NameRU.name }
-         memory_title { nil }
+         kind { Subject.where(kind_code: "EventKind").first }
       end
 
       after(:build) do |o, e|
-         o.titles << build(:title, text: e.title)
-         o.memory =
-            if e.memory_title
-               Memory.by_short_name(e.memory_title).first
+         o.kind = e.kind || association(:event_kind) unless o.kind_code
+         o.item = find_build(:item, id: e.item_id) if e.item_id
+         o.place =
+            if e.place_short_name
+               find_build(:place, short_name: e.place_short_name, without_place: true, without_events: true)
             else
-               build(:memory, without_events: true)
+               find_build(:place, without_place: true, without_events: true)
             end
       end
    end

@@ -33,11 +33,16 @@ class Audio < ApplicationRecord
    scope :by_id, ->(id) { where(id: id) }
    scope :by_memory_id, ->(id) do
       this = table.table_alias || table.name
-      join = "LEFT OUTER JOIN audio_attitudes AS #{this}_attitudes ON #{this}_attitudes.audio_id = #{this}.id
-              LEFT OUTER JOIN events AS #{this}_events ON #{this}_events.id = #{this}_attitudes.audioable_id AND #{this}_attitudes.audioable_type = 'Event'
-              LEFT OUTER JOIN memories AS #{this}_memories ON #{this}_memories.id = #{this}_attitudes.audioable_id AND #{this}_attitudes.audioable_type = 'Memory'"
+      join = "           JOIN audio_attitudes AS #{this}_attitudes
+                           ON #{this}_attitudes.audio_id = #{this}.id
+              LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                           ON #{this}_event_roles.event_id = #{this}_attitudes.audioable_id
+                          AND #{this}_attitudes.audioable_type = 'Event'
+              LEFT OUTER JOIN memories AS #{this}_memories
+                           ON #{this}_memories.id = #{this}_attitudes.audioable_id
+                          AND #{this}_attitudes.audioable_type = 'Memory'"
 
-      wherec = "#{this}_events.memory_id = ? OR #{this}_memories.id = ?"
+      wherec = "#{this}_event_roles.memory_id = ? OR #{this}_memories.id = ?"
 
       joins(join).where(wherec, id, id)
    end

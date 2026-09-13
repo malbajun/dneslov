@@ -122,7 +122,7 @@ module WithTweets
          before_validation :fill_in_tweet
 
          def tweet_language
-           @tweet_language ||= tweets.last&.language.name
+            @tweet_language ||= tweets.last&.language.name
          end
 
          def tweet_alphabeth

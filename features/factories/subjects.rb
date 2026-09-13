@@ -6,11 +6,11 @@ FactoryBot.define do
 
       transient do
          appellation { nil }
-         la { "ру_РО" }
+         la { "ру_РУ" }
       end
 
       after(:build) do |s, e|
-         s.appellations << build(:appellation, text: e.appellation, language_code: e.la[0..1], alphabeth_code: e.la[3..4]) if e.appellation
+         s.appellations = build_list(:appellation, 1, text: e.appellation, language_code: e.la[0..1], alphabeth_code: e.la[3..4]) if e.appellation
       end
    end
 

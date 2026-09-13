@@ -9,7 +9,7 @@ require 'when_easter'
 #
 # add_date[string]            - дата добавления записи в календарь
 # year_date[string]           - дата в году постоянная или перемещаемая, когда память отмечается
-# event_id[int]               - ссылка на событие
+# event_role_id[int]          - ссылка на роль в событии
 # calendary_id[int]           - ссылка на календарь
 # bind_kind_code[string]      - тип привязки к опорному помину(может быть не привязан)
 # bond_to_id[int]             - ссылка на опорный помин, если nil, помин первичный
@@ -34,13 +34,14 @@ class Memo < ApplicationRecord
    }
 
    belongs_to :calendary
-   belongs_to :event
+   belongs_to :event_role
    belongs_to :bond_to, class_name: :Memo
    belongs_to :bind_kind, primary_key: :key, foreign_key: :bind_kind_code, class_name: :Subject
 
    has_one :memo_order
    has_one :order, through: :memo_order
-   has_one :memory, through: :event
+   has_one :memory, through: :event_role
+   has_one :event, through: :event_role
    has_one :slug, through: :memory
    has_one :roundel, -> { order(Arel.sql("random()")).select(:url).limit(1) }, through: :memory, source: :roundels
    has_one :calendary_slug, through: :calendary, source: :slug, class_name: :Slug
@@ -51,14 +52,15 @@ class Memo < ApplicationRecord
    has_many :slugs, -> { distinct.reorder('id') }, through: :orders, source: :slug
    has_many :short_names, through: :memory
    has_many :order_titles, through: :orders, source: :tweets
-   has_many :bond_memo_titles, through: :bond_to, source: :titles
-   has_many :event_titles, through: :event, source: :titles
+   has_many :bond_to_memo_titles, through: :bond_to, source: :titles
+   has_many :event_titles, through: :event_role, source: :titles
    has_many :services, as: :info, inverse_of: :info # TODO додаь задачу превода service_links/ServiceLink во Service
    has_many :titles, -> { title }, as: :describable, dependent: :delete_all
    has_many :notes, as: :describable, dependent: :delete_all, class_name: :Note
    has_many :versi, as: :describable, dependent: :delete_all, class_name: :Versus
    has_many :calendary_titles, through: :calendary, source: :titles, class_name: :Appellation
    has_one :original_title, -> { original_title }, as: :describable, class_name: :Original, dependent: :destroy
+   has_many :bond_memoes, primary_key: :id, foreign_key: :bond_to_id, class_name: :Memo
 
    delegate :quantity, to: :memory
    delegate :quantity, to: :bond_to, prefix: true, allow_nil: true
@@ -79,6 +81,8 @@ class Memo < ApplicationRecord
    scope :by_slug, ->(slugs) do
       joins(:memory).merge(Memory.unscoped.by_slug(slugs)).reorder(:id)
    end
+
+   scope :by_bond_to, ->(ids) { where(bond_to_id: ids) }
 
    scope :first_in_calendary, -> do
       sql = self.joins(:calendary_slug, :memory)
@@ -118,8 +122,10 @@ class Memo < ApplicationRecord
                           AND #{this}_titles.type = 'Title'
                           #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
 
+                         JOIN event_roles AS #{this}_event_roles
+                           ON #{this}.event_role_id = #{this}_event_roles.id
               LEFT OUTER JOIN events AS #{this}_events
-                           ON #{this}_events.id = #{this}.event_id
+                           ON #{this}_events.id = #{this}_event_roles.event_id
                          JOIN subjects AS #{this}_event_kinds
                            ON #{this}_event_kinds.key = #{this}_events.kind_code
                           AND #{this}_event_kinds.kind_code = 'EventKind'
@@ -133,7 +139,7 @@ class Memo < ApplicationRecord
                           AND #{this}_event_titles.type = 'Appellation')
                           #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
                          JOIN memories AS #{this}_memories
-                           ON #{this}_memories.id = #{this}_events.memory_id
+                           ON #{this}_memories.id = #{this}_event_roles.memory_id
                           AND #{this}_memories.type = 'Council'"
 
       selector << "COALESCE(#{this}.year_date, '') || ' [' ||
@@ -179,7 +185,7 @@ class Memo < ApplicationRecord
    singleton_class.send(:alias_method, :by_query, :by_token)
 
    scope :by_event_id, -> (event_id) do
-      where(event_id: event_id)
+      joins(:event_role).where(event_roles: { event_id: event_id })
    end
 
    scope :by_calendary_id, -> (calendary_id) do
@@ -220,8 +226,10 @@ class Memo < ApplicationRecord
                          AND #{as}_titles.describable_type = 'Memo'
                          AND #{as}_titles.type = 'Title'
                          #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
+                        JOIN event_roles AS #{as}_event_roles
+                          ON #{as}.event_role_id = #{as}_event_roles.id
              LEFT OUTER JOIN events AS #{as}_events
-                          ON #{as}.event_id = #{as}_events.id
+                          ON #{as}_event_roles.event_id = #{as}_events.id
                         JOIN subjects AS #{as}_event_kinds
                           ON #{as}_event_kinds.key = #{as}_events.kind_code
                          AND #{as}_event_kinds.kind_code = 'EventKind'
@@ -242,7 +250,7 @@ class Memo < ApplicationRecord
                          AND #{as}_calendary_titles.type = 'Appellation'
                          #{lang_wheres&.[](2)} #{alph_wheres&.[](2)}
              LEFT OUTER JOIN short_names AS #{as}_short_names
-                          ON #{as}_short_names.memory_id = #{as}_events.memory_id
+                          ON #{as}_short_names.memory_id = #{as}_event_roles.memory_id
                          #{lang_wheres&.[](3)} #{alph_wheres&.[](3)}"
 
       selector << "#{as}_short_names.text || ' [' ||
@@ -252,7 +260,13 @@ class Memo < ApplicationRecord
          COALESCE(#{as}_calendary_titles.text, '') || ' (' ||
          memoes.year_date || ')]' AS _value"
 
-      joins(joi).select(selector).group(:id, "#{as}_short_names.text", "#{as}_events.happened_at", "#{as}_event_titles.text", "#{as}_titles.text", "#{as}_calendary_titles.text", "memoes.year_date")
+      joins(joi).select(selector).group(:id,
+         "#{as}_short_names.text",
+         "#{as}_events.happened_at",
+         "#{as}_event_titles.text",
+         "#{as}_titles.text",
+         "#{as}_calendary_titles.text",
+         "memoes.year_date")
    end
 
    scope :with_original, -> context do
@@ -382,8 +396,10 @@ class Memo < ApplicationRecord
                       AND #{this}_#{ast}_titles.type = 'Title'
                       AND #{this}_#{ast}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                       AND #{this}_#{ast}_titles.language_code IN ('#{language_codes.join("', '")}')
+                     JOIN event_roles AS #{this}_#{ast}_event_roles
+                       ON #{this}_#{ast}_event_roles.id = #{this}_#{ast}.event_role_id
           LEFT OUTER JOIN events AS #{this}_#{ast}_events
-                       ON #{this}_#{ast}_events.id = #{this}_#{ast}.event_id
+                       ON #{this}_#{ast}_events.id = #{this}_#{ast}_event_roles.event_id
           LEFT OUTER JOIN subjects AS #{this}_#{ast}_event_kinds
                        ON #{this}_#{ast}_event_kinds.key = #{this}_#{ast}_events.kind_code
                       AND #{this}_#{ast}_event_kinds.kind_code = 'EventKind'
@@ -398,7 +414,7 @@ class Memo < ApplicationRecord
                       AND #{this}_#{ast}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
                       AND #{this}_#{ast}_titles.language_code IN ('#{language_codes.join("', '")}')
           LEFT OUTER JOIN memories AS #{this}_#{ast}_memories
-                       ON #{this}_#{ast}_memories.id = #{this}_#{ast}_events.memory_id"
+                       ON #{this}_#{ast}_memories.id = #{this}_#{ast}_event_roles.memory_id"
 
       joins(join).select(selector).group(
          "#{this}_#{ast}.year_date",
@@ -442,26 +458,26 @@ class Memo < ApplicationRecord
                              COALESCE(#{this}_event_titles.text, #{this}_event_kind_titles.text) AS event_title,
                              COALESCE(#{this}_memory_memoes.happened_at, #{this}_memory_events.happened_at) AS happened_at
                         FROM memories AS #{this}_memories
-                        JOIN events AS #{this}_events
-                          ON #{this}.event_id = #{this}_events.id
+                        JOIN event_roles AS #{this}_event_roles
+                          ON #{this}.event_role_id = #{this}_event_roles.id
                         JOIN events AS #{this}_memory_events
-                          ON #{this}_memory_events.memory_id = #{this}_events.memory_id
+                          ON #{this}_memory_events.id = #{this}_event_roles.event_id
                         JOIN memoes AS #{this}_memory_memoes
-                          ON #{this}_memory_memoes.event_id = #{this}_memory_events.id
+                          ON #{this}_memory_memoes.event_role_id = #{this}_event_roles.id
              LEFT OUTER JOIN descriptions AS #{this}_event_titles
-                          ON #{this}_event_titles.describable_id = #{this}_memory_events.id
-                         AND #{this}_event_titles.describable_type = 'Event'
+                          ON #{this}_event_titles.describable_id = #{this}_event_roles.id
+                         AND #{this}_event_titles.describable_type = 'EventRole'
                          AND #{this}_event_titles.type = 'Title'
                              #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
              LEFT OUTER JOIN subjects AS #{this}_event_kinds
-                          ON #{this}_event_kinds.key = #{this}_memory_events.kind_code
+                          ON #{this}_event_kinds.key = #{this}_event_roles.event_kind_code
                          AND #{this}_event_kinds.kind_code = 'EventKind'
              LEFT OUTER JOIN descriptions AS #{this}_event_kind_titles
                           ON #{this}_event_kind_titles.describable_id = #{this}_event_kinds.id
                          AND #{this}_event_kind_titles.describable_type = 'Subject'
                          AND #{this}_event_kind_titles.type = 'Appellation'
                              #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
-                       WHERE #{this}_memory_events.memory_id = #{this}_memories.id
+                       WHERE #{this}_event_roles.memory_id = #{this}_memories.id
                          AND #{this}_memory_memoes.year_date = #{this}.year_date
                     GROUP BY #{this}_memories.base_year,
                              #{this}_memory_events.id,
@@ -560,8 +576,10 @@ class Memo < ApplicationRecord
                           AND titles.language_code IN ('#{language_codes.join("', '")}')
                           AND titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
 
+              LEFT OUTER JOIN events AS bond_to_memo_event_roles
+                           ON bond_to_memo_event_roles.id = bond_to_memoes.event_role_id
               LEFT OUTER JOIN events AS bond_to_memo_events
-                           ON bond_to_memo_events.id = bond_to_memoes.event_id
+                           ON bond_to_memo_events.id = bond_to_memo_event_roles.event_id
               LEFT OUTER JOIN subjects AS bond_to_event_kinds
                            ON bond_to_event_kinds.key = bond_to_memo_events.kind_code
                           AND bond_to_event_kinds.kind_code = 'EventKind'
@@ -692,20 +710,22 @@ class Memo < ApplicationRecord
          ]
       end
 
-      join = "LEFT OUTER JOIN events AS #{this}_memo_events
-                           ON memoes.event_id = #{this}_memo_events.id
+      join = "LEFT OUTER JOIN event_roles AS #{this}_memo_event_roles
+                           ON #{this}.event_role_id = #{this}_memo_event_roles.id
+              LEFT OUTER JOIN events AS #{this}_memo_events
+                           ON #{this}_memo_events.id = #{this}_memo_event_roles.event_id
                          JOIN memories AS memo_event_memories
-                           ON #{this}_memo_events.memory_id = memo_event_memories.id
+                           ON #{this}_memo_event_roles.memory_id = memo_event_memories.id
               LEFT OUTER JOIN subjects AS event_kinds
                            ON event_kinds.kind_code = 'EventKind'
-                          AND event_kinds.key = #{this}_memo_events.kind_code
+                          AND event_kinds.key = #{this}_memo_event_roles.kind_code
               LEFT OUTER JOIN descriptions AS event_kind_titles
                            ON event_kind_titles.describable_id = event_kinds.id
                           AND event_kind_titles.describable_type = 'Subject'
                           AND event_kind_titles.type = 'Appellation'
                               #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
               LEFT OUTER JOIN short_names AS #{this}_short_names
-                           ON #{this}_short_names.memory_id = #{this}_memo_events.memory_id
+                           ON #{this}_short_names.memory_id = #{this}_memo_event_roles.memory_id
                               #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}"
 
       joins(join).select(selector).group(:id, 'memo_event_memories.id',

@@ -1,4 +1,9 @@
 class ItemType < ActiveRecord::Base
+   extend TotalSize
+   include WithDescriptions
+   include WithAppellations
+   include WithLinks
+
    has_many :items
    has_many :descriptions, as: :describable
 

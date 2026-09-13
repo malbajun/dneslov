@@ -23,11 +23,11 @@ FactoryBot.define do
          end
 
          if e.titles.present?
-            calendary.titles = build_list(:appellation, 1, describable: calendary)
+            calendary.titles = build_list(:title, 1, describable: calendary)
          end
 
          if e.title.present?
-            calendary.titles << build(:appellation, describable: calendary, text: e.title)
+            calendary.titles << build(:title, describable: calendary, text: e.title)
          end
       end
 

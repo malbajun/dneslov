@@ -38,7 +38,7 @@ export default class EventSpan extends Component {
    static getTitle(props) {
       let titles = props.titles.sortByArray(this.types, "type")
 
-      return titles[0].text
+      return props.title || titles[0].text
    }
 
    // system

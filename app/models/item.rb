@@ -1,5 +1,8 @@
 class Item < ActiveRecord::Base
    extend TotalSize
+   include WithDescriptions
+   include WithTitles
+   include WithLinks
 
    belongs_to :item_type
    has_many :events

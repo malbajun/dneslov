@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
+ActiveRecord::Schema[7.0].define(version: 2026_06_11_150506) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -118,6 +118,24 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
     t.index ["type"], name: "index_descriptions_on_type"
   end
 
+  create_table "event_roles", force: :cascade do |t|
+    t.bigint "event_id"
+    t.bigint "memory_id"
+    t.string "type"
+    t.string "agonism"
+    t.string "event_kind_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "place_id", comment: "Ссылка на место"
+    t.index ["agonism"], name: "index_event_roles_on_agonism"
+    t.index ["event_id", "memory_id"], name: "index_event_roles_on_event_id_and_memory_id", unique: true
+    t.index ["event_id"], name: "index_event_roles_on_event_id"
+    t.index ["event_kind_code"], name: "index_event_roles_on_event_kind_code"
+    t.index ["memory_id"], name: "index_event_roles_on_memory_id"
+    t.index ["place_id"], name: "index_event_roles_on_place_id"
+    t.index ["type"], name: "index_event_roles_on_type"
+  end
+
   create_table "event_scripta", force: :cascade do |t|
     t.bigint "event_id", comment: "квѧзка до сꙛбытя"
     t.bigint "scriptum_id", comment: "квѧзка до буке"
@@ -129,7 +147,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
 
   create_table "events", id: :serial, force: :cascade do |t|
     t.string "happened_at"
-    t.bigint "memory_id", null: false
     t.string "kind_code", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -145,9 +162,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
     t.index ["council"], name: "index_events_on_council"
     t.index ["happened_at"], name: "index_events_on_happened_at"
     t.index ["item_id"], name: "index_events_on_item_id"
-    t.index ["kind_code", "memory_id", "item_id"], name: "index_events_on_item_id_and_type_and_memory_id"
     t.index ["kind_code"], name: "index_events_on_kind_code"
-    t.index ["memory_id"], name: "index_events_on_memory_id"
     t.index ["order"], name: "index_events_on_order"
     t.index ["person_name"], name: "index_events_on_person_name"
     t.index ["place_id"], name: "index_events_on_place_id"
@@ -252,17 +267,15 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
     t.bigint "calendary_id", null: false
     t.string "bind_kind_code", null: false
     t.integer "bond_to_id"
-    t.bigint "event_id", null: false
     t.string "happened_at", comment: "год для помина в калѧдарю"
+    t.bigint "event_role_id"
     t.index ["add_date"], name: "index_memoes_on_add_date"
     t.index ["bind_kind_code"], name: "index_memoes_on_bind_kind_code"
     t.index ["bond_to_id", "bind_kind_code"], name: "index_memoes_on_bond_to_id_and_bind_kind_code"
     t.index ["bond_to_id"], name: "index_memoes_on_bond_to_id"
-    t.index ["calendary_id", "event_id", "year_date"], name: "index_memoes_on_calendary_id_and_event_id_and_year_date", unique: true
     t.index ["calendary_id", "year_date"], name: "index_memoes_on_calendary_id_and_year_date"
     t.index ["calendary_id"], name: "index_memoes_on_calendary_id"
-    t.index ["event_id", "bond_to_id", "id"], name: "index_memoes_on_event_id_and_bond_to_id_and_id"
-    t.index ["event_id"], name: "index_memoes_on_event_id"
+    t.index ["event_role_id"], name: "index_memoes_on_event_role_id"
     t.index ["happened_at"], name: "index_memoes_on_happened_at"
     t.index ["year_date"], name: "index_memoes_on_year_date"
   end
@@ -645,7 +658,10 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
   add_foreign_key "calendaries", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "coverings", "memories", on_delete: :cascade
-  add_foreign_key "event_scripta", "events", column: "event_id", on_delete: :cascade
+  add_foreign_key "event_roles", "events", on_delete: :cascade
+  add_foreign_key "event_roles", "memories", on_delete: :cascade
+  add_foreign_key "event_roles", "places", on_delete: :restrict
+  add_foreign_key "event_scripta", "events", on_delete: :cascade
   add_foreign_key "event_scripta", "scripta", on_delete: :cascade
   add_foreign_key "events", "memories", column: "place_id", on_delete: :cascade
   add_foreign_key "image_attitudes", "pictures", on_delete: :cascade
@@ -655,6 +671,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_14_202733) do
   add_foreign_key "members", "roles", on_delete: :cascade
   add_foreign_key "members", "users", on_delete: :cascade
   add_foreign_key "memo_orders", "memories", column: "order_id", on_delete: :cascade
+  add_foreign_key "memoes", "event_roles", column: "event_role_id", on_delete: :restrict
   add_foreign_key "memory_binds", "events", column: "bond_event_id", on_delete: :restrict
   add_foreign_key "memory_binds", "memories", on_delete: :cascade
   add_foreign_key "memory_names", "nomina", on_delete: :cascade

@@ -12,8 +12,9 @@ class FindBuildStrategy
 
       instance_pre = klass.new
       ignored = aa.instance_variable_get(:@attribute_list).ignored.map {|x|x.name}
+      attr_list = klass.new.attributes.symbolize_keys.keys
       attrs = attrs_in.group_by do |(key,_)|
-         if instance_pre.respond_to?("#{key}=")
+         if klass.respond_to?("by_#{key}") || attr_list.include?(key)
             true
          elsif !ignored.include?(key)
             false
@@ -23,7 +24,11 @@ class FindBuildStrategy
       instance = attrs[true] && find(attrs[true], klass) || @strategy.result(e)
 
       attrs[false].each do |key, value|
-         instance.instance_variable_set("@#{key}", value)
+         if instance.respond_to?("#{key}=")
+            instance.send("#{key}=", value)
+         else
+            instance.instance_variable_set("@#{key}", value)
+         end
       end if attrs[false]
 
       instance
@@ -34,8 +39,10 @@ class FindBuildStrategy
          attrs_in.reduce(klass.default_scoped) do |rela, (attr, value)|
             if klass.respond_to?("by_#{attr}")
                rela.send("by_#{attr}", value)
-            else
+            elsif rela.model.new.attributes.keys.include?(attr.to_s)
                rela.where(attr => value)
+            else
+               rela
             end
          end
 

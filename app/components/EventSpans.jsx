@@ -212,5 +212,6 @@ length + 1
                      id={event.id}
                      date={event.date?.toLocaleDateString('ru-RU')}
                      slug={this.props.slug}
+                     title={event.title}
                      titles={event.titles}
                      scripta={event.scripta} />)}</ul></div>)}}
