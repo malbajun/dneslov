@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import Markdown from 'Markdown'
+import Footer from 'Footer'
 
 export default class About extends Component {
    static defaultProps = {
@@ -107,4 +108,7 @@ export default class About extends Component {
                      <div>{Object.keys(this.props.changelog).map((version) => {
                         return <div>{this.props.i18n.version}: <span>{version}</span><ol>{this.props.changelog[version].map((x) => <li>{x}</li> )}</ol></div>
                      })}</div>
-            </div></div></div></div></main>])}}
+            </div></div></div></div></main>,
+         <Footer />])
+   }
+}
