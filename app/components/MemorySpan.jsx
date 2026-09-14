@@ -13,9 +13,7 @@ export default class MemorySpan extends Component {
       defaultCalendarySlug: null,
       roundelUrl: null,
       haits: [],
-      orders: {},
-      orderTweet: null,
-      orderShortName: null,
+      orders: [],
       description: null,
       title: null,
       addDate: null,
@@ -83,18 +81,8 @@ export default class MemorySpan extends Component {
       return "/" + this.props.slug
    }
 
-   orders() {
-      if (this.props.orderTweet) {
-         return [[this.props.orderTweet, this.props.orderShortName]]
-      } else {
-         return Object.keys(this.props.orders).reduce((res, key) => {
-            return res.concat([[this.props.orders[key], key]])
-         }, [])
-      }
-   }
-
-   generateUrl(hait) {
-      return '/' + this.props.slug + '/' + hait.event_id
+   generateUrl(slug, hait) {
+      return '/' + slug + '/' + (hait?.event_id || "")
    }
 
    generateClassName(hait) {
@@ -146,17 +134,18 @@ export default class MemorySpan extends Component {
                         src={this.state.roundelUrl} />}
                   {this.hasNoImage() &&
                      <i className='material-icons circle terracota z-depth-1'>perm_identity</i>}</a>
-               {this.orders().map((order) => <Chip
-                     className='order'
-                     color={this.getSlugColor(order.first())}
-                     tooltip={order.last()}
-                     text={order.first()} />)}
+               {this.props.orders.map((order) => <Chip
+                  className='order'
+                  url={this.generateUrl(order['slug'])}
+                  color={this.getSlugColor(order['slug'])}
+                  tooltip={order['title']}
+                  text={order['tweet']} />)}
                <span
                   className='name short'>
                   {this.props.title}</span>
                {this.props.haits.map((hait) => <Chip
                   classNames={this.generateClassName(hait)}
-                  url={this.generateUrl(hait)}
+                  url={this.generateUrl(this.props.slug, hait)}
                   texts={this.generateTexts(hait)} />)}
                </div>
             {this.props.description &&

@@ -1,13 +1,26 @@
 ---
 types:
+ - name: order_span
+   model: Order
+   version: 0.1
+   with:
+    - pure_order
+   fields:
+    - name: slug
+      kind: string
+      descriptions: :tiun.types.order.slug
+    - name: tweet
+      kind: string
+      descriptions: :tiun.types.order.tweet
+    - name: short_name
+      kind: string
+      descriptions: :tiun.types.order.short_name
  - name: memory_span
    model: Memory
    version: 0.1
    with:
     - pure_slug
     - memoed
-    - title
-    - note
     - short_name
    fields:
     - name: id
@@ -22,15 +35,9 @@ types:
     - name: usual_event_code
       kind: string
       descriptions: :tiun.types.memory.usual_event_code
-    - name: order_short_name
-      kind: string
-      descriptions: :tiun.types.memory.order_short_name
-    - name: order_title
-      kind: string
-      descriptions: :tiun.types.memory.order_title
-    - name: order_tweet
-      kind: string
-      descriptions: :tiun.types.memory.order_tweet
+    - name: orders
+      kind: order_span array
+      descriptions: :tiun.types.memory.orders
     - name: roundel_url
       kind: url
       descriptions: :tiun.types.memory.roundel_url
@@ -66,9 +73,7 @@ types:
     - pure_slug
     - memoed
     - short_name
-    - title
     - description
-    - note
     - tweet
     - links
     - memory_names
@@ -100,12 +105,9 @@ types:
     - name: description
       kind: string
       descriptions: :tiun.types.memory.description
-    - name: order_short_name
-      kind: string
-      descriptions: :tiun.types.memory.order_short_name
-    - name: order_tweet
-      kind: string
-      descriptions: :tiun.types.memory.order_tweet
+    - name: orders
+      kind: order_span array
+      descriptions: :tiun.types.memory.orders
     - name: roundel_url
       kind: url
       descriptions: :tiun.types.memory.roundel_url

@@ -25,6 +25,7 @@ export default class Eventee extends Component {
       scripta: [],
       memoes: [],
       links: [],
+      orders: [],
       describedMemoIds: [],
 
       active: null,
@@ -73,7 +74,6 @@ export default class Eventee extends Component {
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
          let cal = Eventee.calculateDefaultCalendarySlug(props),
-             order = Eventee.getOrder(props),
              describedMemoes = Eventee.getDescribedMemoes(props),
              selectedScripta = Eventee.selectScripta(props),
              sortedScripta = Eventee.sortedScripta(selectedScripta)
@@ -83,7 +83,6 @@ export default class Eventee extends Component {
             prevProps: props,
             playingAudioUrl: null,
             defaultCalendarySlug: cal,
-            order: order,
             title: Eventee.getTitle(props),
             describedMemoes: describedMemoes,
             klugs: Eventee.collectKlugs(props),
@@ -94,9 +93,9 @@ export default class Eventee extends Component {
             happenedAt: Eventee.getHappenedAt(props),
             childrenMemoes: Memory.collectedChildren(props),
             childrenTotal: Memory.collectedChildrenTotals(props), //props.children_total
-            tagKeywords: Eventee.getKeywords(props.short_name, order, props.nomina, describedMemoes),
-            tagTitle: Eventee.getTagTitle(props.short_name, order, describedMemoes),
-            tagDescription: Eventee.getDescription(props.short_name, order, describedMemoes, sortedScripta),
+            tagKeywords: Eventee.getKeywords(props.short_name, props.orders, props.nomina, describedMemoes),
+            tagTitle: Eventee.getTagTitle(props.short_name, props.orders, describedMemoes),
+            tagDescription: Eventee.getDescription(props.short_name, props.orders, describedMemoes, sortedScripta),
          }
       }
 
@@ -121,9 +120,7 @@ export default class Eventee extends Component {
    }
 
    static collectKlugs(props) {
-         return props.memoes.map((m) => {
-            return Object.keys(m.orders)
-         }).flat().concat([ props.memory.slug ]).compact().uniq()
+      props.orders.map(x => x.slug).concat([ props.memory.slug ]).compact().uniq()
    }
 
    static getDescribedMemoes(props) {
@@ -197,12 +194,6 @@ export default class Eventee extends Component {
       return selected.length > 0
    }
 
-   static getOrder(props) {
-      return props.memoes.reduce((order, m) => {
-         return order || this.isInCalendaries(props, m) && Object.values(m.orders)[0]
-      }, null)
-   }
-
    static getHappenedAt(props) {
       return props.memoes.reduce((happenedAt, m) => {
          return happenedAt || m.happened_at
@@ -265,9 +256,9 @@ export default class Eventee extends Component {
 //             this.props.titles.reduce((res, x) => { return res + " " + x.text }, "")
 //   }
 //
-   static getKeywords(shortName, order, nomina, describedMemoes) {
+   static getKeywords(shortName, orders, nomina, describedMemoes) {
       let array = [
-         order,
+         orders.map(x => x.title),
          shortName,
          nomina.map(x => x.name_text),
          describedMemoes.map(x => x.title)
@@ -276,9 +267,9 @@ export default class Eventee extends Component {
       return array.join(", ").slice(0, 255)
    }
 
-   static getTagTitle(shortName, order, describedMemoes) {
+   static getTagTitle(shortName, orders, describedMemoes) {
       let array = [
-         order,
+         orders.map(x => x.title),
          shortName,
          describedMemoes.map(x => x.title)
       ].flat().uniq()
@@ -286,9 +277,9 @@ export default class Eventee extends Component {
       return array.join(" ").slice(0, 255)
    }
 
-   static getDescription(shortName, order, describedMemoes, sortedScripta) {
+   static getDescription(shortName, orders, describedMemoes, sortedScripta) {
       let array = [
-         order,
+         orders.map(x => x.title),
          shortName,
          describedMemoes.map(x => x.description),
          sortedScripta.map(x => x.text)
@@ -332,21 +323,21 @@ export default class Eventee extends Component {
          <div className='row event'>
             <div className={'col' + this.getInfoClass()}>
                <div className='row'>
-                  {[
-                     this.state.order &&
-                        <Chip
-                           className='order'
-                           color={this.getSlugColor(this.state.order)}
-                           text={this.state.order} />,
+                     {this.props.orders.map((order) => <Chip
+                        className='order'
+                        url={Memory.generateUrl(order['slug'])}
+                        color={this.getSlugColor(order['slug'])}
+                        tooltip={order['title']}
+                        text={order['tweet']} />)}
                      <Name
                         short_name={this.props.memory?.short_name}
                         url={getUrlsFrom(this.props.specifiedCalendarySlug, this.props.memory.slug)[0]}
                         defaultNameInCalendary={this.state.title}
                         klugs={this.state.klugs}
-                        names={this.props.nomina} />,
+                        names={this.props.nomina} />
                      <Chip
                         classNames={['event', 'happened_at', 'place']}
-                        texts={[this.props.specific_title || this.state.title, this.state.happenedAt, this.props.place?.name].compact()} />,]}</div></div>
+                        texts={[this.props.specific_title || this.state.title, this.state.happenedAt, this.props.place?.name].compact()} /></div></div>
             {this.props.image_url &&
                <div className='col x2 l3 m6 s12 image'>
                   <a

@@ -38,7 +38,7 @@ export default class EventSpan extends Component {
    static getTitle(props) {
       let titles = props.titles.sortByArray(this.types, "type")
 
-      return props.title || titles[0].text
+      return props.title || titles[0]?.text
    }
 
    // system
@@ -77,7 +77,7 @@ export default class EventSpan extends Component {
                <Chip
                   classNames={['happened_at', 'place']}
                   urls={[null, this.placeUrl()]}
-                  texts={[this.props.happenedAt, generateFullName(this.props.place.names) || this.props.place?.description]} />
+                  texts={[this.props.happenedAt, generateFullName(this.props.place?.names) || this.props.place?.description]} />
                {this.props.date && <Chip
                   wrapperClassName='right'
                   className={this.classNameForYearDate()}
