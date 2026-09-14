@@ -637,8 +637,6 @@ class Event < ApplicationRecord
                        SELECT DISTINCT ON(memoes.id)
                               memoes.id AS id,
                               memoes.year_date AS year_date,
-                              jsonb_object_agg(DISTINCT COALESCE(memo_slugs.text, 'Null'),
-                                                        order_titles_memoes.text) AS orders,
                               memo_titles.text AS title
                          FROM memoes
                          JOIN calendaries
@@ -813,17 +811,19 @@ class Event < ApplicationRecord
    end
 
    scope :with_orders, -> context do
-      language_codes = [ context[:text_languages] ].flatten
-      cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = context[:as] || model.reflections[rela]&.name || rela
+      cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __orders AS (
-                       SELECT DISTINCT ON(memo_slugs.text)
-                              COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
-                              order_titles_memoes.text AS name
-                         FROM memories AS orders
+                       SELECT DISTINCT ON(#{this}_memo_slugs.text)
+                              COALESCE(#{this}_memo_slugs.text, '') AS slug,
+                              #{this}_#{as}_short_names.text AS title,
+                              #{this}_#{as}_tweets.text AS tweet
+                         FROM memories AS #{this}_orders
               LEFT OUTER JOIN event_roles AS #{this}_#{as}_event_roles
                            ON #{this}.id = #{this}_#{as}_event_roles.event_id
               LEFT OUTER JOIN memoes
@@ -836,18 +836,24 @@ class Event < ApplicationRecord
                               #{cslugs_rule}
               LEFT OUTER JOIN memo_orders
                            ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN slugs AS memo_slugs
-                           ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Memory'
-              LEFT OUTER JOIN descriptions AS order_titles_memoes
-                           ON order_titles_memoes.describable_id = orders.id
-                          AND order_titles_memoes.describable_type = 'Memory'
-                          AND order_titles_memoes.type IN ('Tweet')
-                          AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
-                        WHERE orders.id = memo_orders.order_id
-                          AND orders.type = 'Order'
-                          AND calendaries.licit = 't'
-                     GROUP BY order_titles_memoes.text, memo_slugs.text)
+              LEFT OUTER JOIN slugs AS #{this}_memo_slugs
+                           ON #{this}_memo_slugs.sluggable_id = #{this}_orders.id
+                          AND #{this}_memo_slugs.sluggable_type = 'Memory'
+              LEFT OUTER JOIN short_names AS #{this}_#{as}_short_names
+                           ON #{this}_#{as}_short_names.memory_id = #{this}_orders.id
+                          AND #{this}_#{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN descriptions AS #{this}_#{as}_tweets
+                           ON #{this}_#{as}_tweets.describable_id = #{this}_orders.id
+                          AND #{this}_#{as}_tweets.describable_type = 'Memory'
+                          AND #{this}_#{as}_tweets.type IN ('Tweet')
+                          AND #{this}_#{as}_tweets.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                        WHERE #{this}_orders.id = memo_orders.order_id
+                          AND #{this}_orders.type = 'Order'
+                     GROUP BY #{this}_memo_slugs.text,
+                              #{this}_#{as}_short_names.text,
+                              #{this}_#{as}_tweets.text)
                        SELECT jsonb_agg(__orders)
                          FROM __orders), '[]'::jsonb) AS _orders"
 
@@ -898,8 +904,8 @@ class Event < ApplicationRecord
       this = table.table_alias || table.name
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = context[:as] || model.reflections[rela]&.name || rela
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       ch_cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       list = Event::USUAL.map.with_index {|x, i| "('#{x}', #{i})" }
@@ -942,12 +948,13 @@ class Event < ApplicationRecord
                               #{this}_usual_order_table.order_no AS usual_event_code,
                               #{this}_child_roundels.url AS roundel_url,
                               #{this}_children_short_names.text AS short_name,
-                              children_order_tweets.text AS order_tweet,
-                              #{this}_children_order_short_names.text AS order_short_name,
-                              #{this}_children_order_titles.text AS order_title,
                               #{this}_children_titles.text AS title,
                               #{this}_children_memories.base_year AS base_year,
                               #{this}_children_events.happened_at AS happened_at,
+                              json_build_array(jsonb_build_object(
+                                 'slug', COALESCE(#{this}_children_order_slug.text, ''),
+                                 'title', COALESCE(#{this}_children_order_short_names.text, ''),
+                                 'tweet', COALESCE(children_order_tweets.text, ''))) AS orders,
                               #{this}_children_notes.text AS note,
                               json_agg(distinct #{this}_calendary_slugs.text) AS calendary_slugs
                          FROM memoes AS children
@@ -993,12 +1000,9 @@ class Event < ApplicationRecord
                           AND children_order_tweets.type = 'Tweet'
                           AND children_order_tweets.language_code IN ('#{language_codes.join("', '")}')
                           AND children_order_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-              LEFT OUTER JOIN descriptions AS #{this}_children_order_titles
-                           ON #{this}_children_order_titles.describable_id = #{this}_children_orders.id
-                          AND #{this}_children_order_titles.describable_type = 'Memory'
-                          AND #{this}_children_order_titles.type = 'Note'
-                          AND #{this}_children_order_titles.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_children_order_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN slugs AS #{this}_children_order_slug
+                           ON #{this}_children_order_slug.sluggable_id = #{this}_children_orders.id
+                          AND #{this}_children_order_slug.sluggable_type = 'Memory'
               LEFT OUTER JOIN LATERAL (
                        SELECT #{this}_child_roundels.url AS url,
                               #{this}_child_roundels.roundelable_id AS id,
@@ -1026,12 +1030,12 @@ class Event < ApplicationRecord
                               #{this}_usual_order_table.order_no,
                               #{this}_children_memories.base_year,
                               #{this}_children_events.happened_at,
+                              #{this}_children_order_slug.text,
+                              #{this}_children_order_short_names.text,
+                              children_order_tweets.text,
                               children.id,
                               roundel_url,
                               short_name,
-                              order_tweet,
-                              order_title,
-                              order_short_name,
                               title,
                               note
                      ORDER BY #{this}_usual_order_table.order_no, base_year, #{this}_children_slugs.text

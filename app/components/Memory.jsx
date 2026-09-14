@@ -27,6 +27,7 @@ export default class Memory extends Component {
       scripta: [],
       coverings: [],
       audios: [],
+      orders: [],
       selectedCalendaries: [],
       defaultCalendarySlug: null,
       specifiedCalendarySlug: null,
@@ -51,7 +52,6 @@ export default class Memory extends Component {
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
          let cal = Memory.calculateDefaultCalendarySlug(props),
-             order = Memory.getOrder(props),
              describedMemoes = Memory.getDescribedMemoes(props),
              selectedScripta = Memory.selectScripta(props),
              sortedScripta = Memory.sortedScripta(selectedScripta)
@@ -60,7 +60,6 @@ export default class Memory extends Component {
             prevProps: props,
             playingAudioUrl: null,
             defaultCalendarySlug: cal,
-            order: order,
             title: Memory.getCalendaryTitle(props, cal),
             msDate: Memory.getMsDate(props),
             klugs: Memory.collectKlugs(props),
@@ -74,9 +73,9 @@ export default class Memory extends Component {
             happenedAt: Memory.getHappenedAt(props),
             childrenMemoes: Memory.collectedChildren(props),
             childrenTotal: Memory.collectedChildrenTotals(props), //props.children_total
-            tagKeywords: Memory.getKeywords(props.short_name, order, props.names, describedMemoes),
-            tagTitle: Memory.getTitle(props.short_name, order, describedMemoes),
-            tagDescription: Memory.getDescription(props.short_name, order, describedMemoes, sortedScripta),
+            tagKeywords: Memory.getKeywords(props.short_name, props.orders, props.names, describedMemoes),
+            tagTitle: Memory.getTitle(props.short_name, props.orders, describedMemoes),
+            tagDescription: Memory.getDescription(props.short_name, props.orders, describedMemoes, sortedScripta),
          }
       }
 
@@ -101,11 +100,7 @@ export default class Memory extends Component {
    }
 
    static collectKlugs(props) {
-      return props.events.map((e) => {
-         return e.memoes.map((m) => {
-            return Object.keys(m.orders)
-         })
-      }).flat().concat([ props.slug ]).compact().uniq()
+      props.orders.map(x => x.slug).concat([ props.slug ]).compact().uniq()
    }
 
    static selectScripta(props) {
@@ -179,16 +174,6 @@ export default class Memory extends Component {
       let re = new RegExp('https?://([^/]+)')
       let match = link.url.match(re)
       return match[1]
-   }
-
-   static getOrder(props) {
-      return props.events.reduce((order, e) => {
-         return Object.values(e.memoes).reduce((order, m) => {
-            return Object.values(m.orders).reduce((_order, o) => {
-               return _order || o
-            }, order)
-         }, order)
-      }, null)
    }
 
    static getHappenedAt(props) {
@@ -266,9 +251,9 @@ export default class Memory extends Component {
       })
    }
 
-   static getKeywords(shortName, order, names, describedMemoes) {
+   static getKeywords(shortName, orders, names, describedMemoes) {
       let array = [
-         order,
+         orders.map(x => x.title),
          shortName,
          names.map(x => x.name_text),
          describedMemoes.map(x => x.title)
@@ -277,9 +262,9 @@ export default class Memory extends Component {
       return array.join(", ").slice(0, 255)
    }
 
-   static getTitle(shortName, order, describedMemoes) {
+   static getTitle(shortName, orders, describedMemoes) {
       let array = [
-         order,
+         orders.map(x => x.title),
          shortName,
          describedMemoes.map(x => x.title)
       ].flat().uniq()
@@ -287,15 +272,19 @@ export default class Memory extends Component {
       return array.join(" ").slice(0, 255)
    }
 
-   static getDescription(shortName, order, describedMemoes, sortedScripta) {
+   static getDescription(shortName, orders, describedMemoes, sortedScripta) {
       let array = [
-         order,
+         orders.map(x => x.title),
          shortName,
          describedMemoes.map(x => x.description),
          sortedScripta.map(x => x.text)
       ].flat().uniq()
 
       return array.join(" ").slice(0, 255)
+   }
+
+   static generateUrl(slug, hait) {
+      return '/' + slug + '/' + (hait?.event_id || "")
    }
 
    constructor(props) {
@@ -353,11 +342,12 @@ export default class Memory extends Component {
          <div className='row memory'>
             <div className={'col' + this.getInfoClass()}>
                <div className='row'>
-                  {this.state.order &&
-                     <Chip
-                        className='order'
-                        color={this.getSlugColor(this.state.order)}
-                        text={this.state.order} />}
+                  {this.props.orders.map((order) => <Chip
+                     className='order'
+                     url={Memory.generateUrl(order['slug'])}
+                     color={this.getSlugColor(order['slug'])}
+                     tooltip={order['title']}
+                     text={order['tweet']} />)}
                   <Name
                      short_name={this.props.short_name}
                      defaultNameInCalendary={this.state.title}

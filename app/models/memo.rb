@@ -500,34 +500,53 @@ class Memo < ApplicationRecord
    end
 
    scope :with_orders, -> context do
-      join_name = table.table_alias || table.name
+      this = table.table_alias || table.name
       language_codes = context[:language] ? [context[:language]] : context[:text_languages]
       alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
-      /`(?<scope_name>[^']*)'/ =~ caller.grep(/delegation/)[1]
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
-      selector =
-         "COALESCE(jsonb_object_agg(
-          DISTINCT COALESCE(slugs_#{scope_name}.text, ''), titles_#{scope_name}.text)
-            FILTER (
-             WHERE titles_#{scope_name}.id IS NOT NULL), '{}')
-                AS _orders"
-      join =
-         "LEFT OUTER JOIN memo_orders AS memo_orders_#{scope_name}
-                       ON memo_orders_#{scope_name}.memo_id = #{join_name}.id
-          LEFT OUTER JOIN memories AS orders_#{scope_name}
-                       ON orders_#{scope_name}.id = memo_orders_#{scope_name}.order_id
-                      AND orders_#{scope_name}.type = 'Order'
-          LEFT OUTER JOIN slugs AS slugs_#{scope_name}
-                       ON slugs_#{scope_name}.sluggable_type = 'Memory'
-                      AND slugs_#{scope_name}.sluggable_id = orders_#{scope_name}.id
-          LEFT OUTER JOIN descriptions AS titles_#{scope_name}
-                       ON titles_#{scope_name}.describable_type = 'Memory'
-                      AND titles_#{scope_name}.describable_id = orders_#{scope_name}.id
-                      AND titles_#{scope_name}.type = 'Tweet'
-                      AND titles_#{scope_name}.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-                      AND titles_#{scope_name}.language_code IN ('#{language_codes.join("', '")}')"
+      selector = "COALESCE((WITH __orders AS (
+                       SELECT DISTINCT ON(#{this}_memo_slugs.text)
+                              COALESCE(#{this}_memo_slugs.text, '') AS slug,
+                              #{this}_#{as}_short_names.text AS title,
+                              #{this}_#{as}_tweets.text AS tweet
+                         FROM memories AS #{this}_orders
+              LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                           ON #{this}_orders.id = #{this}_event_roles.memory_id
+              LEFT OUTER JOIN memoes AS #{this}_memoes
+                           ON #{this}_event_roles.id = #{this}_memoes.event_role_id
+                          AND #{this}_memoes.id = #{this}.id
+              LEFT OUTER JOIN calendaries AS #{this}_calendaries
+                           ON #{this}_calendaries.id = #{this}_memoes.calendary_id
+              LEFT OUTER JOIN slugs AS #{this}_calendary_slugs
+                           ON #{this}_calendary_slugs.sluggable_id = #{this}_calendaries.id
+                          AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
+                              #{cslugs_rule}
+              LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
+                           ON #{this}_memo_orders.memo_id = #{this}.id
+              LEFT OUTER JOIN slugs AS #{this}_memo_slugs
+                           ON #{this}_memo_slugs.sluggable_id = #{this}_orders.id
+                          AND #{this}_memo_slugs.sluggable_type = 'Memory'
+              LEFT OUTER JOIN short_names AS #{this}_#{as}_short_names
+                           ON #{this}_#{as}_short_names.memory_id = #{this}_orders.id
+                          AND #{this}_#{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN descriptions AS #{this}_#{as}_tweets
+                           ON #{this}_#{as}_tweets.describable_id = #{this}_orders.id
+                          AND #{this}_#{as}_tweets.describable_type = 'Memory'
+                          AND #{this}_#{as}_tweets.type IN ('Tweet')
+                          AND #{this}_#{as}_tweets.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                        WHERE #{this}_orders.id = #{this}_memo_orders.order_id
+                          AND #{this}_orders.type = 'Order'
+                     GROUP BY #{this}_memo_slugs.text, #{this}_#{as}_short_names.text, #{this}_#{as}_tweets.text)
+                       SELECT jsonb_agg(__orders)
+                         FROM __orders), '[]'::jsonb) AS _orders"
 
-      joins(join).select(selector)
+      #binding.pry
+      select(selector).group(:id)
    end
 
    scope :with_slug, -> do

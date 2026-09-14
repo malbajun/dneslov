@@ -24,7 +24,7 @@ const priorities = [
    }
 ]
 
-export const generateFullName = (namesIn, klugs = []) => {
+export const generateFullName = (namesIn = [], klugs = []) => {
    console.debug("[generateFullName] <<< ", namesIn, klugs)
    let names = namesIn.sort((a, b) => { return a.level < b.level }),
        fullName = [

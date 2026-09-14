@@ -500,23 +500,21 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
       as = context[:as] || model.reflections[rela]&.name || rela
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages] || context[:language]].flatten
-      alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+
       cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       list = Event::USUAL.map.with_index {|x, i| "('#{x}', #{i})" }
 
       selector = "#{this}.*,
                   #{this}_#{as}_slugs.text AS _slug,
-                  #{this}_events.id AS event_id,
+                  #{this}_#{as}_events.id AS event_id,
                   #{this}_usual_order_table.order_no AS usual_event_code,
                   #{this}_roundels.url AS _roundel_url,
-                  #{this}_order_tweets.text AS _order_tweet,
-                  #{this}_short_names.text AS _short_name,
-                  #{this}_order_short_names.text AS _order_short_name,
-                  #{this}_order_titles.text AS _order_title,
+                  #{this}_#{as}_short_names.text AS _short_name,
                   #{this}_#{as}_titles.text AS _title,
-                  #{this}_events.happened_at AS _happened_at,
-                  #{this}_notes.text AS _note,
+                  #{this}_#{as}_events.happened_at AS _happened_at,
+                  #{this}_#{as}_notes.text AS _note,
                   json_agg(distinct #{this}_calendary_slugs.text) AS _calendary_slugs"
 
       if context[:id]
@@ -533,8 +531,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
       join =            "
                          JOIN event_roles AS #{this}_event_roles
                            ON #{this}.id = #{this}_event_roles.memory_id
-                         JOIN events AS #{this}_events
-                           ON #{this}_event_roles.event_id = #{this}_events.id
+                         JOIN events AS #{this}_#{as}_events
+                           ON #{this}_event_roles.event_id = #{this}_#{as}_events.id
                          JOIN memoes AS #{this}_memoes
                            ON #{this}_memoes.event_role_id = #{this}_event_roles.id
                          JOIN slugs AS #{this}_#{as}_slugs
@@ -546,39 +544,18 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                            ON #{this}_calendary_slugs.sluggable_id = #{this}_calendaries.id
                           AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
                               #{cslugs_rule} #{idsel}
-                         JOIN short_names AS #{this}_short_names
-                           ON #{this}.id = #{this}_short_names.memory_id
-                          AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                         JOIN short_names AS #{this}_#{as}_short_names
+                           ON #{this}.id = #{this}_#{as}_short_names.memory_id
+                          AND #{this}_#{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
               LEFT OUTER JOIN (VALUES #{list.join(", ")}) AS #{this}_usual_order_table (event_kind_code, order_no)
-                           ON #{this}_usual_order_table.event_kind_code = #{this}_events.kind_code
+                           ON #{this}_usual_order_table.event_kind_code = #{this}_#{as}_events.kind_code
               LEFT OUTER JOIN descriptions AS #{this}_#{as}_titles
                            ON #{this}_#{as}_titles.describable_id = #{this}_memoes.id
                           AND #{this}_#{as}_titles.describable_type = 'Memo'
                           AND #{this}_#{as}_titles.type = 'Title'
                           AND #{this}_#{as}_titles.language_code IN ('#{language_codes.join("', '")}')
                           AND #{this}_#{as}_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-              LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
-                           ON #{this}_memo_orders.memo_id = #{this}_memoes.id
-              LEFT OUTER JOIN memories AS #{this}_orders
-                           ON #{this}_orders.id = #{this}_memo_orders.order_id
-                          AND #{this}_orders.type = 'Order'
-              LEFT OUTER JOIN short_names AS #{this}_order_short_names
-                           ON #{this}_orders.id = #{this}_order_short_names.memory_id
-                          AND #{this}_order_short_names.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_order_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-              LEFT OUTER JOIN descriptions AS #{this}_order_titles
-                           ON #{this}_order_titles.describable_id = #{this}_orders.id
-                          AND #{this}_order_titles.describable_type = 'Memory'
-                          AND #{this}_order_titles.type = 'Note'
-                          AND #{this}_order_titles.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_order_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-              LEFT OUTER JOIN descriptions AS #{this}_order_tweets
-                           ON #{this}_order_tweets.describable_id = #{this}_orders.id
-                          AND #{this}_order_tweets.describable_type = 'Memory'
-                          AND #{this}_order_tweets.type = 'Tweet'
-                          AND #{this}_order_tweets.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_order_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
               LEFT OUTER JOIN LATERAL (
                        SELECT #{this}_roundels.url AS url,
                               #{this}_roundels.roundelable_id AS id,
@@ -587,32 +564,29 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                         WHERE #{this}_roundels.url IS NOT NULL
                           AND (#{this}_event_roles.memory_id = #{this}_roundels.roundelable_id
                           AND 'Memory' = #{this}_roundels.roundelable_type
-                           OR #{this}_events.id = #{this}_roundels.roundelable_id
+                           OR #{this}_#{as}_events.id = #{this}_roundels.roundelable_id
                           AND 'Event' = #{this}_roundels.roundelable_type)
                      ORDER BY random()
                         LIMIT 1) AS #{this}_roundels
                            ON #{this}_roundels.type IN ('Memory', 'Event')
-              LEFT OUTER JOIN descriptions AS #{this}_notes
-                           ON #{this}_notes.describable_id = #{this}_memoes.id
-                          AND #{this}_notes.describable_type = 'Memo'
-                          AND #{this}_notes.type = 'Note'
-                          AND #{this}_notes.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_notes.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+              LEFT OUTER JOIN descriptions AS #{this}_#{as}_notes
+                           ON #{this}_#{as}_notes.describable_id = #{this}_memoes.id
+                          AND #{this}_#{as}_notes.describable_type = 'Memo'
+                          AND #{this}_#{as}_notes.type = 'Note'
+                          AND #{this}_#{as}_notes.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_notes.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
 
       group_by = [
          :id,
          :base_year,
          "#{this}_#{as}_slugs.text",
-         "#{this}_events.id",
+         "#{this}_#{as}_events.id",
          "#{this}_usual_order_table.order_no",
          "#{this}_roundels.url",
-         "#{this}_order_tweets.text",
-         "#{this}_order_short_names.text",
-         "#{this}_short_names.text",
-         "#{this}_order_titles.text",
+         "#{this}_#{as}_short_names.text",
          "#{this}_#{as}_titles.text",
-         "#{this}_events.happened_at",
-         "#{this}_notes.text",
+         "#{this}_#{as}_events.happened_at",
+         "#{this}_#{as}_notes.text",
          "#{this}_calendary_slugs.text"
       ]
 
@@ -626,8 +600,8 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    # with memoes and children via memoes
    scope :with_memoes, -> context do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = context[:text_alphabeths] || Languageble.alphabeth_list_for( language_codes ).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
       cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       cslugs_rule2 = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
@@ -637,8 +611,6 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               memoes.year_date AS year_date,
                               #{this}_event_roles.event_kind_code AS kind_code,
                               memoes.happened_at AS happened_at,
-                              jsonb_object_agg(DISTINCT COALESCE(memo_slugs.text, 'Null'),
-                                                        order_titles_memoes.text) AS orders,
                COALESCE((WITH ___children AS (
                        SELECT DISTINCT ON(children_slugs.text)
                               children_slugs.text AS slug
@@ -668,12 +640,13 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                               #{this}_children_slugs.text AS slug,
                               #{this}_child_roundels.url AS roundel_url,
                               #{this}_children_short_names.text AS short_name,
-                              children_order_tweets.text AS order_tweet,
-                              #{this}_children_order_short_names.text AS order_short_name,
-                              #{this}_children_order_titles.text AS order_title,
                               #{this}_children_titles.text AS title,
                               #{this}_children_memories.base_year AS base_year,
                               #{this}_children_events.happened_at AS happened_at,
+                              json_build_array(jsonb_build_object(
+                                 'slug', COALESCE(#{this}_children_order_slug.text, ''),
+                                 'title', COALESCE(#{this}_children_order_short_names.text, ''),
+                                 'tweet', COALESCE(children_order_tweets.text, ''))) AS orders,
                               #{this}_children_notes.text AS note,
                               json_agg(distinct #{this}_calendary_slugs.text) AS calendary_slugs
                          FROM memoes AS children
@@ -717,12 +690,9 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                           AND children_order_tweets.type = 'Tweet'
                           AND children_order_tweets.language_code IN ('#{language_codes.join("', '")}')
                           AND children_order_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
-              LEFT OUTER JOIN descriptions AS #{this}_children_order_titles
-                           ON #{this}_children_order_titles.describable_id = #{this}_children_orders.id
-                          AND #{this}_children_order_titles.describable_type = 'Memory'
-                          AND #{this}_children_order_titles.type = 'Note'
-                          AND #{this}_children_order_titles.language_code IN ('#{language_codes.join("', '")}')
-                          AND #{this}_children_order_titles.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN slugs AS #{this}_children_order_slug
+                           ON #{this}_children_order_slug.sluggable_id = #{this}_children_orders.id
+                          AND #{this}_children_order_slug.sluggable_type = 'Memory'
               LEFT OUTER JOIN LATERAL (
                        SELECT #{this}_child_roundels.url AS url,
                               #{this}_child_roundels.roundelable_id AS id,
@@ -747,12 +717,12 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
                      GROUP BY #{this}_children_slugs.text,
                               #{this}_children_memories.base_year,
                               #{this}_children_events.happened_at,
+                              #{this}_children_order_slug.text,
+                              #{this}_children_order_short_names.text,
+                              children_order_tweets.text,
                               children.id,
                               roundel_url,
                               short_name,
-                              order_tweet,
-                              order_title,
-                              order_short_name,
                               title,
                               note
                      ORDER BY #{this}_children_slugs.text, base_year
@@ -826,8 +796,11 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
 
    scope :with_bond_memories, ->(context) do
       this = table.table_alias || table.name
-      language_codes = [context[:text_languages]].flatten
-      alphabeth_codes = Languageble.alphabeth_list_for( language_codes ).flatten
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = model.reflections[rela]&.name
+      cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = self.select_values.dup
       selector << "#{this}.*" if selector.empty?
@@ -972,39 +945,47 @@ with recursive t(level,path,id,name_id,bind_kind_name,bond_to_id,root_id,name_al
    end
 
    scope :with_orders, -> context do
-      language_codes = [ context[:text_languages] ].flatten
-      cslugs_rule = context[:calendary_slugs] ? "AND calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
       this = table.table_alias || table.name
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      /`(?<method>(?:with_(?<rela>\w+)|[^']*))'/ =~ caller.grep(/delegation/)[1]
+      as = context[:as] || model.reflections[rela]&.name || rela
+      cslugs_rule = context[:calendary_slugs] ? "AND #{this}_calendary_slugs.text IN ('#{context[:calendary_slugs].join("','")}')" : ""
 
       selector = "COALESCE((WITH __orders AS (
-                       SELECT DISTINCT ON(memo_slugs.text)
-                              COALESCE(memo_slugs.text, order_titles_memoes.text) AS slug,
-                              order_titles_memoes.text AS name
-                         FROM memories AS orders
+                       SELECT DISTINCT ON(#{this}_memo_slugs.text)
+                              COALESCE(#{this}_memo_slugs.text, '') AS slug,
+                              #{this}_#{as}_short_names.text AS title,
+                              #{this}_#{as}_tweets.text AS tweet
+                         FROM memories AS #{this}_orders
               LEFT OUTER JOIN event_roles AS #{this}_event_roles
                            ON #{this}.id = #{this}_event_roles.memory_id
-              LEFT OUTER JOIN memoes
-                           ON #{this}_event_roles.id = memoes.event_role_id
-              LEFT OUTER JOIN calendaries
-                           ON calendaries.id = memoes.calendary_id
-              LEFT OUTER JOIN slugs AS calendary_slugs
-                           ON calendary_slugs.sluggable_id = calendaries.id
-                          AND calendary_slugs.sluggable_type = 'Calendary'
+              LEFT OUTER JOIN memoes AS #{this}_memoes
+                           ON #{this}_event_roles.id = #{this}_memoes.event_role_id
+              LEFT OUTER JOIN calendaries AS #{this}_calendaries
+                           ON #{this}_calendaries.id = #{this}_memoes.calendary_id
+              LEFT OUTER JOIN slugs AS #{this}_calendary_slugs
+                           ON #{this}_calendary_slugs.sluggable_id = #{this}_calendaries.id
+                          AND #{this}_calendary_slugs.sluggable_type = 'Calendary'
                               #{cslugs_rule}
-              LEFT OUTER JOIN memo_orders
-                           ON memo_orders.memo_id = memoes.id
-              LEFT OUTER JOIN slugs AS memo_slugs
-                           ON memo_slugs.sluggable_id = orders.id
-                          AND memo_slugs.sluggable_type = 'Memory'
-              LEFT OUTER JOIN descriptions AS order_titles_memoes
-                           ON order_titles_memoes.describable_id = orders.id
-                          AND order_titles_memoes.describable_type = 'Memory'
-                          AND order_titles_memoes.type IN ('Tweet')
-                          AND order_titles_memoes.language_code IN ('#{language_codes.join("', '")}')
-                        WHERE orders.id = memo_orders.order_id
-                          AND orders.type = 'Order'
-                          AND calendaries.licit = 't'
-                     GROUP BY order_titles_memoes.text, memo_slugs.text)
+              LEFT OUTER JOIN memo_orders AS #{this}_memo_orders
+                           ON #{this}_memo_orders.memo_id = #{this}_memoes.id
+              LEFT OUTER JOIN slugs AS #{this}_memo_slugs
+                           ON #{this}_memo_slugs.sluggable_id = #{this}_orders.id
+                          AND #{this}_memo_slugs.sluggable_type = 'Memory'
+              LEFT OUTER JOIN short_names AS #{this}_#{as}_short_names
+                           ON #{this}_#{as}_short_names.memory_id = #{this}_orders.id
+                          AND #{this}_#{as}_short_names.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+              LEFT OUTER JOIN descriptions AS #{this}_#{as}_tweets
+                           ON #{this}_#{as}_tweets.describable_id = #{this}_orders.id
+                          AND #{this}_#{as}_tweets.describable_type = 'Memory'
+                          AND #{this}_#{as}_tweets.type IN ('Tweet')
+                          AND #{this}_#{as}_tweets.language_code IN ('#{language_codes.join("', '")}')
+                          AND #{this}_#{as}_tweets.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')
+                        WHERE #{this}_orders.id = #{this}_memo_orders.order_id
+                          AND #{this}_orders.type = 'Order'
+                     GROUP BY #{this}_memo_slugs.text, #{this}_#{as}_short_names.text, #{this}_#{as}_tweets.text)
                        SELECT jsonb_agg(__orders)
                          FROM __orders), '[]'::jsonb) AS _orders"
 

@@ -159,7 +159,7 @@ module CoreFeatures
 
    def set_memory
       @memorys ||=
-         %w(with_short_name with_scripta with_memoes with_names with_coverings
+         %w(with_short_name with_scripta with_memoes with_names with_coverings with_orders
             with_bond_memories with_icon with_title with_description with_slug_text).reduce(Memory.unscoped) do |q, method|
             q.respond_to?(method) ? q.send(method, context) : q
          end.with_pure_links
