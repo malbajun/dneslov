@@ -8,6 +8,7 @@ import CalendariesCloud from 'CalendariesCloud'
 import SearchField from 'SearchField'
 import SearchConditions from 'SearchConditions'
 import MemorySpans from 'MemorySpans'
+import Footer from 'Footer'
 import Memory from 'Memory'
 import Eventee from 'Eventee'
 import Resourcees from 'Resourcees'
@@ -585,6 +586,7 @@ export default class MemoriesForm extends Component {
                                  onLoadRequest={this.onMemoryLoadRequest.bind(this)}
                                  onFetchNext={this.onFetchNext.bind(this)}/></div>}</div></form></div></div></main>,
          <div className="progress">
-            <div className="indeterminate"></div></div> ])
+            <div className="indeterminate"></div></div>,
+         <Footer />])
    }
 }

@@ -15,6 +15,7 @@ import { homeMeta } from 'homeMeta'
 import { resourceMeta } from 'resourceMeta'
 import { tagMeta } from 'tagMeta'
 import { eventMeta } from 'eventMeta'
+import Footer from 'Footer'
 import Home from 'Home'
 import User from 'User'
 import Login from 'Login'
@@ -153,4 +154,7 @@ export default class Dashboard extends Component {
                                  service_languages={this.state.service_languages} />}
                            </div></div></div>}</div></main>,
          <div className="progress">
-            <div className="indeterminate"></div></div> ])}}
+            <div className="indeterminate"></div></div>,
+         <Footer />])
+   }
+}

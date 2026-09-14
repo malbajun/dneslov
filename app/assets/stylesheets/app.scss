@@ -1,6 +1,16 @@
 @import "defines";
 
 body {
+   // for footer
+   display: flex;
+   min-height: 100vh;
+   flex-direction: column;
+
+   main {
+      flex: 1 0 auto;
+   }
+
+   // header4
    h4 {
       padding: 0 1rem 0 1rem;
    }
