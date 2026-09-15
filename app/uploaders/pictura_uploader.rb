@@ -35,12 +35,10 @@ class PicturaUploader < CarrierWave::Uploader::Base
       end
    end
 
-   def thumbnail(width, height)
-      width_in = dimension_from(width)
-      height_in = dimension_from(height)
+   def thumbnail width, height
       ratio = self.width.to_f / self.height
       ratio_in = width.to_f / height
-      width, height = ratio < ratio_in ? [width_in, height_in / ratio] : [width_in / ratio, height_in]
+      width, height = ratio > ratio_in ? [width, ratio_in / ratio * height] : [width, ratio / ratio_in * height]
       geom = "#{width.to_i}x#{height.to_i}"
 
       manipulate! do |img|

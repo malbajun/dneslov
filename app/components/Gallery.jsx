@@ -50,8 +50,6 @@ export default class Gallery extends Component {
 
    static getDerivedStateFromProps(props, state) {
       if (props !== state.prevProps) {
-         let titles = Gallery.collectTitles(props)
-
          return {
             prevProps: props,
             images: [],
@@ -63,8 +61,8 @@ export default class Gallery extends Component {
             images: [],
             isNextRequesting: false,
             url: props.url || Gallery.generateUrl(props),
-            tagKeywords: Gallery.getKeywords(props.gallery_title, titles),
-            tagTitle: Gallery.getTitle(props.gallery_title, titles),
+            tagKeywords: Gallery.getKeywords(props.gallery_title, props.title),
+            tagTitle: Gallery.getTitle(props.gallery_title, props.title),
          }
       }
 
@@ -77,28 +75,28 @@ export default class Gallery extends Component {
       return '/' + [props.slug, props.event_id, 'gallery.json'].compact().join('/')
    }
 
-   static getKeywords(shortName, titles) {
+   static getKeywords(shortName, title) {
       let re = RegExp("[\\s,]+", "i"),
           array = [
-         shortName,
-         titles.map((x) => x.split(re))
-      ].flat().compact().uniq()
+             shortName,
+             title
+          ].compact().uniq()
 
       return array.join(", ").slice(0, 255)
    }
 
-   static getTitle(shortName, titles) {
+   static getTitle(shortName, title) {
       let array = [
          shortName,
-         titles
-      ].flat().uniq()
+         title
+      ].uniq()
 
       return array.join(" ").slice(0, 255)
    }
 
    static collectTitles(props) {
       return props.images.reduce((res, x) => {
-         return res.concat(x.titles.map(y => y.text))
+         return res.concat([x.title])
       }, [])
    }
 
@@ -181,12 +179,11 @@ export default class Gallery extends Component {
       })
    }
 
-   onImageClick(uid, imageUrl) {
-      console.log("[onImageClick] * getting...", uid, imageUrl)
-      let url = "/gallery/" + uid
-      console.log("[onImageClick] * getting...", url)
+   onImageClick(uid, imageUrl, ext) {
+      console.debug("[onImageClick] <<<", uid, imageUrl, ext)
+      let url = "/gallery/" + uid, target = ext ? "_blank" : "_self"
 
-      window.open(url, "_self")
+      window.open(url, target)
    }
 
    onImageErrored(_i, uid) {
@@ -254,7 +251,7 @@ export default class Gallery extends Component {
                         uid={picture.uid}
                         wrapperClassName='icon'
                         src={picture.thumb_url}
-                        alt={picture.titles[0]?.text}
+                        tooltip={picture.title}
                         onClick={this.onImageClick}/></div>)}
                </StackGrid>
                   </div>
@@ -267,7 +264,7 @@ export default class Gallery extends Component {
                      slug={this.props.slug}
                      event_id={this.props.event_id}
                      thumb={picture.thumb_url}
-                     title={picture.titles[0]?.text}
+                     title={picture.title}
                      index={index} /></div>)}
                <div
                   className={"loader" + this.getClassName()}>
@@ -275,7 +272,6 @@ export default class Gallery extends Component {
                   excludeElement='header'
                   total={this.state.totalImages}
                   loadedTotal={this.state.fetchedImages}
-                  fetchFunc={this.fetchNext} /></div>
- </div>]
+                  fetchFunc={this.fetchNext} /></div></div>]
    }
 }

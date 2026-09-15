@@ -81,7 +81,7 @@ class GalleryController < ApplicationController
    end
 
    def objects
-      @images ||= attituded.all_pictures.with_titles(context)
+      @images ||= attituded.all_pictures.with_title(context)
    end
 
    def set_image
