@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_06_11_150506) do
+ActiveRecord::Schema[7.0].define(version: 2026_09_16_114538) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "plpgsql"
@@ -136,15 +136,6 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_11_150506) do
     t.index ["type"], name: "index_event_roles_on_type"
   end
 
-  create_table "event_scripta", force: :cascade do |t|
-    t.bigint "event_id", comment: "квѧзка до сꙛбытя"
-    t.bigint "scriptum_id", comment: "квѧзка до буке"
-    t.string "kind", comment: "Тип свѧзке от, к, или авторство"
-    t.index ["event_id", "scriptum_id"], name: "event_scripta_on_event_id_and_scriptum_id", unique: true
-    t.index ["event_id"], name: "index_event_scripta_on_event_id"
-    t.index ["scriptum_id"], name: "index_event_scripta_on_scriptum_id"
-  end
-
   create_table "events", id: :serial, force: :cascade do |t|
     t.string "happened_at"
     t.string "kind_code", null: false
@@ -168,6 +159,18 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_11_150506) do
     t.index ["place_id"], name: "index_events_on_place_id"
     t.index ["tezo_string"], name: "index_events_on_tezo_string"
     t.index ["type_number"], name: "index_events_on_type_number"
+  end
+
+  create_table "hymnable_scripta", force: :cascade do |t|
+    t.bigint "hymnable_id", null: false, comment: "квѧзка до памѧти або событијне роли"
+    t.bigint "scriptum_id", comment: "квѧзка до буке"
+    t.string "kind", comment: "Тип свѧзке от, к, или авторство"
+    t.string "hymnable_type", default: "EventRole", null: false
+    t.index ["hymnable_id", "hymnable_type", "scriptum_id"], name: "hymnable_scripta_on_hymnable_and_scriptum_id", unique: true
+    t.index ["hymnable_id", "hymnable_type"], name: "index_hymnable_scripta_on_hymnable_id_and_hymnable_type"
+    t.index ["hymnable_id"], name: "index_hymnable_scripta_on_hymnable_id"
+    t.index ["hymnable_type"], name: "index_hymnable_scripta_on_hymnable_type"
+    t.index ["scriptum_id"], name: "index_hymnable_scripta_on_scriptum_id"
   end
 
   create_table "image_attitudes", force: :cascade do |t|
@@ -661,9 +664,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_06_11_150506) do
   add_foreign_key "event_roles", "events", on_delete: :cascade
   add_foreign_key "event_roles", "memories", on_delete: :cascade
   add_foreign_key "event_roles", "places", on_delete: :restrict
-  add_foreign_key "event_scripta", "events", on_delete: :cascade
-  add_foreign_key "event_scripta", "scripta", on_delete: :cascade
   add_foreign_key "events", "memories", column: "place_id", on_delete: :cascade
+  add_foreign_key "hymnable_scripta", "scripta", on_delete: :cascade
   add_foreign_key "image_attitudes", "pictures", on_delete: :cascade
   add_foreign_key "links", "resources", on_delete: :cascade
   add_foreign_key "markups", "readings", on_delete: :cascade

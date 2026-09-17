@@ -10,7 +10,10 @@ FactoryBot.define do
       end
 
       after(:build) do |s, e|
-         s.appellations = build_list(:appellation, 1, text: e.appellation, language_code: e.la[0..1], alphabeth_code: e.la[3..4]) if e.appellation
+         if e.appellation
+            l,a = Languageble.la_for_string(e.appellation, e.la[0..1], e.la[3..4])
+            s.appellations = build_list(:appellation, 1, text: e.appellation, language_code: l, alphabeth_code: a)
+         end
       end
    end
 

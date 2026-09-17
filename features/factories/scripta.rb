@@ -8,8 +8,12 @@ FactoryBot.define do
       description { Faker::Lorem.sentence }
       ref_title { Faker::Lorem.word }
 
+      transient do
+         hymnable_short_name { nil }
+      end
+
       after(:build) do |o, e|
-         o.memo_scripta << build(:memo_scriptum, scriptum: o)
+         o.hymnable_scripta << build(:hymnable_scriptum, scriptum: o, memory_short_name: e.hymnable_short_name)
       end
    end
 
