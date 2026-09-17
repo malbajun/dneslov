@@ -17,18 +17,42 @@ class Scriptum < ActiveRecord::Base
    belongs_to :bond_to, primary_key: :id, foreign_key: :bond_to_id, class_name: :Scriptum
    belongs_to :root, primary_key: :id, foreign_key: :root_id, class_name: :Scriptum
 
-   has_many :memo_scripta, inverse_of: :scriptum, dependent: :destroy
-   has_many :target_events, inverse_of: :scriptum, dependent: :destroy, class_name: :EventScriptum
+ # has_many :memo_scripta, inverse_of: :scriptum, dependent: :destroy move from Scriptum to hymnable_scripta
+   has_many :hymnable_scripta, inverse_of: :scriptum, dependent: :destroy
    has_many :memoes, through: :memo_scripta
-   has_many :events, through: :target_events
+   has_many :event_roles, -> { where(hymnable_type: "EventRole") }, through: :hymnable_scripta, source: :hymnable
+   has_many :events, through: :event_roles
    has_many :target, through: :memo_scripta, foreign_key: :event_id, source: :event
 
    scope :by_id, -> id { where(id: id.to_s.strip) }
    scope :by_title, -> title { where(title: title.strip) }
-   scope :by_token, -> text do
+   scope :by_token, -> text, context do
       this = table.table_alias || table.name
-      where("unaccent(#{this}.description) ~* unaccent(?)", "\\m#{text}.*").or(
-      where("unaccent(#{this}.text) ~* unaccent(?)", "\\m#{text}.*"))
+      language_codes = context[:language] ? [context[:language]] : context[:text_languages]
+      alphabeth_codes = context[:alphabeth] ? [context[:alphabeth]] : context[:text_alphabeths] || Languageble.alphabeth_list_for(language_codes)
+      join = "
+             LEFT OUTER JOIN hymnable_scripta AS #{this}_hymnable_scripta
+                          ON #{this}_hymnable_scripta.scriptum_id = #{this}.id
+             LEFT OUTER JOIN memories AS #{this}_memories
+                          ON #{this}_memories.id = #{this}_hymnable_scripta.hymnable_id
+                         AND 'Memory' = #{this}_hymnable_scripta.hymnable_type
+             LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                          ON #{this}_event_roles.id = #{this}_hymnable_scripta.hymnable_id
+                         AND 'EventRole' = #{this}_hymnable_scripta.hymnable_type
+                        JOIN short_names AS #{this}_short_names
+                          ON (#{this}_short_names.memory_id = #{this}_event_roles.memory_id 
+                          OR #{this}_short_names.memory_id = #{this}_memories.id)
+                         AND #{this}_short_names.language_code IN ('#{language_codes.join("', '")}')
+                         AND #{this}_short_names.alphabeth_code IN ('#{alphabeth_codes.join("', '")}')"
+
+      left_outer_joins(:descriptions).joins(join).
+         where("unaccent(descriptions.text) ~* ?", "\\m#{text}.*").or(
+         where("unaccent(#{this}.title) ~* ?", "\\m#{text}.*").or(
+         where("unaccent(#{this}.author) ~* ?", "\\m#{text}.*").or(
+         where("unaccent(#{this}.text) ~* ?", "\\m#{text}.*").or(
+         where("unaccent(#{this}_short_names.text) ~* ?", "\\m#{text}.*"))))).
+         group("#{this}_short_names.id").
+         distinct_by("#{this}_short_names.id")
    end
    singleton_class.send(:alias_method, :by_query, :by_token)
 
@@ -161,19 +185,26 @@ class Scriptum < ActiveRecord::Base
 
       selector = "COALESCE((
                         WITH __target_events AS (
-                      SELECT event_scripta.id AS id,
-                             event_scripta.kind AS kind,
+                      SELECT hymnable_scripta.id AS id,
+                             hymnable_scripta.kind AS kind,
+                             #{this}_event_roles.id AS event_role_id,
                              #{this}_events.id AS event_id,
                              #{this}_short_names.text || ' (' ||
                              COALESCE(#{this}_event_titles.text, '') || ':' ||
                              #{this}_events.happened_at || ')' AS event_title
-                        FROM event_scripta
-             LEFT OUTER JOIN events AS #{this}_events
-                          ON #{this}_events.id = event_scripta.event_id
-                        JOIN subjects AS #{this}_event_kinds
+                        FROM hymnable_scripta
+             LEFT OUTER JOIN memories AS #{this}_memories
+                          ON #{this}_memories.id = hymnable_scripta.hymnable_id
+                         AND 'Memory' = hymnable_scripta.hymnable_type
+             LEFT OUTER JOIN event_roles AS #{this}_event_roles
+                          ON #{this}_event_roles.id = hymnable_scripta.hymnable_id
+                         AND 'EventRole' = hymnable_scripta.hymnable_type
+                        JOIN events AS #{this}_events
+                          ON #{this}_event_roles.event_id = #{this}_events.id
+             LEFT OUTER JOIN subjects AS #{this}_event_kinds
                           ON #{this}_event_kinds.key = #{this}_events.kind_code
                          AND #{this}_event_kinds.kind_code = 'EventKind'
-                        JOIN descriptions AS #{this}_event_titles
+             LEFT OUTER JOIN descriptions AS #{this}_event_titles
                           ON #{this}_event_titles.id IS NOT NULL
                          AND (#{this}_event_titles.describable_id = #{this}_events.id
                          AND #{this}_event_titles.describable_type = 'Event'
@@ -182,14 +213,20 @@ class Scriptum < ActiveRecord::Base
                          AND #{this}_event_titles.describable_type = 'Subject'
                          AND #{this}_event_titles.type = 'Appellation')
                              #{lang_wheres&.[](0)} #{alph_wheres&.[](0)}
-                        JOIN event_roles AS #{this}_event_roles
-                          ON #{this}_events.id = #{this}_event_roles.event_id
-             LEFT OUTER JOIN short_names AS #{this}_short_names
-                          ON #{this}_short_names.memory_id = #{this}_event_roles.memory_id
+                        JOIN short_names AS #{this}_short_names
+                          ON (#{this}_short_names.memory_id = #{this}_event_roles.memory_id 
+                          OR #{this}_short_names.memory_id = #{this}_memories.id)
+
                              #{lang_wheres&.[](1)} #{alph_wheres&.[](1)}
 
-                       WHERE event_scripta.scriptum_id = #{this}.id
-                    GROUP BY event_scripta.id, #{this}_short_names.text, #{this}_events.id, event_scripta.kind, #{this}_events.happened_at, #{this}_event_titles.text)
+                       WHERE hymnable_scripta.scriptum_id = #{this}.id
+                    GROUP BY hymnable_scripta.id,
+                             #{this}_short_names.text,
+                             #{this}_events.id,
+                             #{this}_event_roles.id,
+                             hymnable_scripta.kind,
+                             #{this}_events.happened_at,
+                             #{this}_event_titles.text)
                       SELECT jsonb_agg(__target_events)
                         FROM __target_events), '[]'::jsonb) AS _target_events"
 
@@ -198,22 +235,17 @@ class Scriptum < ActiveRecord::Base
 
    has_alphabeth on: %i(text title), novalidate: true
 
-   validates_presence_of :type, :title, :bind_kind_name
+   validates_presence_of :type, :title, :bind_kind_name, :text
    validates_presence_of :bond_to_id, if: :bond?
    validates_absence_of :bond_to_id, unless: :bond?
 
    before_validation -> { self.bind_kind_name ||= 'несвязана' }, on: :create
    before_validation :generate_title, unless: :bond?
-   after_save :fill_root_id, unless: :root_id?
 
-   accepts_nested_attributes_for :target_events, reject_if: :all_blank, allow_destroy: true
+   # accepts_nested_attributes_for :target_events, reject_if: :all_blank, allow_destroy: true
 
    def bond?
       bind_kind_name != 'несвязана'
-   end
-
-   def fill_root_id
-      self.update_attribute(:root_id, self.bond_to&.root_id || self.id)
    end
 
    def generate_title
@@ -222,7 +254,7 @@ class Scriptum < ActiveRecord::Base
          (3..tokina.size).to_a.reduce(nil) do |res, sz|
             next res if res
 
-            pretitle = tokina[0...sz].join(" ").sub(/[:;,._!\/-]$/, '')
+            pretitle = tokina[0...sz].select {|x| x.size > 2}.join(" ").sub(/[:;,._!\/-]$/, '')
 
             !Scriptum.where(title: pretitle).first&.text && pretitle
          end || self.text

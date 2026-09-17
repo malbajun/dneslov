@@ -20,6 +20,7 @@ class Memory < ApplicationRecord
    has_many :paterics, as: :info, dependent: :destroy, class_name: :PatericLink
    has_many :event_roles, inverse_of: :memory, class_name: :EventRole, dependent: :delete_all
    has_many :events, through: :event_roles, class_name: :Event
+   has_many :hymnable_scripta, as: :hymnable, dependent: :destroy
    has_many :memoes, through: :events, class_name: :Memo
    has_many :service_scripta, through: :services
    has_many :scripta, through: :service_scripta

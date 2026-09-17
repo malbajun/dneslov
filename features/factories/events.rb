@@ -16,7 +16,7 @@ FactoryBot.define do
       end
 
       after(:build) do |o, e|
-         o.kind = e.kind || association(:event_kind) unless o.kind_code
+         o.kind = e.kind || build(:event_kind) unless o.kind_code
          o.item = find_build(:item, id: e.item_id) if e.item_id
          o.place =
             if e.place_short_name

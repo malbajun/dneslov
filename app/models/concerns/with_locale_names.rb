@@ -46,7 +46,7 @@ module WithLocaleNames
             selector = self.select_values.dup
             selector << "#{this}.*" if selector.empty?
 
-            selector.concat [ "language_names.text AS _language", "alphabeth_names.text AS _alphabeth" ]
+            selector.concat [ "COALESCE(language_names.text, '') AS _language", "COALESCE(alphabeth_names.text, '') AS _alphabeth" ]
 
             if language_codes.any?
                lang_wheres = "AND language_names.language_code IN ('#{language_codes.join("', '")}')"

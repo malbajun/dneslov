@@ -1,0 +1,22 @@
+---
+types:
+ - name: hymnable_scriptee
+   model: HymnableScriptum
+   version: 0.1
+   fields:
+    - name: id
+      kind: integer
+      readonly: true
+      descriptions: :tiun.types.hymnable_scriptee.id
+    - name: kind
+      kind: string
+      descriptions: :tiun.types.hymnable_scriptee.kind
+    - name: event_role_id
+      kind: string
+      descriptions: :tiun.types.hymnable_scriptee.event_role_id
+    - name: event_id
+      kind: string
+      descriptions: :tiun.types.hymnable_scriptee.event_id
+    - name: event_title
+      kind: string
+      descriptions: :tiun.types.hymnable_scriptee.event_title

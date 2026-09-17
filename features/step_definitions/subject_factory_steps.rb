@@ -1,21 +1,21 @@
 Допустим('єствує ѧзык {string} яко {string}') do |name, code|
-   FactoryBot.find_create(:language, key: code, name: name)
+   FactoryBot.find_create(:language, key: code, appellation: name)
 end
 
 Допустим('єствує азбука {string} яко {string}') do |name, code|
-   FactoryBot.find_create(:alphabeth, key: code, name: name)
+   FactoryBot.find_create(:alphabeth, key: code, appellation: name)
 end
 
-Допустим("єствує ѧзык {string}") do |string|
-   FactoryBot.find_create(:language, key: string)
+Допустим("єствує ѧзык {string}") do |key|
+   FactoryBot.find_create(:language, key: key)
 end
 
-Допустим("єствує азбука {string}") do |string|
-   FactoryBot.find_create(:alphabeth, key: string)
+Допустим("єствує азбука {string}") do |key|
+   FactoryBot.find_create(:alphabeth, key: key)
 end
 
 Допустим("єствує взор сꙛбытя {string} яко {string}") do |name, code|
-   FactoryBot.find_create(:event_kind, key: code, name: name, appellation: name)
+   FactoryBot.find_create(:event_kind, key: code, appellation: name)
 end
 
 Допустим('сѫ взори сꙛбытєв {string}') do |codes|
