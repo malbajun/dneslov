@@ -1,5 +1,6 @@
 ---
 defaults:
+   asset_host: "@Rails.application.config.asset_host@"
    poll_frequency: 3600 # 1 hour
    optional: false # used in fields section
    errors:
