@@ -1,6 +1,6 @@
 class RoundelUploader < CarrierWave::Uploader::Base
    #include ::CarrierWave::Backgrounder::Delay
-   include CarrierWave::RMagick
+   include CarrierWave::MiniMagick
 
    cache_storage CarrierWave::Storage::File
    storage :file

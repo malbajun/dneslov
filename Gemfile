@@ -125,7 +125,7 @@ gem 'carrierwave', '~> 3.1.0'
 gem 'carrierwave-base64'
 gem 'carrierwave_backgrounder'
 gem 'file_validators'
-gem 'rmagick'
+gem 'mini_magick', '~> 4.13'
 
 # audio
 gem 'carrierwave-ffmpeg', codeberg: 'majioa/carrierwave-ffmpeg' #path: "/usr/local/home/majioa/git/carrierwave-ffmpeg"
