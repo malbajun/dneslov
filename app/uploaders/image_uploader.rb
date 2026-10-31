@@ -3,6 +3,7 @@ class ImageUploader < CarrierWave::Uploader::Base
    include ::CarrierWave::MiniMagick
    include FramedThumbnail
    include TiffConversion
+   include AnimationProcessing
 
    cache_storage CarrierWave::Storage::File
    storage :file
@@ -29,13 +30,6 @@ class ImageUploader < CarrierWave::Uploader::Base
 
    def content_type_allowlist
       [/image\//]
-   end
-
-   def auto_orient
-      manipulate! do |img|
-         img.auto_orient
-         img
-      end
    end
 
    def asset_host
