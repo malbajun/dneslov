@@ -17,7 +17,7 @@ class RoundelUploader < CarrierWave::Uploader::Base
    end
 
    def match_size? file
-      height >= 400 if file
+      ::MiniMagick::Image.new(current_path).height >= 400 if file
    end
 
    def filename
