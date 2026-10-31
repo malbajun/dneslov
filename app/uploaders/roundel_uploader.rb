@@ -1,6 +1,7 @@
 class RoundelUploader < CarrierWave::Uploader::Base
    #include ::CarrierWave::Backgrounder::Delay
-   include CarrierWave::RMagick
+   include CarrierWave::MiniMagick
+   include AnimationProcessing
 
    cache_storage CarrierWave::Storage::File
    storage :file
@@ -17,7 +18,7 @@ class RoundelUploader < CarrierWave::Uploader::Base
    end
 
    def match_size? file
-      height >= 400 if file
+      ::MiniMagick::Image.new(current_path).height >= 400 if file
    end
 
    def filename
