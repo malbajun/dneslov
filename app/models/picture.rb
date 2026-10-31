@@ -47,7 +47,7 @@ class Picture < ApplicationRecord
    # search by short_name or slug with/out event name or id
    scope :by_roundelable_name, ->(name_in) do
       if /(?<name>.*)#(?<event>.*)/ =~ name_in
-         by_uno(name).joins(:events).merge(Event.by_uno(event))
+         by_uno(name).joins(:events).merge(Event.by_uno(event).reorder(""))
       else
          by_uno(name_in)
       end
@@ -55,7 +55,6 @@ class Picture < ApplicationRecord
 
    # title with or without event
    scope :by_default_or_specific_title, ->(title) do
-      this = table.table_alias || table.name
       sub_m =
          case title
          when Slug::RE
@@ -63,12 +62,15 @@ class Picture < ApplicationRecord
          else
             Memory.by_title(title)
          end
-      sub_e = Event.by_of_two_title(title)
+      memory_ids = sub_m.reorder("").select(:id)
+      event_ids = Event.by_default_or_specific_title(title).reorder("").select(:id)
+      memory_event_ids = EventRole.where(memory_id: memory_ids).select(:event_id)
 
-      left_outer_joins(:events, :memories).
-      joins(sub_m.joins_values, sub_e.joins_values).
-         merge(sub_m.reorder("")).or(merge(sub_e)).
-         distinct
+      attitudes = ImageAttitude.where(imageable_type: "Memory", imageable_id: memory_ids).
+         or(ImageAttitude.where(imageable_type: "Event", imageable_id: event_ids)).
+         or(ImageAttitude.where(imageable_type: "Event", imageable_id: memory_event_ids))
+
+      where(id: attitudes.select(:picture_id))
    end
 
    scope :by_memory, ->(m) do

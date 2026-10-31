@@ -1,5 +1,5 @@
 # language: ru
-@api @image @controller @json
+@api @image @controller @json @processed_images
 Свойство: Правач картинок
    Предыстория:
       * є картинка сѫ даными:
@@ -31,7 +31,7 @@
          | title        | Картина                              |
          | attitude_to  | Памѧтно#Сꙛбытие(100,10)              |
       * єствує памѧть сꙛ даными:
-         | id           | 101                                  |
+         | id           | 100101                                  |
          | short_name   | Памѧтна Ѫ                            |
          | title        | Титуло                               |
          | slug         | слуг                                 |
@@ -116,7 +116,7 @@
 
    @get @collection @search
    Пример: Користник искає во спису картинок по памѧтному едозу (єдином опозонавателю) во взору id
-      Если запытаю добыванје из изо "/api/v1/images.json?m=101"
+      Если запытаю добыванје из изо "/api/v1/images.json?m=100101"
       То добѫдꙛ кодъ поврата "200"
       И добѫдꙛ выводъ:
          """
@@ -143,18 +143,18 @@
       И добѫдꙛ выводъ:
          """
          ---
-         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
-           title: Фотка
-           description:
-           thumb_url: "/images/6/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
-           url: "/images/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
-           type: Photo
          - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f064
            title: Картина
            description:
            thumb_url: "/images/6/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
            url: "/images/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f064.webp"
            type: Painting
+         - uid: 6b9e05cf-aabc-4dc3-97f7-4abd70d6f063
+           title: Фотка
+           description:
+           thumb_url: "/images/6/6b/thumb_6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           url: "/images/6/6b/6b9e05cf-aabc-4dc3-97f7-4abd70d6f063.webp"
+           type: Photo
          """
       А добѫдꙛ охватъ "0-9/2"
 

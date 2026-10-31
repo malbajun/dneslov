@@ -116,3 +116,51 @@ end
    @mini_magick_files_before = Dir[File.join(Dir.tmpdir, 'mini_magick*')]
    @image_processing = -> { uploader.thumbnail(400, 400) }
 end
+
+Допустим('єствує картинка из слике {string}') do |filename|
+   @image_source = Rails.root.join('features', 'fixtures', filename).to_s
+end
+
+Допустим('єствує TIFF со мелкашкој пред основными странками') do
+   @image_source = File.join(@workdir, 'pages.tiff')
+   # Page 0 is REDUCEDIMAGE (32x16, red); pages 1 and 2 are real pages
+   # (80x40, blue and 160x80, green). Choose the first real page, not largest.
+   FileUtils.cp(Rails.root.join('features/fixtures/thumbnail-first.tiff'), @image_source)
+   image = MiniMagick::Image.new(@image_source)
+   expect(image.pages.first.data.fetch('properties').fetch('tiff:subfiletype')).to eq('REDUCEDIMAGE')
+end
+
+Допустим('єствує TIFF без мелкашке со основными странками') do
+   @image_source = File.join(@workdir, 'pages.tiff')
+   MiniMagick::Tool::Convert.new do |convert|
+      convert.size '80x40'
+      convert.xc 'blue'
+      convert << '('
+      convert.size '160x80'
+      convert.xc 'green'
+      convert << ')'
+      convert << @image_source
+   end
+end
+
+Допустим('єствує TIFF толькѫ со мелкашкој') do
+   @image_source = File.join(@workdir, 'pages.tiff')
+   MiniMagick::Tool::Convert.new do |convert|
+      convert.size '32x16'
+      convert.xc 'red'
+      convert.define 'tiff:subfiletype=REDUCEDIMAGE'
+      convert << @image_source
+   end
+end
+
+То('извод картинке имає синь цвѣтъ') do
+   pixel = MiniMagick::Image.new(@processed_image).get_pixels[20][40]
+   expect(pixel[2]).to be > pixel[0] + 100
+   expect(pixel[2]).to be > pixel[1] + 100
+end
+
+Если('покушаю загрѫзити TIFF без основне стране') do
+   uploader = ImageUploader.new
+   uploader.stubs(:current_path).returns(@image_source)
+   @image_processing = -> { uploader.convert('webp') }
+end
